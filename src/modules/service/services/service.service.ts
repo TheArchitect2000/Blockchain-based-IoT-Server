@@ -103,6 +103,8 @@ export class ServiceService {
       .editService(foundService._id, foundService)
       .then((data) => {
         this.result = data;
+        console.log("editing service: ");
+        console.log(data);
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while renaming a device!';
