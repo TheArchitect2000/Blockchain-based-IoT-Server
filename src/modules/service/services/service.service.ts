@@ -72,6 +72,9 @@ export class ServiceService {
       if (body.description != null || body.description != undefined) {
         foundService.description = body.description;
       }
+      if (body.serviceImage != null || body.serviceImage != undefined) {
+        foundService.serviceImage = body.serviceImage;
+      }
       if (body.serviceType != null || body.serviceType != undefined) {
         foundService.serviceType = body.serviceType;
       }
