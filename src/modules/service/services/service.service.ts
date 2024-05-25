@@ -97,7 +97,7 @@ export class ServiceService {
       foundService.updatedAt = new Date();
     }
 
-    console.log('Updated found service for edit is: ', foundService);
+    console.log('Updated found service for edit is 2222: ', foundService);
 
     await this.serviceRepository
       .editService(foundService._id, foundService)
