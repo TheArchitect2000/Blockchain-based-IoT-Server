@@ -1,0 +1,7 @@
+export enum ErrorTypeEnum {
+  INVALID_INPUT = 400,
+  FORBIDDEN = 403,
+  NOT_FOUND = 404,
+  CONFLICT = 409,
+  UNPROCESSABLE_ENTITY = 422,
+}
