@@ -78,8 +78,6 @@ export class ServiceController {
       .editService(body, request.user.userId)
       .then((data) => {
         this.result = data;
-        console.log("new data issssss: ");
-        console.log(data);
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while editing the service!';
