@@ -72,6 +72,9 @@ export class ServiceService {
       if (body.description != null || body.description != undefined) {
         foundService.description = body.description;
       }
+      console.log("foundService image issssss:" + foundService.serviceImage);
+      console.log("bodyService image issssss:" + body.serviceImage);
+      
       if (body.serviceImage != null || body.serviceImage != undefined) {
         foundService.serviceImage = body.serviceImage;
       }
@@ -94,7 +97,7 @@ export class ServiceService {
       foundService.updatedAt = new Date();
     }
 
-    console.log('teeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee: ', foundService);
+    console.log('Updated found service for edit is: ', foundService);
 
     await this.serviceRepository
       .editService(foundService._id, foundService)
