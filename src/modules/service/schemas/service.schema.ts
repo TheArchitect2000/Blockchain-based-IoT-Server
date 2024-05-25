@@ -66,7 +66,7 @@ const schema = new Schema({
   serviceImage: {
     type: String,
     ref: "media",
-    minlength: 1,
+    minlength: 0,
     required: false,
     default: null,
   },
