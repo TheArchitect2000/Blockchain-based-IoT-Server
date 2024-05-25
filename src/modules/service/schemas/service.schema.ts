@@ -64,10 +64,11 @@ const schema = new Schema({
     default: 0,
   },
   serviceImage: {
-    type: Schema.Types.ObjectId,
-    ref: 'media',
-    default: null,
+    type: String,
+    ref: "media",
+    minlength: 1,
     required: false,
+    default: null,
   },
   blocklyJson: {
     type: {},
