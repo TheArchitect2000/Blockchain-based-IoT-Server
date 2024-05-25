@@ -77,7 +77,7 @@ export class ServiceService {
       console.log("bodyService image issssss:" + body.serviceImage);
       
       if (body.serviceImage != null || body.serviceImage != undefined) {
-        foundService.serviceImage = body.serviceImage;
+        foundService.serviceImage = "body.serviceImage";
         console.log(foundService);
         console.log("ghol ghol ghol ghol ghol ghol ghol ghol ghol ghol ghol ghol");
       }
