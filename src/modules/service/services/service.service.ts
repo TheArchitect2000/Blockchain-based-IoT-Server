@@ -19,6 +19,7 @@ export class ServiceService {
       userId: body.userId,
       serviceName: body.serviceName,
       description: body.description,
+      serviceImage: body.serviceImage,
       serviceType: body.serviceType,
       status: body.status,
       blocklyJson: body.blocklyJson,
@@ -77,8 +78,8 @@ export class ServiceService {
       
       if (body.serviceImage != null || body.serviceImage != undefined) {
         foundService.serviceImage = body.serviceImage;
+        console.log(foundService);
         console.log("ghol ghol ghol ghol ghol ghol ghol ghol ghol ghol ghol ghol");
-        
       }
       if (body.serviceType != null || body.serviceType != undefined) {
         foundService.serviceType = body.serviceType;
