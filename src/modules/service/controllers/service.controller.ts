@@ -29,6 +29,7 @@ import { GereralException } from 'src/modules/utility/exceptions/general.excepti
 import { ServiceService } from '../services/service.service';
 import { insertServiceDto } from '../data-transfer-objects/insert-service.dto';
 import { editServiceDto } from '../data-transfer-objects/edit-service.dto';
+import { verifyProofDto } from '../data-transfer-objects/verify-proof.dto';
 
 @ApiTags('Manage Services')
 @Controller('app')
@@ -50,6 +51,19 @@ export class ServiceController {
     return await this.serviceService.insertService(body);
   }
 
+  @Post('v1/service/proof')
+  @HttpCode(201)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Verifying the proof.',
+    description:
+      'This api verifies then user proof code.',
+  })
+  async verifyProof(@Body() body: insertServiceDto, @Request() request) {
+    return await this.serviceService.insertService(body);
+  }
+
   @Patch('v1/service/edit')
   @HttpCode(200)
   @UseGuards(JwtAuthGuard)
@@ -58,36 +72,22 @@ export class ServiceController {
     summary: 'Edites service.',
     description: 'Edites service by service ID and other fields.',
   })
-  async editService(@Body() body: editServiceDto, @Request() request) {
-    console.log('We are in editService controller');
+  async editService(@Body() body: verifyProofDto, @Request() request) {
+    console.log('We are in Verify Proof section');
 
     if (
-      body.serviceId === null ||
-      body.serviceId === undefined ||
-      body.serviceId === '' ||
-      Types.ObjectId.isValid(String(body.serviceId)) === false
+      body.proof === null ||
+      body.proof === undefined ||
+      body.proof === ''
     ) {
-      let errorMessage = 'Service id is not valid!';
+      let errorMessage = 'proof is not valid!';
       throw new GereralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         errorMessage,
       );
     }
 
-    await this.serviceService
-      .editService(body, request.user.userId)
-      .then((data) => {
-        this.result = data;
-      })
-      .catch((error) => {
-        let errorMessage = 'Some errors occurred while editing the service!';
-        throw new GereralException(
-          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-          errorMessage,
-        );
-      });
-
-    return this.result;
+    return false;
   }
 
   @Get('v1/service/get-services-by-user-id/:userId')
