@@ -37,7 +37,7 @@ import { JwtAuthGuard } from '../guard/jwt-auth.guard';
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
-    summary: 'Verifying the proof.',
+    summary: 'Verifying the proof',
     description:
       'This api verifies then user proof code.',
   })
