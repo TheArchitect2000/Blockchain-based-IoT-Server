@@ -60,20 +60,8 @@ export class ServiceController {
     description:
       'This api verifies then user proof code.',
   })
-  async verifyProof(@Body() body: insertServiceDto, @Request() request) {
-    return await this.serviceService.insertService(body);
-  }
-
-  @Patch('v1/service/edit')
-  @HttpCode(200)
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({
-    summary: 'Edites service.',
-    description: 'Edites service by service ID and other fields.',
-  })
-  async editService(@Body() body: verifyProofDto, @Request() request) {
-    console.log('We are in Verify Proof section');
+  async verifyProof(@Body() body: verifyProofDto, @Request() request) {
+    console.log('We are in Verify Proof section', body);
 
     if (
       body.proof === null ||
@@ -88,6 +76,46 @@ export class ServiceController {
     }
 
     return false;
+  }
+
+  @Patch('v1/service/edit')
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Edites service.',
+    description: 'Edites service by service ID and other fields.',
+  })
+  async editService(@Body() body: editServiceDto, @Request() request) {
+    console.log('We are in editService controller');
+
+    if (
+      body.serviceId === null ||
+      body.serviceId === undefined ||
+      body.serviceId === '' ||
+      Types.ObjectId.isValid(String(body.serviceId)) === false
+    ) {
+      let errorMessage = 'Service id is not valid!';
+      throw new GereralException(
+        ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+        errorMessage,
+      );
+    }
+
+    await this.serviceService
+      .editService(body, request.user.userId)
+      .then((data) => {
+        this.result = data;
+      })
+      .catch((error) => {
+        let errorMessage = 'Some errors occurred while editing the service!';
+        throw new GereralException(
+          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+          errorMessage,
+        );
+      });
+
+    return this.result;
   }
 
   @Get('v1/service/get-services-by-user-id/:userId')
