@@ -29,7 +29,6 @@ import { GereralException } from 'src/modules/utility/exceptions/general.excepti
 import { ServiceService } from '../services/service.service';
 import { insertServiceDto } from '../data-transfer-objects/insert-service.dto';
 import { editServiceDto } from '../data-transfer-objects/edit-service.dto';
-import { verifyProofDto } from '../data-transfer-objects/verify-proof.dto';
 
 @ApiTags('Manage Services')
 @Controller('app')
@@ -49,33 +48,6 @@ export class ServiceController {
   })
   async insertDevice(@Body() body: insertServiceDto, @Request() request) {
     return await this.serviceService.insertService(body);
-  }
-
-  @Post('v1/service/proof')
-  @HttpCode(201)
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({
-    summary: 'Verifying the proof.',
-    description:
-      'This api verifies then user proof code.',
-  })
-  async verifyProof(@Body() body: verifyProofDto, @Request() request) {
-    console.log('We are in Verify Proof section', body);
-
-    if (
-      body.proof === null ||
-      body.proof === undefined ||
-      body.proof === ''
-    ) {
-      let errorMessage = 'proof is not valid!';
-      throw new GereralException(
-        ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-        errorMessage,
-      );
-    }
-
-    return false;
   }
 
   @Patch('v1/service/edit')
