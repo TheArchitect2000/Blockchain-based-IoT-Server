@@ -22,11 +22,10 @@ import {
     ApiQuery,
     ApiTags,
   } from '@nestjs/swagger';
-  import { AuthenticationService } from './authentication.service';
-import { JwtAuthGuard } from './guard/jwt-auth.guard';
 import { verifyProofDto } from 'src/modules/service/data-transfer-objects/verify-proof.dto';
 import { GereralException } from 'src/modules/utility/exceptions/general.exception';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
+import { JwtAuthGuard } from '../guard/jwt-auth.guard';
 
   @ApiTags('Manage Zpk')
   @Controller('app')
