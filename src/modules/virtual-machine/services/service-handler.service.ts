@@ -44,7 +44,7 @@ export class ServiceHandlerService {
           //   this.runInstalledService(installedService);
             
             const deviceInfos: any = await this.deviceService.getDeviceInfoByEncryptedId(deviceEncryptedId)
-            console.log("Deviceeeeeeeeee Infoooooooos:", deviceInfos);
+            console.log("Device Info:", deviceInfos);
             
             parsedPayload.data = {...parsedPayload.data, mac: deviceInfos.mac, name: deviceInfos.deviceName, type: deviceInfos.deviceType}
             
@@ -66,6 +66,7 @@ export class ServiceHandlerService {
   async runServiceCode(parsedInstalledService, parsedPayload) {
     let userId = parsedInstalledService.userId;
     let user = await this.userService.getUserProfileByIdFromUser(userId);
+
     let userEmail = user.email;
     console.log(`\x1b[33m \nUser email is: ${userEmail} \x1b[0m`);
     let parsedInstalledServiceCode = parsedInstalledService.code;
@@ -93,10 +94,10 @@ export class ServiceHandlerService {
     console.log(`\x1b[33m \nmovement is:\x1b[0m`, movement);
     console.log(`\x1b[33m \nbutton is:\x1b[0m`, button);
     console.log(`\x1b[33m \device name is:\x1b[0m`, deviceName);
-    let editedParsedInstalledServiceCode = ``;
+    let editedParsedInstalledServiceCode = parsedInstalledServiceCode;
 
     if (parsedInstalledServiceCode.includes("MULTI_SENSOR_1.MAC")) {
-      editedParsedInstalledServiceCode = parsedInstalledServiceCode.replaceAll(
+      editedParsedInstalledServiceCode = editedParsedInstalledServiceCode.replaceAll(
         "MULTI_SENSOR_1.MAC",
         deviceMac,
       );
@@ -132,14 +133,9 @@ export class ServiceHandlerService {
 
     if (parsedInstalledServiceCode.includes(`MULTI_SENSOR_1.DOOR`)) {
       if (door == 'Open') {
-        console.log(`\x1b[33m \nDoor is open\x1b[0m`);
         editedParsedInstalledServiceCode = editedParsedInstalledServiceCode.replaceAll(
           `MULTI_SENSOR_1.DOOR.OPENED`,
           String(true),
-        );
-        console.log(
-          `\x1b[33m \neditedParsedInstalledServiceCode is:\x1b[0m`,
-          editedParsedInstalledServiceCode,
         );
       } else if (door == 'Close') {
         editedParsedInstalledServiceCode = editedParsedInstalledServiceCode.replaceAll(
@@ -163,20 +159,15 @@ export class ServiceHandlerService {
       }
     }
 
-    if (parsedInstalledServiceCode.includes(`MULTI_SENSOR_1.BUTTON`)) {
+    if (parsedInstalledServiceCode.includes(`MULTI_SENSOR_1.PRESSED`)||parsedInstalledServiceCode.includes(`MULTI_SENSOR_1.NOT_PRESSED`)) {
       if (button == 'Pressed') {
         editedParsedInstalledServiceCode = editedParsedInstalledServiceCode.replaceAll(
-          `MULTI_SENSOR_1.BUTTON.PRESSED`,
+          `MULTI_SENSOR_1.PRESSED`,
           "true",
         );
-      } else if (button == 'Double') {
+      } else if (button == 'NOT Pressed') {
         editedParsedInstalledServiceCode = editedParsedInstalledServiceCode.replaceAll(
-          `MULTI_SENSOR_1.BUTTON.DOUBLE_PRESSED`,
-          "true",
-        );
-      } else if (button == 'Triple') {
-        editedParsedInstalledServiceCode = editedParsedInstalledServiceCode.replaceAll(
-          `MULTI_SENSOR_1.BUTTON.TRIPLE_PRESSED`,
+          `MULTI_SENSOR_1.NOT_PRESSED`,
           "true",
         );
       }
