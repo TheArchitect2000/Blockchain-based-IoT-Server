@@ -8,6 +8,7 @@ import { AuthenticationModule } from './modules/authentication/authentication.mo
 import { BlocklyModule } from './modules/blockly/blockly.module';
 import { BrokerModule } from './modules/broker/broker.module';
 import { DeviceModule } from './modules/device/device.module';
+import { ZkpModule } from './modules/zkp/zkp.module';
 import { NotificationModule } from './modules/notification/notification.module';
 import { PanelModule } from './modules/panel/panel.module';
 import { ServiceModule } from './modules/service/service.module';
@@ -56,6 +57,7 @@ import { VirtualMachineModule } from './modules/virtual-machine/virtual-machine.
     BlocklyModule,
     VirtualMachineModule,
     NotificationModule,
+    ZkpModule,
   ],
   controllers: [AppController],
   providers: [

@@ -133,11 +133,21 @@ export class DeviceRepository {
     );
   }
 
+  async getDeviceByEncryptedId(encryptId ,whereCondition, populateCondition, selectCondition) {
+    console.log('we are in getAllDevices repository!');
+
+    return await this.deviceModel
+      .find({ deviceEncryptedId: encryptId })
+      .where(whereCondition)
+      .populate(populateCondition)
+      .select(selectCondition);
+  }
+
   async getAllDevices(whereCondition, populateCondition, selectCondition) {
     console.log('we are in getAllDevices repository!');
 
     return await this.deviceModel
-      .find()
+      .findOne()
       .where(whereCondition)
       .populate(populateCondition)
       .select(selectCondition);

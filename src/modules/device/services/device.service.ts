@@ -563,6 +563,43 @@ export class DeviceService {
 
     return response;
   }
+  
+  async getDeviceInfoByEncryptedId(encryptId) {
+    let whereCondition = { isDeleted: false };
+    let populateCondition = [];
+    let selectCondition =
+      '_id deviceName deviceType mac deviceEncryptedId hardwareVersion firmwareVersion parameters isShared location geometry insertedBy insertDate isDeletable isDeleted deletedBy deleteDate deletionReason updatedBy updateDate';
+    let foundDevices: any = null;
+    let response = {};
+
+    console.log('we are in getDeviceInfoByEncryptedId service!');
+
+    foundDevices = await this.deviceRepository.getDeviceByEncryptedId(
+      encryptId,
+      whereCondition,
+      populateCondition,
+      selectCondition,
+    );
+
+    foundDevices.forEach((element) => {
+      response = {
+        _id: element._id,
+        deviceName: element.deviceName,
+        deviceType: element.deviceType,
+        mac: element.mac,
+        deviceEncryptedId: element.deviceEncryptedId,
+        hardwareVersion: element.hardwareVersion,
+        firmwareVersion: element.firmwareVersion,
+        parameters: element.parameters,
+        isShared: element.isShared,
+        location: element.location,
+        geometry: element.geometry,
+      };
+    });
+    console.log('response are: ', response);
+
+    return response;
+  }
 
   async deleteDeviceByDeviceId(deviceId): Promise<any> {
     let whereCondition = { isDeleted: false };

@@ -4,17 +4,14 @@ import {
   HttpCode,
   Post,
   Get,
-  Patch,
-  Delete,
-  Request,
-  Response,
-  UseGuards,
-  Param,
-  Query,
-  Req,
-  Put,
   UseInterceptors,
   UploadedFile,
+  Query,
+  UseGuards,
+  Param,
+  Request,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
@@ -28,10 +25,10 @@ import {
 import { JwtAuthGuard } from 'src/modules/authentication/guard/jwt-auth.guard';
 import { uploadFileDto } from '../data-transfer-objects/upload-file.dto';
 import { ErrorTypeEnum } from '../enums/error-type.enum';
-import { ResourceTypeEnum } from '../enums/resource-type.enum';
 import { GereralException } from '../exceptions/general.exception';
 import { MediaService } from '../services/media.service';
 import { Types } from 'mongoose';
+import { ResourceTypeEnum } from '../enums/resource-type.enum';
 
 @ApiTags('Manage Medias')
 @Controller('')
@@ -41,9 +38,8 @@ export class MediaController {
   @Post('v1/media/upload')
   @HttpCode(200)
   @UseInterceptors(FileInterceptor('file'))
-  @ApiOperation({ summary: 'upload media file.' })
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  //@UseGuards(JwtAuthGuard)
+  //@ApiBearerAuth()
   @ApiConsumes('multipart/form-data')
   @ApiQuery({
     name: 'type',
@@ -57,27 +53,39 @@ export class MediaController {
     schema: {
       type: 'object',
       properties: {
-        // type: { type: 'string' },
         file: {
-          // this field name must be the same as FileInterceptor name parameter
           type: 'string',
           format: 'binary',
         },
       },
     },
   })
+  @ApiOperation({ summary: 'upload media file.' })
   async uploadMedia(
     @UploadedFile() file: Express.Multer.File,
     @Query('type') type: string,
     @Body() body: uploadFileDto,
     @Request() request,
   ) {
-    return await this.mediaService.insertMedia(
-      type,
-      body,
-      request.user.userId,
-      file,
-    );
+    try {
+      const uploadResult = await this.mediaService.insertMedia(
+        type,
+        body,
+        request.user.userId,
+        file,
+      );
+
+      return true;
+    } catch (error) {
+      /* throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'An error occurred while uploading the file.',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      ); */
+      return false;
+    }
   }
 
   @Get('v1/media/get-by-id/:mediaId')
@@ -87,18 +95,12 @@ export class MediaController {
     description: 'Get a media by media id. This api requires a media id.',
   })
   async getMediaById(@Param('mediaId') mediaId: string) {
-    if (
-      mediaId === null ||
-      mediaId === undefined ||
-      mediaId === '' ||
-      Types.ObjectId.isValid(String(mediaId)) === false
-    ) {
+    if (!Types.ObjectId.isValid(mediaId)) {
       throw new GereralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-        'Media Id is required and must be entered and must be entered correctly with objectId type.',
+        'Media Id is required and must be a valid ObjectId.',
       );
     }
-
     return await this.mediaService.getMediaById(mediaId);
   }
 }

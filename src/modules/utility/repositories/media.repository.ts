@@ -9,7 +9,7 @@ import { MediaModel } from '../models/media.model';
 export class MediaRepository {
   constructor(
     @InjectModel('media')
-    private readonly mediaModel?: MediaModel,
+    private readonly mediaModel: MediaModel,
   ) {}
 
   async create(data) {
@@ -24,3 +24,4 @@ export class MediaRepository {
       .select(selectCondition);
   }
 }
+

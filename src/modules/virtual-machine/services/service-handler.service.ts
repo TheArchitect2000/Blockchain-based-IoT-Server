@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import * as ivm from 'isolated-vm';
+import { DeviceService } from 'src/modules/device/services/device.service';
 import { InstalledServiceService } from 'src/modules/service/services/installed-service.service';
 import { UserService } from 'src/modules/user/services/user/user.service';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
@@ -19,6 +20,7 @@ export class ServiceHandlerService {
     private readonly userService?: UserService,
     private readonly installedServiceService?: InstalledServiceService,
     private readonly mailService?: MailService,
+    private readonly deviceService?: DeviceService
   ) {}
 
   async runInstalledService(deviceEncryptedId, parsedPayload) {
@@ -40,7 +42,12 @@ export class ServiceHandlerService {
             let parsedInstalledService = JSON.parse(installedServiceOutput);
           // console.log(`\x1b[32m \nInstalled service code is: ${parsedInstalledService.code} \x1b[0m`);
           //   this.runInstalledService(installedService);
-          
+            
+            const deviceInfos: any = await this.deviceService.getDeviceInfoByEncryptedId(deviceEncryptedId)
+            console.log("Deviceeeeeeeeee Infoooooooos:", deviceInfos);
+            
+            parsedPayload.data = {...parsedPayload.data, mac: deviceInfos.mac, name: deviceInfos.deviceName, type: deviceInfos.deviceType}
+            
             await this.runServiceCode(parsedInstalledService, parsedPayload);
           }
         }
@@ -77,15 +84,40 @@ export class ServiceHandlerService {
     let movement = parsedPayload.data.Movement;
     let door = parsedPayload.data.Door;
     let button = parsedPayload.data.Button;
+    let deviceName = parsedPayload.data.name;
+    let deviceMac = parsedPayload.data.mac;
+    let deviceType = parsedPayload.data.type;
     console.log(`\x1b[33m \ntemperature is:\x1b[0m`, temperature);
     console.log(`\x1b[33m \nhumidity is:\x1b[0m`, humidity);
     console.log(`\x1b[33m \ndoor is:\x1b[0m`, door);
     console.log(`\x1b[33m \nmovement is:\x1b[0m`, movement);
     console.log(`\x1b[33m \nbutton is:\x1b[0m`, button);
+    console.log(`\x1b[33m \device name is:\x1b[0m`, deviceName);
     let editedParsedInstalledServiceCode = ``;
 
-    if (parsedInstalledServiceCode.includes("MULTI_SENSOR_1.TEMPERATURE")) {
+    if (parsedInstalledServiceCode.includes("MULTI_SENSOR_1.MAC")) {
       editedParsedInstalledServiceCode = parsedInstalledServiceCode.replaceAll(
+        "MULTI_SENSOR_1.MAC",
+        deviceMac,
+      );
+    }
+
+    if (parsedInstalledServiceCode.includes("MULTI_SENSOR_1.TYPE")) {
+      editedParsedInstalledServiceCode = editedParsedInstalledServiceCode.replaceAll(
+        "MULTI_SENSOR_1.TYPE",
+        deviceType,
+      );
+    }
+
+    if (parsedInstalledServiceCode.includes("MULTI_SENSOR_1.NAME")) {
+      editedParsedInstalledServiceCode = editedParsedInstalledServiceCode.replaceAll(
+        "MULTI_SENSOR_1.NAME",
+        deviceName,
+      );
+    }
+
+    if (parsedInstalledServiceCode.includes("MULTI_SENSOR_1.TEMPERATURE")) {
+      editedParsedInstalledServiceCode = editedParsedInstalledServiceCode.replaceAll(
         "MULTI_SENSOR_1.TEMPERATURE",
         temperature,
       );

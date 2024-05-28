@@ -392,6 +392,33 @@ export class DeviceController {
 
     return this.result;
   }
+  
+  
+  @Get('v1/device/get-device-info-by-device-encrypted-id/:encryptedId')
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Get all installed devices.',
+    description: 'Gets all installed devices.',
+  })//QTA6NzY6NEU6NTc6REY6RDg=
+  async getDeviceInfoByEncryptedId(@Param('encryptedId') encryptedId: string) {
+    await this.deviceService
+      .getDeviceInfoByEncryptedId(encryptedId)
+      .then((data) => {
+        this.result = data;
+      })
+      .catch((error) => {
+        let errorMessage = 'Some errors occurred while fetching devices!';
+
+        throw new GereralException(
+          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+          errorMessage,
+        );
+      });
+
+    return this.result;
+  }
 
   @Delete('v1/device/delete-device-by-device-id/:deviceId')
   @HttpCode(200)
