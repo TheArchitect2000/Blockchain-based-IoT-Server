@@ -38,6 +38,11 @@ export class insertInstalledServiceDto {
   installedServiceName: string;
 
   @IsOptional()
+  @IsString({ message: 'installedServiceImage must be string.' })
+  @ApiProperty({ required: false })
+  installedServiceImage: string;
+
+  @IsOptional()
   @MinLength(5, { message: 'description cannot be less than 5 letters.' })
   @IsString({ message: 'description must be string.' })
   @ApiProperty({ required: false })
@@ -58,3 +63,5 @@ export class insertInstalledServiceDto {
   @ApiProperty({ required: false })
   deviceMap: {};
 }
+
+

@@ -37,7 +37,7 @@ export class ServiceHandlerService {
             let installedServiceOutput = JSON.stringify(installedService[i]).replaceAll(
               /\r?\n|\r/g,
               ' ',
-            );
+            );9
           // console.log(`\x1b[31m \nThe device ${installedService} has installed service! ${data}\x1b[0m`);
             let parsedInstalledService = JSON.parse(installedServiceOutput);
           // console.log(`\x1b[32m \nInstalled service code is: ${parsedInstalledService.code} \x1b[0m`);

@@ -2385,8 +2385,16 @@ export class UserService {
       .then(async (data) => {
         await this.serviceService
           .deleteAllUserServicesPermanently(userId)
-          .then(async (data) => {
-            await this.deviceService
+          .then(async (data) => {})
+          .catch((error) => {
+            const errorMessage =
+              'Some errors occurred while deleting devices in user service!';
+            throw new GereralException(
+              ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+              errorMessage,
+            );
+          });
+          await this.deviceService
               .getDevicesByUserId(userId)
               .then(async (data) => {
                 const userDevices = data;
@@ -2441,15 +2449,6 @@ export class UserService {
                   errorMessage,
                 );
               });
-          })
-          .catch((error) => {
-            const errorMessage =
-              'Some errors occurred while deleting devices in user service!';
-            throw new GereralException(
-              ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-              errorMessage,
-            );
-          });
       })
       .catch((error) => {
         const errorMessage =

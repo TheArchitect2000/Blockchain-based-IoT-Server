@@ -21,6 +21,7 @@ export class InstalledServiceService {
       userId: body.userId,
       serviceId: body.serviceId,
       installedServiceName: body.installedServiceName,
+      installedServiceImage: body.installedServiceImage,
       description: body.description,
       code: body.code,
       deviceMap: body.deviceMap,
@@ -77,11 +78,19 @@ export class InstalledServiceService {
         foundInstalledService.serviceId = body.serviceId;
       }
       if (
+        body.installedServiceImage != null ||
+        body.installedServiceImage != undefined
+      ) {
+        foundInstalledService.installedServiceImage = body.installedServiceImage;
+      }
+
+      if (
         body.installedServiceName != null ||
         body.installedServiceName != undefined
       ) {
         foundInstalledService.installedServiceName = body.installedServiceName;
       }
+      
       if (body.description != null || body.description != undefined) {
         foundInstalledService.description = body.description;
       }
@@ -131,6 +140,7 @@ export class InstalledServiceService {
         )
         .then((data) => {
           foundService = data;
+
         })
         .catch((error) => {
           let errorMessage = 'Some errors occurred while finding a service!';

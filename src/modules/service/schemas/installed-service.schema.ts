@@ -49,8 +49,7 @@ const schema = new Schema({
         required: false
     }, */
   installedServiceImage: {
-    type: Schema.Types.ObjectId,
-    ref: 'media',
+    type: String,
     default: null,
     required: false,
   },
