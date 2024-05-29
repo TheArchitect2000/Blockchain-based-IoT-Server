@@ -202,9 +202,23 @@ export class ServiceService {
         insertDate: element.insertDate,
       });
     });
-    console.log('response are: ', response);
 
-    return response;
+    const validUserIds = [
+      '6655f533bda95083b9c9b042', // harry
+      '664af35ff4e40ecbcc618a50', // gramezan22
+      '664ad130f4e40ecbcc600ca1', // hramezancoin
+      '65f9e57f49e1750d2c4e9ded', // hramezan
+      '6623750f7514f3254c230114', // m.k.kasaeizadeh
+      '6655ef71bda95083b9c99b83' // shayanheaven
+  ]
+
+  const finalResult = response.filter((service) =>
+    service.insertedBy && validUserIds.includes(service.insertedBy.toString())
+  );
+
+  console.log('response are: ', finalResult);
+
+    return finalResult;
   }
 
   async deleteServiceByServiceId(serviceId, userId): Promise<any> {

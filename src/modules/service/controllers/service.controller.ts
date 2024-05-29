@@ -129,6 +129,7 @@ export class ServiceController {
     return this.result;
   }
 
+  
   @Get('v1/service/get-all-services')
   @HttpCode(200)
   @UseGuards(JwtAuthGuard)
@@ -140,8 +141,8 @@ export class ServiceController {
   async getAllServices() {
     await this.serviceService
       .getAllServices()
-      .then((data) => {
-        this.result = data;
+      .then((response) => {
+        this.result = response
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while fetching services!';
