@@ -14,10 +14,10 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   const config = new DocumentBuilder()
-    .setTitle('Fides Innovations')
-    .setDescription('The Fides Innovations API description')
+    .setTitle('FidesInnova')
+    .setDescription('The FidesInnova API description')
     .setVersion('2.1.0')
-    .addTag('Fides Innovations')
+    .addTag('FidesInnova')
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);

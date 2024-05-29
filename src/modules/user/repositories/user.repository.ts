@@ -23,6 +23,7 @@ export class UserRepository {
       })
       .catch((error) => {
         const errorMessage = 'Some errors occurred while user insertion!';
+        console.log(error.message);
         throw new GereralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
