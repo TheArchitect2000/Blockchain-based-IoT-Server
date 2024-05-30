@@ -7,6 +7,8 @@ import { MediaModel } from '../models/media.model';
 
 @Injectable()
 export class MediaRepository {
+  private result
+
   constructor(
     @InjectModel('media')
     private readonly mediaModel: MediaModel,
@@ -16,12 +18,14 @@ export class MediaRepository {
     return await this.mediaModel.create(data);
   }
 
-  async findById(_id, whereCondition, populateCondition, selectCondition) {
-    return await this.mediaModel
-      .findOne({ _id })
-      .where(whereCondition)
-      .populate(populateCondition)
-      .select(selectCondition);
+  async findById(_id) {
+    await this.mediaModel
+      .findOne({ _id: _id })
+      .then((data) => {
+        this.result = data
+      });
+    
+    return this.result;
   }
 }
 

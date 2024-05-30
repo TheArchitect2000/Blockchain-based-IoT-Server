@@ -1,28 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
+import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { uploadFileDto } from '../dto/media-dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { ErrorTypeEnum } from '../enums/error-type.enum';
-import { GereralException } from '../exceptions/general.exception';
-import { MediaModel } from '../models/media.model';
-import { MediaRepository } from '../repositories/media.repository';
-import { uploadFileDto } from '../data-transfer-objects/upload-file.dto';
-
-/**
- * Media manipulation service.
- */
+import { MediaRepository } from 'src/modules/utility/repositories/media.repository';
 
 @Injectable()
 export class MediaService {
   constructor(
     @InjectModel('media')
-    private readonly mediaModel: MediaModel,
     private readonly mediaRepository: MediaRepository,
-    private readonly configService: ConfigService,
   ) {}
 
   async insertMedia(type: string, body: uploadFileDto, userId: string, file: Express.Multer.File) {
-    
-    console.log("We are in Insert media");
     
     const newMedium = {
       user: userId,
@@ -39,11 +29,12 @@ export class MediaService {
       updateDate: new Date(),
     };
 
+    console.log("We are in Insert media", newMedium);
+
     try {
       const uploadedFile = await this.mediaRepository.create(newMedium);
 
-      if (uploadedFile) {
-        
+      if (uploadedFile) {  
         return {
           _id: uploadedFile._id,
           fileName: uploadedFile.fileName,
@@ -61,6 +52,8 @@ export class MediaService {
         );
       }
     } catch (error) {
+      console.log(error);
+      
       throw new GereralException(
         ErrorTypeEnum.INTERNAL_SERVER_ERROR,
         'An error occurred while saving the file to the database.',
@@ -68,40 +61,34 @@ export class MediaService {
     }
   }
 
-  async findById(id, whereCondition, populateCondition, selectCondition) {
-    return await this.mediaRepository.findById(
-      id,
-    );
-  }
-
-  async getMediaById(id) {
-    let whereCondition = { isDeleted: false };
-    let populateCondition = [
+  async getMediaById(id: string) {
+    const whereCondition = { isDeleted: false };
+    const populateCondition = [
       {
         path: 'user',
         select: 'firstName lastName userName mobile',
       },
     ];
-    let selectCondition = 'firstName lastName userName mobile';
-
-    return await this.mediaRepository.findById(
-      id,
-    );
+    const selectCondition = 'user type encoding mediaType destination fileName path size insertedBy insertDate updatedBy updateDate';
+  
+    try {
+      const media = await this.mediaRepository.findById(id);
+      if (!media) {
+        throw new GereralException(
+          ErrorTypeEnum.NOT_FOUND,
+          'Media not found',
+        );
+      }
+      return media;
+    } catch (error) {
+      console.log(error);
+      throw new GereralException(
+        ErrorTypeEnum.INTERNAL_SERVER_ERROR,
+        'An error occurred while retrieving the media.',
+      );
+    }
   }
-
-  /* async getMediaVolumesSetting(file, type) {
-        if(file && file.size){
-            this.setting = await this.settingService.imageVolumesSettings();
-            this.setting.items.forEach(set => {
-                if (set.key == type && Number(set.value) * 1000 < Number(file.size)) {
-                this.photoRepository.unlink(file.path, err => {
-                    if (err) Logger.error(err, 'FileUploadInvalidVolume');
-                });
-                throw new PhotoInvalidSizeException();
-                }
-            });
-        }else{
-            throw new PhotoInvalidSizeException();
-        }
-    } */
+  
+  
 }
+

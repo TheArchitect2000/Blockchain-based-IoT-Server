@@ -1,45 +1,51 @@
 import {
-  Body,
-  Controller,
-  HttpCode,
-  Post,
-  Get,
-  UseInterceptors,
-  UploadedFile,
-  Query,
-  UseGuards,
-  Param,
-  Request,
-  HttpException,
-  HttpStatus,
-} from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
-import {
-  ApiBearerAuth,
-  ApiBody,
-  ApiConsumes,
-  ApiOperation,
-  ApiQuery,
-  ApiTags,
-} from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/modules/authentication/guard/jwt-auth.guard';
-import { uploadFileDto } from '../data-transfer-objects/upload-file.dto';
-import { ErrorTypeEnum } from '../enums/error-type.enum';
-import { GereralException } from '../exceptions/general.exception';
+    Body,
+    Controller,
+    HttpCode,
+    Post,
+    Get,
+    Patch,
+    Delete,
+    Request,
+    Response,
+    UseGuards,
+    Param,
+    Query,
+    Req,
+    Put,
+    UseInterceptors,
+    UploadedFile,
+    HttpException,
+    HttpStatus,
+  } from '@nestjs/common';
+  import {
+    ApiBearerAuth,
+    ApiBody,
+    ApiConsumes,
+    ApiOperation,
+    ApiQuery,
+    ApiTags,
+  } from '@nestjs/swagger';
 import { MediaService } from '../services/media.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ResourceTypeEnum } from 'src/modules/utility/enums/resource-type.enum';
+import { uploadFileDto } from '../dto/media-dto';
 import { Types } from 'mongoose';
-import { ResourceTypeEnum } from '../enums/resource-type.enum';
+import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
+import { JwtAuthGuard } from 'src/modules/authentication/guard/jwt-auth.guard';
 
-@ApiTags('Manage Medias')
-@Controller('')
-export class MediaController {
-  constructor(private readonly mediaService: MediaService) {}
+
+  @ApiTags('Upload Media')
+  @Controller('app')
+  export class MediaController {
+    constructor(private readonly mediaService: MediaService) {}
 
   @Post('v1/media/upload')
   @HttpCode(200)
   @UseInterceptors(FileInterceptor('file'))
-  //@UseGuards(JwtAuthGuard)
-  //@ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiConsumes('multipart/form-data')
   @ApiQuery({
     name: 'type',
@@ -67,6 +73,8 @@ export class MediaController {
     @Body() body: uploadFileDto,
     @Request() request,
   ) {
+    console.log("We are in upload media upload");
+    
     try {
       const uploadResult = await this.mediaService.insertMedia(
         type,
@@ -84,9 +92,9 @@ export class MediaController {
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
-      return false;
     }
   }
+
 
   @Get('v1/media/get-by-id/:mediaId')
   @HttpCode(200)
@@ -103,4 +111,6 @@ export class MediaController {
     }
     return await this.mediaService.getMediaById(mediaId);
   }
+  
 }
+  

@@ -218,7 +218,7 @@ export class ServiceService {
 
   console.log('response are: ', finalResult);
 
-    return finalResult;
+    return response;
   }
 
   async deleteServiceByServiceId(serviceId, userId): Promise<any> {
