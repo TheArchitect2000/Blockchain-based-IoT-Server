@@ -1,3 +1,5 @@
+// src/modules/device/device.module.ts
+
 import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { deviceLogFeature } from './features/device-log.feature';
@@ -13,14 +15,15 @@ import { DeviceController } from './controllers/device.controller';
 import { DeviceTypeController } from './controllers/device-type.controller';
 import { DeviceLogController } from './controllers/device-log.controller';
 import { UserModule } from '../user/user.module';
+import { ServiceModule } from '../service/service.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature(deviceFeature),
     MongooseModule.forFeature(deviceLogFeature),
     MongooseModule.forFeature(deviceTypeFeature),
-    forwardRef(() => UserModule), // For avoid circular dependency
-    // UserModule,
+    forwardRef(() => UserModule), 
+    forwardRef(() => ServiceModule)
   ],
   providers: [
     DeviceService,
