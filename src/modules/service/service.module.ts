@@ -1,6 +1,4 @@
-// src/modules/service/service.module.ts
-
-import { Module, forwardRef } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ServiceService } from './services/service.service';
 import { ServiceController } from './controllers/service.controller';
@@ -10,15 +8,11 @@ import { InstalledServiceController } from './controllers/installed-service.cont
 import { InstalledServiceService } from './services/installed-service.service';
 import { InstalledServiceRepository } from './repositories/installed-service.repository';
 import { installedServiceFeature } from './features/installed-service.feature';
-import { DeviceModule } from '../device/device.module';
-import { VirtualMachineModule } from '../virtual-machine/virtual-machine.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature(serviceFeature),
     MongooseModule.forFeature(installedServiceFeature),
-    forwardRef(() => DeviceModule), 
-    forwardRef(() => VirtualMachineModule)
   ],
   providers: [
     ServiceService,

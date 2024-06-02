@@ -383,7 +383,7 @@ export class DeviceController {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while fetching devices!';
-        console.log(error);
+
         throw new GereralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,

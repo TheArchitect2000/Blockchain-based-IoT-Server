@@ -147,7 +147,7 @@ export class DeviceRepository {
     console.log('we are in getAllDevices repository!');
 
     return await this.deviceModel
-      .find()
+      .findOne()
       .where(whereCondition)
       .populate(populateCondition)
       .select(selectCondition);
