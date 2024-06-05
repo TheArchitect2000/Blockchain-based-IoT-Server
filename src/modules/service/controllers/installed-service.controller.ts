@@ -29,6 +29,13 @@ import { GereralException } from 'src/modules/utility/exceptions/general.excepti
 import { InstalledServiceService } from '../services/installed-service.service';
 import { insertInstalledServiceDto } from '../data-transfer-objects/insert-installed-service.dto';
 import { editInstalledServiceDto } from '../data-transfer-objects/edit-installed-service.dto';
+import { Script, createContext } from 'vm';
+import { readFileSync } from 'fs';
+import { createServer } from 'tls';
+import axios from 'axios';
+import mqtt from 'mqtt';
+
+
 
 @ApiTags('Manage Installed Services')
 @Controller('app')
@@ -38,6 +45,76 @@ export class InstalledServiceController {
   constructor(
     private readonly installedServiceService: InstalledServiceService,
   ) {}
+
+  @Get('v1/installed-service/test')
+  @HttpCode(200)
+  @ApiOperation({
+    summary: 'testing',
+    description:
+      '',
+  })
+  async testFunc() {
+    
+    const code = `
+  // Function to run MQTT client inside VM
+  function runMqttClient() {
+const connectUrl = "mqtts://developer.fidesinnova.io:8883";
+
+let flag_recNewData = false;
+let data = "";
+let topic = "12345";
+
+    const client = mqtt.connect(connectUrl, {
+        clean: true,
+        connectTimeout: 4000,
+        reconnectPeriod: 1000,
+        protocolId: "MQIsdp",
+        protocolVersion: 3,
+    });
+
+    client.on("connect", () => {
+        console.log("Conntected)
+        client.subscribeAsync(topic, (err) => {
+            if (!err) {
+                //test();
+            // client.publish("presence", "Hello mqtt");
+            }
+        });
+    });
+
+    client.on("message", (topic, message) => {
+        flag_recNewData = true;
+        data = JSON.parse(message.toString());
+        // console.log(data);
+    });
+
+    setInterval(() => {
+        if (flag_recNewData == true) {
+            flag_recNewData = false;
+            console.log("Last received message: ", data.data);
+        }
+    }, 1);
+}
+
+runMqttClient();
+`;
+
+// Create a script
+const script = new Script(code);
+
+// Create a context for the script to run in
+const context = createContext({
+  console: console,
+  setInterval: setInterval,
+  mqtt: mqtt
+});
+
+// Run the script in the context
+script.runInContext(context);
+
+    return true;
+    
+  }
 
   @Post('v1/installed-service/insert')
   @HttpCode(201)
@@ -52,6 +129,9 @@ export class InstalledServiceController {
     @Body() body: insertInstalledServiceDto,
     @Request() request,
   ) {
+
+
+
     return await this.installedServiceService.insertInstalledService(body);
   }
 
