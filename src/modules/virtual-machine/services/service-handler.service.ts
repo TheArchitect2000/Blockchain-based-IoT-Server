@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import * as ivm from 'isolated-vm';
 import { DeviceService } from 'src/modules/device/services/device.service';
 import { InstalledServiceService } from 'src/modules/service/services/installed-service.service';
@@ -14,7 +15,6 @@ import { MailService } from 'src/modules/utility/services/mail.service';
 @Injectable()
 export class ServiceHandlerService {
   private result;
-  private vmMap: Map<string, ivm.Isolate> = new Map();
 
   constructor(
     private readonly userService?: UserService,
@@ -29,26 +29,26 @@ export class ServiceHandlerService {
       .then(async (data) => {
         this.result = data;
         if (data != undefined && data != null && data.length != 0) {
+          // console.log(`\x1b[33m \nThe device ${deviceEncryptedId} has installed service! ${data}\x1b[0m`);
           let installedService = this.result;
-
-          for (var i = 0; i < installedService.length; i++) {
+          
+          // Remove new line \n character from string.
+          for(var i=0; i < installedService.length; i++){
             let installedServiceOutput = JSON.stringify(installedService[i]).replaceAll(
               /\r?\n|\r/g,
               ' ',
-            );
+            );9
+          // console.log(`\x1b[31m \nThe device ${installedService} has installed service! ${data}\x1b[0m`);
             let parsedInstalledService = JSON.parse(installedServiceOutput);
-
-            const deviceInfos: any = await this.deviceService.getDeviceInfoByEncryptedId(deviceEncryptedId);
+          // console.log(`\x1b[32m \nInstalled service code is: ${parsedInstalledService.code} \x1b[0m`);
+          //   this.runInstalledService(installedService);
+            
+            const deviceInfos: any = await this.deviceService.getDeviceInfoByEncryptedId(deviceEncryptedId)
             console.log("Device Info:", deviceInfos);
-
-            parsedPayload.data = {
-              ...parsedPayload.data,
-              mac: deviceInfos.mac,
-              name: deviceInfos.deviceName,
-              type: deviceInfos.deviceType
-            };
-
-            await this.runServiceCode(deviceEncryptedId, parsedInstalledService, parsedPayload);
+            
+            parsedPayload.data = {...parsedPayload.data, mac: deviceInfos.mac, name: deviceInfos.deviceName, type: deviceInfos.deviceType}
+            
+            await this.runServiceCode(parsedInstalledService, parsedPayload);
           }
         }
       })
@@ -63,14 +63,7 @@ export class ServiceHandlerService {
       });
   }
 
-  async runServiceCode(deviceEncryptedId, parsedInstalledService, parsedPayload) {
-    // Check if there's an existing VM for the device and destroy it
-    if (this.vmMap.has(deviceEncryptedId)) {
-      const existingVm = this.vmMap.get(deviceEncryptedId);
-      existingVm.dispose();
-      this.vmMap.delete(deviceEncryptedId);
-    }
-
+  async runServiceCode(parsedInstalledService, parsedPayload) {
     let userId = parsedInstalledService.userId;
     let user = await this.userService.getUserProfileByIdFromUser(userId);
 
@@ -81,7 +74,12 @@ export class ServiceHandlerService {
       `\x1b[33m \nRunning installed service... \nService code is: ${parsedInstalledServiceCode} \x1b[0m`,
     );
     console.log(`\x1b[33m \nParsed payload is:\x1b[0m`, parsedPayload);
-    
+    /**
+     * Device data formats:
+     * "Movement": "Scanning...", "Detected"
+     * "Door": "Open", "Close"
+     * "Button": "Pressed", "Double", "Triple"
+     */
     let temperature = parsedPayload.data.Temperature;
     let humidity = parsedPayload.data.Humidity;
     let movement = parsedPayload.data.Movement;
@@ -90,14 +88,12 @@ export class ServiceHandlerService {
     let deviceName = parsedPayload.data.name;
     let deviceMac = parsedPayload.data.mac;
     let deviceType = parsedPayload.data.type;
-    
     console.log(`\x1b[33m \ntemperature is:\x1b[0m`, temperature);
     console.log(`\x1b[33m \nhumidity is:\x1b[0m`, humidity);
     console.log(`\x1b[33m \ndoor is:\x1b[0m`, door);
     console.log(`\x1b[33m \nmovement is:\x1b[0m`, movement);
     console.log(`\x1b[33m \nbutton is:\x1b[0m`, button);
-    console.log(`\x1b[33m \ndevice name is:\x1b[0m`, deviceName);
-
+    console.log(`\x1b[33m \device name is:\x1b[0m`, deviceName);
     let editedParsedInstalledServiceCode = parsedInstalledServiceCode;
 
     if (parsedInstalledServiceCode.includes("MULTI_SENSOR_1.MAC")) {
@@ -169,18 +165,10 @@ export class ServiceHandlerService {
           `MULTI_SENSOR_1.PRESSED`,
           "true",
         );
-        editedParsedInstalledServiceCode = editedParsedInstalledServiceCode.replaceAll(
-          `MULTI_SENSOR_1.NOT_PRESSED`,
-          "false",
-        );
-      } else {
+      } else if (button == 'NOT Pressed') {
         editedParsedInstalledServiceCode = editedParsedInstalledServiceCode.replaceAll(
           `MULTI_SENSOR_1.NOT_PRESSED`,
           "true",
-        );
-        editedParsedInstalledServiceCode = editedParsedInstalledServiceCode.replaceAll(
-          `MULTI_SENSOR_1.PRESSED`,
-          "false",
         );
       }
     }
@@ -190,6 +178,13 @@ export class ServiceHandlerService {
       editedParsedInstalledServiceCode,
     );
 
+    const isolate = new ivm.Isolate({ memoryLimit: 128 }); // The default is 128MB and the minimum is 8MB.
+    const context = isolate.createContextSync();
+    const jail = context.global;
+    // jail.setSync("global", jail.derefInto());
+    /* jail.setSync('customizedMessage.sendMail', function(...args) {
+            this.sendMail(...args);
+        }); */
     editedParsedInstalledServiceCode = editedParsedInstalledServiceCode.replaceAll(
       `customizedMessage.sendMail`,
       `sendMail`,
@@ -199,15 +194,13 @@ export class ServiceHandlerService {
       `customizedMessage.sendNotification`,
       `sendNotification`,
     );
-
-    const isolate = new ivm.Isolate({ memoryLimit: 128 }); // The default is 128MB and the minimum is 8MB.
-    const context = isolate.createContextSync();
-    const jail = context.global;
-    
     console.log(
       `\x1b[33m \neditedParsedInstalledServiceCode is:\x1b[0m`,
       editedParsedInstalledServiceCode,
     );
+    /* jail.setSync('sendMail', function(...args) {
+            this.sendMail(...args);
+        }); */
 
     jail.setSync('sendMail', (emailJson) => {
       this.sendMail(userEmail, emailJson);
@@ -217,9 +210,17 @@ export class ServiceHandlerService {
       this.sendNotification(userId, notificationJson);
     });
 
+    /* jail.setSync('sendMail', new ivm.Reference(function(...args) {
+            // this.sendMail(...args);
+        }));
+ */
     try {
-      await context.evalClosure(
-        `(async function() { ${editedParsedInstalledServiceCode} })()`,
+      /* const evaluation = await context.evalSync(
+                `(function() { ${editedParsedInstalledServiceCode} })()`
+            );
+            console.log("\x1b[33m \nevaluation: \x1b[0m", await evaluation); */
+      await context.evalSync(
+        `(function() { ${editedParsedInstalledServiceCode} })()`,
       );
     } catch (e) {
       console.log(e);
@@ -228,12 +229,12 @@ export class ServiceHandlerService {
     jail.setSync('global', jail.derefInto());
     try {
       await context.evalClosureSync(`global._var1 = 50;`);
+      // await context.evalClosureSync(`global._var1 = ${counts};`);
       const result = await context.evalSync('(function() { return _var1 })()');
       console.log('result: ', await result);
     } catch (e) {}
 
-    // Save the new VM to the map
-    this.vmMap.set(deviceEncryptedId, isolate);
+    isolate.dispose();
   }
 
   async sendMail(userEmail, email) {

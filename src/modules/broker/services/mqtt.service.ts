@@ -23,17 +23,44 @@ import { DeviceLogService } from 'src/modules/device/services/device-log.service
 import { ServiceHandlerService } from 'src/modules/virtual-machine/services/service-handler.service';
 import { ModuleRef } from '@nestjs/core';
 
+/**
+1883 : MQTT, unencrypted, unauthenticated
+1884 : MQTT, unencrypted, authenticated
+8883 : MQTT, encrypted, unauthenticated
+8884 : MQTT, encrypted, client certificate required
+8885 : MQTT, encrypted, authenticated
+8886 : MQTT, encrypted, unauthenticated
+8887 : MQTT, encrypted, server certificate deliberately expired
+8080 : MQTT over WebSockets, unencrypted, unauthenticated
+8081 : MQTT over WebSockets, encrypted, unauthenticated
+8090 : MQTT over WebSockets, unencrypted, authenticated
+8091 : MQTT over WebSockets, encrypted, authenticated
+ */
+
+// let aedes = new Aedes();
 
 @Injectable()
 export class MqttService implements OnModuleInit {
   @Inject(ServiceHandlerService)
   private serviceHandlerService?: ServiceHandlerService;
 
-  constructor(){}
+  constructor() // @Inject(MqttLogService)
+  // private readonly mqttLogService?: MqttLogService,
+  // @Inject(DeviceLogService)
+  // private readonly deviceLogService?: DeviceLogService,
+  // @Inject(ServiceHandlerService)
+  // private serviceHandlerService?: ServiceHandlerService,  // This will be auto injected by Nestjs Injector
+
+  // private readonly activityService?: ActivityService,
+  {
+    // this.serviceHandlerService = new ServiceHandlerService();
+  }
 
   async onModuleInit() {
     console.log('Initialization of MqttService...');
     console.log('this.serviceHandlerService: ', this.serviceHandlerService);
+    // this.serviceHandlerService = new ServiceHandlerService();
+    // console.log('this.serviceHandlerService: ', this.serviceHandlerService);
     await this.brokerStart(this.serviceHandlerService);
   }
 
@@ -45,8 +72,13 @@ export class MqttService implements OnModuleInit {
       wss: 8081,
     };
 
+    //   this.mqttLogService = new MqttLogService();
+    // await this.callLogService();
+
+    // const host = process.env.HOST_PROTOCOL + process.env.HOST_NAME_OR_IP;
     const host = 'https://' + process.env.HOST_NAME_OR_IP;
 
+    // MQTT over TLS / MQTTS
     const options = {
       key: fs.readFileSync('assets/certificates/webprivate.pem'),
       cert: fs.readFileSync('assets/certificates/webpublic.pem'),
@@ -285,14 +317,14 @@ export class MqttService implements OnModuleInit {
 
             // await this.manageInstalledService(parsedPayload.from)
             // this.serviceHandlerService.runInstalledService(parsedPayload.from);
-            /* await serviceHandler.runInstalledService(
+            await serviceHandler.runInstalledService(
               parsedPayload.from,
               parsedPayload,
-            ); */
+            );
           } else {
             // await this.manageInstalledService(client.id)
             // this.serviceHandlerService.runInstalledService(client.id);
-            /* await serviceHandler.runInstalledService(client.id, parsedPayload); */
+            await serviceHandler.runInstalledService(client.id, parsedPayload);
           }
         }
       }
@@ -324,5 +356,35 @@ export class MqttService implements OnModuleInit {
           // always executed
         });
     });
+
+    aedes.on('client', function (client) {
+      console.log('new client', client.id);
+    });
+  }
+
+  /* async saveDeviceEvent(client) {
+      await this.mqttLogService.logDeviceConnection(client.id, DeviceEventsEnum.CONNECTED);
+    } */
+
+  async callLogService() {
+    /* await this.mqttLogService.logDeviceConnection('QTA6NzY6NEU6NTc6MkI6NDg=', DeviceEventsEnum.CONNECTED)
+      .then((data) => {
+        log(data)
+      })
+      .catch((error)=>{
+          console.error(error);
+      }); */
+    /* let insertedDeviceLogEvent : any = null;
+        
+        insertedDeviceLogEvent = await this.deviceLogService.insertDeviceLogEvent('QTA6NzY6NEU6NTc6MkI6NDg=', DeviceEventsEnum.CONNECTED)
+        .then((data) => {
+            insertedDeviceLogEvent = data
+        })
+        .catch((error)=>{
+            console.error(error);
+            let errorMessage = 'Some errors occurred while inserting device log in mqtt log service!';
+            throw new GereralException(ErrorTypeEnum.UNPROCESSABLE_ENTITY, errorMessage)
+        })
+        console.log("Device log inserted!") */
   }
 }
