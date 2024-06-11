@@ -61,7 +61,9 @@ export class insertInstalledServiceDto {
   })
   @IsJSON({ message: 'deviceMap must be string and in json format.' })
   @ApiProperty({ required: false })
-  deviceMap: {};
+  deviceMap: {
+    MULTI_SENSOR_1: string
+  };
 }
 
 

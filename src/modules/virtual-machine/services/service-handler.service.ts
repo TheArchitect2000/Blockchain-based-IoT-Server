@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
-import * as ivm from 'isolated-vm';
 import { DeviceService } from 'src/modules/device/services/device.service';
 import { InstalledServiceService } from 'src/modules/service/services/installed-service.service';
 import { UserService } from 'src/modules/user/services/user/user.service';
@@ -34,10 +33,12 @@ export class ServiceHandlerService {
           
           // Remove new line \n character from string.
           for(var i=0; i < installedService.length; i++){
+            
             let installedServiceOutput = JSON.stringify(installedService[i]).replaceAll(
               /\r?\n|\r/g,
               ' ',
-            );9
+            );
+
           // console.log(`\x1b[31m \nThe device ${installedService} has installed service! ${data}\x1b[0m`);
             let parsedInstalledService = JSON.parse(installedServiceOutput);
           // console.log(`\x1b[32m \nInstalled service code is: ${parsedInstalledService.code} \x1b[0m`);
@@ -178,9 +179,9 @@ export class ServiceHandlerService {
       editedParsedInstalledServiceCode,
     );
 
-    const isolate = new ivm.Isolate({ memoryLimit: 128 }); // The default is 128MB and the minimum is 8MB.
+    /* const isolate = new ivm.Isolate({ memoryLimit: 128 }); // The default is 128MB and the minimum is 8MB.
     const context = isolate.createContextSync();
-    const jail = context.global;
+    const jail = context.global; */
     // jail.setSync("global", jail.derefInto());
     /* jail.setSync('customizedMessage.sendMail', function(...args) {
             this.sendMail(...args);
@@ -202,13 +203,13 @@ export class ServiceHandlerService {
             this.sendMail(...args);
         }); */
 
-    jail.setSync('sendMail', (emailJson) => {
+    /* jail.setSync('sendMail', (emailJson) => {
       this.sendMail(userEmail, emailJson);
     });
     
     jail.setSync('sendNotification', (notificationJson) => {
       this.sendNotification(userId, notificationJson);
-    });
+    }); */
 
     /* jail.setSync('sendMail', new ivm.Reference(function(...args) {
             // this.sendMail(...args);
@@ -219,14 +220,14 @@ export class ServiceHandlerService {
                 `(function() { ${editedParsedInstalledServiceCode} })()`
             );
             console.log("\x1b[33m \nevaluation: \x1b[0m", await evaluation); */
-      await context.evalSync(
+      /* await context.evalSync(
         `(function() { ${editedParsedInstalledServiceCode} })()`,
-      );
+      ); */
     } catch (e) {
       console.log(e);
     }
 
-    jail.setSync('global', jail.derefInto());
+    /* jail.setSync('global', jail.derefInto());
     try {
       await context.evalClosureSync(`global._var1 = 50;`);
       // await context.evalClosureSync(`global._var1 = ${counts};`);
@@ -234,7 +235,7 @@ export class ServiceHandlerService {
       console.log('result: ', await result);
     } catch (e) {}
 
-    isolate.dispose();
+    isolate.dispose(); */
   }
 
   async sendMail(userEmail, email) {

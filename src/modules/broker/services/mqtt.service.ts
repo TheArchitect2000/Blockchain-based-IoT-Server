@@ -317,14 +317,14 @@ export class MqttService implements OnModuleInit {
 
             // await this.manageInstalledService(parsedPayload.from)
             // this.serviceHandlerService.runInstalledService(parsedPayload.from);
-            await serviceHandler.runInstalledService(
+            /* await serviceHandler.runInstalledService(
               parsedPayload.from,
               parsedPayload,
-            );
+            ); */
           } else {
             // await this.manageInstalledService(client.id)
             // this.serviceHandlerService.runInstalledService(client.id);
-            await serviceHandler.runInstalledService(client.id, parsedPayload);
+            //await serviceHandler.runInstalledService(client.id, parsedPayload);
           }
         }
       }

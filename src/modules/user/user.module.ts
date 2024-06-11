@@ -35,11 +35,11 @@ import { ServiceModule } from '../service/service.module';
     MongooseModule.forFeature(otpFeature),
     // forwardRef(() => AuthenticationModule),
     // AuthenticationModule,
+    forwardRef(() => ServiceModule),
     UtilityModule,
     PanelModule,
     forwardRef(() => DeviceModule), // For avoid circular dependency
     // DeviceModule,
-    ServiceModule,
     MulterModule.registerAsync({
       useClass: MulterConfigService,
     }),
