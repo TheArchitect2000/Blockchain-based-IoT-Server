@@ -184,7 +184,7 @@ export class MailService {
       });
   }
 
-  async sendEmailFromService(email: string, notificationMessage: string) {
+  async sendEmailFromService(email: string, notificationMessage: string, subject: string) {
     console.log(
       'We are in sendEmailFromService email is: ',
       email,
@@ -207,12 +207,13 @@ export class MailService {
         .sendMail({
           to: email,
           // from: '"Support Team" <support@example.com>', // override default from
-          subject: 'FidesInnova. Device Notification. ',
+          subject: 'FidesInnova: Device Notification',
           template: './send-notification', // `.hbs` extension is appended automatically
           context: {
             // filling curly brackets with content
             name: email,
             notificationMessage: String(notificationMessage),
+            subject: subject
           },
           /*attachments: [
             {

@@ -12,6 +12,7 @@ import { MailService } from '../utility/services/mail.service';
 import { UserService } from '../user/services/user/user.service';
 import { UserModule } from '../user/user.module';
 import { DeviceModule } from '../device/device.module';
+import { VirtualMachineHandlerService } from '../virtual-machine/services/service-handler.service';
 
 @Module({
   imports: [
@@ -25,9 +26,10 @@ import { DeviceModule } from '../device/device.module';
     ServiceRepository,
     InstalledServiceService,
     MailService,
+    VirtualMachineHandlerService,
     InstalledServiceRepository,
   ],
   controllers: [ServiceController, InstalledServiceController],
-  exports: [ServiceService, InstalledServiceService, MailService],
+  exports: [ServiceService, InstalledServiceService, MailService, VirtualMachineHandlerService],
 })
 export class ServiceModule {}

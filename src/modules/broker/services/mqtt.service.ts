@@ -1,27 +1,14 @@
 import {
-  Injectable,
-  Controller,
-  Get,
   Inject,
-  Param,
+  Injectable,
   OnModuleInit,
+  forwardRef,
 } from '@nestjs/common';
-// import { Aedes } from 'aedes';
-// import * as Aedes from 'aedes';
 const aedes = require('aedes')();
-import { log } from 'console';
 import * as fs from 'fs';
-//import * as https from 'https';
-import https from 'https'
-import axios, { isCancel, AxiosError ,AxiosRequestConfig } from 'axios';
-import { MqttLogService } from './mqtt-log.service';
-import { ActivityService } from 'src/modules/panel/services/activity.service';
+import axios from 'axios';
 import { DeviceEventsEnum } from '../enums/device-events.enum';
-import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
-import { DeviceLogService } from 'src/modules/device/services/device-log.service';
-import { ServiceHandlerService } from 'src/modules/virtual-machine/services/service-handler.service';
-import { ModuleRef } from '@nestjs/core';
+
 
 /**
 1883 : MQTT, unencrypted, unauthenticated
@@ -41,30 +28,15 @@ import { ModuleRef } from '@nestjs/core';
 
 @Injectable()
 export class MqttService implements OnModuleInit {
-  @Inject(ServiceHandlerService)
-  private serviceHandlerService?: ServiceHandlerService;
 
-  constructor() // @Inject(MqttLogService)
-  // private readonly mqttLogService?: MqttLogService,
-  // @Inject(DeviceLogService)
-  // private readonly deviceLogService?: DeviceLogService,
-  // @Inject(ServiceHandlerService)
-  // private serviceHandlerService?: ServiceHandlerService,  // This will be auto injected by Nestjs Injector
-
-  // private readonly activityService?: ActivityService,
-  {
-    // this.serviceHandlerService = new ServiceHandlerService();
-  }
+  constructor(){}
 
   async onModuleInit() {
     console.log('Initialization of MqttService...');
-    console.log('this.serviceHandlerService: ', this.serviceHandlerService);
-    // this.serviceHandlerService = new ServiceHandlerService();
-    // console.log('this.serviceHandlerService: ', this.serviceHandlerService);
-    await this.brokerStart(this.serviceHandlerService);
+    await this.brokerStart();
   }
 
-  async brokerStart(serviceHandler) {
+  async brokerStart() {
     const mqttPorts = {
       mqtt: 1883, // TCP Port: 1883
       mqtts: 8883, // SSL/TLS Port: 8883
@@ -83,14 +55,20 @@ export class MqttService implements OnModuleInit {
       key: fs.readFileSync('assets/certificates/webprivate.pem'),
       cert: fs.readFileSync('assets/certificates/webpublic.pem'),
     };
+
     const server = require('tls').createServer(options, aedes.handle);
     //const server = require('tls').createServer(aedes.handle);
-    server.listen(mqttPorts.mqtts, function () {
+
+    server.listen(mqttPorts.mqtts, function() {
       console.log(
         '\nMQTT server over TLS / MQTTS started and listening on port',
         mqttPorts.mqtts,
         '\n',
       );
+
+      // virtual machine creating all
+      //createAllMachines();
+
       aedes.mq.emit({
         topic: 'aedes/hello',
         payload: "I'm broker " + aedes.id,
@@ -122,11 +100,7 @@ export class MqttService implements OnModuleInit {
         'from broker',
         aedes.id,
       );
-      console.log('this.serviceHandlerService: ', this.serviceHandlerService);
-      console.log('serviceHandler: ', serviceHandler);
-      // await this.serviceHandlerService.runInstalledService(client.id);
-      // await serviceHandler.runInstalledService(client.id);
-      // await serviceHandler.runInstalledService('MzQ6QjQ6NzI6NEE6RUY6MDg=');
+
     });
 
     aedes.on('unsubscribe', function (subscriptions, client) {

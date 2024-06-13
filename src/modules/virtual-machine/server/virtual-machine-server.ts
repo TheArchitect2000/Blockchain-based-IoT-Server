@@ -1,8 +1,8 @@
-import { ServiceHandlerService } from '../services/service-handler.service';
+import { VirtualMachineHandlerService } from '../services/service-handler.service';
 
 class VirtualMachineServer {
-  constructor(private readonly serviceHandlerService?: ServiceHandlerService) {
-    this.serviceHandlerService = new ServiceHandlerService();
+  constructor(private readonly virtualMachineHandlerService?: VirtualMachineHandlerService) {
+    this.virtualMachineHandlerService = new VirtualMachineHandlerService();
   }
 
   async launch() {

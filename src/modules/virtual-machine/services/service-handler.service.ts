@@ -1,252 +1,332 @@
-import { Injectable } from '@nestjs/common';
-import { ModuleRef } from '@nestjs/core';
+import { Script, createContext } from 'vm';
+import mqtt from 'mqtt';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { MailService } from 'src/modules/utility/services/mail.service';
+import { UserService } from 'src/modules/user/services/user/user.service';
 import { DeviceService } from 'src/modules/device/services/device.service';
 import { InstalledServiceService } from 'src/modules/service/services/installed-service.service';
-import { UserService } from 'src/modules/user/services/user/user.service';
-import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
-import { MailService } from 'src/modules/utility/services/mail.service';
-
-/**
- * Service Handler service.
- */
+import axios from 'axios';
 
 @Injectable()
-export class ServiceHandlerService {
-  private result;
+export class VirtualMachineHandlerService {
+    private vmContexts = {};
+    private allResults;
 
-  constructor(
-    private readonly userService?: UserService,
-    private readonly installedServiceService?: InstalledServiceService,
-    private readonly mailService?: MailService,
-    private readonly deviceService?: DeviceService
-  ) {}
+    constructor(
+      private readonly installedServiceService?: InstalledServiceService,
+      private readonly mailService?: MailService,
+      private readonly userService?: UserService,
+      private readonly deviceService?: DeviceService
+    ) {}
 
-  async runInstalledService(deviceEncryptedId, parsedPayload) {
-    await this.installedServiceService
-      .getInstalledServicesByDeviceEncryptedId(deviceEncryptedId)
-      .then(async (data) => {
-        this.result = data;
-        if (data != undefined && data != null && data.length != 0) {
-          // console.log(`\x1b[33m \nThe device ${deviceEncryptedId} has installed service! ${data}\x1b[0m`);
-          let installedService = this.result;
+    async createVirtualMachine(body, installedServiceId) {
+
+        let userCode = body.code.toString();
+    
+        let serviceOutPut = userCode.toString().replaceAll(
+          /\r?\n|\r/g,
+          ' ',
+        );
+    
+        let editedUserCodeOutput = serviceOutPut;
+    
+        editedUserCodeOutput = editedUserCodeOutput.replaceAll(
+          "MULTI_SENSOR_1",
+          "data.data",
+        );
+    
+        editedUserCodeOutput = editedUserCodeOutput.replaceAll(
+          `customizedMessage.sendMail`,
+          `sendMail`,
+        );
+    
+        editedUserCodeOutput = editedUserCodeOutput.replaceAll(
+          `customizedMessage.sendNotification`,
+          `sendNotification`,
+        );
+    
+        let userId = body.insertedBy;
+    
+        const code = `
+            const {
+                Worker,
+                isMainThread,
+                parentPort,
+                workerData,
+            } = require("worker_threads");
+    
+            const { TextEncoder, TextDecoder } = require('util');
+    
+            function uppercaseKeys(obj) {
+              return Object.keys(obj).reduce((result, key) => {
+                  result[key.toUpperCase()] = obj[key];
+                  return result;
+              }, {});
+            }
+    
+            function lowercaseStrings(obj) {
+              if (typeof obj !== 'object' || obj === null) {
+                return obj;
+              }
+              for (const key in obj) {
+                if (Object.prototype.hasOwnProperty.call(obj, key)) {
+                  const value = obj[key];
+                  // Check if the value is a string
+                  if (typeof value === 'string') {
+                    // Lowercase the string
+                    obj[key] = value.toLowerCase();
+                  } else if (typeof value === 'object') {
+                    // Recursively call lowercaseStrings if the value is an object
+                    lowercaseStrings(value);
+                  }
+                }
+              }
+              return obj;
+            }
+    
+                const connectUrl = "mqtts://${process.env.HOST_NAME_OR_IP}:8883";
+    
+                // Create a shared buffer with 2048 bytes
+                const sharedBuffer = new SharedArrayBuffer(2048);
+                const view = new DataView(sharedBuffer);
+    
+                let topic = "${body.deviceMap.MULTI_SENSOR_1}";
+                const client = mqtt.connect(connectUrl, {
+                    clean: true,
+                    connectTimeout: 4000,
+                    reconnectPeriod: 1000,
+                    protocolId: "MQIsdp",
+                    protocolVersion: 3,
+                });
+    
+                function terminateVm() {
+                  view.setUint8(1, 1);
+                  client.end(false, () => {
+                    console.log('Disconnected from MQTT broker');
+                  });
+                  return true;
+                }
+              
+                // Expose the function to the context
+                globalThis.terminateVm = terminateVm;
+    
+                client.on("connect", () => {
+                    client.subscribe(topic, (err) => {
+                        if (!err) {
+                            console.log("Connected To :", topic);
+                        } else {
+                            console.log("Error While Connecting To :", topic);
+                        }
+                    });
+                });
+    
+                async function getDeviceInfos(ecryptedId) {
+                  const respons = await deviceService.getDeviceInfoByEncryptedId(ecryptedId)
+                  return respons
+                }
+    
+                 client.on("message", async (topic, message) => {
+    
+                  let data = JSON.parse(message);
+    
+                  try {
+                    const deviceInfos = await getDeviceInfos(topic);
+    
+                    if (deviceInfos) {
+                        data.data = {
+                            ...data.data, 
+                            mac: deviceInfos.mac,
+                            name: deviceInfos.deviceName,
+                            type: deviceInfos.deviceType
+                        };
+            
+                        data.data = uppercaseKeys(data.data);
+                        data.data = lowercaseStrings(data.data);
+            
+                        console.log("The data is:", data);
+                    } else {
+                        console.error("Device info not found for topic:", topic);
+                    }
+                  } catch (error) {
+                      console.error("Error fetching device info:", error);
+                  }
+    
+                    // Encode the message and store it in sharedBuffer
+                    const encoder = new TextEncoder();
+                    const encodedMessage = encoder.encode(JSON.stringify(data));
+                    for (let i = 0; i < encodedMessage.length; i++) {
+                        view.setUint8(i + 2, encodedMessage[i]);  // Store starting from index 1
+                    }
+                    // Set the flag to true (1)
+                    view.setUint8(0, 1);
+                }); 
+    
+                console.log("Main thread: Starting workers...");
+    
+                const sendMail = async (email) => {
+                  let user = await userService.getUserProfileByIdFromUser('${userId}');
+                  let userEmail = user.email;
+                  return await mailService.sendEmailFromService(userEmail, email.body, email.subject);
+                }
+    
+                const sendNotification = async (notification) => {
+                  return await mailService.sendNotificationFromService('${userId}', notification.title, notification.message);
+                }
+    
+                const workerCode = \`
+    
+                const {
+                  Worker,
+                  isMainThread,
+                  parentPort,
+                  workerData,
+                } = require("worker_threads");
+      
+                const { TextEncoder, TextDecoder } = require('util');
+    
+                function mainFunction() {
+                  const sharedBuffer = workerData;
+                  const view = new DataView(sharedBuffer);
+                  const decoder = new TextDecoder();
+                  parentPort.postMessage("Loop Runed")
+    
+                  while (true) {
+                      const flag = view.getUint8(0);
+                      const terminate = view.getUint8(1);
+                      if (terminate === 1) {
+                        process.exit(0);
+                      }
+                      if (flag === 1) {
+                          // Reset the flag
+                          view.setUint8(0, 0);
+    
+                          // Extract and decode the message starting from index 1
+                          const bytes = new Uint8Array(sharedBuffer, 2, 1022);
+                          
+                          let message = decoder.decode(bytes).trim();
+                      
+                          // Log the exact content of the message
+                          console.log('Decoded message:', message);
+    
+                          // Clean up the message by removing any non-JSON residual characters
+                          const cleanMessage = message.replace(/[^\\x20-\\x7E]/g, '');
+    
+                          // Parse the JSON message
+    
+                          const sendMail = (obj) => {
+                            parentPort.postMessage(obj);
+                          };
+    
+                          const sendNotification = (obj) => {
+                            parentPort.postMessage(obj);
+                          };
+                          
+                          try {
+                              let data = JSON.parse(cleanMessage);
+                              parentPort.postMessage("Data Parsed");
+                              parentPort.postMessage(data);
+    
+                             ${editedUserCodeOutput}
+    
+                          } catch (e) {
+                              parentPort.postMessage('Failed to parse JSON: ');
+                              parentPort.postMessage(e);
+                          }
+    
+                      }
+    
+                      // Simulate a short delay
+                      var waitTill = new Date(new Date().getTime() + 100);
+                      while (waitTill > new Date()) {}
+                  }
+              }
+    
+              mainFunction();\`
+    
+                const vmWorker = new Worker(workerCode, { eval: true, workerData: sharedBuffer });
+    
+                vmWorker.on('message', (msg) => {
+                    if ( (typeof msg).toString() === "object" ) {
+                      if ( msg.subject ) {
+                        sendMail(msg)
+                      } else if ( msg.title ) {
+                        sendNotification(msg)
+                      }
+                    }
+                    console.log('Main thread: Received from worker: ', msg);
+                });
+    
+                vmWorker.on('error', (err) => {
+                  console.error('Worker encountered an error:', err);
+                });
+    
+                vmWorker.on('exit', (code) => {
+                    if (code !== 0) {
+                        console.error('Worker stopped with exit code', code);
+                    } else {
+                        console.log('Worker exited successfully.');
+                    }
+                });
+    
+              console.log('vmWorker started successfully.');
+    
+        `;
+    
+          // Create a script
+          const script = new Script(code);
+    
+          // Create a context for the script to run in
+          const context = createContext({
+            console: console,
+            require: require,
+            mqtt: mqtt,
+            userService: this.userService,
+            mailService: this.mailService,
+            deviceService: this.deviceService,
+            JSON: {
+              parse: JSON.parse,
+              stringify: JSON.stringify,
+            },
+            TextEncoder: require("util").TextEncoder,
+                TextDecoder: require("util").TextDecoder,
+          });
           
-          // Remove new line \n character from string.
-          for(var i=0; i < installedService.length; i++){
-            
-            let installedServiceOutput = JSON.stringify(installedService[i]).replaceAll(
-              /\r?\n|\r/g,
-              ' ',
-            );
+        // Run the script in the context
+        script.runInContext(context);
+    
+        this.vmContexts[installedServiceId.toString()] = context;
 
-          // console.log(`\x1b[31m \nThe device ${installedService} has installed service! ${data}\x1b[0m`);
-            let parsedInstalledService = JSON.parse(installedServiceOutput);
-          // console.log(`\x1b[32m \nInstalled service code is: ${parsedInstalledService.code} \x1b[0m`);
-          //   this.runInstalledService(installedService);
-            
-            const deviceInfos: any = await this.deviceService.getDeviceInfoByEncryptedId(deviceEncryptedId)
-            console.log("Device Info:", deviceInfos);
-            
-            parsedPayload.data = {...parsedPayload.data, mac: deviceInfos.mac, name: deviceInfos.deviceName, type: deviceInfos.deviceType}
-            
-            await this.runServiceCode(parsedInstalledService, parsedPayload);
-          }
+        console.log(`Virtual Machine With ID ${installedServiceId} Created Successfully`)
+    }
+
+    async deleteVirtualMachinByServiceId(installedServiceId) {
+        try {
+            this.vmContexts[installedServiceId.toString()].terminateVm();
+            delete this.vmContexts[installedServiceId.toString()];
+            return true;
+        } catch (e) {
+            return false;
         }
+    }
+
+    async createAllVirtualMachines() {
+      console.log("Installed Service Service:", this.installedServiceService);
+      await this.installedServiceService
+      .getAllInstalledServices()
+      .then((data) => {
+        data.map((service) => {
+          if (service.code) {
+            this.createVirtualMachine(service, service._id)
+          }
+        })
       })
       .catch((error) => {
         let errorMessage =
-          'Some errors occurred while fetching installed services profiles!';
-
-        throw new GereralException(
-          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-          errorMessage + error,
-        );
+          'Some errors occurred while fetching installed services!';
+        return errorMessage;
       });
-  }
-
-  async runServiceCode(parsedInstalledService, parsedPayload) {
-    let userId = parsedInstalledService.userId;
-    let user = await this.userService.getUserProfileByIdFromUser(userId);
-
-    let userEmail = user.email;
-    console.log(`\x1b[33m \nUser email is: ${userEmail} \x1b[0m`);
-    let parsedInstalledServiceCode = parsedInstalledService.code;
-    console.log(
-      `\x1b[33m \nRunning installed service... \nService code is: ${parsedInstalledServiceCode} \x1b[0m`,
-    );
-    console.log(`\x1b[33m \nParsed payload is:\x1b[0m`, parsedPayload);
-    /**
-     * Device data formats:
-     * "Movement": "Scanning...", "Detected"
-     * "Door": "Open", "Close"
-     * "Button": "Pressed", "Double", "Triple"
-     */
-    let temperature = parsedPayload.data.Temperature;
-    let humidity = parsedPayload.data.Humidity;
-    let movement = parsedPayload.data.Movement;
-    let door = parsedPayload.data.Door;
-    let button = parsedPayload.data.Button;
-    let deviceName = parsedPayload.data.name;
-    let deviceMac = parsedPayload.data.mac;
-    let deviceType = parsedPayload.data.type;
-    console.log(`\x1b[33m \ntemperature is:\x1b[0m`, temperature);
-    console.log(`\x1b[33m \nhumidity is:\x1b[0m`, humidity);
-    console.log(`\x1b[33m \ndoor is:\x1b[0m`, door);
-    console.log(`\x1b[33m \nmovement is:\x1b[0m`, movement);
-    console.log(`\x1b[33m \nbutton is:\x1b[0m`, button);
-    console.log(`\x1b[33m \device name is:\x1b[0m`, deviceName);
-    let editedParsedInstalledServiceCode = parsedInstalledServiceCode;
-
-    if (parsedInstalledServiceCode.includes("MULTI_SENSOR_1.MAC")) {
-      editedParsedInstalledServiceCode = editedParsedInstalledServiceCode.replaceAll(
-        "MULTI_SENSOR_1.MAC",
-        deviceMac,
-      );
+      return this.allResults;
     }
 
-    if (parsedInstalledServiceCode.includes("MULTI_SENSOR_1.TYPE")) {
-      editedParsedInstalledServiceCode = editedParsedInstalledServiceCode.replaceAll(
-        "MULTI_SENSOR_1.TYPE",
-        deviceType,
-      );
-    }
-
-    if (parsedInstalledServiceCode.includes("MULTI_SENSOR_1.NAME")) {
-      editedParsedInstalledServiceCode = editedParsedInstalledServiceCode.replaceAll(
-        "MULTI_SENSOR_1.NAME",
-        deviceName,
-      );
-    }
-
-    if (parsedInstalledServiceCode.includes("MULTI_SENSOR_1.TEMPERATURE")) {
-      editedParsedInstalledServiceCode = editedParsedInstalledServiceCode.replaceAll(
-        "MULTI_SENSOR_1.TEMPERATURE",
-        temperature,
-      );
-    }
-
-    if (parsedInstalledServiceCode.includes(`MULTI_SENSOR_1.HUMIDITY`)) {
-      editedParsedInstalledServiceCode = String(editedParsedInstalledServiceCode).replaceAll(
-        `MULTI_SENSOR_1.HUMIDITY`,
-        humidity,
-      );
-    }
-
-    if (parsedInstalledServiceCode.includes(`MULTI_SENSOR_1.DOOR`)) {
-      if (door == 'Open') {
-        editedParsedInstalledServiceCode = editedParsedInstalledServiceCode.replaceAll(
-          `MULTI_SENSOR_1.DOOR.OPENED`,
-          String(true),
-        );
-      } else if (door == 'Close') {
-        editedParsedInstalledServiceCode = editedParsedInstalledServiceCode.replaceAll(
-          `MULTI_SENSOR_1.DOOR.CLOSED`,
-          "true",
-        );
-      }
-    }
-
-    if (parsedInstalledServiceCode.includes(`MULTI_SENSOR_1.MOTION`)) {
-      if (movement == 'Scanning...') {
-        editedParsedInstalledServiceCode = editedParsedInstalledServiceCode.replaceAll(
-          `MULTI_SENSOR_1.MOTION.UNDETECTED`,
-          "true",
-        );
-      } else if (movement == 'Detected') {
-        editedParsedInstalledServiceCode = editedParsedInstalledServiceCode.replaceAll(
-          `MULTI_SENSOR_1.MOTION.DETECTED`,
-          "true",
-        );
-      }
-    }
-
-    if (parsedInstalledServiceCode.includes(`MULTI_SENSOR_1.PRESSED`)||parsedInstalledServiceCode.includes(`MULTI_SENSOR_1.NOT_PRESSED`)) {
-      if (button == 'Pressed') {
-        editedParsedInstalledServiceCode = editedParsedInstalledServiceCode.replaceAll(
-          `MULTI_SENSOR_1.PRESSED`,
-          "true",
-        );
-      } else if (button == 'NOT Pressed') {
-        editedParsedInstalledServiceCode = editedParsedInstalledServiceCode.replaceAll(
-          `MULTI_SENSOR_1.NOT_PRESSED`,
-          "true",
-        );
-      }
-    }
-
-    console.log(
-      `\x1b[33m \neditedParsedInstalledServiceCode is:\x1b[0m`,
-      editedParsedInstalledServiceCode,
-    );
-
-    /* const isolate = new ivm.Isolate({ memoryLimit: 128 }); // The default is 128MB and the minimum is 8MB.
-    const context = isolate.createContextSync();
-    const jail = context.global; */
-    // jail.setSync("global", jail.derefInto());
-    /* jail.setSync('customizedMessage.sendMail', function(...args) {
-            this.sendMail(...args);
-        }); */
-    editedParsedInstalledServiceCode = editedParsedInstalledServiceCode.replaceAll(
-      `customizedMessage.sendMail`,
-      `sendMail`,
-    );
-    
-    editedParsedInstalledServiceCode = editedParsedInstalledServiceCode.replaceAll(
-      `customizedMessage.sendNotification`,
-      `sendNotification`,
-    );
-    console.log(
-      `\x1b[33m \neditedParsedInstalledServiceCode is:\x1b[0m`,
-      editedParsedInstalledServiceCode,
-    );
-    /* jail.setSync('sendMail', function(...args) {
-            this.sendMail(...args);
-        }); */
-
-    /* jail.setSync('sendMail', (emailJson) => {
-      this.sendMail(userEmail, emailJson);
-    });
-    
-    jail.setSync('sendNotification', (notificationJson) => {
-      this.sendNotification(userId, notificationJson);
-    }); */
-
-    /* jail.setSync('sendMail', new ivm.Reference(function(...args) {
-            // this.sendMail(...args);
-        }));
- */
-    try {
-      /* const evaluation = await context.evalSync(
-                `(function() { ${editedParsedInstalledServiceCode} })()`
-            );
-            console.log("\x1b[33m \nevaluation: \x1b[0m", await evaluation); */
-      /* await context.evalSync(
-        `(function() { ${editedParsedInstalledServiceCode} })()`,
-      ); */
-    } catch (e) {
-      console.log(e);
-    }
-
-    /* jail.setSync('global', jail.derefInto());
-    try {
-      await context.evalClosureSync(`global._var1 = 50;`);
-      // await context.evalClosureSync(`global._var1 = ${counts};`);
-      const result = await context.evalSync('(function() { return _var1 })()');
-      console.log('result: ', await result);
-    } catch (e) {}
-
-    isolate.dispose(); */
-  }
-
-  async sendMail(userEmail, email) {
-    console.log('email.subject: ', email.subject);
-    console.log('email.body: ', email.body);
-    return await this.mailService.sendEmailFromService(userEmail, email.body);
-  }
-
-  async sendNotification(userId, notification) {
-    console.log('notification.title: ', notification.title);
-    console.log('notification.message: ', notification.message);
-    return await this.mailService.sendNotificationFromService(userId, notification.title, notification.message);
-  }
 }
+

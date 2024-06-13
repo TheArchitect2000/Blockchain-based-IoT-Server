@@ -17,7 +17,6 @@ import databaseConfig from './modules/utility/configurations/database.configurat
 import multerConfig from './modules/utility/configurations/multer.configuration';
 import { ResponseTransformInterceptor } from './modules/utility/interceptors/response-transform.interceptor';
 import { UtilityModule } from './modules/utility/utility.module';
-import { VirtualMachineModule } from './modules/virtual-machine/virtual-machine.module';
 import { MediaModule } from './modules/media/media.module';
 
 @Module({
@@ -56,7 +55,6 @@ import { MediaModule } from './modules/media/media.module';
     PanelModule,
     ServiceModule,
     BlocklyModule,
-    VirtualMachineModule,
     NotificationModule,
     ZkpModule,
     MediaModule

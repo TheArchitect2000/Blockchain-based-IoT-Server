@@ -104,13 +104,19 @@ export class InstalledServiceRepository {
     populateCondition,
     selectCondition,
   ) {
+
     console.log('we are in getAllInstalledServices repository!');
 
-    return await this.installedServiceModel
-      .find()
-      .where(whereCondition)
-      .populate(populateCondition)
-      .select(selectCondition);
+    let res = await this.installedServiceModel
+    .find()
+    .where(whereCondition)
+    .populate(populateCondition)
+    .select(selectCondition);
+
+    console.log("rese is: ", res);
+  
+    return res;
+    
   }
 
   async deleteAllUserInstalledServicesPermanently(userId) {

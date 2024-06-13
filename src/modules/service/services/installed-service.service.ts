@@ -202,26 +202,32 @@ export class InstalledServiceService {
     let whereCondition = { isDeleted: false };
     let populateCondition = [];
     let selectCondition =
-      '_id userId serviceId installedServiceName description deviceMap installedServiceImage activationStatus insertedBy insertDate updatedBy updateDate';
+      '_id userId serviceId installedServiceName description code deviceMap installedServiceImage activationStatus insertedBy insertDate updatedBy updateDate';
     let foundServices: any = null;
     let response = [];
 
     console.log('we are in getAllInstalledServices service!');
 
-    foundServices =
-      await this.installedServiceRepository.getAllInstalledServices(
+    console.log('we are 1.5');
+
+    try {
+      foundServices = await this.installedServiceRepository.getAllInstalledServices(
         whereCondition,
         populateCondition,
         selectCondition,
       );
+    } catch (error) {
+      console.log(error);
+    }
 
-    console.log('Found installed services are: ', foundServices);
+    console.log('we are 2!');
 
     foundServices.forEach((element) => {
       response.push({
         _id: element._id,
         serviceId: element.serviceId,
         installedServiceName: element.installedServiceName,
+        code: element.code,
         description: element.description,
         deviceMap: element.deviceMap,
         installedServiceImage: element.installedServiceImage,
@@ -230,7 +236,10 @@ export class InstalledServiceService {
         insertDate: element.insertDate,
       });
     });
-    console.log('response are: ', response);
+
+    console.log(response);
+
+    console.log("3");  
 
     return response;
   }
