@@ -42,7 +42,7 @@ export class ServiceService {
     let whereCondition = { _id: body.serviceId };
     let populateCondition = [];
     let selectCondition =
-      '_id userId deviceName description serviceType status devices numberOfInstallations installationPrice runningPrice rate serviceImage blocklyJson code insertedBy insertDate updatedBy updateDate';
+      '_id userId deviceName published publishRequested publishRejected description serviceType status devices numberOfInstallations installationPrice runningPrice rate serviceImage blocklyJson code insertedBy insertDate updatedBy updateDate';
     let foundService: any = null;
 
     console.log('we are in editService service!');
@@ -67,6 +67,17 @@ export class ServiceService {
 
     // if(foundService && foundService !== undefined && foundService.deletable){
     if (foundService && foundService !== undefined) {
+
+      if ( foundService.published === true || foundService.publishRequested === true || foundService.publishRejected === true ) {
+        let errorMessage = 'Some errors occurred while editing a service!';
+        this.result = {
+          message: errorMessage,
+          success: false,
+          date: new Date(),
+        }
+        return this.result;
+      }
+
       if (body.serviceName != null || body.serviceName != undefined) {
         foundService.serviceName = body.serviceName;
       }
@@ -105,7 +116,183 @@ export class ServiceService {
         console.log(data);
       })
       .catch((error) => {
-        let errorMessage = 'Some errors occurred while renaming a device!';
+        let errorMessage = 'Some errors occurred while renaming a service!';
+        throw new GereralException(
+          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+          errorMessage,
+        );
+      });
+
+    return this.result;
+  }
+
+  async publishService(body, userId): Promise<any> {
+    let whereCondition = { _id: body.serviceId };
+    let populateCondition = [];
+    let selectCondition =
+      '_id userId deviceName published publishRequested publishRejected description serviceType status devices numberOfInstallations installationPrice runningPrice rate serviceImage blocklyJson code insertedBy insertDate updatedBy updateDate';
+    let foundService: any = null;
+
+    console.log('we are in publishService service!');
+    console.log('body: ', body);
+    console.log('userId: ', userId);
+
+    await this.serviceRepository
+      .getServiceById(
+        body.serviceId,
+        whereCondition,
+        populateCondition,
+        selectCondition,
+      )
+      .then((data) => {
+        foundService = data;
+      })
+      .catch((error) => {
+        let errorMessage =
+          'Some errors occurred while finding a service for publish!';
+        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+      });
+
+    // if(foundService && foundService !== undefined && foundService.deletable){
+    if (foundService && foundService !== undefined) {
+
+      foundService.published = true;
+      foundService.publishRejected = false;
+      foundService.publishRequested = false;
+
+      foundService.updatedBy = userId;
+      foundService.updatedAt = new Date();
+    }
+
+    console.log('Updated found service for publish is: ', foundService);
+
+    await this.serviceRepository
+      .editService(foundService._id, foundService)
+      .then((data) => {
+        this.result = data;
+      })
+      .catch((error) => {
+        let errorMessage = 'Some errors occurred while publishing a service!';
+        throw new GereralException(
+          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+          errorMessage,
+        );
+      });
+
+    return this.result;
+  }
+
+  async rejectService(body, userId): Promise<any> {
+    let whereCondition = { _id: body.serviceId };
+    let populateCondition = [];
+    let selectCondition =
+      '_id userId deviceName published publishRequested publishRejected description serviceType status devices numberOfInstallations installationPrice runningPrice rate serviceImage blocklyJson code insertedBy insertDate updatedBy updateDate';
+    let foundService: any = null;
+
+    console.log('we are in rejectService service!');
+    console.log('body: ', body);
+    console.log('userId: ', userId);
+
+    await this.serviceRepository
+      .getServiceById(
+        body.serviceId,
+        whereCondition,
+        populateCondition,
+        selectCondition,
+      )
+      .then((data) => {
+        foundService = data;
+      })
+      .catch((error) => {
+        let errorMessage =
+          'Some errors occurred while finding a service for reject!';
+        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+      });
+
+    // if(foundService && foundService !== undefined && foundService.deletable){
+    if (foundService && foundService !== undefined) {
+
+      foundService.publishRejected = true;
+      foundService.published = false;
+      foundService.publishRequested = false;
+
+      foundService.updatedBy = userId;
+      foundService.updatedAt = new Date();
+    }
+
+    console.log('Updated found service for reject is: ', foundService);
+
+    await this.serviceRepository
+      .editService(foundService._id, foundService)
+      .then((data) => {
+        this.result = data;
+      })
+      .catch((error) => {
+        let errorMessage = 'Some errors occurred while publishing a service!';
+        throw new GereralException(
+          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+          errorMessage,
+        );
+      });
+
+    return this.result;
+  }
+
+  async requestServicePublish(body, userId): Promise<any> {
+    let whereCondition = { _id: body.serviceId };
+    let populateCondition = [];
+    let selectCondition =
+      '_id userId deviceName published publishRequested publishRejected description serviceType status devices numberOfInstallations installationPrice runningPrice rate serviceImage blocklyJson code insertedBy insertDate updatedBy updateDate';
+    let foundService: any = null;
+
+    console.log('we are in requestPublishService service!');
+    console.log('body: ', body);
+    console.log('userId: ', userId);
+
+    await this.serviceRepository
+      .getServiceById(
+        body.serviceId,
+        whereCondition,
+        populateCondition,
+        selectCondition,
+      )
+      .then((data) => {
+        foundService = data;
+      })
+      .catch((error) => {
+        let errorMessage =
+          'Some errors occurred while finding a service for publishing request!';
+          throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+      });
+
+    // if(foundService && foundService !== undefined && foundService.deletable){
+    if (foundService && foundService !== undefined) {
+
+      if ( foundService.published === true || foundService.publishRequested === true || foundService.publishRejected === true ) {
+        let errorMessage = 'Some errors occurred while requesting publish a service!';
+        this.result = {
+          message: errorMessage,
+          success: false,
+          date: new Date(),
+        }
+        return this.result;
+      }
+
+      foundService.publishRequested = true;
+
+      foundService.updatedBy = userId;
+      foundService.updatedAt = new Date();
+    }
+
+    console.log('Updated found service for publishing request is: ', foundService);
+
+    await this.serviceRepository
+      .editService(foundService._id, foundService)
+      .then((data) => {
+        this.result = data;
+      })
+      .catch((error) => {
+        let errorMessage = 'Some errors occurred while requesting publish a service!';
         throw new GereralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
@@ -119,8 +306,8 @@ export class ServiceService {
     let whereCondition = { isDeleted: false };
     let populateCondition = [];
     let selectCondition =
-      '_id userId serviceName description serviceType status devices numberOfInstallations installationPrice runningPrice rate serviceImage blocklyJson code insertedBy insertDate updatedBy updateDate';
-    let foundService: any = null;
+      '_id userId serviceName description published publishRequested publishRejected serviceType status devices numberOfInstallations installationPrice runningPrice rate serviceImage blocklyJson code insertedBy insertDate updatedBy updateDate';
+    let foundService: any = null;        
 
     // if (ObjectID.isValid(serviceId)){
     if (mongoose.isValidObjectId(serviceId)) {
@@ -147,7 +334,7 @@ export class ServiceService {
     let whereCondition = { isDeleted: false };
     let populateCondition = [];
     let selectCondition =
-      'serviceName description serviceType status blocklyJson code devices numberOfInstallations installationPrice runningPrice rate serviceImage blocklyXML code insertedBy insertDate isDeletable isDeleted deletedBy deleteDate deletionReason updatedBy updateDate';
+      'serviceName description serviceType published publishRequested publishRejected status blocklyJson code devices numberOfInstallations installationPrice runningPrice rate serviceImage blocklyXML code insertedBy insertDate isDeletable isDeleted deletedBy deleteDate deletionReason updatedBy updateDate';
     let foundServices: any = null;
 
     console.log('we are in getServicesByUserId service!');
@@ -168,7 +355,7 @@ export class ServiceService {
     let whereCondition = { isDeleted: false };
     let populateCondition = [];
     let selectCondition =
-      'serviceName description serviceType status devices numberOfInstallations installationPrice runningPrice rate serviceImage blocklyJson code insertedBy insertDate isDeletable isDeleted deletedBy deleteDate deletionReason updatedBy updateDate';
+      'serviceName published publishRequested publishRejected description serviceType status devices numberOfInstallations installationPrice runningPrice rate serviceImage blocklyJson code insertedBy insertDate isDeletable isDeleted deletedBy deleteDate deletionReason updatedBy updateDate';
     let foundServices: any = null;
     let response = [];
 
@@ -198,25 +385,103 @@ export class ServiceService {
         serviceImage: element.serviceImage,
         blocklyJson: element.blocklyJson,
         code: element.code,
+        published: element.published,
+        publishRequested: element.publishRequested,
+        publishRejected: element.publishRejected,
         insertedBy: element.insertedBy,
         insertDate: element.insertDate,
       });
     });
 
-    const validUserIds = [
-      '6655f533bda95083b9c9b042', // harry
-      '664af35ff4e40ecbcc618a50', // gramezan22
-      '664ad130f4e40ecbcc600ca1', // hramezancoin
-      '65f9e57f49e1750d2c4e9ded', // hramezan
-      '6623750f7514f3254c230114', // m.k.kasaeizadeh
-      '6655ef71bda95083b9c99b83' // shayanheaven
-  ]
+    return response;
+  }
 
-  const finalResult = response.filter((service) =>
-    service.insertedBy && validUserIds.includes(service.insertedBy.toString())
-  );
+  async getAllPublishedServices() {
+    let whereCondition = { isDeleted: false, published: true };
+    let populateCondition = [];
+    let selectCondition =
+      'serviceName published publishRequested publishRejected description serviceType status devices numberOfInstallations installationPrice runningPrice rate serviceImage blocklyJson code insertedBy insertDate isDeletable isDeleted deletedBy deleteDate deletionReason updatedBy updateDate';
+    let foundServices: any = null;
+    let response = [];
 
-  console.log('response are: ', finalResult);
+    console.log('we are in getAllServices service!');
+
+    foundServices = await this.serviceRepository.getAllServices(
+      whereCondition,
+      populateCondition,
+      selectCondition,
+    );
+
+    console.log('Found services are: ', foundServices);
+
+    foundServices.forEach((element) => {
+      response.push({
+        _id: element._id,
+        serviceName: element.serviceName,
+        description: element.description,
+        serviceType: element.serviceType,
+        status: element.status,
+        serviceCreator: element.serviceCreator,
+        devices: element.devices,
+        numberOfInstallations: element.numberOfInstallations,
+        installationPrice: element.installationPrice,
+        runningPrice: element.runningPrice,
+        rate: element.rate,
+        serviceImage: element.serviceImage,
+        blocklyJson: element.blocklyJson,
+        code: element.code,
+        published: element.published,
+        publishRequested: element.publishRequested,
+        publishRejected: element.publishRejected,
+        insertedBy: element.insertedBy,
+        insertDate: element.insertDate,
+      });
+    });
+
+    return response;
+  }
+
+  async getAllPublishRequestedServices() {
+    let whereCondition = { isDeleted: false, publishRequested: true };
+    let populateCondition = [];
+    let selectCondition =
+      'serviceName published publishRequested publishRejected description serviceType status devices numberOfInstallations installationPrice runningPrice rate serviceImage blocklyJson code insertedBy insertDate isDeletable isDeleted deletedBy deleteDate deletionReason updatedBy updateDate';
+    let foundServices: any = null;
+    let response = [];
+
+    console.log('we are in getAllServices service!');
+
+    foundServices = await this.serviceRepository.getAllServices(
+      whereCondition,
+      populateCondition,
+      selectCondition,
+    );
+
+    console.log('Found services are: ', foundServices);
+
+    foundServices.forEach((element) => {
+      response.push({
+        _id: element._id,
+        serviceName: element.serviceName,
+        description: element.description,
+        serviceType: element.serviceType,
+        status: element.status,
+        serviceCreator: element.serviceCreator,
+        devices: element.devices,
+        numberOfInstallations: element.numberOfInstallations,
+        installationPrice: element.installationPrice,
+        runningPrice: element.runningPrice,
+        rate: element.rate,
+        serviceImage: element.serviceImage,
+        blocklyJson: element.blocklyJson,
+        code: element.code,
+        published: element.published,
+        publishRequested: element.publishRequested,
+        publishRejected: element.publishRejected,
+        insertedBy: element.insertedBy,
+        insertDate: element.insertDate,
+      });
+    });
 
     return response;
   }
@@ -225,7 +490,7 @@ export class ServiceService {
     let whereCondition = { isDeleted: false };
     let populateCondition = [];
     let selectCondition =
-      '_id isDeleted userId serviceName description serviceType status devices numberOfInstallations installationPrice runningPrice rate insertedBy insertDate isDeletable isDeleted deletedBy deleteDate deletionReason updatedBy updateDate';
+      '_id isDeleted userId published publishRequested publishRejected serviceName description serviceType status devices numberOfInstallations installationPrice runningPrice rate insertedBy insertDate isDeletable isDeleted deletedBy deleteDate deletionReason updatedBy updateDate';
     let foundService: any = null;
 
     await this.serviceRepository
@@ -246,6 +511,17 @@ export class ServiceService {
 
     // if(foundService && foundService !== undefined && foundService.deletable){
     if (foundService && foundService !== undefined) {
+
+      if ( foundService.published === true || foundService.publishRequested === true || foundService.publishRejected === true ) {
+        let errorMessage = 'Some errors occurred while deleting a service!';
+        this.result = {
+          message: errorMessage,
+          success: false,
+          date: new Date(),
+        }
+        return this.result;
+      }
+
       foundService.isDeleted = true;
       foundService.deletedBy = userId;
       foundService.deleteDate = new Date();

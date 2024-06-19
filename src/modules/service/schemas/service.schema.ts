@@ -97,6 +97,21 @@ const schema = new Schema({
     required: false,
     default: true,
   },
+  publishRejected: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+  published: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+  publishRequested: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
   isDeleted: {
     type: Boolean,
     required: false,

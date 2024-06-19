@@ -29,13 +29,18 @@ import { GereralException } from 'src/modules/utility/exceptions/general.excepti
 import { ServiceService } from '../services/service.service';
 import { insertServiceDto } from '../data-transfer-objects/insert-service.dto';
 import { editServiceDto } from '../data-transfer-objects/edit-service.dto';
+import { publishServiceDto } from '../data-transfer-objects/publish-service.dto';
+import { UserService } from 'src/modules/user/services/user/user.service';
 
 @ApiTags('Manage Services')
 @Controller('app')
 export class ServiceController {
   private result;
 
-  constructor(private readonly serviceService: ServiceService) {}
+  constructor(
+    private readonly serviceService: ServiceService,
+    private readonly userService: UserService,
+  ) {}
 
   @Post('v1/service/insert')
   @HttpCode(201)
@@ -46,8 +51,55 @@ export class ServiceController {
     description:
       'This api requires user service profile. Devices are array device Ids.',
   })
-  async insertDevice(@Body() body: insertServiceDto, @Request() request) {
+  async insertService(@Body() body: insertServiceDto, @Request() request) {
     return await this.serviceService.insertService(body);
+  }
+
+  @Patch('v1/service/request-service-publish')
+  @HttpCode(201)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Publishing a user service.',
+    description:
+      'This API will publish an service that is sended a request for publishing.',
+  })
+  async requestServicePublish(@Body() body: publishServiceDto, @Request() request) {
+    return await this.serviceService.requestServicePublish(body, request.user.userId);
+  }
+
+  @Patch('v1/service/publish-service')
+  @HttpCode(201)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Publishing a user service.',
+    description:
+      'This API will publish an service that is sended a request for publishing.',
+  })
+  async publishService(@Body() body: publishServiceDto, @Request() request) {
+    const profile = await this.userService.getUserProfileByIdFromUser(request.user.userId) as any;
+    if ( !profile || !profile?.roles[0]?.name || profile?.roles[0]?.name != "super_admin" ) {
+      return { success: false, message: "User permission error!"};
+    }
+    return await this.serviceService.publishService(body, request.user.userId);
+  }
+
+  @Patch('v1/service/reject-service')
+  @HttpCode(201)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Publishing a user service.',
+    description:
+      'This API will publish an service that is sended a request for publishing.',
+  })
+  async rejectService(@Body() body: publishServiceDto, @Request() request) {
+    const profile = await this.userService.getUserProfileByIdFromUser(request.user.userId) as any;
+    if ( !profile || !profile?.roles[0]?.name || profile?.roles[0]?.name != "super_admin" ) {
+      return { success: false, message: "User permission error!"};
+    }
+    return await this.serviceService.rejectService(body, request.user.userId);
   }
 
   @Patch('v1/service/edit')
@@ -129,6 +181,57 @@ export class ServiceController {
     return this.result;
   }
 
+  @Get('v1/service/get-all-published-services')
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Get all published services.',
+    description: 'Gets all the services that are published.',
+  })
+  async getAllPublishedServices() {
+    await this.serviceService
+      .getAllPublishedServices()
+      .then((response) => {
+        this.result = response
+      })
+      .catch((error) => {
+        let errorMessage = 'Some errors occurred while fetching services!';
+
+        throw new GereralException(
+          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+          errorMessage,
+        );
+      });
+
+    return this.result;
+  }
+
+  @Get('v1/service/get-all-publish-requested-services')
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Get all publish requested services.',
+    description: 'Gets all the services that are requesting for publish.',
+  })
+  async getAllPublishRequestedServices() {
+    await this.serviceService
+      .getAllPublishRequestedServices()
+      .then((response) => {
+        this.result = response
+      })
+      .catch((error) => {
+        let errorMessage = 'Some errors occurred while fetching services!';
+
+        throw new GereralException(
+          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+          errorMessage,
+        );
+      });
+
+    return this.result;
+  }
   
   @Get('v1/service/get-all-services')
   @HttpCode(200)

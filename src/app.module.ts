@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthenticationModule } from './modules/authentication/authentication.module';
@@ -26,7 +28,6 @@ import { MediaModule } from './modules/media/media.module';
       isGlobal: true,
       load: [databaseConfig, multerConfig],
     }),
-
     MongooseModule.forRoot(
       process.env.MONGO_CONNECTION,
       // `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_CONNECTION}`
@@ -47,6 +48,14 @@ import { MediaModule } from './modules/media/media.module';
         connectionName: 'panelDb',
       },
     ),
+    ServeStaticModule.forRoot({
+      rootPath: "./uploads",
+      serveRoot: '/app/uploads',
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: "./uploads/*",
+      serveRoot: '/app/uploads/*',
+    }),
     AuthenticationModule,
     UserModule,
     BrokerModule,
@@ -57,7 +66,7 @@ import { MediaModule } from './modules/media/media.module';
     BlocklyModule,
     NotificationModule,
     ZkpModule,
-    MediaModule
+    MediaModule,
   ],
   controllers: [AppController],
   providers: [

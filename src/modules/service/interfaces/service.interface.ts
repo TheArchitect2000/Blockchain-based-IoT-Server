@@ -14,6 +14,9 @@ export interface Service extends Document {
   serviceImage: string;
   blocklyJson: string;
   code: string;
+  published: boolean;
+  publishRequested: boolean;
+  publishRejected: boolean;
   insertedBy: string;
   insertDate: string;
   isDeletable: boolean;

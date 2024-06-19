@@ -2353,6 +2353,7 @@ export class UserService {
         userName: element.userName,
         mobile: element.mobile,
         email: element.email,
+        creationDate: element.insertDate,
         activationStatus: element.activationStatus,
       });
     });

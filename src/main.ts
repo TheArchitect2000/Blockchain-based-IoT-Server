@@ -23,7 +23,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('app/api', app, document);
 
-  app.useStaticAssets(join(__dirname, '../assets'));
+  app.useStaticAssets(join(__dirname, '../uploads'));
 
   // app.enableCors();
   app.enableCors({

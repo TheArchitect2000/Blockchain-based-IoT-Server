@@ -34,11 +34,12 @@ export class MediaService {
     try {
       const uploadedFile = await this.mediaRepository.create(newMedium);
 
-      if (uploadedFile) {  
+      if (uploadedFile) {
         return {
           _id: uploadedFile._id,
           fileName: uploadedFile.fileName,
           path: uploadedFile.path,
+          url: `${process.env.HOST_PROTOCOL + process.env.HOST_NAME_OR_IP}/${process.env.HOST_SUB_DIRECTORY}/${uploadedFile.path}`,
           size: uploadedFile.size,
           type: uploadedFile.type,
           destination: uploadedFile.destination,
@@ -62,15 +63,6 @@ export class MediaService {
   }
 
   async getMediaById(id: string) {
-    const whereCondition = { isDeleted: false };
-    const populateCondition = [
-      {
-        path: 'user',
-        select: 'firstName lastName userName mobile',
-      },
-    ];
-    const selectCondition = 'user type encoding mediaType destination fileName path size insertedBy insertDate updatedBy updateDate';
-  
     try {
       const media = await this.mediaRepository.findById(id);
       if (!media) {
@@ -79,7 +71,8 @@ export class MediaService {
           'Media not found',
         );
       }
-      return media;
+
+      return {...media._doc, url: `${process.env.HOST_PROTOCOL + process.env.HOST_NAME_OR_IP}/${process.env.HOST_SUB_DIRECTORY}/${media.path}`};
     } catch (error) {
       console.log(error);
       throw new GereralException(

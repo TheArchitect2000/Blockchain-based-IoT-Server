@@ -13,7 +13,7 @@ import { diskStorage } from "multer";
     MongooseModule.forFeature([{ name: 'media', schema: mediaSchema }]),
     MulterModule.register({
       storage: diskStorage({
-        destination: './uploads', // Set the destination folder
+        destination: './uploads',
         filename: (req, file, callback) => {
           const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
           const ext = extname(file.originalname);
