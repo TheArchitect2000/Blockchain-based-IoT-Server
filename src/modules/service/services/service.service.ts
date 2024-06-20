@@ -182,6 +182,62 @@ export class ServiceService {
     return this.result;
   }
 
+  async cancelServiceRequest(body, userId): Promise<any> {
+    let whereCondition = { _id: body.serviceId };
+    let populateCondition = [];
+    let selectCondition =
+      '_id userId deviceName published publishRequested publishRejected description serviceType status devices numberOfInstallations installationPrice runningPrice rate serviceImage blocklyJson code insertedBy insertDate updatedBy updateDate';
+    let foundService: any = null;
+
+    console.log('we are in publishService service!');
+    console.log('body: ', body);
+    console.log('userId: ', userId);
+
+    await this.serviceRepository
+      .getServiceById(
+        body.serviceId,
+        whereCondition,
+        populateCondition,
+        selectCondition,
+      )
+      .then((data) => {
+        foundService = data;
+      })
+      .catch((error) => {
+        let errorMessage =
+          'Some errors occurred while finding a service for canceling!';
+        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+      });
+
+    // if(foundService && foundService !== undefined && foundService.deletable){
+    if (foundService && foundService !== undefined) {
+
+      foundService.published = false;
+      foundService.publishRejected = false;
+      foundService.publishRequested = false;
+
+      foundService.updatedBy = userId;
+      foundService.updatedAt = new Date();
+    }
+
+    console.log('Updated found service for cancel request is: ', foundService);
+
+    await this.serviceRepository
+      .editService(foundService._id, foundService)
+      .then((data) => {
+        this.result = data;
+      })
+      .catch((error) => {
+        let errorMessage = 'Some errors occurred while canceling a service request !';
+        throw new GereralException(
+          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+          errorMessage,
+        );
+      });
+
+    return this.result;
+  }
+
   async rejectService(body, userId): Promise<any> {
     let whereCondition = { _id: body.serviceId };
     let populateCondition = [];

@@ -102,6 +102,23 @@ export class ServiceController {
     return await this.serviceService.rejectService(body, request.user.userId);
   }
 
+  @Patch('v1/service/cancel-service-request')
+  @HttpCode(201)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Canceling a user service request.',
+    description:
+      'This API will cancel the service request that is sended for publishing.',
+  })
+  async cancelRequest(@Body() body: publishServiceDto, @Request() request) {
+    const profile = await this.userService.getUserProfileByIdFromUser(request.user.userId) as any;
+    if ( !profile || !profile?.roles[0]?.name || profile?.roles[0]?.name != "super_admin" ) {
+      return { success: false, message: "User permission error!"};
+    }
+    return await this.serviceService.cancelServiceRequest(body, request.user.userId);
+  }
+
   @Patch('v1/service/edit')
   @HttpCode(200)
   @UseGuards(JwtAuthGuard)
