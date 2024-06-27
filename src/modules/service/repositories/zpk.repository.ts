@@ -5,10 +5,6 @@ export class ServiceRepository {
   private result;
 
   async zpkProof(proof) {
-    
-
     return this.result;
   }
-
-
 }

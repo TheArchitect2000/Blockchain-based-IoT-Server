@@ -20,9 +20,11 @@ import multerConfig from './modules/utility/configurations/multer.configuration'
 import { ResponseTransformInterceptor } from './modules/utility/interceptors/response-transform.interceptor';
 import { UtilityModule } from './modules/utility/utility.module';
 import { MediaModule } from './modules/media/media.module';
+//import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
+    //ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       envFilePath: '.env',
       isGlobal: true,
@@ -49,11 +51,11 @@ import { MediaModule } from './modules/media/media.module';
       },
     ),
     ServeStaticModule.forRoot({
-      rootPath: "./uploads",
+      rootPath: './uploads',
       serveRoot: '/app/uploads',
     }),
     ServeStaticModule.forRoot({
-      rootPath: "./uploads/*",
+      rootPath: './uploads/*',
       serveRoot: '/app/uploads/*',
     }),
     AuthenticationModule,

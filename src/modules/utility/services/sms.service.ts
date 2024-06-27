@@ -1,4 +1,4 @@
-import { HttpService, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 
 /**
  * SMS sending service.
@@ -6,10 +6,10 @@ import { HttpService, Injectable, Logger } from '@nestjs/common';
 
 @Injectable()
 export class SMSService {
-  constructor(private readonly HttpService: HttpService) {}
+  constructor(/* private readonly HttpService?: HttpService */) {}
 
   async sendSMS(mobile, message): Promise<any> {
-    await this.HttpService.post(
+    /* await this.HttpService.post(
       String(process.env.PARSGREENURL),
       {
         SmsCode: message,
@@ -35,6 +35,6 @@ export class SMSService {
         return Logger.log(
           `Error sending Activation code : ${mobile} code : ${message} Date : ${new Date()} Error : ${Error}`,
         );
-      });
+      }); */
   }
 }

@@ -9,45 +9,41 @@ import axios from 'axios';
 
 @Injectable()
 export class VirtualMachineHandlerService {
-    private vmContexts = {};
-    private allResults;
+  private vmContexts = {};
+  private allResults;
 
-    constructor(
-      private readonly installedServiceService?: InstalledServiceService,
-      private readonly mailService?: MailService,
-      private readonly userService?: UserService,
-      private readonly deviceService?: DeviceService
-    ) {}
+  constructor(
+    private readonly installedServiceService?: InstalledServiceService,
+    private readonly mailService?: MailService,
+    private readonly userService?: UserService,
+    private readonly deviceService?: DeviceService,
+  ) {}
 
-    async createVirtualMachine(body, installedServiceId) {
+  async createVirtualMachine(body, installedServiceId) {
+    let userCode = body.code.toString();
 
-        let userCode = body.code.toString();
-    
-        let serviceOutPut = userCode.toString().replaceAll(
-          /\r?\n|\r/g,
-          ' ',
-        );
-    
-        let editedUserCodeOutput = serviceOutPut;
-    
-        editedUserCodeOutput = editedUserCodeOutput.replaceAll(
-          "MULTI_SENSOR_1",
-          "data.data",
-        );
-    
-        editedUserCodeOutput = editedUserCodeOutput.replaceAll(
-          `customizedMessage.sendMail`,
-          `sendMail`,
-        );
-    
-        editedUserCodeOutput = editedUserCodeOutput.replaceAll(
-          `customizedMessage.sendNotification`,
-          `sendNotification`,
-        );
-    
-        let userId = body.insertedBy;
-    
-        const code = `
+    let serviceOutPut = userCode.toString().replaceAll(/\r?\n|\r/g, ' ');
+
+    let editedUserCodeOutput = serviceOutPut;
+
+    editedUserCodeOutput = editedUserCodeOutput.replaceAll(
+      'MULTI_SENSOR_1',
+      'data.data',
+    );
+
+    editedUserCodeOutput = editedUserCodeOutput.replaceAll(
+      `customizedMessage.sendMail`,
+      `sendMail`,
+    );
+
+    editedUserCodeOutput = editedUserCodeOutput.replaceAll(
+      `customizedMessage.sendNotification`,
+      `sendNotification`,
+    );
+
+    let userId = body.userId;
+
+    const code = `
             const {
                 Worker,
                 isMainThread,
@@ -271,62 +267,62 @@ export class VirtualMachineHandlerService {
               console.log('vmWorker started successfully.');
     
         `;
-    
-          // Create a script
-          const script = new Script(code);
-    
-          // Create a context for the script to run in
-          const context = createContext({
-            console: console,
-            require: require,
-            mqtt: mqtt,
-            userService: this.userService,
-            mailService: this.mailService,
-            deviceService: this.deviceService,
-            JSON: {
-              parse: JSON.parse,
-              stringify: JSON.stringify,
-            },
-            TextEncoder: require("util").TextEncoder,
-                TextDecoder: require("util").TextDecoder,
-          });
-          
-        // Run the script in the context
-        script.runInContext(context);
-    
-        this.vmContexts[installedServiceId.toString()] = context;
 
-        console.log(`Virtual Machine With ID ${installedServiceId} Created Successfully`)
+    // Create a script
+    const script = new Script(code);
+
+    // Create a context for the script to run in
+    const context = createContext({
+      console: console,
+      require: require,
+      mqtt: mqtt,
+      userService: this.userService,
+      mailService: this.mailService,
+      deviceService: this.deviceService,
+      JSON: {
+        parse: JSON.parse,
+        stringify: JSON.stringify,
+      },
+      TextEncoder: require('util').TextEncoder,
+      TextDecoder: require('util').TextDecoder,
+    });
+
+    // Run the script in the context
+    script.runInContext(context);
+
+    this.vmContexts[installedServiceId.toString()] = context;
+
+    console.log(
+      `Virtual Machine With ID ${installedServiceId} Created Successfully`,
+    );
+  }
+
+  async deleteVirtualMachinByServiceId(installedServiceId) {
+    try {
+      this.vmContexts[installedServiceId.toString()].terminateVm();
+      delete this.vmContexts[installedServiceId.toString()];
+      return true;
+    } catch (e) {
+      return false;
     }
+  }
 
-    async deleteVirtualMachinByServiceId(installedServiceId) {
-        try {
-            this.vmContexts[installedServiceId.toString()].terminateVm();
-            delete this.vmContexts[installedServiceId.toString()];
-            return true;
-        } catch (e) {
-            return false;
-        }
-    }
-
-    async createAllVirtualMachines() {
-      console.log("Installed Service Service:", this.installedServiceService);
-      await this.installedServiceService
+  async createAllVirtualMachines() {
+    console.log('Installed Service Service:', this.installedServiceService);
+    await this.installedServiceService
       .getAllInstalledServices()
       .then((data) => {
         data.map((service) => {
           if (service.code) {
-            this.createVirtualMachine(service, service._id)
+            this.createVirtualMachine(service, service._id);
           }
-        })
+        });
       })
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while fetching installed services!';
         return errorMessage;
       });
-      return this.allResults;
-    }
-
+    return this.allResults;
+  }
 }
-

@@ -46,6 +46,11 @@ const schema = new Schema({
     required: false,
     default: null,
   },
+  StorX: {
+    type: Object,
+    required: false,
+    default: {},
+  },
   walletAddress: {
     minlength: 6,
     type: String,
@@ -62,10 +67,10 @@ const schema = new Schema({
     },
   ],
   info: {
-    type: Schema.Types.ObjectId,
+    type: Object,
     ref: 'user-info',
     required: false,
-    default: null,
+    default: {},
   },
   activationStatus: {
     type: String,
@@ -154,6 +159,21 @@ const schema = new Schema({
   updateDate: {
     type: Date,
     required: true,
+  },
+  avatar: {
+    type: String,
+    required: false,
+    default: '',
+  },
+  lang: {
+    type: String,
+    required: false,
+    default: '',
+  },
+  title: {
+    type: String,
+    required: false,
+    default: '',
   },
 });
 

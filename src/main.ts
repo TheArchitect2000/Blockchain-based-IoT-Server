@@ -37,11 +37,17 @@ async function bootstrap() {
       'https://developer.fidesinnova.io',
       'https://panel.fidesinnova.io',
     ],
-    allowedHeaders: ['Content-Type', 'Origin', 'X-Requested-With', 'Accept', 'Authorization'],
+    allowedHeaders: [
+      'Content-Type',
+      'Origin',
+      'X-Requested-With',
+      'Accept',
+      'Authorization',
+    ],
     // headers exposed to the client
     exposedHeaders: ['Authorization'],
     credentials: true, // Enable credentials (cookies, authorization headers) cross-origin
-  
+
     methods: ['GET', 'POST', 'PATCH', 'DELETE'],
   });
 

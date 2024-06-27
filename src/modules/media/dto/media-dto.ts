@@ -1,6 +1,6 @@
 import { IsOptional, IsNotEmpty, IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { ResourceTypeEnum } from 'src/modules/utility/enums/resource-type.enum'; 
+import { ResourceTypeEnum } from 'src/modules/utility/enums/resource-type.enum';
 
 export class uploadFileDto {
   @IsEnum(ResourceTypeEnum, { message: 'Selected type is not valid.' })

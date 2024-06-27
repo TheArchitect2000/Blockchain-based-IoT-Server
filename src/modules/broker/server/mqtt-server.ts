@@ -3,9 +3,7 @@ import { MqttService } from '../services/mqtt.service';
 class MqttServer {
   //   private mqttService: MqttService;
 
-  constructor(
-    private readonly mqttService?: MqttService,
-  ) {
+  constructor(private readonly mqttService?: MqttService) {
     this.mqttService = new MqttService();
   }
 
@@ -13,7 +11,6 @@ class MqttServer {
     // this.mqttService.brokerStart();
   }
 }
-
 
 let mqttServer = new MqttServer();
 mqttServer.launch();

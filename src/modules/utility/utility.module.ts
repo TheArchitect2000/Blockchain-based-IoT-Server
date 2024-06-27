@@ -1,5 +1,5 @@
 import { MailerModule } from '@nestjs-modules/mailer';
-import { HttpModule, HttpService, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MulterModule } from '@nestjs/platform-express';
@@ -28,7 +28,6 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 @Module({
   imports: [
     ConfigModule.forRoot(), //  It will load the contents of the .env file automatically.
-    HttpModule,
     MongooseModule.forFeature(otpFeature),
     MongooseModule.forFeature(mediaFeature),
     MongooseModule.forFeature(tagFeature),

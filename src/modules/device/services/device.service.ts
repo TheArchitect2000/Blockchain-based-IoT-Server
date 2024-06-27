@@ -104,7 +104,7 @@ export class DeviceService {
       selectCondition,
     );
 
-    console.log('Found devices are: ', foundDevices);
+    //console.log('Found devices are: ', foundDevices);
 
     return foundDevices;
   }
@@ -127,11 +127,11 @@ export class DeviceService {
       selectCondition,
     );
 
-    console.log('Found devices are: ', foundDevices);
+    //console.log('Found devices are: ', foundDevices);
 
     foundDevices.forEach((element) => {
       encryptedDeviceId = this.encryptDeviceId(element._id.toString());
-      console.log('encryptedDeviceId is: ', encryptedDeviceId);
+      //console.log('encryptedDeviceId is: ', encryptedDeviceId);
       foundDevicesWithEncryptedDeviceId.push({
         _id: element._id,
         encryptedId: encryptedDeviceId,
@@ -503,7 +503,7 @@ export class DeviceService {
       selectCondition,
     );
 
-    console.log('Found devices are: ', foundDevices);
+    //console.log('Found devices are: ', foundDevices);
 
     foundDevices.forEach((element) => {
       response.push({
@@ -530,7 +530,7 @@ export class DeviceService {
     let whereCondition = { isDeleted: false };
     let populateCondition = [];
     let selectCondition =
-      '_id deviceName deviceType mac deviceEncryptedId hardwareVersion firmwareVersion parameters isShared location geometry insertedBy insertDate isDeletable isDeleted deletedBy deleteDate deletionReason updatedBy updateDate';
+      '_id insertedBy deviceName deviceType mac deviceEncryptedId hardwareVersion firmwareVersion parameters isShared location geometry insertedBy insertDate isDeletable isDeleted deletedBy deleteDate deletionReason updatedBy updateDate';
     let foundDevices: any = null;
     let response = [];
 
@@ -542,11 +542,12 @@ export class DeviceService {
       selectCondition,
     );
 
-    console.log('Found devices are: ', foundDevices);
+    //console.log('Found devices are: ', foundDevices);
 
     foundDevices.forEach((element) => {
       response.push({
         _id: element._id,
+        userId: element.insertedBy,
         deviceName: element.deviceName,
         deviceType: element.deviceType,
         mac: element.mac,
@@ -563,7 +564,7 @@ export class DeviceService {
 
     return response;
   }
-  
+
   async getDeviceInfoByEncryptedId(encryptId) {
     let whereCondition = { isDeleted: false };
     let populateCondition = [];

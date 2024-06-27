@@ -64,8 +64,14 @@ export class ServiceController {
     description:
       'This API will publish an service that is sended a request for publishing.',
   })
-  async requestServicePublish(@Body() body: publishServiceDto, @Request() request) {
-    return await this.serviceService.requestServicePublish(body, request.user.userId);
+  async requestServicePublish(
+    @Body() body: publishServiceDto,
+    @Request() request,
+  ) {
+    return await this.serviceService.requestServicePublish(
+      body,
+      request.user.userId,
+    );
   }
 
   @Patch('v1/service/publish-service')
@@ -78,9 +84,15 @@ export class ServiceController {
       'This API will publish an service that is sended a request for publishing.',
   })
   async publishService(@Body() body: publishServiceDto, @Request() request) {
-    const profile = await this.userService.getUserProfileByIdFromUser(request.user.userId) as any;
-    if ( !profile || !profile?.roles[0]?.name || profile?.roles[0]?.name != "super_admin" ) {
-      return { success: false, message: "User permission error!"};
+    const profile = (await this.userService.getUserProfileByIdFromUser(
+      request.user.userId,
+    )) as any;
+    if (
+      !profile ||
+      !profile?.roles[0]?.name ||
+      profile?.roles[0]?.name != 'super_admin'
+    ) {
+      return { success: false, message: 'User permission error!' };
     }
     return await this.serviceService.publishService(body, request.user.userId);
   }
@@ -95,9 +107,15 @@ export class ServiceController {
       'This API will publish an service that is sended a request for publishing.',
   })
   async rejectService(@Body() body: publishServiceDto, @Request() request) {
-    const profile = await this.userService.getUserProfileByIdFromUser(request.user.userId) as any;
-    if ( !profile || !profile?.roles[0]?.name || profile?.roles[0]?.name != "super_admin" ) {
-      return { success: false, message: "User permission error!"};
+    const profile = (await this.userService.getUserProfileByIdFromUser(
+      request.user.userId,
+    )) as any;
+    if (
+      !profile ||
+      !profile?.roles[0]?.name ||
+      profile?.roles[0]?.name != 'super_admin'
+    ) {
+      return { success: false, message: 'User permission error!' };
     }
     return await this.serviceService.rejectService(body, request.user.userId);
   }
@@ -112,11 +130,20 @@ export class ServiceController {
       'This API will cancel the service request that is sended for publishing.',
   })
   async cancelRequest(@Body() body: publishServiceDto, @Request() request) {
-    const profile = await this.userService.getUserProfileByIdFromUser(request.user.userId) as any;
-    if ( !profile || !profile?.roles[0]?.name || profile?.roles[0]?.name != "super_admin" ) {
-      return { success: false, message: "User permission error!"};
+    const profile = (await this.userService.getUserProfileByIdFromUser(
+      request.user.userId,
+    )) as any;
+    if (
+      !profile ||
+      !profile?.roles[0]?.name ||
+      profile?.roles[0]?.name != 'super_admin'
+    ) {
+      return { success: false, message: 'User permission error!' };
     }
-    return await this.serviceService.cancelServiceRequest(body, request.user.userId);
+    return await this.serviceService.cancelServiceRequest(
+      body,
+      request.user.userId,
+    );
   }
 
   @Patch('v1/service/edit')
@@ -210,7 +237,7 @@ export class ServiceController {
     await this.serviceService
       .getAllPublishedServices()
       .then((response) => {
-        this.result = response
+        this.result = response;
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while fetching services!';
@@ -236,7 +263,7 @@ export class ServiceController {
     await this.serviceService
       .getAllPublishRequestedServices()
       .then((response) => {
-        this.result = response
+        this.result = response;
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while fetching services!';
@@ -249,7 +276,7 @@ export class ServiceController {
 
     return this.result;
   }
-  
+
   @Get('v1/service/get-all-services')
   @HttpCode(200)
   @UseGuards(JwtAuthGuard)
@@ -262,7 +289,7 @@ export class ServiceController {
     await this.serviceService
       .getAllServices()
       .then((response) => {
-        this.result = response
+        this.result = response;
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while fetching services!';

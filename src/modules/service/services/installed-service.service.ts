@@ -81,7 +81,8 @@ export class InstalledServiceService {
         body.installedServiceImage != null ||
         body.installedServiceImage != undefined
       ) {
-        foundInstalledService.installedServiceImage = body.installedServiceImage;
+        foundInstalledService.installedServiceImage =
+          body.installedServiceImage;
       }
 
       if (
@@ -90,7 +91,7 @@ export class InstalledServiceService {
       ) {
         foundInstalledService.installedServiceName = body.installedServiceName;
       }
-      
+
       if (body.description != null || body.description != undefined) {
         foundInstalledService.description = body.description;
       }
@@ -140,7 +141,6 @@ export class InstalledServiceService {
         )
         .then((data) => {
           foundService = data;
-
         })
         .catch((error) => {
           let errorMessage = 'Some errors occurred while finding a service!';
@@ -211,11 +211,12 @@ export class InstalledServiceService {
     console.log('we are 1.5');
 
     try {
-      foundServices = await this.installedServiceRepository.getAllInstalledServices(
-        whereCondition,
-        populateCondition,
-        selectCondition,
-      );
+      foundServices =
+        await this.installedServiceRepository.getAllInstalledServices(
+          whereCondition,
+          populateCondition,
+          selectCondition,
+        );
     } catch (error) {
       console.log(error);
     }
@@ -226,6 +227,7 @@ export class InstalledServiceService {
       response.push({
         _id: element._id,
         serviceId: element.serviceId,
+        userId: element.userId,
         installedServiceName: element.installedServiceName,
         code: element.code,
         description: element.description,
@@ -239,7 +241,7 @@ export class InstalledServiceService {
 
     console.log(response);
 
-    console.log("3");  
+    console.log('3');
 
     return response;
   }

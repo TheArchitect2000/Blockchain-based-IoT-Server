@@ -67,14 +67,17 @@ export class ServiceService {
 
     // if(foundService && foundService !== undefined && foundService.deletable){
     if (foundService && foundService !== undefined) {
-
-      if ( foundService.published === true || foundService.publishRequested === true || foundService.publishRejected === true ) {
+      if (
+        foundService.published === true ||
+        foundService.publishRequested === true ||
+        foundService.publishRejected === true
+      ) {
         let errorMessage = 'Some errors occurred while editing a service!';
         this.result = {
           message: errorMessage,
           success: false,
           date: new Date(),
-        }
+        };
         return this.result;
       }
 
@@ -112,7 +115,7 @@ export class ServiceService {
       .editService(foundService._id, foundService)
       .then((data) => {
         this.result = data;
-        console.log("editing service: ");
+        console.log('editing service: ');
         console.log(data);
       })
       .catch((error) => {
@@ -155,7 +158,6 @@ export class ServiceService {
 
     // if(foundService && foundService !== undefined && foundService.deletable){
     if (foundService && foundService !== undefined) {
-
       foundService.published = true;
       foundService.publishRejected = false;
       foundService.publishRequested = false;
@@ -211,7 +213,6 @@ export class ServiceService {
 
     // if(foundService && foundService !== undefined && foundService.deletable){
     if (foundService && foundService !== undefined) {
-
       foundService.published = false;
       foundService.publishRejected = false;
       foundService.publishRequested = false;
@@ -228,7 +229,8 @@ export class ServiceService {
         this.result = data;
       })
       .catch((error) => {
-        let errorMessage = 'Some errors occurred while canceling a service request !';
+        let errorMessage =
+          'Some errors occurred while canceling a service request !';
         throw new GereralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
@@ -267,7 +269,6 @@ export class ServiceService {
 
     // if(foundService && foundService !== undefined && foundService.deletable){
     if (foundService && foundService !== undefined) {
-
       foundService.publishRejected = true;
       foundService.published = false;
       foundService.publishRequested = false;
@@ -318,19 +319,23 @@ export class ServiceService {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while finding a service for publishing request!';
-          throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     // if(foundService && foundService !== undefined && foundService.deletable){
     if (foundService && foundService !== undefined) {
-
-      if ( foundService.published === true || foundService.publishRequested === true || foundService.publishRejected === true ) {
-        let errorMessage = 'Some errors occurred while requesting publish a service!';
+      if (
+        foundService.published === true ||
+        foundService.publishRequested === true ||
+        foundService.publishRejected === true
+      ) {
+        let errorMessage =
+          'Some errors occurred while requesting publish a service!';
         this.result = {
           message: errorMessage,
           success: false,
           date: new Date(),
-        }
+        };
         return this.result;
       }
 
@@ -340,7 +345,10 @@ export class ServiceService {
       foundService.updatedAt = new Date();
     }
 
-    console.log('Updated found service for publishing request is: ', foundService);
+    console.log(
+      'Updated found service for publishing request is: ',
+      foundService,
+    );
 
     await this.serviceRepository
       .editService(foundService._id, foundService)
@@ -348,7 +356,8 @@ export class ServiceService {
         this.result = data;
       })
       .catch((error) => {
-        let errorMessage = 'Some errors occurred while requesting publish a service!';
+        let errorMessage =
+          'Some errors occurred while requesting publish a service!';
         throw new GereralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
@@ -363,7 +372,7 @@ export class ServiceService {
     let populateCondition = [];
     let selectCondition =
       '_id userId serviceName description published publishRequested publishRejected serviceType status devices numberOfInstallations installationPrice runningPrice rate serviceImage blocklyJson code insertedBy insertDate updatedBy updateDate';
-    let foundService: any = null;        
+    let foundService: any = null;
 
     // if (ObjectID.isValid(serviceId)){
     if (mongoose.isValidObjectId(serviceId)) {
@@ -567,14 +576,17 @@ export class ServiceService {
 
     // if(foundService && foundService !== undefined && foundService.deletable){
     if (foundService && foundService !== undefined) {
-
-      if ( foundService.published === true || foundService.publishRequested === true || foundService.publishRejected === true ) {
+      if (
+        foundService.published === true ||
+        foundService.publishRequested === true ||
+        foundService.publishRejected === true
+      ) {
         let errorMessage = 'Some errors occurred while deleting a service!';
         this.result = {
           message: errorMessage,
           success: false,
           date: new Date(),
-        }
+        };
         return this.result;
       }
 

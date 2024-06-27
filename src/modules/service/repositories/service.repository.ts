@@ -5,7 +5,6 @@ import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { GereralException } from 'src/modules/utility/exceptions/general.exception';
 import { ServiceModel } from '../models/service.model';
 
-
 @Injectable()
 export class ServiceRepository {
   private result;

@@ -15,6 +15,7 @@ import {
   Put,
   UseInterceptors,
   UploadedFile,
+  Inject,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -27,13 +28,96 @@ import { JwtAuthGuard } from 'src/modules/authentication/guard/jwt-auth.guard';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { GereralException } from 'src/modules/utility/exceptions/general.exception';
 import { DeviceLogService } from '../services/device-log.service';
+import { DeviceService } from '../services/device.service';
+import storxController from './storx.controller';
+import { UserService } from 'src/modules/user/services/user/user.service';
 
 @ApiTags('Manage Device Logs')
 @Controller('app')
 export class DeviceLogController {
   private result;
+  private storxBucket = process.env.STORX_BUCKET_NAME || '';
 
-  constructor(private readonly deviceLogService: DeviceLogService) {}
+  constructor(
+    @Inject(UserService)
+    private readonly userService: UserService,
+    private readonly deviceLogService: DeviceLogService,
+    private readonly deviceService: DeviceService,
+  ) {
+    setInterval(async () => {
+      const usersRes = await this.userService.getAllUsers();
+      const devicesRes = await this.deviceService.getAllDevices();
+
+      devicesRes.map(async (device: any, index) => {
+        usersRes.map(async (user) => {
+          console.log(
+            `User S3 Type: ${typeof user.StorX}, S3 Length: ${
+              Object.keys(user.StorX).length
+            }, userID: ${user._id}, Device Owner: ${device.userId}`,
+          );
+
+          if (
+            user._id.toString() === device.userId.toString() &&
+            (typeof user.StorX).toString() === 'object' &&
+            Number(Object.keys(user.StorX).length) > 0
+          ) {
+            console.log('User S3 is: ', user.StorX);
+            const StorX = user.StorX;
+            storxController.setBucketProps(
+              StorX.endpoint,
+              StorX.access_key_id,
+              StorX.secret_key,
+            );
+            storxController.CreateBucket(this.storxBucket);
+            const res =
+              await this.getDeviceLogByEncryptedDeviceIdAndFieldNameAndNumberOfDaysBefore(
+                device.deviceEncryptedId,
+                'LastDay',
+                1,
+              );
+            const reader = JSON.stringify(res);
+
+            const uploadRes = await storxController.UploadFile({
+              reader: reader,
+              bucketName: this.storxBucket,
+              deviceID: device.deviceEncryptedId,
+            });
+
+            console.log('Now bucket is: ', storxController.getStorxBucket());
+
+            if (uploadRes.success == true) {
+              console.log(
+                `${device.deviceName}, ${device.mac} : have ${res.length} log datas that uploaded successfully`,
+              );
+            } else {
+              console.log(
+                `${device.deviceName}, ${device.mac} : log datas can't be uploaded, got errors !`,
+              );
+            }
+
+            console.log('------------------------------------------------');
+
+            /* const writer = [];
+          const startTime = new Date();
+          startTime.setDate(startTime.getDate() - 10);
+          startTime.setHours(0, 0, 0, 0);
+  
+          const endTime = new Date();
+          endTime.setDate(endTime.getDate() + 1);
+          endTime.setHours(23, 59, 59, 0);
+  
+          const uploadedData = await storxController.DownloadFiles({
+            writer: writer,
+            bucketName: this.storxBucket,
+            deviceID: device.deviceEncryptedId,
+            endTime: endTime,
+            startTime: startTime,
+          }); */
+          }
+        });
+      });
+    }, 24 * 60 * 60 * 1000);
+  }
 
   @Get('v1/device-log/get-last-device-log-by-encrypted-deviceid-and-field-name')
   @HttpCode(200)

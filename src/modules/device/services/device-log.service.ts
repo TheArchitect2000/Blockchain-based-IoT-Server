@@ -4,6 +4,7 @@ import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { log } from 'console';
 import { DeviceLogRepository } from '../repositories/device-log.repository';
 import { DeviceService } from './device.service';
+//import { Cron } from '@nestjs/schedule';
 
 /**
  * Device log manipulation service.
@@ -49,8 +50,6 @@ export class DeviceLogService {
       insertDate: new Date(),
     };
 
-    console.log('deviceLog', deviceLog);
-
     let insertedDeviceLog;
 
     await this.deviceLogRepository
@@ -78,8 +77,6 @@ export class DeviceLogService {
       senderDeviceEncryptedId: body.senderDeviceEncryptedId,
       insertDate: new Date(),
     };
-
-    console.log('deviceLog', deviceLog);
 
     let insertedDeviceLog;
 
@@ -111,14 +108,12 @@ export class DeviceLogService {
     };
     query[fieldName] = { $exists: true };
 
-    console.log(query);
-
     foundActivities =
       await this.deviceLogRepository.getDeviceLogByEncryptedDeviceIdAndFieldName(
         query,
       );
 
-    if(query !== null){
+    if (query !== null) {
       return foundActivities;
     }
   }
@@ -149,14 +144,12 @@ export class DeviceLogService {
         fieldName,
       )
         .then((data) => {
-          if(data !==null){
-          foundDeviceLog = data;
-          console.log('foundDeviceLog: ', foundDeviceLog);
+          if (data !== null) {
+            foundDeviceLog = data;
 
-          element.payloadsSent = foundDeviceLog.length;
-          console.log('foundDeviceLog.length: ', foundDeviceLog.length);
-          foundActivities.push(foundDeviceLog);
-        }
+            element.payloadsSent = foundDeviceLog.length;
+            foundActivities.push(foundDeviceLog);
+          }
         })
         .catch((error) => {
           let errorMessage =
@@ -164,7 +157,7 @@ export class DeviceLogService {
           throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
         });
     }
-      return foundActivities;
+    return foundActivities;
 
     /* let query = {
             "deviceEncryptedId": deviceEncryptedId,
@@ -201,8 +194,6 @@ export class DeviceLogService {
     };
     query[fieldName] = { $exists: true };
 
-    console.log(query);
-
     foundDeviceLogs = await this.deviceLogRepository.getDeviceLogs(query);
 
     //console.log(foundDeviceLogs);
@@ -230,9 +221,6 @@ export class DeviceLogService {
     startDate.setSeconds(0);
     startDate.setMilliseconds(0);
 
-    console.log('startDate :', startDate);
-    console.log('endDate :', endDate);
-
     let query = {
       deviceEncryptedId: deviceEncryptedId,
       insertDate: {
@@ -242,11 +230,7 @@ export class DeviceLogService {
     };
     query[fieldName] = { $exists: true };
 
-    console.log(query);
-
     foundDeviceLogs = await this.deviceLogRepository.getDeviceLogs(query);
-
-    console.log(foundDeviceLogs);
 
     return foundDeviceLogs;
   }
@@ -276,11 +260,7 @@ export class DeviceLogService {
       data: { $exists: true },
     };
 
-    console.log(query);
-
     foundDeviceLogs = await this.deviceLogRepository.getDeviceLogs(query);
-
-    console.log('Found device logs: ', foundDeviceLogs);
 
     return foundDeviceLogs;
   }

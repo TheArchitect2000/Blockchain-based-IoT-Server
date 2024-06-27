@@ -21,7 +21,6 @@ import { ServiceHandlerController } from '../virtual-machine/controllers/service
 import { InstalledServiceController } from '../service/controllers/installed-service.controller';
 import { UserController } from '../user/controllers/user.controller';
 
-
 @Module({
   imports: [
     MongooseModule.forFeature(serviceFeature),
@@ -59,6 +58,5 @@ import { UserController } from '../user/controllers/user.controller';
     InstalledServiceRepository,
     ServiceRepository,
   ],
-
 })
 export class BrokerModule {}

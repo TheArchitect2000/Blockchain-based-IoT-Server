@@ -34,7 +34,6 @@ import { UserService } from 'src/modules/user/services/user/user.service';
 import { DeviceService } from 'src/modules/device/services/device.service';
 import { VirtualMachineHandlerService } from 'src/modules/virtual-machine/services/service-handler.service';
 
-
 @ApiTags('Manage Installed Services')
 @Controller('app')
 export class InstalledServiceController {
@@ -43,7 +42,7 @@ export class InstalledServiceController {
 
   constructor(
     private readonly installedServiceService: InstalledServiceService,
-    private readonly VirtualMachineService?: VirtualMachineHandlerService
+    private readonly VirtualMachineService?: VirtualMachineHandlerService,
   ) {}
 
   @Post('v1/installed-service/insert')
@@ -59,7 +58,6 @@ export class InstalledServiceController {
     @Body() body: insertInstalledServiceDto,
     @Request() request,
   ) {
-
     const res = await this.installedServiceService.insertInstalledService(body);
 
     this.VirtualMachineService.createVirtualMachine(body, res._id);
@@ -73,14 +71,10 @@ export class InstalledServiceController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Creates All Virtual Machines.',
-    description:
-      '',
+    description: '',
   })
-  async createAllInstalledServicesVirtualMachines(
-    @Request() request,
-  ) {
-
-    if (this.virtualsCreated === false ) {
+  async createAllInstalledServicesVirtualMachines(@Request() request) {
+    if (this.virtualsCreated === false) {
       this.virtualsCreated = true;
       return this.VirtualMachineService.createAllVirtualMachines();
     } else {
@@ -256,7 +250,9 @@ export class InstalledServiceController {
       );
     }
 
-    this.VirtualMachineService.deleteVirtualMachinByServiceId(installedServiceId);
+    this.VirtualMachineService.deleteVirtualMachinByServiceId(
+      installedServiceId,
+    );
 
     await this.installedServiceService
       .deleteInstalledServiceByInstalledServiceId(
@@ -267,8 +263,8 @@ export class InstalledServiceController {
         this.result = data;
       })
       .catch((error) => {
-        console.log("Errrrrrrorrrrrrrrrrrrrrr Isssssssssssssss:", error);
-        
+        console.log('Errrrrrrorrrrrrrrrrrrrrr Isssssssssssssss:', error);
+
         let errorMessage =
           'Some errors occurred while deleting the installed service!';
         throw new GereralException(
@@ -280,4 +276,3 @@ export class InstalledServiceController {
     return this.result;
   }
 }
-

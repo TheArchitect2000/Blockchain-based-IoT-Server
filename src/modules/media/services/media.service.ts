@@ -12,8 +12,12 @@ export class MediaService {
     private readonly mediaRepository: MediaRepository,
   ) {}
 
-  async insertMedia(type: string, body: uploadFileDto, userId: string, file: Express.Multer.File) {
-    
+  async insertMedia(
+    type: string,
+    body: uploadFileDto,
+    userId: string,
+    file: Express.Multer.File,
+  ) {
     const newMedium = {
       user: userId,
       type: type,
@@ -29,7 +33,7 @@ export class MediaService {
       updateDate: new Date(),
     };
 
-    console.log("We are in Insert media", newMedium);
+    console.log('We are in Insert media', newMedium);
 
     try {
       const uploadedFile = await this.mediaRepository.create(newMedium);
@@ -39,7 +43,9 @@ export class MediaService {
           _id: uploadedFile._id,
           fileName: uploadedFile.fileName,
           path: uploadedFile.path,
-          url: `${process.env.HOST_PROTOCOL + process.env.HOST_NAME_OR_IP}/${process.env.HOST_SUB_DIRECTORY}/${uploadedFile.path}`,
+          url: `${process.env.HOST_PROTOCOL + process.env.HOST_NAME_OR_IP}/${
+            process.env.HOST_SUB_DIRECTORY
+          }/${uploadedFile.path}`,
           size: uploadedFile.size,
           type: uploadedFile.type,
           destination: uploadedFile.destination,
@@ -54,7 +60,7 @@ export class MediaService {
       }
     } catch (error) {
       console.log(error);
-      
+
       throw new GereralException(
         ErrorTypeEnum.INTERNAL_SERVER_ERROR,
         'An error occurred while saving the file to the database.',
@@ -66,13 +72,15 @@ export class MediaService {
     try {
       const media = await this.mediaRepository.findById(id);
       if (!media) {
-        throw new GereralException(
-          ErrorTypeEnum.NOT_FOUND,
-          'Media not found',
-        );
+        throw new GereralException(ErrorTypeEnum.NOT_FOUND, 'Media not found');
       }
 
-      return {...media._doc, url: `${process.env.HOST_PROTOCOL + process.env.HOST_NAME_OR_IP}/${process.env.HOST_SUB_DIRECTORY}/${media.path}`};
+      return {
+        ...media._doc,
+        url: `${process.env.HOST_PROTOCOL + process.env.HOST_NAME_OR_IP}/${
+          process.env.HOST_SUB_DIRECTORY
+        }/${media.path}`,
+      };
     } catch (error) {
       console.log(error);
       throw new GereralException(
@@ -81,7 +89,4 @@ export class MediaService {
       );
     }
   }
-  
-  
 }
-

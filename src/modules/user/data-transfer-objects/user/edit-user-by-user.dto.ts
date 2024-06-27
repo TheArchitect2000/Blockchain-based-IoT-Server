@@ -43,4 +43,19 @@ export class editUserByUserDto {
   @IsString({ message: 'walletAddress must be string.' })
   @ApiProperty({ required: false })
   walletAddress: string;
+
+  @IsOptional()
+  @IsString({ message: 'title must be string.' })
+  @ApiProperty({ required: false })
+  title: string;
+
+  @IsOptional()
+  @IsString({ message: 'avatar must be string.' })
+  @ApiProperty({ required: false })
+  avatar: string;
+
+  @IsOptional()
+  @IsString({ message: 'lang must be string.' })
+  @ApiProperty({ required: false })
+  lang: string;
 }

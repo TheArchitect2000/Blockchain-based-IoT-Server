@@ -10,7 +10,8 @@ export interface User extends Document {
   newPassword: string;
   walletAddress: string;
   roles: string[];
-  info: string;
+  StorX: Object;
+  info: Object;
   insertedBy: string;
   insertDate: string;
   activationStatus: string;

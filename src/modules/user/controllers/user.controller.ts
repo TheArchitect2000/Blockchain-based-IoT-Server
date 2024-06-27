@@ -76,8 +76,7 @@ export class UserController {
     summary: 'Send otp code to user.',
     description: 'This api requires a user mobile.',
   })
-  async test() // @Param('mobile') mobile: string
-  {
+  async test() { // @Param('mobile') mobile: string
     console.log('We are in test function!');
     var user = <User>{};
     const token = Math.floor(1000 + Math.random() * 9000).toString();

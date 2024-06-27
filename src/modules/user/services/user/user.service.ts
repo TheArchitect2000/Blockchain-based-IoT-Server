@@ -31,6 +31,7 @@ import { ServiceService } from 'src/modules/service/services/service.service';
 import { InstalledServiceService } from 'src/modules/service/services/installed-service.service';
 import { DeviceService } from 'src/modules/device/services/device.service';
 import { DeviceLogService } from 'src/modules/device/services/device-log.service';
+import storxController from 'src/modules/device/controllers/storx.controller';
 
 const saltRounds = 10;
 
@@ -76,8 +77,9 @@ export class UserService {
       new Date(this.otp[this.otp.length - 1].expiryDate).getTime() <
         new Date().getTime()
     ) {
+      const StorX = await storxController.createUserAndGenerateStorXKey(body.email, "fides user")
       this.otpService.insertEmailOTP(OTPTypeEnum.REGISTRATION, body.email);
-      const newUser = await this.insertAUserByEmail(body);
+      const newUser = await this.insertAUserByEmail({...body, StorX: StorX});
       const payload = { mobile: newUser.mobile, sub: newUser._id };
 
       const accessSignOptions: any = {};
@@ -212,7 +214,7 @@ export class UserService {
       const whereCondition = { isDeleted: false };
       const populateCondition = [];
       const selectCondition =
-        'firstName lastName userName mobile email roles info activationStatus activationStatusChangeReason activationStatusChangedBy activationStatusChangeDate verificationStatus verificationStatusChangeReason verificationStatusChangedBy verificationStatusChangeDate insertedBy insertDate updatedBy updateDate isDeletable isDeleted deletedBy deleteDate deletionReason';
+        'firstName lastName avatar lang title userName StorX mobile email roles info activationStatus activationStatusChangeReason activationStatusChangedBy activationStatusChangeDate verificationStatus verificationStatusChangeReason verificationStatusChangedBy verificationStatusChangeDate insertedBy insertDate updatedBy updateDate isDeletable isDeleted deletedBy deleteDate deletionReason';
 
       await this.otpService.setVerificationStatus(
         this.otp[this.otp.length - 1]._id,
@@ -319,7 +321,7 @@ export class UserService {
           },
         ];
         const selectCondition =
-          'firstName lastName userName mobile email roles info activationStatus activationStatusChangeReason activationStatusChangedBy activationStatusChangeDate verificationStatus verificationStatusChangeReason verificationStatusChangedBy verificationStatusChangeDate insertedBy insertDate updatedBy updateDate isDeletable isDeleted deletedBy deleteDate deletionReason';
+          'firstName lastName avatar lang title userName StorX mobile email roles info activationStatus activationStatusChangeReason activationStatusChangedBy activationStatusChangeDate verificationStatus verificationStatusChangeReason verificationStatusChangedBy verificationStatusChangeDate insertedBy insertDate updatedBy updateDate isDeletable isDeleted deletedBy deleteDate deletionReason';
 
         const foundedNewUser = await this.userRepository.findUserById(
           insertedUser._id,
@@ -360,7 +362,7 @@ export class UserService {
       const whereCondition = { isDeleted: false };
       const populateCondition = [];
       const selectCondition =
-        'firstName lastName userName mobile email password newPassword roles info activationStatus activationStatusChangeReason activationStatusChangedBy activationStatusChangeDate verificationStatus verificationStatusChangeReason verificationStatusChangedBy verificationStatusChangeDate insertedBy insertDate updatedBy updateDate isDeletable isDeleted deletedBy deleteDate deletionReason';
+        'firstName lastName avatar lang title userName StorX mobile email password newPassword roles info activationStatus activationStatusChangeReason activationStatusChangedBy activationStatusChangeDate verificationStatus verificationStatusChangeReason verificationStatusChangedBy verificationStatusChangeDate insertedBy insertDate updatedBy updateDate isDeletable isDeleted deletedBy deleteDate deletionReason';
 
       console.log('I am in verifyOtpCodeSentByEmailForResetPassword service!');
 
@@ -402,7 +404,7 @@ export class UserService {
 
                 let whereCondition={};
                 let populateCondition=[];
-                let selectCondition='IsActive Email Username Password NewPassword FirstName LastName Mobile createdAt updatedAt';
+                let selectCondition='IsActive Email Username Password NewPassword firstName lastName avatar lang title Mobile createdAt updatedAt';
                 let foundCustomer = null;
                 
                 foundCustomer = await this.customerService.findACustomerByEmail(body.email, whereCondition, populateCondition, selectCondition);
@@ -528,7 +530,7 @@ export class UserService {
         },
       ];
       const selectCondition =
-        'firstName lastName userName mobile roles info activationStatus activationStatusChangeReason activationStatusChangedBy activationStatusChangeDate verificationStatus verificationStatusChangeReason verificationStatusChangedBy verificationStatusChangeDate insertedBy insertDate updatedBy updateDate isDeletable isDeleted deletedBy deleteDate deletionReason';
+        'firstName lastName avatar lang title userName StorX mobile roles info activationStatus activationStatusChangeReason activationStatusChangedBy activationStatusChangeDate verificationStatus verificationStatusChangeReason verificationStatusChangedBy verificationStatusChangeDate insertedBy insertDate updatedBy updateDate isDeletable isDeleted deletedBy deleteDate deletionReason';
 
       await this.findAUserByMobile(
         body.mobile,
@@ -619,7 +621,7 @@ export class UserService {
           },
         ];
         const selectCondition =
-          'firstName lastName userName mobile roles info activationStatus activationStatusChangeReason activationStatusChangedBy activationStatusChangeDate verificationStatus verificationStatusChangeReason verificationStatusChangedBy verificationStatusChangeDate insertedBy insertDate updatedBy updateDate isDeletable isDeleted deletedBy deleteDate deletionReason';
+          'firstName lastName avatar lang title userName StorX mobile roles info activationStatus activationStatusChangeReason activationStatusChangedBy activationStatusChangeDate verificationStatus verificationStatusChangeReason verificationStatusChangedBy verificationStatusChangeDate insertedBy insertDate updatedBy updateDate isDeletable isDeleted deletedBy deleteDate deletionReason';
 
         const foundedNewUser = await this.userRepository.findUserById(
           insertedUser._id,
@@ -773,7 +775,7 @@ export class UserService {
     const whereCondition = { isDeleted: false };
     const populateCondition = [];
     const selectCondition =
-      'firstName lastName userName mobile email roles info activationStatus activationStatusChangeReason activationStatusChangedBy activationStatusChangeDate verificationStatus verificationStatusChangeReason verificationStatusChangedBy verificationStatusChangeDate insertedBy insertDate updatedBy updateDate isDeletable isDeleted deletedBy deleteDate deletionReason';
+      'firstName lastName avatar lang title userName StorX mobile email roles info activationStatus activationStatusChangeReason activationStatusChangedBy activationStatusChangeDate verificationStatus verificationStatusChangeReason verificationStatusChangedBy verificationStatusChangeDate insertedBy insertDate updatedBy updateDate isDeletable isDeleted deletedBy deleteDate deletionReason';
 
     console.log('I am in checkUserEmailIsExist!');
 
@@ -901,6 +903,15 @@ export class UserService {
       }
       if (data.walletAddress != null || data.walletAddress != undefined) {
         this.user.walletAddress = data.walletAddress;
+      }
+      if (data.title != null || data.title != undefined) {
+        this.user.title = data.title;
+      }
+      if (data.avatar != null || data.avatar != undefined) {
+        this.user.avatar = data.avatar;
+      }
+      if (data.lang != null || data.lang != undefined) {
+        this.user.lang = data.lang;
       }
       this.user.updatedBy = this.user._id;
       this.user.updateDate = new Date();
@@ -1464,7 +1475,7 @@ export class UserService {
     const whereCondition = {};
     const populateCondition = [];
     const selectCondition =
-      '_id firstName lastName userName mobile email walletAddress insertDate updateDate';
+      '_id firstName lastName avatar lang title userName StorX mobile email walletAddress insertDate updateDate';
 
     console.log('we are in getUserByEmail service!');
 
@@ -1543,7 +1554,7 @@ export class UserService {
       },
     ];
     const selectCondition =
-      'firstName lastName userName email mobile walletAddress roles info activationStatus activationStatusChangeReason activationStatusChangedBy activationStatusChangeDate verificationStatus verificationStatusChangeReason verificationStatusChangedBy verificationStatusChangeDate insertedBy insertDate updatedBy updateDate isDeletable isDeleted deletedBy deleteDate deletionReason';
+      'firstName lastName avatar lang title userName StorX email mobile walletAddress roles info activationStatus activationStatusChangeReason activationStatusChangedBy activationStatusChangeDate verificationStatus verificationStatusChangeReason verificationStatusChangedBy verificationStatusChangeDate insertedBy insertDate updatedBy updateDate isDeletable isDeleted deletedBy deleteDate deletionReason';
 
     return await this.userRepository.findUserById(
       userId,
@@ -1581,7 +1592,7 @@ export class UserService {
       },
     ];
     const selectCondition =
-      'firstName lastName userName mobile email roles info insertedBy insertDate updatedBy updateDate';
+      'firstName lastName avatar lang title userName StorX mobile email roles info insertedBy insertDate updatedBy updateDate';
 
     return await this.userRepository.findUserById(
       userId,
@@ -1635,7 +1646,7 @@ export class UserService {
       },
     ];
     const selectCondition =
-      'firstName lastName userName mobile roles info insertedBy insertDate updatedBy updateDate';
+      'firstName lastName avatar lang title userName StorX mobile roles info insertedBy insertDate updatedBy updateDate';
 
     return await this.userRepository.findAUserByUserName(
       userName,
@@ -1669,7 +1680,7 @@ export class UserService {
       },
     ];
     const selectCondition =
-      'firstName lastName userName mobile roles info activationStatus activationStatusChangeReason activationStatusChangedBy activationStatusChangeDate verificationStatus verificationStatusChangeReason verificationStatusChangedBy verificationStatusChangeDate insertedBy insertDate updatedBy updateDate isDeletable isDeleted deletedBy deleteDate deletionReason';
+      'firstName lastName avatar lang title userName StorX mobile roles info activationStatus activationStatusChangeReason activationStatusChangedBy activationStatusChangeDate verificationStatus verificationStatusChangeReason verificationStatusChangedBy verificationStatusChangeDate insertedBy insertDate updatedBy updateDate isDeletable isDeleted deletedBy deleteDate deletionReason';
 
     return await this.userRepository.findUserById(
       userId,
@@ -1844,7 +1855,7 @@ export class UserService {
       },
     ];
     const selectCondition =
-      'firstName lastName userName mobile email password walletAddress roles info activationStatus activationStatusChangeReason activationStatusChangedBy activationStatusChangeDate verificationStatus verificationStatusChangeReason verificationStatusChangedBy verificationStatusChangeDate insertedBy insertDate updatedBy updateDate isDeletable isDeleted deletedBy deleteDate deletionReason';
+      'firstName lastName avatar lang title userName StorX mobile email password walletAddress roles info activationStatus activationStatusChangeReason activationStatusChangedBy activationStatusChangeDate verificationStatus verificationStatusChangeReason verificationStatusChangedBy verificationStatusChangeDate insertedBy insertDate updatedBy updateDate isDeletable isDeleted deletedBy deleteDate deletionReason';
 
     this.user = await this.userRepository.findUserByEmail(
       data.email,
@@ -2174,7 +2185,7 @@ export class UserService {
       ],
       limit: limit,
       select:
-        'firstName lastName userName mobile roles info activationStatus activationStatusChangeReason activationStatusChangedBy activationStatusChangeDate verificationStatus verificationStatusChangeReason verificationStatusChangedBy verificationStatusChangeDate insertedBy insertDate updatedBy updateDate isDeletable isDeleted deletedBy deleteDate deletionReason',
+        'firstName lastName avatar lang title userName StorX mobile roles info activationStatus activationStatusChangeReason activationStatusChangedBy activationStatusChangeDate verificationStatus verificationStatusChangeReason verificationStatusChangedBy verificationStatusChangeDate insertedBy insertDate updatedBy updateDate isDeletable isDeleted deletedBy deleteDate deletionReason',
     };
 
     return await this.userRepository.paginate(finalQuery, options);
@@ -2234,6 +2245,7 @@ export class UserService {
       email: body.email,
       userName: body.email,
       password: bcrypt.hashSync(String(body.password), salt),
+      StorX: body.StorX || {},
       roles: roles,
       insertDate: new Date(),
       updateDate: new Date(),
@@ -2248,7 +2260,7 @@ export class UserService {
     const whereCondition = { isDeleted: false };
     const populateCondition = [];
     const selectCondition =
-      'firstName lastName userName mobile email roles info activationStatus activationStatusChangeReason activationStatusChangedBy activationStatusChangeDate verificationStatus verificationStatusChangeReason verificationStatusChangedBy verificationStatusChangeDate insertedBy insertDate updatedBy updateDate isDeletable isDeleted deletedBy deleteDate deletionReason';
+      'firstName lastName avatar lang title userName StorX mobile email roles info activationStatus activationStatusChangeReason activationStatusChangedBy activationStatusChangeDate verificationStatus verificationStatusChangeReason verificationStatusChangedBy verificationStatusChangeDate insertedBy insertDate updatedBy updateDate isDeletable isDeleted deletedBy deleteDate deletionReason';
 
     console.log('I am in insertUserByEmail service!');
 
@@ -2314,7 +2326,7 @@ export class UserService {
         },
       ];
       const selectCondition =
-        'firstName lastName userName mobile email roles info activationStatus activationStatusChangeReason activationStatusChangedBy activationStatusChangeDate verificationStatus verificationStatusChangeReason verificationStatusChangedBy verificationStatusChangeDate insertedBy insertDate updatedBy updateDate isDeletable isDeleted deletedBy deleteDate deletionReason';
+        'firstName lastName avatar lang title userName StorX mobile email roles info activationStatus activationStatusChangeReason activationStatusChangedBy activationStatusChangeDate verificationStatus verificationStatusChangeReason verificationStatusChangedBy verificationStatusChangeDate insertedBy insertDate updatedBy updateDate isDeletable isDeleted deletedBy deleteDate deletionReason';
 
       const foundedNewUser = await this.userRepository.findUserById(
         insertedUser._id,
@@ -2331,7 +2343,7 @@ export class UserService {
     const whereCondition = { isDeleted: false };
     const populateCondition = [];
     const selectCondition =
-      '_id firstName lastName userName mobile email roles info activationStatus activationStatusChangeReason activationStatusChangedBy activationStatusChangeDate verificationStatus verificationStatusChangeReason verificationStatusChangedBy verificationStatusChangeDate insertedBy insertDate updatedBy updateDate isDeletable isDeleted deletedBy deleteDate deletionReason';
+      '_id firstName lastName avatar lang title userName StorX mobile email roles info activationStatus activationStatusChangeReason activationStatusChangedBy activationStatusChangeDate verificationStatus verificationStatusChangeReason verificationStatusChangedBy verificationStatusChangeDate insertedBy insertDate updatedBy updateDate isDeletable isDeleted deletedBy deleteDate deletionReason';
     let foundUsers: any = null;
     const response = [];
 
@@ -2346,16 +2358,7 @@ export class UserService {
     console.log('Found users are: ', foundUsers);
 
     foundUsers.forEach((element) => {
-      response.push({
-        _id: element._id,
-        firstName: element.firstName,
-        lastName: element.lastName,
-        userName: element.userName,
-        mobile: element.mobile,
-        email: element.email,
-        creationDate: element.insertDate,
-        activationStatus: element.activationStatus,
-      });
+      response.push({...element._doc});
     });
     console.log('response are: ', response);
 
@@ -2395,46 +2398,34 @@ export class UserService {
               errorMessage,
             );
           });
-          await this.deviceService
-              .getDevicesByUserId(userId)
-              .then(async (data) => {
-                const userDevices = data;
-                userDevices.forEach(async (element) => {
-                  await this.deviceLogService
-                    .deleteAllUserDeviceLogsPermanently(
-                      element.deviceEncryptedId,
-                    )
-                    .then(async (data) => {})
-                    .catch((error) => {
-                      const errorMessage =
-                        'Some errors occurred while deleting all user device logs in user service!';
-                      throw new GereralException(
-                        ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-                        errorMessage,
-                      );
-                    });
+        await this.deviceService
+          .getDevicesByUserId(userId)
+          .then(async (data) => {
+            const userDevices = data;
+            userDevices.forEach(async (element) => {
+              await this.deviceLogService
+                .deleteAllUserDeviceLogsPermanently(element.deviceEncryptedId)
+                .then(async (data) => {})
+                .catch((error) => {
+                  const errorMessage =
+                    'Some errors occurred while deleting all user device logs in user service!';
+                  throw new GereralException(
+                    ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+                    errorMessage,
+                  );
                 });
+            });
 
-                await this.deviceService
-                  .deleteAllUserDevicesPermanently(userId)
+            await this.deviceService
+              .deleteAllUserDevicesPermanently(userId)
+              .then(async (data) => {
+                await this.deleteUserPermanently(userId)
                   .then(async (data) => {
-                    await this.deleteUserPermanently(userId)
-                      .then(async (data) => {
-                        this.result = data;
-                      })
-                      .catch((error) => {
-                        const errorMessage =
-                          'Some errors occurred while deleting user in user service!';
-                        throw new GereralException(
-                          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-                          errorMessage,
-                        );
-                      });
                     this.result = data;
                   })
                   .catch((error) => {
                     const errorMessage =
-                      'Some errors occurred while deleting all user devices in user service!';
+                      'Some errors occurred while deleting user in user service!';
                     throw new GereralException(
                       ErrorTypeEnum.UNPROCESSABLE_ENTITY,
                       errorMessage,
@@ -2444,12 +2435,22 @@ export class UserService {
               })
               .catch((error) => {
                 const errorMessage =
-                  'Some errors occurred get user devices for deletion in user service!';
+                  'Some errors occurred while deleting all user devices in user service!';
                 throw new GereralException(
                   ErrorTypeEnum.UNPROCESSABLE_ENTITY,
                   errorMessage,
                 );
               });
+            this.result = data;
+          })
+          .catch((error) => {
+            const errorMessage =
+              'Some errors occurred get user devices for deletion in user service!';
+            throw new GereralException(
+              ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+              errorMessage,
+            );
+          });
       })
       .catch((error) => {
         const errorMessage =

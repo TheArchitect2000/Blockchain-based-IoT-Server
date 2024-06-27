@@ -6,9 +6,8 @@ import { ErrorTypeEnum } from '../enums/error-type.enum';
 import { join } from 'path';
 
 import * as fs from 'fs';
-import https from 'https'
-import axios, { isCancel, AxiosError ,AxiosRequestConfig } from 'axios';
-
+import https from 'https';
+import axios, { isCancel, AxiosError, AxiosRequestConfig } from 'axios';
 
 @Injectable()
 export class MailService {
@@ -184,7 +183,11 @@ export class MailService {
       });
   }
 
-  async sendEmailFromService(email: string, notificationMessage: string, subject: string) {
+  async sendEmailFromService(
+    email: string,
+    notificationMessage: string,
+    subject: string,
+  ) {
     console.log(
       'We are in sendEmailFromService email is: ',
       email,
@@ -213,7 +216,7 @@ export class MailService {
             // filling curly brackets with content
             name: email,
             notificationMessage: String(notificationMessage),
-            subject: subject
+            subject: subject,
           },
           /*attachments: [
             {
@@ -244,9 +247,11 @@ export class MailService {
     }
   }
 
-
-  
-  async sendNotificationFromService(userId: string, notificationTitle: string,notificationMessage: string) {
+  async sendNotificationFromService(
+    userId: string,
+    notificationTitle: string,
+    notificationMessage: string,
+  ) {
     console.log(
       'We are in sendNotifacattionFromService userId is: ',
       userId,
@@ -262,34 +267,34 @@ export class MailService {
     //   '/' +
     //   process.env.HOST_SUB_DIRECTORY +
     //   '/v1/notification/sendMessage?message=' +
-    //   notificationMessage + 
+    //   notificationMessage +
     //   'title' +
-    //   notificationTitle + 
-    //   'user' + 
+    //   notificationTitle +
+    //   'user' +
     //   userId;
 
     // console.log('url: ', url);
 
     const host = 'https://' + process.env.HOST_NAME_OR_IP;
     if (process.env.NOTIFICATION_BY_NOTIFICATION == 'enabled') {
-      axios.post(host + '/app/v1/notification/sendMessage', {
-        message: notificationMessage,
-        title: notificationTitle,
-        user: userId,
-      })
-      .then(function (response) {
+      axios
+        .post(host + '/app/v1/notification/sendMessage', {
+          message: notificationMessage,
+          title: notificationTitle,
+          user: userId,
+        })
+        .then(function (response) {
           // handle success
           //console.log(response);
-      })
-      .catch(function (error) {
+        })
+        .catch(function (error) {
           // handle error
           //console.log(error);
-      })
-      .finally(function () {
+        })
+        .finally(function () {
           // always executed
-      });
-    }
-    else if (process.env.NOTIFICATION_BY_NOTIFICATION == 'disabled') {
+        });
+    } else if (process.env.NOTIFICATION_BY_NOTIFICATION == 'disabled') {
       console.log(`\x1b[33m \nSending notifications is disabled.\x1b[0m`);
     }
   }

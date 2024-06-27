@@ -3,5 +3,7 @@ import { VirtualMachineHandlerService } from '../services/service-handler.servic
 
 @Controller('')
 export class ServiceHandlerController {
-  constructor(private readonly virtualMachineHandlerService: VirtualMachineHandlerService) {}
+  constructor(
+    private readonly virtualMachineHandlerService: VirtualMachineHandlerService,
+  ) {}
 }

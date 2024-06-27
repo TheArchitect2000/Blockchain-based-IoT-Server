@@ -19,7 +19,7 @@ import { VirtualMachineHandlerService } from '../virtual-machine/services/servic
     MongooseModule.forFeature(serviceFeature),
     MongooseModule.forFeature(installedServiceFeature),
     forwardRef(() => UserModule),
-    forwardRef(() => DeviceModule)
+    forwardRef(() => DeviceModule),
   ],
   providers: [
     ServiceService,
@@ -30,6 +30,11 @@ import { VirtualMachineHandlerService } from '../virtual-machine/services/servic
     InstalledServiceRepository,
   ],
   controllers: [ServiceController, InstalledServiceController],
-  exports: [ServiceService, InstalledServiceService, MailService, VirtualMachineHandlerService],
+  exports: [
+    ServiceService,
+    InstalledServiceService,
+    MailService,
+    VirtualMachineHandlerService,
+  ],
 })
 export class ServiceModule {}

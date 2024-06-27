@@ -20,10 +20,14 @@ export class MediaService {
     private readonly configService: ConfigService,
   ) {}
 
-  async insertMedia(type: string, body: uploadFileDto, userId: string, file: Express.Multer.File) {
-    
-    console.log("We are in Insert media");
-    
+  async insertMedia(
+    type: string,
+    body: uploadFileDto,
+    userId: string,
+    file: Express.Multer.File,
+  ) {
+    console.log('We are in Insert media');
+
     const newMedium = {
       user: userId,
       type: type,
@@ -43,7 +47,6 @@ export class MediaService {
       const uploadedFile = await this.mediaRepository.create(newMedium);
 
       if (uploadedFile) {
-        
         return {
           _id: uploadedFile._id,
           fileName: uploadedFile.fileName,
@@ -69,9 +72,7 @@ export class MediaService {
   }
 
   async findById(id, whereCondition, populateCondition, selectCondition) {
-    return await this.mediaRepository.findById(
-      id,
-    );
+    return await this.mediaRepository.findById(id);
   }
 
   async getMediaById(id) {
@@ -84,9 +85,7 @@ export class MediaService {
     ];
     let selectCondition = 'firstName lastName userName mobile';
 
-    return await this.mediaRepository.findById(
-      id,
-    );
+    return await this.mediaRepository.findById(id);
   }
 
   /* async getMediaVolumesSetting(file, type) {

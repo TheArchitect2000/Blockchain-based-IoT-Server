@@ -392,8 +392,7 @@ export class DeviceController {
 
     return this.result;
   }
-  
-  
+
   @Get('v1/device/get-device-info-by-device-encrypted-id/:encryptedId')
   @HttpCode(200)
   @UseGuards(JwtAuthGuard)
@@ -401,7 +400,7 @@ export class DeviceController {
   @ApiOperation({
     summary: 'Get all installed devices.',
     description: 'Gets all installed devices.',
-  })//QTA6NzY6NEU6NTc6REY6RDg=
+  }) //QTA6NzY6NEU6NTc6REY6RDg=
   async getDeviceInfoByEncryptedId(@Param('encryptedId') encryptedId: string) {
     await this.deviceService
       .getDeviceInfoByEncryptedId(encryptedId)

@@ -1,14 +1,8 @@
-import {
-  Inject,
-  Injectable,
-  OnModuleInit,
-  forwardRef,
-} from '@nestjs/common';
+import { Inject, Injectable, OnModuleInit, forwardRef } from '@nestjs/common';
 const aedes = require('aedes')();
 import * as fs from 'fs';
 import axios from 'axios';
 import { DeviceEventsEnum } from '../enums/device-events.enum';
-
 
 /**
 1883 : MQTT, unencrypted, unauthenticated
@@ -28,8 +22,7 @@ import { DeviceEventsEnum } from '../enums/device-events.enum';
 
 @Injectable()
 export class MqttService implements OnModuleInit {
-
-  constructor(){}
+  constructor() {}
 
   async onModuleInit() {
     console.log('Initialization of MqttService...');
@@ -59,7 +52,7 @@ export class MqttService implements OnModuleInit {
     const server = require('tls').createServer(options, aedes.handle);
     //const server = require('tls').createServer(aedes.handle);
 
-    server.listen(mqttPorts.mqtts, function() {
+    server.listen(mqttPorts.mqtts, function () {
       console.log(
         '\nMQTT server over TLS / MQTTS started and listening on port',
         mqttPorts.mqtts,
@@ -100,7 +93,6 @@ export class MqttService implements OnModuleInit {
         'from broker',
         aedes.id,
       );
-
     });
 
     aedes.on('unsubscribe', function (subscriptions, client) {
@@ -133,22 +125,21 @@ export class MqttService implements OnModuleInit {
       // axios.get('http://programming.cpvanda.com/app/v1/broker-mqtt-log/log-event')
       // axios.get(host + '/app/v1/broker-mqtt-log/log-event')
 
-
-    process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
-//const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+      process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
+      //const httpsAgent = new https.Agent({ rejectUnauthorized: false });
       axios
         .post(host + '/app/v1/broker-mqtt-log/log-device-event', {
           deviceEncryptedId: client.id,
           event: DeviceEventsEnum.CONNECTED,
         })
-          
+
         .then(function (response) {
           // handle success
-           console.log(response);
+          console.log(response);
         })
         .catch(function (error) {
           // handle error
-           console.log(error);
+          console.log(error);
         })
         .finally(function () {
           // always executed
