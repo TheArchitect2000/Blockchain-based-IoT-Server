@@ -20,6 +20,7 @@ import multerConfig from './modules/utility/configurations/multer.configuration'
 import { ResponseTransformInterceptor } from './modules/utility/interceptors/response-transform.interceptor';
 import { UtilityModule } from './modules/utility/utility.module';
 import { MediaModule } from './modules/media/media.module';
+import { AdminModule } from './modules/admin/admin.module';
 //import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
@@ -69,6 +70,7 @@ import { MediaModule } from './modules/media/media.module';
     NotificationModule,
     ZkpModule,
     MediaModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [
