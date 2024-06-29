@@ -76,7 +76,8 @@ export class UserController {
     summary: 'Send otp code to user.',
     description: 'This api requires a user mobile.',
   })
-  async test() { // @Param('mobile') mobile: string
+  async test() {
+    // @Param('mobile') mobile: string
     console.log('We are in test function!');
     var user = <User>{};
     const token = Math.floor(1000 + Math.random() * 9000).toString();
@@ -99,7 +100,10 @@ export class UserController {
     @Body() body: signupByEmailDto,
     @Request() request,
   ) {
-    return await this.userService.sendOTPCodeForSignupByEmail(body);
+    return await this.userService.sendOTPCodeForSignupByEmail({
+      ...body,
+      email: body.email.toString().toLocaleLowerCase(),
+    });
   }
 
   @Post('v1/user/request-otp-code-for-reset-password-by-email')
@@ -376,7 +380,10 @@ export class UserController {
     description: 'This api requires a user mobile.',
   })
   async credential(@Body() body: credentialDto, @Request() request) {
-    return await this.userService.credential(body);
+    return await this.userService.credential({
+      ...body,
+      email: body.email.toString().toLocaleLowerCase(),
+    });
   }
 
   @Post('v1/user/refresh-tokens')
