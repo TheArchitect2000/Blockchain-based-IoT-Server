@@ -8,8 +8,8 @@ import {
   IsNumberOptions,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { categoryTypeEnum } from './../../enums/category-type.enum';
-import { ActivationStatusEnum } from './../../enums/activation-status.enum';
+import { categoryTypeEnum } from '../../enums/category-type.enum';
+import { ActivationStatusEnum } from '../../enums/activation-status.enum';
 import { VerificationStatusEnum } from '../../enums/verification-status.enum';
 
 export class insertCategoryByPanelDto {

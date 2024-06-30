@@ -4,7 +4,7 @@ import { GereralException } from 'src/modules/utility/exceptions/general.excepti
 import { ObjectID } from 'mongodb';
 // import { Types } from 'mongoose';
 import { TagRepository } from '../repositories/tag.repository';
-import { ActivationStatusEnum } from './../enums/activation-status.enum';
+import { ActivationStatusEnum } from '../enums/activation-status.enum';
 import { VerificationStatusEnum } from '../enums/verification-status.enum';
 
 @Injectable()

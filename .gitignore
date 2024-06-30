@@ -1,6 +1,7 @@
 # compiled output
 /dist
 /node_modules
+/uploads
 
 # Project configuration files
 assets/certificates/webprivate.pem
@@ -17,6 +18,7 @@ lerna-debug.log*
 
 # OS
 .DS_Store
+.env
 
 # Tests
 /coverage

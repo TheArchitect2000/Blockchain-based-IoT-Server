@@ -37,11 +37,11 @@ import { TagService } from '../services/tag.service';
 // import { ActivationStatusEnum } from '../enums/activation-status.enum';
 // import { VerificationStatusEnum } from '../enums/verification-status.enum';
 // import { BooleanEnum } from '../enums/boolean.enum';
-import { changeActivationStatusDto } from '../data-transfer-objects//tag/change-activation-status.dto';
-import { changeVerificationStatusDto } from '../data-transfer-objects//tag/change-verification-status.dto';
+import { changeActivationStatusDto } from '../data-transfer-objects/tag/change-activation-status.dto';
+import { changeVerificationStatusDto } from '../data-transfer-objects/tag/change-verification-status.dto';
 // import { ChangeVerificationStatusGeneralDto } from '../data-transfer-objects/change-verification-status-general.dto';
-import { deleteTagDto } from './../data-transfer-objects/tag/delete-tag-dto';
-import { ActivationStatusEnum } from './../enums/activation-status.enum';
+import { deleteTagDto } from '../data-transfer-objects/tag/delete-tag-dto';
+import { ActivationStatusEnum } from '../enums/activation-status.enum';
 import { VerificationStatusEnum } from '../enums/verification-status.enum';
 
 @ApiTags('Manage Tags')

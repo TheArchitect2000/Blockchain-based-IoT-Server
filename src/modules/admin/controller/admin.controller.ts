@@ -10,8 +10,6 @@ export class AdminController {
 
   @Get('v1/admin/node-servers')
   @HttpCode(201)
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   @ApiOperation({
     summary: 'getting node servers.',
     description: 'This api is returning node servers.',

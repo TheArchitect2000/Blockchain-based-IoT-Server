@@ -14,7 +14,7 @@ import {
   IsUrl,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { levelOfEducationEnum } from './../../enums/level-of-education.enum';
+import { levelOfEducationEnum } from '../../enums/level-of-education.enum';
 
 export class editUserByUserDto {
   @IsOptional()
