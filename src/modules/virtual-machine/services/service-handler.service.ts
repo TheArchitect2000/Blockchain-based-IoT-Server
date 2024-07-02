@@ -146,6 +146,11 @@ export class VirtualMachineHandlerService {
                   } catch (error) {
                       console.error("Error fetching device info:", error);
                   }
+
+                    // Clear the sharedBuffer before setting new data
+                    for (let i = 0; i < sharedBuffer.byteLength; i++) {
+                        view.setUint8(i, 0);
+                    }
     
                     // Encode the message and store it in sharedBuffer
                     const encoder = new TextEncoder();
@@ -197,7 +202,7 @@ export class VirtualMachineHandlerService {
                           view.setUint8(0, 0);
     
                           // Extract and decode the message starting from index 1
-                          const bytes = new Uint8Array(sharedBuffer, 2, 1022);
+                          const bytes = new Uint8Array(sharedBuffer, 2, 2048);
                           
                           let message = decoder.decode(bytes).trim();
                       
