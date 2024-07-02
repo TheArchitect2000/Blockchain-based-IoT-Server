@@ -43,12 +43,12 @@ import { editUserProfileByPanelDto } from '../data-transfer-objects/user/edit-us
 import { UserApiPermissionsEnum } from '../enums/user-api-permissions.enum';
 import { UserService } from '../services/user/user.service';
 import { verifyOtpCodeDto } from '../data-transfer-objects/user/verify-otp-code.dto';
-import { verifyResetPasswordCodeDto } from '../data-transfer-objects/user/verify-reset-password-code.dto';
-import { credentialDto } from '../data-transfer-objects/user/credential.dto';
-import { refreshTokensDto } from '../data-transfer-objects/user/refresh-tokens.dto';
-import { insertUserByPanelDto } from '../data-transfer-objects/user/insert-user-by-panel.dto';
-import { UserActivationStatusEnum } from '../enums/user-activation-status.enum';
-import { UserVerificationStatusEnum } from '../enums/user-verification-status.enum';
+import { verifyResetPasswordCodeDto } from './../data-transfer-objects/user/verify-reset-password-code.dto';
+import { credentialDto } from './../data-transfer-objects/user/credential.dto';
+import { refreshTokensDto } from './../data-transfer-objects/user/refresh-tokens.dto';
+import { insertUserByPanelDto } from './../data-transfer-objects/user/insert-user-by-panel.dto';
+import { UserActivationStatusEnum } from './../enums/user-activation-status.enum';
+import { UserVerificationStatusEnum } from './../enums/user-verification-status.enum';
 import { User } from 'src/modules/utility/services/user.entity'; /// Temp
 import { MailService } from 'src/modules/utility/services/mail.service';
 import { verifyOtpCodeSentByEmailDto } from '../data-transfer-objects/user/verify-otp-code-sent-by-email.dto';

@@ -218,11 +218,12 @@ export class VirtualMachineHandlerService {
                           };
                           
                           try {
-                              let data = JSON.parse(cleanMessage);
-                              parentPort.postMessage("Data Parsed");
-                              parentPort.postMessage(data);
+                            parentPort.postMessage("cleanMessage: ", cleanMessage);
+                            let data = JSON.parse(cleanMessage);
+                            parentPort.postMessage("Data Parsed");
+                            parentPort.postMessage(data);
     
-                             ${editedUserCodeOutput}
+                            ${editedUserCodeOutput}
     
                           } catch (e) {
                               parentPort.postMessage('Failed to parse JSON: ');

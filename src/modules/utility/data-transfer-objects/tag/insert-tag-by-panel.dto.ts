@@ -8,7 +8,7 @@ import {
   IsNumberOptions,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { ActivationStatusEnum } from '../../enums/activation-status.enum';
+import { ActivationStatusEnum } from './../../enums/activation-status.enum';
 import { VerificationStatusEnum } from '../../enums/verification-status.enum';
 
 export class insertTagByPanelDto {

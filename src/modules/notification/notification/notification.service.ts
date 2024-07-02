@@ -1,19 +1,35 @@
 import { log } from 'console';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { UserService } from 'src/modules/user/services/user/user.service';
 import { SendNotificationRequestBodyDto } from '../dto/send-notif-dto';
 import firebase from 'firebase-admin';
 
 import * as serviceAccount from '../../../fidesinnova-aa633-firebase-adminsdk-utzec-ac7cc3e00e.json';
+import { NotificationRepository } from './notification.repository';
+import {
+  AddNotificationRequestBodyDto,
+  GetNotificationRequestBodyDto,
+} from '../dto/notification.dto';
+import { NotificationSchema } from './notification.schema';
 
 @Injectable()
 export class NotificationService {
   firebaseApp: firebase.app.App;
-  constructor(private userService: UserService) {
+
+  constructor(
+    @Inject(UserService)
+    private userService?: UserService,
+    private notificationRepository?: NotificationRepository,
+  ) {
     this.firebaseApp = firebase.initializeApp({
       credential: firebase.credential.cert(serviceAccount as any),
     });
   }
+
+  getNotificationKeys(): string[] {
+    return Object.keys(NotificationSchema.paths);
+  }
+
   sendToken(token: string, userId: string) {
     return this.userService.setFirebaseToken(userId, token);
   }
@@ -41,5 +57,24 @@ export class NotificationService {
 
       throw new BadRequestException(undefined, err.message);
     }
+  }
+
+  async addNotificationForUserById(
+    data: AddNotificationRequestBodyDto,
+    insertedBy: string,
+  ) {
+    const insertData = {
+      ...data,
+      insertDate: new Date(),
+      insertedBy: insertedBy,
+    };
+
+    return this.notificationRepository.insertNotif(insertData);
+  }
+
+  async getUserNotificationUserById(userId: string) {
+    return this.notificationRepository.getNotSeenNotificationsForUserById(
+      userId,
+    );
   }
 }

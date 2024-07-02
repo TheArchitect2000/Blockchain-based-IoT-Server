@@ -5,7 +5,7 @@ import { MongoClient, ObjectID } from 'mongodb';
 import { Types } from 'mongoose';
 import { CategoryRepository } from '../repositories/category.repository';
 import { MediaService } from 'src/modules/utility/services/media.service';
-import { categoryTypeEnum } from '../enums/category-type.enum';
+import { categoryTypeEnum } from './../enums/category-type.enum';
 
 @Injectable()
 export class CategoryService {

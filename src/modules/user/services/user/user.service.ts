@@ -15,8 +15,8 @@ import { UserRoleService } from '../user-role/user-role.service';
 import { MediaService } from 'src/modules/utility/services/media.service';
 import { JwtService } from '@nestjs/jwt';
 // import { waitingTimeException } from './../../exception/waiting-time.exception';
-import { requestActivationCodeRepeatedlyException } from '../../exception/request-activation-code-repeatedly.exception';
-import { UserInfoRepository } from '../../repositories/user-info.repository';
+import { requestActivationCodeRepeatedlyException } from './../../exception/request-activation-code-repeatedly.exception';
+import { UserInfoRepository } from './../../repositories/user-info.repository';
 import { sign, SignOptions, verify } from 'jsonwebtoken';
 import { VerificationStatusEnum } from 'src/modules/utility/enums/verification-status.enum';
 import { ActivationStatusEnum } from 'src/modules/utility/enums/activation-status.enum';
@@ -77,10 +77,7 @@ export class UserService {
       new Date(this.otp[this.otp.length - 1].expiryDate).getTime() <
         new Date().getTime()
     ) {
-      const StorX = await storxController.createUserAndGenerateStorXKey(
-        body.email,
-        'fides user',
-      );
+      const StorX = await storxController.createUserAndGenerateStorXKey(body.email, "fides user")
       this.otpService.insertEmailOTP(OTPTypeEnum.REGISTRATION, body.email);
       const newUser = await this.insertAUserByEmail({ ...body, StorX: StorX });
       const payload = { mobile: newUser.mobile, sub: newUser._id };

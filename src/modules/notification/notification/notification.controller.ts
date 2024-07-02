@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Request, UseGuards } from '@nestjs/common';
 import { NotificationService } from './notification.service';
 import { JwtAuthGuard } from 'src/modules/authentication/guard/jwt-auth.guard';
 import {
@@ -12,6 +12,7 @@ import { SendNotificationRequestBodyDto } from '../dto/send-notif-dto';
 import { Types } from 'mongoose';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { AddNotificationRequestBodyDto } from '../dto/notification.dto';
 
 @ApiTags('Notification')
 @Controller('app/v1/notification')
@@ -48,5 +49,31 @@ export class NotificationController {
         'userId must be valid type',
       );
     return this.service.sendNotification(body);
+  }
+
+  @Post('/add-notification-by-user-id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'add notification for user when opening app or site.',
+    description: '',
+  })
+  async addNotification(
+    @Body() body: AddNotificationRequestBodyDto,
+    @Request() request,
+  ) {
+    return this.service.addNotificationForUserById(body, request.user.userId);
+  }
+
+  @Get('/get-notification-by-user-id/:userId')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'get notification for user when opening app or site.',
+    description: '',
+  })
+  async getNotification(@Param('userId') userId: string) {
+    
+    return this.service.getUserNotificationUserById(userId);
   }
 }

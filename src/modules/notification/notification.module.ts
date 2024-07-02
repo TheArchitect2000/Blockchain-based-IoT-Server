@@ -1,14 +1,18 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { NotificationController } from './notification/notification.controller';
 import { NotificationService } from './notification/notification.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { userFeature } from '../user/features/user.feature';
+import { notificationFeature } from './notification/notification.feature';
+import { NotificationRepository } from './notification/notification.repository';
 import { UserModule } from '../user/user.module';
 
 @Module({
-  imports: [MongooseModule.forFeature(userFeature), UserModule],
+  imports: [
+    MongooseModule.forFeature(notificationFeature),
+    forwardRef(() => UserModule),
+  ],
   controllers: [NotificationController],
-  providers: [NotificationService],
+  providers: [NotificationService, NotificationRepository],
   exports: [NotificationService],
 })
 export class NotificationModule {}
