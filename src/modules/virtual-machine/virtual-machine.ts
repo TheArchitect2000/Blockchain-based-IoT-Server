@@ -7,7 +7,7 @@ import mqtt from 'mqtt';
 import { InstalledServiceRepository } from "../service/repositories/installed-service.repository";
 import { InstalledServiceModel } from "/root/server_backend_developer/src/modules/service/models/installed-service.model"
 import { installedServiceSchema } from "../service/schemas/installed-service.schema";
-import { Model, model } from "mongoose";
+import { Model, model } from "mongoose"; //
 
 let vmContexts = {};
 
