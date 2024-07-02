@@ -217,7 +217,8 @@ export class VirtualMachineHandlerService {
                             parentPort.postMessage(obj);
                           };
                           
-                          parentPort.postMessage("cleanMessage: ", cleanMessage);
+                          parentPort.postMessage("clean Message ISSSSSS: ");
+                          parentPort.postMessage(cleanMessage)
 
                           try {
                             let data = JSON.parse(cleanMessage);
