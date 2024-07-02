@@ -4,7 +4,7 @@ export interface Notification extends Document {
   title: string
   message: string
   userId: string
-  seen: boolean
+  read: boolean
   public: boolean
   expiryDate: string
   insertedBy: string

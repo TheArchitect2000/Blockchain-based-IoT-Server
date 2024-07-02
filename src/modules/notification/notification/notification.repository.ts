@@ -39,17 +39,25 @@ export class NotificationRepository {
     return this.result;
   }
 
-  async getSeenNotificationsForUserById(userId) {
+  async getReadNotificationsForUserById(userId) {
     return await this.notificationModel
-      .findOne({ userId: userId, seen: true })
+      .find({ userId: userId, read: true })
       .where({})
       .populate([])
       .select(this.getNotificationKeys().join(' '));
   }
 
-  async getNotSeenNotificationsForUserById(userId) {
+  async getNotReadNotificationsForUserById(userId) {
     return await this.notificationModel
-      .findOne({ userId: userId, seen: false })
+      .find({ userId: userId, read: false })
+      .where({})
+      .populate([])
+      .select(this.getNotificationKeys().join(' '));
+  }
+
+  async getNotificationById(notifId) {
+    return await this.notificationModel
+      .findOne({ _id: notifId })
       .where({})
       .populate([])
       .select(this.getNotificationKeys().join(' '));
@@ -57,28 +65,29 @@ export class NotificationRepository {
 
   async getAllNotificationsForUserById(userId) {
     return await this.notificationModel
-      .findOne({ userId: userId })
+      .find({ userId: userId })
       .where({})
       .populate([])
       .select(this.getNotificationKeys().join(' '));
   }
 
-  async seenNotificationByUserIdAndNotifId(userId, notifId) {
-    await this.notificationModel
-      .updateOne({ userId: userId, _id: notifId }, {})
-      .then((data) => {
-        this.result = data;
-      })
-      .catch((error) => {
-        const errorMessage = 'Some errors occurred while user update!';
-        throw new GereralException(
-          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-          errorMessage,
-        );
-      });
-
-    return this.result;
+  async editNotificationByUserIdAndNotifId(userId, notifId, editedFields) {
+    try {
+      const result = await this.notificationModel.updateOne(
+        { userId: userId, _id: notifId },
+        { $set: editedFields } // Use $set to update specific fields
+      ).exec();
+  
+      return result;
+    } catch (error) {
+      const errorMessage = 'Some errors occurred while setting notification as read!';
+      throw new GereralException(
+        ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+        errorMessage,
+      );
+    }
   }
+  
 
   /* async insertUser(data) {
     await this.notificationModel

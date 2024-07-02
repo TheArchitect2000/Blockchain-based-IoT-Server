@@ -70,13 +70,27 @@ export class NotificationService {
   }
 
   async getUserNotificationUserById(userId: string) {
-    return this.notificationRepository.getNotSeenNotificationsForUserById(
+    return this.notificationRepository.getNotReadNotificationsForUserById(
       userId,
     );
   }
 
-  /* async seenNotificationByUserIdAndNotificationIds(userId: string, notifList: string[]) {
-    return this.notificationRepository.
-  } */
+  async getNotificationById(notifId: string) {
+    return this.notificationRepository.getNotificationById(notifId);
+  }
 
+  async readNotificationByUserIdAndNotificationIds(
+    userId: string,
+    notifList: string[],
+  ) {
+    notifList.forEach(async (item) => {
+      await this.notificationRepository.editNotificationByUserIdAndNotifId(
+        userId,
+        item,
+        { read: true },
+      );
+    });
+
+    return { status: true, message: 'Notifications readed successfully' };
+  }
 }

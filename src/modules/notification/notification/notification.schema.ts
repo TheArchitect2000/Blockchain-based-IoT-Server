@@ -35,7 +35,7 @@ const schema = new Schema({
     type: Date,
     required: true,
   },
-  seen: {
+  read: {
     type: Boolean,
     required: false,
     default: false,

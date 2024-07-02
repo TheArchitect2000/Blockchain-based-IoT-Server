@@ -19,7 +19,7 @@ export class AddNotificationRequestBodyDto {
 }
 
 
-export class SeenNotificationRequestBodyDto {
+export class ReadNotificationRequestBodyDto {
   @IsNotEmpty()
   @IsString()
   @ApiProperty({ required: true })
