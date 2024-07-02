@@ -6,10 +6,7 @@ import firebase from 'firebase-admin';
 
 import * as serviceAccount from '../../../fidesinnova-aa633-firebase-adminsdk-utzec-ac7cc3e00e.json';
 import { NotificationRepository } from './notification.repository';
-import {
-  AddNotificationRequestBodyDto,
-  GetNotificationRequestBodyDto,
-} from '../dto/notification.dto';
+import { AddNotificationRequestBodyDto } from '../dto/notification.dto';
 import { NotificationSchema } from './notification.schema';
 
 @Injectable()
@@ -77,4 +74,9 @@ export class NotificationService {
       userId,
     );
   }
+
+  /* async seenNotificationByUserIdAndNotificationIds(userId: string, notifList: string[]) {
+    return this.notificationRepository.
+  } */
+
 }

@@ -202,7 +202,7 @@ export class VirtualMachineHandlerService {
                           view.setUint8(0, 0);
     
                           // Extract and decode the message starting from index 1
-                          const bytes = new Uint8Array(sharedBuffer, 2, 2048);
+                          const bytes = new Uint8Array(sharedBuffer, 2, 2046);
                           
                           let message = decoder.decode(bytes).trim();
                       

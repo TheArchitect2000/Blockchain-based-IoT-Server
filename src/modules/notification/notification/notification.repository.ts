@@ -63,6 +63,23 @@ export class NotificationRepository {
       .select(this.getNotificationKeys().join(' '));
   }
 
+  async seenNotificationByUserIdAndNotifId(userId, notifId) {
+    await this.notificationModel
+      .updateOne({ userId: userId, _id: notifId }, {})
+      .then((data) => {
+        this.result = data;
+      })
+      .catch((error) => {
+        const errorMessage = 'Some errors occurred while user update!';
+        throw new GereralException(
+          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+          errorMessage,
+        );
+      });
+
+    return this.result;
+  }
+
   /* async insertUser(data) {
     await this.notificationModel
       .create(data)

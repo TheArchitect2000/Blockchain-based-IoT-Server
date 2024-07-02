@@ -19,7 +19,7 @@ export class AddNotificationRequestBodyDto {
 }
 
 
-export class GetNotificationRequestBodyDto {
+export class SeenNotificationRequestBodyDto {
   @IsNotEmpty()
   @IsString()
   @ApiProperty({ required: true })
@@ -28,5 +28,6 @@ export class GetNotificationRequestBodyDto {
   @IsNotEmpty()
   @IsString()
   @ApiProperty({ required: true })
-  seen: boolean;
+  notifications: string[];
 }
+

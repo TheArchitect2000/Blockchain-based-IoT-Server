@@ -12,7 +12,7 @@ import { SendNotificationRequestBodyDto } from '../dto/send-notif-dto';
 import { Types } from 'mongoose';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { GereralException } from 'src/modules/utility/exceptions/general.exception';
-import { AddNotificationRequestBodyDto } from '../dto/notification.dto';
+import { AddNotificationRequestBodyDto, SeenNotificationRequestBodyDto } from '../dto/notification.dto';
 
 @ApiTags('Notification')
 @Controller('app/v1/notification')
@@ -76,4 +76,19 @@ export class NotificationController {
     
     return this.service.getUserNotificationUserById(userId);
   }
+
+  /* @Post('/seen-notification-by-user-id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'add notification for user when opening app or site.',
+    description: '',
+  })
+  async seenNotification(
+    @Body() body: SeenNotificationRequestBodyDto,
+    @Request() request,
+  ) {
+    return this.service.addNotificationForUserById(body, request.user.userId);
+  } */
+
 }
