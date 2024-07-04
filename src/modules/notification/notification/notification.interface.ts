@@ -1,6 +1,6 @@
 import { Document } from 'mongoose';
 
-export default type NotifTypes = 'notification' | 'ticket';
+export type NotifTypes = 'notification' | 'ticket';
 
 
 export interface Notification extends Document {
