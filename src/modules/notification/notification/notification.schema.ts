@@ -12,6 +12,16 @@ const schema = new Schema({
     required: true,
     default: '',
   },
+  type: {
+    type: String,
+    required: false,
+    default: 'notification',
+  },
+  detail: {
+    type: Object,
+    required: false,
+    default: {},
+  },
   userId: {
     type: String,
     required: true,

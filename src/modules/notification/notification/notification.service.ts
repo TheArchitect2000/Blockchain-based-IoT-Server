@@ -6,7 +6,11 @@ import firebase from 'firebase-admin';
 
 import * as serviceAccount from '../../../fidesinnova-aa633-firebase-adminsdk-utzec-ac7cc3e00e.json';
 import { NotificationRepository } from './notification.repository';
-import { AddNotificationRequestBodyDto } from '../dto/notification.dto';
+import {
+  AddNotificationRequestBodyDto,
+  AddPublicNotificationRequestBodyDto,
+  EditNotificationRequestBodyDto,
+} from '../dto/notification.dto';
 import { NotificationSchema } from './notification.schema';
 
 @Injectable()
@@ -69,28 +73,80 @@ export class NotificationService {
     return this.notificationRepository.insertNotif(insertData);
   }
 
-  async getUserNotificationUserById(userId: string) {
+  async getUserNotificationsByUserId(userId: string) {
     return this.notificationRepository.getNotReadNotificationsForUserById(
       userId,
     );
+  }
+
+  async getAllUserNotificationsByUserId(userId: string) {
+    return this.notificationRepository.getAllNotificationsForUserById(userId);
+  }
+
+  async getPublicNotifications() {
+    return this.notificationRepository.getPublicNotifications();
   }
 
   async getNotificationById(notifId: string) {
     return this.notificationRepository.getNotificationById(notifId);
   }
 
-  async readNotificationByUserIdAndNotificationIds(
-    userId: string,
-    notifList: string[],
-  ) {
+  async readNotificationsByNotificationIds(notifList: string[]) {
     notifList.forEach(async (item) => {
-      await this.notificationRepository.editNotificationByUserIdAndNotifId(
-        userId,
-        item,
-        { read: true },
-      );
+      await this.notificationRepository.editNotificationByNotifId(item, {
+        read: true,
+      });
     });
 
     return { status: true, message: 'Notifications readed successfully' };
+  }
+
+  async editNotificationById(
+    notifId: string,
+    editedValues: EditNotificationRequestBodyDto,
+  ) {
+    const expireDate = new Date();
+    expireDate.setDate(
+      expireDate.getDate() + Number(editedValues.expiryDate.toString()),
+    );
+    expireDate.setHours(23, 59, 59, 999);
+
+    const notifData = await this.notificationRepository.getNotificationById(
+      notifId,
+    );
+
+    if (notifData.public == true) {
+      return await this.notificationRepository.editNotificationByNotifId(
+        notifId,
+        { ...editedValues, expiryDate: expireDate },
+      );
+    } else {
+      const { expiryDate, ...rest } = editedValues;
+      return await this.notificationRepository.editNotificationByNotifId(
+        notifId,
+        rest,
+      );
+    }
+  }
+
+  async addPublicNotification(
+    data: AddPublicNotificationRequestBodyDto,
+    insertedBy: string,
+  ) {
+    const expireDate = new Date();
+    expireDate.setDate(
+      expireDate.getDate() + Number(data.expiryDate.toString()),
+    );
+    expireDate.setHours(23, 59, 59, 999);
+    const insertData = {
+      ...data,
+      userId: 'root',
+      public: true,
+      expiryDate: expireDate,
+      insertDate: new Date(),
+      insertedBy: insertedBy,
+    };
+
+    return this.notificationRepository.insertNotif(insertData);
   }
 }

@@ -71,23 +71,34 @@ export class NotificationRepository {
       .select(this.getNotificationKeys().join(' '));
   }
 
-  async editNotificationByUserIdAndNotifId(userId, notifId, editedFields) {
+  async getPublicNotifications() {
+    const nowDate = new Date();
+    return await this.notificationModel
+      .find({ public: true })
+      .where({ expiryDate: { $gte: nowDate } }) // $gte for "greater than or equal to"
+      .populate([])
+      .select(this.getNotificationKeys().join(' '));
+  }
+
+  async editNotificationByNotifId(notifId, editedFields) {
     try {
-      const result = await this.notificationModel.updateOne(
-        { userId: userId, _id: notifId },
-        { $set: editedFields } // Use $set to update specific fields
-      ).exec();
-  
+      const result = await this.notificationModel
+        .updateOne(
+          { _id: notifId },
+          { $set: editedFields }, // Use $set to update specific fields
+        )
+        .exec();
+
       return result;
     } catch (error) {
-      const errorMessage = 'Some errors occurred while setting notification as read!';
+      const errorMessage =
+        'Some errors occurred while setting notification as read!';
       throw new GereralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         errorMessage,
       );
     }
   }
-  
 
   /* async insertUser(data) {
     await this.notificationModel
