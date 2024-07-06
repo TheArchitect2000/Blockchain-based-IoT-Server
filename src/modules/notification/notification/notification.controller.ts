@@ -81,8 +81,8 @@ export class NotificationController {
   }
 
   @Post('/add-notification-by-user-email')
-  /* @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth() */
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'add notification for user when opening app or site.',
     description: '',
