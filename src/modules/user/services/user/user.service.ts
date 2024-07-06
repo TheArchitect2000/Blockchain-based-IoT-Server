@@ -1476,7 +1476,7 @@ export class UserService {
     const populateCondition = [];
     const selectCondition =
       '_id firstName lastName avatar lang title userName StorX mobile email walletAddress insertDate updateDate';
-
+      
     console.log('we are in getUserByEmail service!');
 
     await this.userRepository

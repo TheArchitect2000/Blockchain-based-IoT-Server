@@ -18,6 +18,23 @@ export class AddNotificationRequestBodyDto {
   userId: string;
 }
 
+export class AddNotificationByEmailRequestBodyDto {
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty({ required: true })
+  title: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty({ required: true })
+  message: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty({ required: true })
+  userEmail: string;
+}
+
 export class ReadNotificationRequestBodyDto {
   @IsNotEmpty()
   @IsString()

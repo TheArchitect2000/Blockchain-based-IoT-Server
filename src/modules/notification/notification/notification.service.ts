@@ -7,6 +7,7 @@ import firebase from 'firebase-admin';
 import * as serviceAccount from '../../../fidesinnova-aa633-firebase-adminsdk-utzec-ac7cc3e00e.json';
 import { NotificationRepository } from './notification.repository';
 import {
+  AddNotificationByEmailRequestBodyDto,
   AddNotificationRequestBodyDto,
   AddPublicNotificationRequestBodyDto,
   EditNotificationRequestBodyDto,
@@ -68,6 +69,26 @@ export class NotificationService {
       ...data,
       insertDate: new Date(),
       insertedBy: insertedBy,
+    };
+
+    return this.notificationRepository.insertNotif(insertData);
+  }
+
+  async addNotificationForUserByEmail(
+    data: AddNotificationByEmailRequestBodyDto,
+  ) {
+    const theUser = await this.userService.findAUserByEmail(
+      data.userEmail,
+      { isDeleted: false },
+      [],
+      '_id firstName lastName email',
+    );
+    
+    const insertData = {
+      ...data,
+      insertDate: new Date(),
+      userId: theUser._id,
+      insertedBy: theUser._id,
     };
 
     return this.notificationRepository.insertNotif(insertData);

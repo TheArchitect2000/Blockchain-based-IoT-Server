@@ -22,6 +22,7 @@ import { Types } from 'mongoose';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { GereralException } from 'src/modules/utility/exceptions/general.exception';
 import {
+  AddNotificationByEmailRequestBodyDto,
   AddNotificationRequestBodyDto,
   AddPublicNotificationRequestBodyDto,
   EditNotificationRequestBodyDto,
@@ -72,11 +73,24 @@ export class NotificationController {
     summary: 'add notification for user when opening app or site.',
     description: '',
   })
-  async addNotification(
+  async addNotificationByUserId(
     @Body() body: AddNotificationRequestBodyDto,
     @Request() request,
   ) {
     return this.service.addNotificationForUserById(body, request.user.userId);
+  }
+
+  @Post('/add-notification-by-user-email')
+  /* @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth() */
+  @ApiOperation({
+    summary: 'add notification for user when opening app or site.',
+    description: '',
+  })
+  async addNotificationByEmail(
+    @Body() body: AddNotificationByEmailRequestBodyDto,
+  ) {
+    return this.service.addNotificationForUserByEmail(body);
   }
 
   @Post('/add-public-notification')
@@ -144,12 +158,8 @@ export class NotificationController {
     summary: 'add notification for user when opening app or site.',
     description: '',
   })
-  async readNotification(
-    @Body() body: ReadNotificationRequestBodyDto,
-  ) {
-    return this.service.readNotificationsByNotificationIds(
-      body.notifications,
-    );
+  async readNotification(@Body() body: ReadNotificationRequestBodyDto) {
+    return this.service.readNotificationsByNotificationIds(body.notifications);
   }
 
   @Patch('/edit-notification-by-id')
