@@ -16,8 +16,8 @@ export class NotificationRepository {
     private readonly notificationModel?: NotificationModel,
   ) {}
 
-  getNotificationKeys(): string[] {
-    return Object.keys(NotificationSchema.paths);
+  getNotificationKeys(): string {
+    return Object.keys(NotificationSchema.paths).join(' ');
   }
 
   async insertNotif(data) {
@@ -44,7 +44,7 @@ export class NotificationRepository {
       .find({ userId: userId, read: true })
       .where({})
       .populate([])
-      .select(this.getNotificationKeys().join(' '));
+      .select(this.getNotificationKeys());
   }
 
   async getNotReadNotificationsForUserById(userId) {
@@ -52,7 +52,7 @@ export class NotificationRepository {
       .find({ userId: userId, read: false })
       .where({})
       .populate([])
-      .select(this.getNotificationKeys().join(' '));
+      .select(this.getNotificationKeys());
   }
 
   async getNotificationById(notifId) {
@@ -60,7 +60,7 @@ export class NotificationRepository {
       .findOne({ _id: notifId })
       .where({})
       .populate([])
-      .select(this.getNotificationKeys().join(' '));
+      .select(this.getNotificationKeys());
   }
 
   async getAllNotificationsForUserById(userId) {
@@ -68,7 +68,7 @@ export class NotificationRepository {
       .find({ userId: userId })
       .where({})
       .populate([])
-      .select(this.getNotificationKeys().join(' '));
+      .select(this.getNotificationKeys());
   }
 
   async getPublicNotifications() {
@@ -77,7 +77,7 @@ export class NotificationRepository {
       .find({ public: true })
       .where({ expiryDate: { $gte: nowDate } }) // $gte for "greater than or equal to"
       .populate([])
-      .select(this.getNotificationKeys().join(' '));
+      .select(this.getNotificationKeys());
   }
 
   async editNotificationByNotifId(notifId, editedFields) {

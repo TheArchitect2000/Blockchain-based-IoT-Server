@@ -44,7 +44,10 @@ import { UserApiPermissionsEnum } from '../enums/user-api-permissions.enum';
 import { UserService } from '../services/user/user.service';
 import { verifyOtpCodeDto } from '../data-transfer-objects/user/verify-otp-code.dto';
 import { verifyResetPasswordCodeDto } from './../data-transfer-objects/user/verify-reset-password-code.dto';
-import { credentialDto } from './../data-transfer-objects/user/credential.dto';
+import {
+  checkPasswordDto,
+  credentialDto,
+} from './../data-transfer-objects/user/credential.dto';
 import { refreshTokensDto } from './../data-transfer-objects/user/refresh-tokens.dto';
 import { insertUserByPanelDto } from './../data-transfer-objects/user/insert-user-by-panel.dto';
 import { UserActivationStatusEnum } from './../enums/user-activation-status.enum';
@@ -384,6 +387,16 @@ export class UserController {
       ...body,
       email: body.email.toString().toLocaleLowerCase(),
     });
+  }
+
+  @Post('v1/user/check-password')
+  @HttpCode(200)
+  @ApiOperation({
+    summary: 'Checks the passwords.',
+    description: 'This api compare normal and hashed passwords.',
+  })
+  async checkPasswords(@Body() body: checkPasswordDto, @Request() request) {
+    return await this.userService.checkUserPasswords(body);
   }
 
   @Post('v1/user/refresh-tokens')

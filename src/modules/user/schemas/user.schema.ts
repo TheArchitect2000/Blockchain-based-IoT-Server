@@ -22,15 +22,24 @@ const schema = new Schema({
     // lowercase: true,
     default: null,
   },
-  mobile: {
-    type: String,
-    // unique: true,
+  tel: {
+    type: Object,
     required: false,
-    default: null,
+    default: {},
+  },
+  address: {
+    type: Object,
+    required: false,
+    default: {},
   },
   email: {
     type: String,
     unique: true,
+    required: false,
+    default: null,
+  },
+  timezone: {
+    type: String,
     required: false,
     default: null,
   },

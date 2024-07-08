@@ -12,3 +12,16 @@ export class credentialDto {
   @ApiProperty({ required: true })
   password: string;
 }
+
+
+export class checkPasswordDto {
+  @IsNotEmpty({ message: 'Entered password is required and must be entered.' })
+  @IsNumber({}, { message: 'Entered password must be number.' })
+  @ApiProperty({ required: true })
+  enteredPassword: string;
+
+  @IsNotEmpty({ message: 'User password is required and must be entered.' })
+  @IsNumber({}, { message: 'User password must be number.' })
+  @ApiProperty({ required: true })
+  userPassword: string;
+}
