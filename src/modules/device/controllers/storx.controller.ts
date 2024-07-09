@@ -163,15 +163,14 @@ let developer_data = {
 function isExpired(expiresAt: string | Date): boolean {
   const expiresAtDate = new Date(expiresAt);
   const now = new Date();
-
   const remainingTime = expiresAtDate.getTime() - now.getTime();
-
-  return remainingTime < 0;
+  console.log('remaining time is:', remainingTime);
+  return remainingTime <= 0;
 }
 
 async function checkDeveloperToken() {
   if (developer_data.token && developer_data.expire) {
-    if (isExpired(developer_data.expire)) {
+    if (isExpired(developer_data.expire) == false) {
       console.log('Developer token is not expired');
     } else {
       return await developerLogin();
@@ -194,11 +193,16 @@ async function developerLogin() {
     expire: data.expiresAt,
   };
 
+  console.log('Developer data is:', developer_data);
+
   return developer_data;
 }
 
 async function createUserAndGenerateStorXKey(email: string, fullName: string) {
   await checkDeveloperToken();
+
+  console.log('We are in createUserAndGenerateStorXKey');
+
   const { data } = await axios.post(
     `${process.env.STORX_HOST}/api/v0/developer/auth/create-user`,
     {
@@ -213,6 +217,8 @@ async function createUserAndGenerateStorXKey(email: string, fullName: string) {
   );
 
   const userData = data.data;
+
+  console.log('User Data is:', userData);
 
   const { data: tokenData } = await axios.post(
     `${process.env.STORX_HOST}/api/v0/developer/auth/user-token`,

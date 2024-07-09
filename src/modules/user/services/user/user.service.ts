@@ -1540,28 +1540,7 @@ export class UserService {
 
   async findAUserById(userId) {
     const whereCondition = { isDeleted: false };
-    const populateCondition = [
-      {
-        path: 'info',
-        select:
-          'nationalCode nickName fatherName email website telephone fax biography levelOfEducation',
-        populate: [
-          {
-            path: 'profileImage',
-          },
-          {
-            path: 'headerImage',
-          },
-        ],
-      },
-      {
-        path: 'roles',
-        populate: {
-          path: 'permissions',
-          select: 'name module label description routes',
-        },
-      },
-    ];
+    const populateCondition = [];
     const selectCondition = this.getUserKeys();
 
     return await this.userRepository.findUserById(
@@ -1573,33 +1552,10 @@ export class UserService {
   }
 
   async getUserProfileByIdFromUser(userId) {
-    const whereCondition = {
-      isDeleted: false,
-      // activationStatus: UserActivationStatusEnum.ACTIVE,
-      // verificationStatus: UserVerificationStatusEnum.VERIFIED,
-    };
-    const populateCondition = [
-      {
-        path: 'info',
-        select:
-          'nationalCode nickName fatherName email website telephone fax biography levelOfEducation',
-        populate: [
-          {
-            path: 'profileImage',
-          },
-          {
-            path: 'headerImage',
-          },
-        ],
-      },
-      {
-        path: 'roles',
-        populate: {
-          path: 'permissions',
-        },
-      },
-    ];
-    const selectCondition = this.getUserKeys();
+    const whereCondition = { isDeleted: false };
+    const populateCondition = [];
+    const selectCondition = 'firstName lastName address avatar lang title userName StorX email mobile walletAddress roles info activationStatus activationStatusChangeReason activationStatusChangedBy activationStatusChangeDate verificationStatus verificationStatusChangeReason verificationStatusChangedBy verificationStatusChangeDate insertedBy insertDate updatedBy updateDate isDeletable isDeleted deletedBy deleteDate deletionReason'
+    //this.getUserKeys();
 
     return await this.userRepository.findUserById(
       userId,
@@ -1841,32 +1797,10 @@ export class UserService {
   }
 
   async credential(data) {
-    const whereCondition = {
-      isDeleted: false,
-      // activationStatus: UserActivationStatusEnum.ACTIVE,
-      // verificationStatus: UserVerificationStatusEnum.VERIFIED,
-    };
-    const populateCondition = [
-      {
-        path: 'info',
-        select:
-          'nationalCode nickName fatherName website telephone fax biography levelOfEducation',
-        populate: [
-          {
-            path: 'profileImage',
-          },
-          {
-            path: 'headerImage',
-          },
-        ],
-      },
-      {
-        path: 'roles',
-        populate: {
-          path: 'permissions',
-        },
-      },
-    ];
+    console.log('We are in credential');
+
+    const whereCondition = { isDeleted: false };
+    const populateCondition = [];
     const selectCondition = this.getUserKeys();
 
     this.user = await this.userRepository.findUserByEmail(
@@ -1876,11 +1810,15 @@ export class UserService {
       selectCondition,
     );
 
+    console.log('this.user:', this.user);
+
     if (this.user) {
       const isValidPassword = await this.validateUserPassword(
         data.password,
         this.user.password,
       );
+
+      console.log('Is Valid Password:', isValidPassword.toString());
 
       if (isValidPassword) {
         const payload = { email: this.user.email, sub: this.user._id };
@@ -2068,6 +2006,8 @@ export class UserService {
       firstName: data.firstName ? data.firstName : '',
       lastName: data.lastName ? data.lastName : '',
       userName: data.userName ? data.userName : '',
+      address: data.address ? data.address : '',
+      timezone: data.timezone ? data.timezone : '',
       mobile: data.mobile ? data.mobile : '',
       email: data.email ? data.email : '',
       walletAddress: data.walletAddress ? data.walletAddress : '',
