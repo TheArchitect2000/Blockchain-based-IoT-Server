@@ -1,12 +1,8 @@
 <p align="center">
   <a href="http://fidesonnova.io/" target="blank"><img src="https://fidesinnova.io/Download/FidesInnova-Token-Logo.png" width="200" alt="FidesInnova Logo" /></a>
 </p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">Step-by-step Installation Instructions for <a href="http://fidesinnova.io" target="_blank">FidesInnova Server Backend</a>.</p>
-    <p align="center">
+<p align="center">Step-by-step Installation Instructions for <a href="http://fidesinnova.io" target="_blank">FidesInnova Server Backend</a>.</p>
+<p align="center">
 
 ## 1- Prepare operating system
 First of all install Ubuntu 20.04 LTS on your server. 
