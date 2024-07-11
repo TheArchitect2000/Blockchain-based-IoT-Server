@@ -157,13 +157,13 @@ http {
 systemctl restart nginx
 ```
 
-## 4- Installation of Node.js (Version 16.14.2) and NestJS on Ubuntu
+## 4- Installation of Node.js (Version 20.9.0) and NestJS on Ubuntu
 ```
 sudo apt update
 sudo apt install nodejs
 sudo apt install npm
 sudo npm install -g n        
-n 16.14.2
+n 20.9.0
 npm i -g @nestjs/cli 
 ```
 
