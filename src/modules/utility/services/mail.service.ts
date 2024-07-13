@@ -183,6 +183,63 @@ export class MailService {
       });
   }
 
+  async sendVerifyEmailOTP(email: string, otp: string, otpType: string) {
+    console.log(
+      'We are in sendVerifyEmailOTP email is: ',
+      email,
+      '   and OTP is: ',
+      otp,
+    );
+
+    const url =
+      process.env.HOST_PROTOCOL +
+      process.env.HOST_NAME_OR_IP +
+      '/' +
+      process.env.HOST_SUB_DIRECTORY +
+      '/v1/user/verify-otp-code-sent-by-email-for-verify-email?email=' +
+      email +
+      '&otp=' +
+      otp;
+
+    console.log('url: ', url);
+
+    await this.mailerService
+      .sendMail({
+        to: email,
+        // from: '"Support Team" <support@example.com>', // override default from
+        subject: 'FidesInnova. Confirm Your Email. ',
+        template: './verify-email-with-otp.hbs', // `.hbs` extension is appended automatically
+        context: {
+          // filling curly brackets with content
+          name: email,
+          url: url,
+        },
+        /*attachments: [
+          {
+            filename: 'logo-fidesinnova-black.png',
+            // path: __dirname +'../../../../../assets/images/logo-fidesinnova-black.png',
+            path: join(
+              __dirname,
+              '../../../../assets/images/logo-fidesinnova-black.png',
+            ),
+            cid: 'logo',
+          },
+        ],*/
+      })
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((error) => {
+        console.log(error);
+
+        let errorMessage = 'Some errors occurred while sending email';
+        throw new GereralException(
+          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+          errorMessage,
+        );
+      });
+  }
+
   async sendEmailFromService(
     email: string,
     notificationMessage: string,

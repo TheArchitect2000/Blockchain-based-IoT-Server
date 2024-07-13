@@ -22,14 +22,23 @@ export class OTPRepository {
   }
 
   async findOTPByEmail(userEmail, otpType) {
+    const nowDate = new Date();
     return await this.otpModel
       .find({ email: userEmail })
-      .where({ type: otpType, verify: false });
+      .where({ type: otpType, expiryDate: { $gte: nowDate } });
+  }
+
+  async findOTPById(otpId, otpType) {
+    const nowDate = new Date();
+    return await this.otpModel
+      .find({ _id: otpId })
+      .where({ type: otpType, expiryDate: { $gte: nowDate } });
   }
 
   async findOTP(userMobile, otpType) {
+    const nowDate = new Date();
     return await this.otpModel
       .find({ mobile: userMobile })
-      .where({ type: otpType, verify: false });
+      .where({ type: otpType, expiryDate: { $gte: nowDate } });
   }
 }

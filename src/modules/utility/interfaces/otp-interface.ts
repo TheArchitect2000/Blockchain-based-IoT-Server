@@ -5,7 +5,7 @@ export interface OTP extends Document {
   email: string;
   sentCode: string;
   issueDate: string;
-  expiryDate: string;
+  expiryDate: Date;
   verificationStatus: string;
   insertedBy: string;
   insertDate: string;

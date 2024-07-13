@@ -61,6 +61,8 @@ import { Response as Res, response } from 'express';
 import { join } from 'path';
 import { editUserAndInfoByUserDto } from '../data-transfer-objects/user/edit-user-and-info-by-user.dto';
 import { editUserByUserDto } from '../data-transfer-objects/user/edit-user-by-user.dto';
+import { verifyEmailDto } from '../data-transfer-objects/user/verify-email.dto';
+import { IsAdminGuard } from 'src/modules/authentication/guard/is-admin.guard';
 var fs = require('fs');
 
 @ApiTags('Manage Users')
@@ -120,6 +122,19 @@ export class UserController {
     @Request() request,
   ) {
     return await this.userService.sendOTPCodeForResetPasswordByEmail(body);
+  }
+
+  @Post('v1/user/request-otp-code-for-verify-email')
+  @HttpCode(200)
+  @ApiOperation({
+    summary: 'Send otp code to user by email for reset password.',
+    description: 'This api requires a user email.',
+  })
+  async sendOTPCodeForVerifyEmail(
+    @Body() body: verifyEmailDto,
+    @Request() request,
+  ) {
+    return await this.userService.sendOTPCodeForVrifyEmail(body);
   }
 
   @Get('v1/user/verify-otp-code-sent-by-email-for-signup')
@@ -326,6 +341,109 @@ export class UserController {
     // return await this.userService.verifyOtpCodeSentByEmailForResetPassword(body);
   }
 
+  
+  @Get('v1/user/verify-otp-code-sent-by-email-for-verify-email')
+  @HttpCode(200)
+  @ApiOperation({
+    summary: 'verify otp code to user by email.',
+    description: 'This api requires a user email.',
+  })
+  @ApiQuery({
+    name: 'email',
+    type: String,
+    required: true,
+    description: 'Email',
+  })
+  @ApiQuery({
+    name: 'otp',
+    type: String,
+    required: true,
+    description: 'OTP',
+  })
+  async verifyOTPCodeSentByEmailForVerifyEmail(
+    @Query('email') email: string,
+    @Query('otp') otp: string,
+    @Body() body: verifyOtpCodeSentByEmailDto,
+    //@Req() req: Request,
+    @Response() res: Res,
+  ) {
+    body.email = email;
+    body.otp = otp;
+    console.log('We are in verifyOTPCodeSentByEmailForVerifyEmail function!');
+    console.log('Email is: ', email);
+    console.log('otp is: ', otp);
+
+    let otpIsVerified: boolean = false;
+
+    // let otpIsVerified = await this.userService.verifyOTPCodeSentByEmailForVerifyEmail(body);
+
+    await this.userService
+      .verifyOtpCodeSentByEmailForVerify(body)
+      .then((data) => {
+        otpIsVerified = data;
+
+        // Show congratulations page.
+
+        fs.readFile(
+          join(
+            __dirname,
+            '../../../../assets/web-pages/verify-email-congrat-msg.html',
+          ),
+          function (error, pgResp) {
+            if (error) {
+              res.writeHead(404);
+              res.write('Response web page does not found!');
+            } else {
+              if (otpIsVerified) {
+                res.writeHead(200, { 'Content-Type': 'text/html' });
+                // res.write('<h1> successful </h1>');
+                res.write(pgResp);
+              } else {
+                res.writeHead(200, { 'Content-Type': 'text/html' });
+                res.write('<h1> unsuccessful </h1>');
+              }
+              res.end();
+            }
+
+            res.end();
+          },
+        );
+      })
+      .catch((error) => {
+        // Show unsuccessful page.
+
+        fs.readFile(
+          join(
+            __dirname,
+            '../../../../assets/web-pages/verify-email-unsuccessful-msg.html',
+          ),
+          function (error, pgResp) {
+            if (error) {
+              res.writeHead(404);
+              res.write('Response web page does not found!');
+            } else {
+              if (!otpIsVerified) {
+                res.writeHead(200, { 'Content-Type': 'text/html' });
+                // res.write('<h1> successful </h1>');
+                res.write(pgResp);
+              } else {
+                res.writeHead(200, { 'Content-Type': 'text/html' });
+                res.write('<h1> unsuccessful </h1>');
+              }
+              res.end();
+            }
+
+            res.end();
+          },
+        );
+
+        // let errorMessage = 'Some errors occurred while user verification by email!';
+        // throw new GereralException(ErrorTypeEnum.UNPROCESSABLE_ENTITY, errorMessage)
+      });
+
+    // return await this.userService.verifyOtpCodeSentByEmailForResetPassword(body);
+  }
+
   @Post('v1/user/verify-otp-code-sent-by-email')
   @HttpCode(200)
   @ApiOperation({
@@ -415,7 +533,7 @@ export class UserController {
     summary: 'Get my profile.',
     description: 'This api requires token.',
   })
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, IsAdminGuard)
   @ApiBearerAuth()
   async getMyProfile(@Request() request) {
     if (

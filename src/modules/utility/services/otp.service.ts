@@ -63,6 +63,12 @@ export class OTPService {
           randomNumber.toString(),
           type,
         );
+      } else if (type === OTPTypeEnum.Verify) {
+        return await this.mailService.sendVerifyEmailOTP(
+          email,
+          randomNumber.toString(),
+          type,
+        );
       }
     } else {
       throw new GereralException(
@@ -146,14 +152,24 @@ export class OTPService {
 
     return await bcrypt
       .compare(String(userOTP), findOTP.sentCode)
-      .then(function (result) {
+      .then(async function (result) {
         if (result) {
+          try {
+            const expiredDate = new Date();
+            expiredDate.setHours(expiredDate.getHours() - 1);
+            const res = await newThis.repository.editOTP(findOTP._id, {
+              expiryDate: expiredDate,
+            });
+          } catch (error) {
+            console.log("Error Catched:", error);
+            
+          }
           return true;
-          /*  if(newThis.validateOTPExpiryDate(findOTP.expiryDate)){
-                    return true
-                } else {
-                    return false
-                } */
+          /* if (newThis.validateOTPExpiryDate(findOTP.expiryDate)) {
+            return true
+          } else {
+            return false;
+          } */
         } else {
           console.log('inValid code');
           return false;

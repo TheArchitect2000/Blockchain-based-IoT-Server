@@ -125,6 +125,51 @@ export class UserService {
     }
   }
 
+  async sendOTPCodeForVrifyEmail(body) {
+    console.log('We are in sendOTPCodeForVrifyEmail service ');
+
+    this.otp = await this.otpService.findOTPByEmail(
+      body.email,
+      OTPTypeEnum.Verify,
+    );
+
+    if (
+      this.otp.length == 0 ||
+      new Date(this.otp[this.otp.length - 1].expiryDate).getTime() <
+        new Date().getTime()
+    ) {
+      await this.otpService.insertEmailOTP(
+        OTPTypeEnum.Verify,
+        body.email,
+      );
+    } else {
+      throw new GereralException(ErrorTypeEnum.CONFLICT, 'Verification email is already sended !');
+    }
+
+    const whereCondition = { isDeleted: false };
+    const populateCondition = [];
+    const selectCondition = '';
+    await this.findAUserByEmail(
+      body.email,
+      whereCondition,
+      populateCondition,
+      selectCondition,
+    );
+
+    console.log('this.user', this.user);
+
+    // Check if user found
+    if (this.user) {
+      return true;
+    } else {
+      // User not found.
+
+      console.log('User not found for verify email.');
+
+      throw new GereralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
+    }
+  }
+
   async sendOTPCodeForResetPasswordByEmail(body) {
     console.log('We are in sendOTPCodeForResetPasswordByEmail service ');
 
@@ -306,28 +351,7 @@ export class UserService {
         const insertedUser = await this.userRepository.insertUser(newUser);
 
         const whereCondition = { isDeleted: false };
-        const populateCondition = [
-          {
-            path: 'info',
-            select:
-              'nationalCode nickName fatherName website telephone fax biography levelOfEducation',
-            populate: [
-              {
-                path: 'profileImage',
-              },
-              {
-                path: 'headerImage',
-              },
-            ],
-          },
-          {
-            path: 'roles',
-            populate: {
-              path: 'permissions',
-              select: 'name module label description routes',
-            },
-          },
-        ];
+        const populateCondition = [];
         const selectCondition = this.getUserKeys();
 
         const foundedNewUser = await this.userRepository.findUserById(
@@ -350,6 +374,96 @@ export class UserService {
       // return console.log('Correct code');
     } else {
       // return console.log('expired code');
+      return false;
+    }
+  }
+
+  async verifyOtpCodeSentByEmailForVerify(body) {
+    console.log('I am in verifyOtpCodeSentByEmailForVerify service!');
+
+    this.otp = await this.otpService.findOTPByEmail(
+      body.email,
+      OTPTypeEnum.Verify,
+    );
+
+    console.log("after findOTPByEmail", this.otp);
+
+    const verifyOTP = await this.otpService.verifyOTP(
+      this.otp[this.otp.length - 1],
+      body.otp,
+    );
+
+    if (verifyOTP) {
+      const whereCondition = { isDeleted: false };
+      const populateCondition = [];
+      const selectCondition = this.getUserKeys();
+
+      await this.otpService.setVerificationStatus(
+        this.otp[this.otp.length - 1]._id,
+        VerificationStatusEnum.VERIFIED,
+        VerificationStatusChangeReasonsEnum.VERIFICATION_BY_EMAIL_VIA_EMAIL,
+      );
+
+      await this.findAUserByEmail(
+        body.email,
+        whereCondition,
+        populateCondition,
+        selectCondition,
+      );
+
+      console.log('this.user: ', this.user);
+
+      if (this.user) {
+        // User already exists.
+
+        await this.setActivationStatus(
+          this.user._id,
+          UserActivationStatusEnum.ACTIVE,
+          UserActivationStatusChangeReasonsEnum.ACIVATION_BY_USER_VIA_EMAIL,
+          this.user._id,
+        );
+        await this.setVerificationStatus(
+          this.user._id,
+          UserVerificationStatusEnum.VERIFIED,
+          UserVerificationStatusChangeReasonsEnum.VERIFICATION_BY_EMAIL_VIA_EMAIL,
+          this.user._id,
+        );
+
+        const response: any = await this.myProfileResponse(this.user);
+        response.tokens = this.generateTokensByEmail(
+          this.user.email,
+          this.user._id,
+        );
+
+        // Start of finding a customer in panel...
+        /* console.log("Activating a customer in panel...");
+
+                let whereCondition={};
+                let populateCondition=[];
+                let selectCondition='IsActive Email Username Password FirstName LastName Mobile createdAt updatedAt';
+                let foundCustomer = null;
+                
+                foundCustomer = await this.customerService.findACustomerByEmail(body.email, whereCondition, populateCondition, selectCondition);
+
+                if(foundCustomer){
+                    console.log("Customer found!");
+                    await this.customerService.changeActivationStatusOfCustomer({_id: foundCustomer._id, isActive: true});
+                } else {
+                    console.log("Customer not found!");
+                    throw new GereralException(ErrorTypeEnum.NOT_FOUND,'Customer does not exist.');
+                } */
+        // End of finding a customer in panel.
+
+        // return await response
+
+        return true;
+      }
+
+      // return console.log('Correct code');
+    } else {
+      // return console.log('expired code');
+      console.log("Returning False");
+      
       return false;
     }
   }
