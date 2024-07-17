@@ -207,7 +207,80 @@ git clone https://github.com/FidesInnova/server_backend_developer.git
 ```
 
 ## 7- Prepare app host configuration
--  In project root folder, find .env file and edit `HOST_NAME_OR_IP='subdomain.YOUR_DOMAIN.com'`
+-  In project root folder, create `.env` file and edit parameters based on your node URL info
+```
+cd ~/server_backend_developer
+sudo nano .env
+```
+Inside the `.env` file, past the parameters.
+```
+API_Mode = "Productionn"
+PORT = 5000
+SWAGGER_LOCAL_SERVER = http://localhost:5000
+
+# Server Configuration
+HOST_PROTOCOL = 'https://'
+HOST_NAME_OR_IP = 'panel.YOUR_DOMAIN.COM'
+HOST_PORT = '3000'
+HOST_SUB_DIRECTORY = 'app'
+
+# Node Servers
+NODE_SERVERS=[{"Name":"EnergyWise","MQTT":"panel.fidesinnova.io","API":"panel.fidesinnova.io/app"},{"Name":"Cherry","MQTT":"panel.cherrynode.tech","API":"panel.cherrynode.tech/app"},{"Name":"Developer","MQTT":"developer.fidesinnova.io","API":"developer.fidesinnova.io/app"}]
+
+# StorX Config
+STORX_BUCKET_NAME = 'fidesinnova'
+STORX_HOST = 'https://b2.storx.io'
+STORX_AUTH_HOST = 'https://auth.storx.io'
+
+# Mongo Database Configuration
+MONGO_DATABASE_NAME = fidesinnova
+MONGO_USER = Administrator
+# MONGO_PASSWORD = 'PASSWORD'
+MONGO_PORT = 27017
+MONGO_HOST = mongodb://127.0.0.1
+MONGO_CONNECTION = mongodb://127.0.0.1:27017/fidesinnova
+
+# Email Configuration
+NOTIFICATION_BY_MAIL = 'enabled'
+NOTIFICATION_BY_NOTIFICATION = 'enabled'
+
+# Mail server
+MAIL_HOST = YOUR_HOST_MAIL_SERVER_PROVIDER
+MAIL_PORT = 465
+MAIL_USER = noreply@YOUR_DOMAIN.COM
+MAIL_PASSWORD = YOUR_MAIL_SERVER_PASSWORD
+MAIL_FROM = noreply@YOUR_DOMAIN.COM
+# optional
+MAIL_TRANSPORT = smtp://${MAIL_USER}:${MAIL_PASSWORD}@${MAIL_HOST}
+
+ACCESS_TOKEN_ISSUER = 'https://fidesinnova.io'
+ACCESS_TOKEN_EXPIRATION_TIME = 1200000000     # Miliseconds
+ACCESS_TOKEN_SECRET_KEY = '?#6KRVytq*zn5zhWWLHksL$MJj7Krkan^&^^BzZD?fqUjs4mhWNExZZ8S7CPXXkPGYMEzj2y$bK7@TWwYaja=7j^+ccFqG8#EpM4&4ppmST?A7?F_a3bq=m6B&CwRrb3'
+# ACCESS_TOKEN_ALGORITHM = 'PS384'
+ACCESS_TOKEN_ALGORITHM = 'HS384'
+
+REFRESH_TOKEN_ISSUER = 'https://fidesinnova.io'
+REFRESH_TOKEN_EXPIRATION_TIME = 2400000000    # Miliseconds
+REFRESH_TOKEN_SECRET_KEY = 'Cn3ZU$EQcpc_C9Yyqc*t3pur#Rg_Q9xUt4GUVnf8=Q4ruE?f@8^ngFgKpE7Nh=gytxzY3!tcpBZ4STj-ehCfb2k-&C43sFgYfSfZ&ALP!XJhe3R%hNGTMmHXCMsm9Bfv'
+REFRESH_TOKEN_ALGORITHM = 'HS384'
+
+ADMIN_MOBILE = '0123456789'
+ADMIN_PASSWORD = '9876543210'
+
+# Multer Configuration     # Multer is a node.js middleware for handling multipart/form-data, which is primarily used for uploading files.
+MULTER_MEDIA_PATH = ./storages/resources
+MULTER_MEDIA_SIZE = 10000000    # 10 MB
+```
+Update these parameters:
+```
+HOST_NAME_OR_IP = 'panel.YOUR_DOMAIN.COM'
+
+MAIL_HOST = YOUR_HOST_MAIL_SERVER_PROVIDER
+MAIL_PORT = 465
+MAIL_USER = noreply@YOUR_DOMAIN.COM
+MAIL_PASSWORD = YOUR_MAIL_SERVER_PASSWORD
+MAIL_FROM = noreply@YOUR_DOMAIN.COM
+```
 
 ### put ssl certificate files in following directory:
 ```
