@@ -392,7 +392,7 @@ export class DeviceService {
     }
   }
 
-  async editDevice(body: EditDeviceDto, userId: any) {
+  async editDevice(body: EditDeviceDto, userId: any, isAdmin = false) {
     let whereCondition = { _id: body.deviceId };
     let populateCondition = [];
     let selectCondition =
@@ -419,6 +419,21 @@ export class DeviceService {
 
     // if(foundDevice && foundDevice !== undefined && foundDevice.deletable){
     if (foundDevice && foundDevice !== undefined) {
+      if (
+        foundDevice &&
+        foundDevice != undefined &&
+        foundDevice.userId != userId &&
+        isAdmin == false
+      ) {
+        let errorMessage = 'Access Denied!';
+        this.result = {
+          message: errorMessage,
+          success: false,
+          date: new Date(),
+        };
+        return this.result;
+      }
+
       foundDevice.updatedBy = userId;
       foundDevice.updateDate = new Date();
     }
@@ -437,7 +452,7 @@ export class DeviceService {
     return this.result;
   }
 
-  async renameDevice(body, userId): Promise<any> {
+  async renameDevice(body, userId, isAdmin = false): Promise<any> {
     let whereCondition = { _id: body.deviceId };
     let populateCondition = [];
     let selectCondition =
@@ -464,6 +479,21 @@ export class DeviceService {
 
     // if(foundDevice && foundDevice !== undefined && foundDevice.deletable){
     if (foundDevice && foundDevice !== undefined) {
+      if (
+        foundDevice &&
+        foundDevice != undefined &&
+        foundDevice.userId != userId &&
+        isAdmin == false
+      ) {
+        let errorMessage = 'Access Denied!';
+        this.result = {
+          message: errorMessage,
+          success: false,
+          date: new Date(),
+        };
+        return this.result;
+      }
+
       foundDevice.deviceName = body.deviceName;
       foundDevice.updatedBy = userId;
       foundDevice.updateDate = new Date();
@@ -565,11 +595,11 @@ export class DeviceService {
     return response;
   }
 
-  async getDeviceInfoByEncryptedId(encryptId) {
+  async getDeviceInfoByEncryptedId(encryptId, userId = '', isAdmin = false) {
     let whereCondition = { isDeleted: false };
     let populateCondition = [];
     let selectCondition =
-      '_id deviceName deviceType mac deviceEncryptedId hardwareVersion firmwareVersion parameters isShared location geometry insertedBy insertDate isDeletable isDeleted deletedBy deleteDate deletionReason updatedBy updateDate';
+      '_id deviceName userId deviceType mac deviceEncryptedId hardwareVersion firmwareVersion parameters isShared location geometry insertedBy insertDate isDeletable isDeleted deletedBy deleteDate deletionReason updatedBy updateDate';
     let foundDevices: any = null;
     let response = {};
 
@@ -582,27 +612,48 @@ export class DeviceService {
       selectCondition,
     );
 
-    foundDevices.forEach((element) => {
-      response = {
-        _id: element._id,
-        deviceName: element.deviceName,
-        deviceType: element.deviceType,
-        mac: element.mac,
-        deviceEncryptedId: element.deviceEncryptedId,
-        hardwareVersion: element.hardwareVersion,
-        firmwareVersion: element.firmwareVersion,
-        parameters: element.parameters,
-        isShared: element.isShared,
-        location: element.location,
-        geometry: element.geometry,
+    console.log('foundeddddddd deviceeeeeeeeee: ', foundDevices);
+
+    if (
+      userId.length > 0 &&
+      foundDevices &&
+      foundDevices != undefined &&
+      foundDevices.userId != userId &&
+      isAdmin == false
+    ) {
+      let errorMessage = 'Access Denied!';
+      this.result = {
+        message: errorMessage,
+        success: false,
+        date: new Date(),
       };
-    });
+      return this.result;
+    }
+
+    response = {
+      _id: foundDevices._id,
+      deviceName: foundDevices.deviceName,
+      deviceType: foundDevices.deviceType,
+      mac: foundDevices.mac,
+      deviceEncryptedId: foundDevices.deviceEncryptedId,
+      hardwareVersion: foundDevices.hardwareVersion,
+      firmwareVersion: foundDevices.firmwareVersion,
+      parameters: foundDevices.parameters,
+      isShared: foundDevices.isShared,
+      location: foundDevices.location,
+      geometry: foundDevices.geometry,
+    };
+
     console.log('response are: ', response);
 
     return response;
   }
 
-  async deleteDeviceByDeviceId(deviceId): Promise<any> {
+  async deleteDeviceByDeviceId(
+    deviceId,
+    userId = '',
+    isAdmin = false,
+  ): Promise<any> {
     let whereCondition = { isDeleted: false };
     let populateCondition = [];
     let selectCondition =
@@ -627,6 +678,23 @@ export class DeviceService {
 
     // if(foundDevice && foundDevice !== undefined && foundDevice.deletable){
     if (foundDevice && foundDevice !== undefined) {
+
+      if (
+        userId.length > 0 &&
+        foundDevice &&
+        foundDevice != undefined &&
+        foundDevice.userId != userId &&
+        isAdmin == false
+      ) {
+        let errorMessage = 'Access Denied!';
+        this.result = {
+          message: errorMessage,
+          success: false,
+          date: new Date(),
+        };
+        return this.result;
+      }
+
       foundDevice.isDeleted = true;
       foundDevice.RemoveTime = new Date();
       foundDevice.updatedAt = new Date();

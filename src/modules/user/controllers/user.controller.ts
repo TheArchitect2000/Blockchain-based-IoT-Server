@@ -75,6 +75,21 @@ export class UserController {
     private readonly mailService: MailService, /// Test
   ) {}
 
+  async isAdmin(userId: string) {
+    const profile = (await this.userService.getUserProfileByIdFromUser(
+      userId,
+    )) as any;
+    if (
+      !profile ||
+      !profile?.roles[0]?.name ||
+      profile?.roles[0]?.name != 'super_admin'
+    ) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   @Post('user/test')
   @HttpCode(200)
   @ApiOperation({
@@ -127,7 +142,7 @@ export class UserController {
   @Post('v1/user/request-otp-code-for-verify-email')
   @HttpCode(200)
   @ApiOperation({
-    summary: 'Send otp code to user by email for reset password.',
+    summary: 'Send otp code to user by email for verify email.',
     description: 'This api requires a user email.',
   })
   async sendOTPCodeForVerifyEmail(
@@ -341,7 +356,6 @@ export class UserController {
     // return await this.userService.verifyOtpCodeSentByEmailForResetPassword(body);
   }
 
-  
   @Get('v1/user/verify-otp-code-sent-by-email-for-verify-email')
   @HttpCode(200)
   @ApiOperation({
@@ -507,6 +521,19 @@ export class UserController {
     });
   }
 
+  @Post('v1/user/admin-credential')
+  @HttpCode(200)
+  @ApiOperation({
+    summary: 'Send otp code to user.',
+    description: 'This api requires a user mobile.',
+  })
+  async adminCredential(@Body() body: credentialDto, @Request() request) {
+    return await this.userService.adminCredential({
+      ...body,
+      email: body.email.toString().toLocaleLowerCase(),
+    });
+  }
+
   @Post('v1/user/check-password')
   @HttpCode(200)
   @ApiOperation({
@@ -533,7 +560,7 @@ export class UserController {
     summary: 'Get my profile.',
     description: 'This api requires token.',
   })
-  @UseGuards(JwtAuthGuard, IsAdminGuard)
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   async getMyProfile(@Request() request) {
     if (
@@ -557,12 +584,23 @@ export class UserController {
     summary: 'Get a user by email.',
     description: 'Gets a user by user email. This api requires a user email.',
   })
-  async getUserByEmail(@Param('userEmail') userEmail: string) {
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  async getUserByEmail(
+    @Param('userEmail') userEmail: string,
+    @Request() request,
+  ) {
     if (userEmail === null || userEmail === undefined || userEmail === '') {
       throw new GereralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         'User email is required and must be entered and must be entered correctly.',
       );
+    }
+
+    const isAdmin = await this.isAdmin(request.user.userId);
+
+    if (isAdmin === false && request.user.email !== userEmail) {
+      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
 
     await this.userService
@@ -595,10 +633,16 @@ export class UserController {
     @Body() body: editUserByUserDto,
     @Request() request,
   ) {
+    const isAdmin = await this.isAdmin(request.user.userId);
+
+    if (isAdmin === false && request.user.userId !== userId) {
+      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+    }
+
     return await this.userService.editUserByUser(userId, body);
   }
 
-  @Patch('v1/user/edit-user-and-info-by-user')
+  /* @Patch('v1/user/edit-user-and-info-by-user')
   @HttpCode(200)
   @ApiOperation({
     summary: 'Edit user and info by user.',
@@ -643,7 +687,7 @@ export class UserController {
       body,
       request.user.userId,
     );
-  }
+  } */
 
   @Patch('v1/user/change-my-profile-activation')
   @HttpCode(200)
@@ -706,7 +750,12 @@ export class UserController {
     summary: 'Get a user by id.',
     description: 'Gets a user by user id. This api requires a user id.',
   })
-  async getUserProfileByIdFromUser(@Param('userId') userId: string) {
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  async getUserProfileByIdFromUser(
+    @Param('userId') userId: string,
+    @Request() request,
+  ) {
     if (
       userId === null ||
       userId === undefined ||
@@ -719,6 +768,12 @@ export class UserController {
       );
     }
 
+    const isAdmin = await this.isAdmin(request.user.userId);
+
+    if (isAdmin === false && request.user.userId !== userId) {
+      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+    }
+
     return await this.userService.getUserProfileByIdFromUser(userId);
   }
 
@@ -729,12 +784,23 @@ export class UserController {
     description:
       'Gets a user by user username. This api requires a user username.',
   })
-  async getUserProfileByUserNameFromUser(@Param('userName') userName: string) {
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  async getUserProfileByUserNameFromUser(
+    @Param('userName') userName: string,
+    @Request() request,
+  ) {
     if (userName === null || userName === undefined || userName === '') {
       throw new GereralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         'userName is required and must be entered.',
       );
+    }
+
+    const isAdmin = await this.isAdmin(request.user.userId);
+
+    if (isAdmin === false && request.user.email !== userName) {
+      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
 
     return await this.userService.getUserProfileByUserNameFromUser(userName);
@@ -821,31 +887,7 @@ export class UserController {
     return await this.userService.insertUserByPanel(body, request.user.userId);
   }
 
-  @Get('user/get-profile-by-id/:userId')
-  @HttpCode(200)
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({
-    summary: 'Get a user by id.',
-    description: 'Gets a user by user id. This api requires a user id.',
-  })
-  async getUserProfileByIdFromPanel(@Param('userId') userId: string) {
-    if (
-      userId === null ||
-      userId === undefined ||
-      userId === '' ||
-      Types.ObjectId.isValid(String(userId)) === false
-    ) {
-      throw new GereralException(
-        ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-        'User id is required and must be entered and must be entered correctly with objectId type.',
-      );
-    }
-
-    return await this.userService.getUserProfileByIdFromPanel(userId);
-  }
-
-  @Patch('v1/user/edit-user-by-panel/:userId')
+  /* @Patch('v1/user/edit-user-by-panel/:userId')
   @HttpCode(200)
   @ApiOperation({
     summary: 'Edit user profile by user.',
@@ -904,7 +946,7 @@ export class UserController {
       userId,
       request.user.userId,
     );
-  }
+  } */
 
   @Patch('user/change-profile-activation/:userId')
   @HttpCode(200)
@@ -929,6 +971,12 @@ export class UserController {
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         'User id is required and must be entered and must be entered correctly with objectId type.',
       );
+    }
+
+    const isAdmin = await this.isAdmin(request.user.userId);
+
+    if (isAdmin === false && request.user.userId !== userId) {
+      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
 
     return await this.userService.changeUserProfileActivationByPanel(
@@ -962,6 +1010,12 @@ export class UserController {
       );
     }
 
+    const isAdmin = await this.isAdmin(request.user.userId);
+
+    if (isAdmin === false && request.user.userId !== userId) {
+      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+    }
+
     return await this.userService.changeUserProfileVerificationByPanel(
       userId,
       request.user.userId,
@@ -970,7 +1024,7 @@ export class UserController {
 
   @Get('v1/user/get-all-users')
   @HttpCode(200)
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, IsAdminGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get all users.',
@@ -1112,6 +1166,8 @@ export class UserController {
 
   @Delete('v1/user/delete-all-user-data')
   @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Deletes all user data.',
     description: 'This api requires user id.',
@@ -1122,7 +1178,10 @@ export class UserController {
     required: true,
     description: 'user ID',
   })
-  async deleteAllUserDataByUserId(@Query('userId') userId: string) {
+  async deleteAllUserDataByUserId(
+    @Query('userId') userId: string,
+    @Request() request,
+  ) {
     if (
       userId === null ||
       userId === undefined ||
@@ -1134,6 +1193,12 @@ export class UserController {
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         errorMessage,
       );
+    }
+
+    const isAdmin = await this.isAdmin(request.user.userId);
+
+    if (isAdmin === false && request.user.userId !== userId) {
+      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
 
     await this.userService

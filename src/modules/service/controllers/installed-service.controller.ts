@@ -33,6 +33,7 @@ import { MailService } from 'src/modules/utility/services/mail.service';
 import { UserService } from 'src/modules/user/services/user/user.service';
 import { DeviceService } from 'src/modules/device/services/device.service';
 import { VirtualMachineHandlerService } from 'src/modules/virtual-machine/services/service-handler.service';
+import { IsAdminGuard } from 'src/modules/authentication/guard/is-admin.guard';
 
 @ApiTags('Manage Installed Services')
 @Controller('app')
@@ -43,7 +44,23 @@ export class InstalledServiceController {
   constructor(
     private readonly installedServiceService: InstalledServiceService,
     private readonly VirtualMachineService?: VirtualMachineHandlerService,
+    private readonly userService?: UserService,
   ) {}
+
+  async isAdmin(userId: string) {
+    const profile = (await this.userService.getUserProfileByIdFromUser(
+      userId,
+    )) as any;
+    if (
+      !profile ||
+      !profile?.roles[0]?.name ||
+      profile?.roles[0]?.name != 'super_admin'
+    ) {
+      return false;
+    } else {
+      return true;
+    }
+  }
 
   @Post('v1/installed-service/insert')
   @HttpCode(201)
@@ -58,8 +75,11 @@ export class InstalledServiceController {
     @Body() body: insertInstalledServiceDto,
     @Request() request,
   ) {
-    const res = await this.installedServiceService.insertInstalledService(body);
-
+    const data = {
+      ...body,
+      userId: request.user.userId,
+    };
+    const res = await this.installedServiceService.insertInstalledService(data);
     this.VirtualMachineService.createVirtualMachine(body, res._id);
 
     return res;
@@ -67,7 +87,7 @@ export class InstalledServiceController {
 
   @Post('v1/installed-service/create-all-virtual-machines')
   @HttpCode(201)
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, IsAdminGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Creates All Virtual Machines.',
@@ -110,8 +130,10 @@ export class InstalledServiceController {
       );
     }
 
+    const isAdmin = await this.isAdmin(request.user.userId);
+
     await this.installedServiceService
-      .editInstalledService(body, request.user.userId)
+      .editInstalledService(body, request.user.userId, isAdmin)
       .then((data) => {
         this.result = data;
       })
@@ -136,7 +158,10 @@ export class InstalledServiceController {
     description:
       'Gets user installed services by user id. This api requires a user id.',
   })
-  async getInstalledServicesByUserId(@Param('userId') userId: string) {
+  async getInstalledServicesByUserId(
+    @Param('userId') userId: string,
+    @Request() request,
+  ) {
     if (
       userId === null ||
       userId === undefined ||
@@ -145,8 +170,14 @@ export class InstalledServiceController {
     ) {
       throw new GereralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-        'Home id is required and must be entered and must be entered correctly.',
+        'User id is required and must be entered and must be entered correctly.',
       );
+    }
+
+    const isAdmin = await this.isAdmin(request.user.userId);
+
+    if (isAdmin === false && request.user.userId !== userId) {
+      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
 
     await this.installedServiceService
@@ -179,10 +210,12 @@ export class InstalledServiceController {
       'Gets user installed services by user id. This api requires a user id.',
   })
   async getInstalledServicesByDeviceEncryptedId(
-    @Param('deviceEncryptedId') deviceEncryptedId: string,
+    @Param('deviceEncryptedId') deviceEncryptedId: string, @Request() request,
   ) {
+    const isAdmin = await this.isAdmin(request.user.userId);
+
     await this.installedServiceService
-      .getInstalledServicesByDeviceEncryptedId(deviceEncryptedId)
+      .getInstalledServicesByDeviceEncryptedId(deviceEncryptedId, request.user.userId, isAdmin)
       .then((data) => {
         this.result = data;
       })
@@ -201,7 +234,7 @@ export class InstalledServiceController {
 
   @Get('v1/installed-service/get-all-installed-services')
   @HttpCode(200)
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, IsAdminGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get all installed services.',
@@ -250,14 +283,17 @@ export class InstalledServiceController {
       );
     }
 
-    this.VirtualMachineService.deleteVirtualMachinByServiceId(
+    await this.VirtualMachineService.deleteVirtualMachinByServiceId(
       installedServiceId,
     );
+
+    const isAdmin = await this.isAdmin(request.user.userId);
 
     await this.installedServiceService
       .deleteInstalledServiceByInstalledServiceId(
         installedServiceId,
         request.user.userId,
+        isAdmin
       )
       .then((data) => {
         this.result = data;

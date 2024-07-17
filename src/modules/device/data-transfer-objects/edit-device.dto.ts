@@ -24,11 +24,11 @@ export class EditDeviceDto {
   @ApiProperty({ required: true })
   deviceId: string;
 
-  @IsOptional()
+  /* @IsOptional()
   // @IsNotEmpty({ message: 'userId is required and must be entered.' })
   @IsString({ message: 'userId must be string.' })
   @ApiProperty({ required: true })
-  userId: string;
+  userId: string; */
 
   @IsOptional()
   @IsString({ message: 'deviceName must be string.' })

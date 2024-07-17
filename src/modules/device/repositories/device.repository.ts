@@ -142,7 +142,7 @@ export class DeviceRepository {
     console.log('we are in getAllDevices repository!');
 
     return await this.deviceModel
-      .find({ deviceEncryptedId: encryptId })
+      .findOne({ deviceEncryptedId: encryptId })
       .where(whereCondition)
       .populate(populateCondition)
       .select(selectCondition);

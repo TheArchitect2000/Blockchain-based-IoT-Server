@@ -83,7 +83,7 @@ export class NotificationService {
       [],
       '_id firstName lastName email',
     );
-    
+
     const insertData = {
       ...data,
       insertDate: new Date(),
@@ -112,8 +112,10 @@ export class NotificationService {
     return this.notificationRepository.getNotificationById(notifId);
   }
 
-  async readNotificationsByNotificationIds(notifList: string[]) {
-    notifList.forEach(async (item) => {
+  async readNotificationsByNotificationIds(
+    notifList: string[],
+  ) {
+    notifList.forEach(async (item: any) => {
       await this.notificationRepository.editNotificationByNotifId(item, {
         read: true,
       });
@@ -124,6 +126,8 @@ export class NotificationService {
 
   async editNotificationById(
     notifId: string,
+    userId = '',
+    isAdmin = false,
     editedValues: EditNotificationRequestBodyDto,
   ) {
     const expireDate = new Date();
@@ -135,6 +139,21 @@ export class NotificationService {
     const notifData = await this.notificationRepository.getNotificationById(
       notifId,
     );
+
+    if (
+      userId.length > 0 &&
+      notifData &&
+      notifData != undefined &&
+      notifData.userId != userId &&
+      isAdmin == false
+    ) {
+      let errorMessage = 'Access Denied!';
+      return {
+        message: errorMessage,
+        success: false,
+        date: new Date(),
+      };
+    }
 
     if (notifData.public == true) {
       return await this.notificationRepository.editNotificationByNotifId(

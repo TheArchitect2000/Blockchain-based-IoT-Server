@@ -64,7 +64,7 @@ import { AdminModule } from './modules/admin/admin.module';
     BrokerModule,
     DeviceModule,
     UtilityModule,
-    PanelModule,
+    //PanelModule,
     ServiceModule,
     BlocklyModule,
     NotificationModule,

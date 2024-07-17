@@ -138,12 +138,12 @@ export class UserService {
       new Date(this.otp[this.otp.length - 1].expiryDate).getTime() <
         new Date().getTime()
     ) {
-      await this.otpService.insertEmailOTP(
-        OTPTypeEnum.Verify,
-        body.email,
-      );
+      await this.otpService.insertEmailOTP(OTPTypeEnum.Verify, body.email);
     } else {
-      throw new GereralException(ErrorTypeEnum.CONFLICT, 'Verification email is already sended !');
+      throw new GereralException(
+        ErrorTypeEnum.CONFLICT,
+        'Verification email is already sended !',
+      );
     }
 
     const whereCondition = { isDeleted: false };
@@ -386,7 +386,7 @@ export class UserService {
       OTPTypeEnum.Verify,
     );
 
-    console.log("after findOTPByEmail", this.otp);
+    console.log('after findOTPByEmail', this.otp);
 
     const verifyOTP = await this.otpService.verifyOTP(
       this.otp[this.otp.length - 1],
@@ -462,8 +462,8 @@ export class UserService {
       // return console.log('Correct code');
     } else {
       // return console.log('expired code');
-      console.log("Returning False");
-      
+      console.log('Returning False');
+
       return false;
     }
   }
@@ -628,19 +628,6 @@ export class UserService {
     if (verifyOTP) {
       const whereCondition = { isDeleted: false };
       const populateCondition = [
-        {
-          path: 'info',
-          select:
-            'nationalCode nickName fatherName email website telephone fax biography levelOfEducation',
-          populate: [
-            {
-              path: 'profileImage',
-            },
-            {
-              path: 'headerImage',
-            },
-          ],
-        },
         {
           path: 'roles',
           populate: {
@@ -1047,7 +1034,7 @@ export class UserService {
     }
   }
 
-  async editUserAndInfoByUser(data, userId) {
+  /* async editUserAndInfoByUser(data, userId) {
     const whereCondition = { isDeleted: false };
     const populateCondition = [];
     const selectCondition = '';
@@ -1163,7 +1150,7 @@ export class UserService {
     } else {
       throw new GereralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
     }
-  }
+  } */
 
   async changeMyProfileActivation(userId) {
     const whereCondition = { isDeleted: false };
@@ -1654,7 +1641,15 @@ export class UserService {
 
   async findAUserById(userId) {
     const whereCondition = { isDeleted: false };
-    const populateCondition = [];
+    const populateCondition = [
+      {
+        path: 'roles',
+        populate: {
+          path: 'permissions',
+          select: 'name module label description routes',
+        },
+      },
+    ];
     const selectCondition = this.getUserKeys();
 
     return await this.userRepository.findUserById(
@@ -1667,8 +1662,16 @@ export class UserService {
 
   async getUserProfileByIdFromUser(userId) {
     const whereCondition = { isDeleted: false };
-    const populateCondition = [];
-    const selectCondition = 'firstName lastName address avatar lang title userName StorX email mobile walletAddress roles info activationStatus activationStatusChangeReason activationStatusChangedBy activationStatusChangeDate verificationStatus verificationStatusChangeReason verificationStatusChangedBy verificationStatusChangeDate insertedBy insertDate updatedBy updateDate isDeletable isDeleted deletedBy deleteDate deletionReason'
+    const populateCondition = [
+      {
+        path: 'roles',
+        populate: {
+          path: 'permissions',
+        },
+      },
+    ];
+    const selectCondition = this.getUserKeys();
+    //'firstName lastName address avatar lang title userName StorX email mobile walletAddress roles info activationStatus activationStatusChangeReason activationStatusChangedBy activationStatusChangeDate verificationStatus verificationStatusChangeReason verificationStatusChangedBy verificationStatusChangeDate insertedBy insertDate updatedBy updateDate isDeletable isDeleted deletedBy deleteDate deletionReason'
     //this.getUserKeys();
 
     return await this.userRepository.findUserById(
@@ -1703,19 +1706,6 @@ export class UserService {
     };
     const populateCondition = [
       {
-        path: 'info',
-        select:
-          'nationalCode nickName fatherName email website telephone fax biography levelOfEducation',
-        populate: [
-          {
-            path: 'profileImage',
-          },
-          {
-            path: 'headerImage',
-          },
-        ],
-      },
-      {
         path: 'roles',
         populate: {
           path: 'permissions',
@@ -1735,19 +1725,6 @@ export class UserService {
   async getUserProfileByIdFromPanel(userId) {
     const whereCondition = {};
     const populateCondition = [
-      {
-        path: 'info',
-        select:
-          'nationalCode nickName fatherName email website telephone fax biography levelOfEducation',
-        populate: [
-          {
-            path: 'profileImage',
-          },
-          {
-            path: 'headerImage',
-          },
-        ],
-      },
       {
         path: 'roles',
         populate: {
@@ -1914,7 +1891,15 @@ export class UserService {
     console.log('We are in credential');
 
     const whereCondition = { isDeleted: false };
-    const populateCondition = [];
+    const populateCondition = [
+      {
+        path: 'roles',
+        populate: {
+          path: 'permissions',
+          select: 'name module label description routes',
+        },
+      },
+    ];
     const selectCondition = this.getUserKeys();
 
     this.user = await this.userRepository.findUserByEmail(
@@ -1933,6 +1918,84 @@ export class UserService {
       );
 
       console.log('Is Valid Password:', isValidPassword.toString());
+
+      if (isValidPassword) {
+        const payload = { email: this.user.email, sub: this.user._id };
+
+        const accessSignOptions: any = {};
+        accessSignOptions.expiresIn = process.env.ACCESS_TOKEN_EXPIRATION_TIME;
+        accessSignOptions.issuer = process.env.ACCESS_TOKEN_ISSUER;
+        accessSignOptions.algorithm = process.env.ACCESS_TOKEN_ALGORITHM;
+
+        const refreshSignOptions: any = {};
+        refreshSignOptions.expiresIn =
+          process.env.REFRESH_TOKEN_EXPIRATION_TIME;
+        refreshSignOptions.issuer = process.env.REFRESH_TOKEN_ISSUER;
+        refreshSignOptions.algorithm = process.env.REFRESH_TOKEN_ALGORITHM;
+
+        const accessToken = this.jwtService.sign(payload, {
+          ...accessSignOptions,
+          secret: process.env.ACCESS_TOKEN_SECRET_KEY,
+        });
+        const refreshToken = this.jwtService.sign(payload, {
+          ...refreshSignOptions,
+          secret: process.env.REFRESH_TOKEN_SECRET_KEY,
+        });
+
+        const tokens = {
+          accessToken: accessToken,
+          refreshToken: refreshToken,
+        };
+
+        const response: any = await this.myProfileResponse(this.user);
+        response.tokens = tokens;
+
+        return await response;
+      } else {
+        throw new GereralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
+      }
+    } else {
+      throw new GereralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
+    }
+  }
+
+  async adminCredential(data) {
+    console.log('We are in adminCredential');
+
+    const whereCondition = { isDeleted: false };
+    const populateCondition = [
+      {
+        path: 'roles',
+        populate: {
+          path: 'permissions',
+          select: 'name module label description routes',
+        },
+      },
+    ];
+    const selectCondition = this.getUserKeys();
+
+    this.user = await this.userRepository.findUserByEmail(
+      data.email,
+      whereCondition,
+      populateCondition,
+      selectCondition,
+    );
+
+    console.log('this.user:', this.user);
+
+    if (this.user) {
+      if (
+        !this.user ||
+        !this.user?.roles[0].name ||
+        this.user?.roles[0].name != 'super_admin'
+      ) {
+        throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied.');
+      }
+
+      const isValidPassword = await this.validateUserPassword(
+        data.password,
+        this.user.password,
+      );
 
       if (isValidPassword) {
         const payload = { email: this.user.email, sub: this.user._id };
@@ -2216,21 +2279,6 @@ export class UserService {
       sort: { insertDate: sortMode },
       populate: [
         {
-          path: 'info',
-          select:
-            'nationalCode nickName fatherName email website telephone fax biography levelOfEducation',
-          populate: [
-            {
-              path: 'profileImage',
-              select: 'type fileName',
-            },
-            {
-              path: 'headerImage',
-              select: 'type fileName',
-            },
-          ],
-        },
-        {
           path: 'roles',
           populate: {
             path: 'permissions',
@@ -2369,19 +2417,6 @@ export class UserService {
 
       const whereCondition = { isDeleted: false };
       const populateCondition = [
-        {
-          path: 'info',
-          select:
-            'nationalCode nickName fatherName website telephone fax biography levelOfEducation',
-          populate: [
-            {
-              path: 'profileImage',
-            },
-            {
-              path: 'headerImage',
-            },
-          ],
-        },
         {
           path: 'roles',
           populate: {

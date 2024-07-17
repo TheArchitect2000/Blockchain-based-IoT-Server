@@ -39,7 +39,7 @@ export class InstalledServiceService {
     return insertedService;
   }
 
-  async editInstalledService(body, userId): Promise<any> {
+  async editInstalledService(body, userId, isAdmin = false): Promise<any> {
     let whereCondition = { _id: body.installedServiceId };
     let populateCondition = [];
     let selectCondition =
@@ -68,6 +68,18 @@ export class InstalledServiceService {
 
     // if(foundInstalledService && foundInstalledService !== undefined && foundInstalledService.deletable){
     if (foundInstalledService && foundInstalledService !== undefined) {
+      if (
+        foundInstalledService.userId.toString() !== userId.toString() &&
+        isAdmin == false
+      ) {
+        let errorMessage = 'Access Denied!';
+        this.result = {
+          message: errorMessage,
+          success: false,
+          date: new Date(),
+        };
+        return this.result;
+      }
       if (
         body.installedServiceId != null ||
         body.installedServiceId != undefined
@@ -173,7 +185,11 @@ export class InstalledServiceService {
     return foundServices;
   }
 
-  async getInstalledServicesByDeviceEncryptedId(deviceEncryptedId) {
+  async getInstalledServicesByDeviceEncryptedId(
+    deviceEncryptedId,
+    userId,
+    isAdmin = false,
+  ) {
     let whereCondition = { isDeleted: false };
     let populateCondition = [];
     let selectCondition =
@@ -195,6 +211,19 @@ export class InstalledServiceService {
         throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
+    if (
+      foundService.userId.toString() !== userId.toString() &&
+      isAdmin == false
+    ) {
+      let errorMessage = 'Access Denied!';
+      this.result = {
+        message: errorMessage,
+        success: false,
+        date: new Date(),
+      };
+      return this.result;
+    }
+
     return foundService;
   }
 
@@ -208,8 +237,6 @@ export class InstalledServiceService {
 
     console.log('we are in getAllInstalledServices service!');
 
-    console.log('we are 1.5');
-
     try {
       foundServices =
         await this.installedServiceRepository.getAllInstalledServices(
@@ -220,8 +247,6 @@ export class InstalledServiceService {
     } catch (error) {
       console.log(error);
     }
-
-    console.log('we are 2!');
 
     foundServices.forEach((element) => {
       response.push({
@@ -239,16 +264,13 @@ export class InstalledServiceService {
       });
     });
 
-    console.log(response);
-
-    console.log('3');
-
     return response;
   }
 
   async deleteInstalledServiceByInstalledServiceId(
     installedServiceId,
     userId,
+    isAdmin = false,
   ): Promise<any> {
     let whereCondition = { isDeleted: false };
     let populateCondition = [];
@@ -274,6 +296,19 @@ export class InstalledServiceService {
 
     // if(foundInstalledService && foundInstalledService !== undefined && foundInstalledService.deletable){
     if (foundInstalledService && foundInstalledService !== undefined) {
+      if (
+        foundInstalledService.userId.toString() !== userId.toString() &&
+        isAdmin == false
+      ) {
+        let errorMessage = 'Access Denied!';
+        this.result = {
+          message: errorMessage,
+          success: false,
+          date: new Date(),
+        };
+        return this.result;
+      }
+
       foundInstalledService.isDeleted = true;
       foundInstalledService.deletedBy = userId;
       foundInstalledService.deleteDate = new Date();

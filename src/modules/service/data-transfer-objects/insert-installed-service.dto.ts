@@ -21,10 +21,10 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class insertInstalledServiceDto {
   // @IsOptional()
-  @IsNotEmpty({ message: 'userId is required and must be entered.' })
+  /* @IsNotEmpty({ message: 'userId is required and must be entered.' })
   @IsString({ message: 'userId must be string.' })
   @ApiProperty({ required: true })
-  userId: string;
+  userId: string; */
 
   // @IsOptional()
   @IsNotEmpty({ message: 'serviceId is required and must be entered.' })

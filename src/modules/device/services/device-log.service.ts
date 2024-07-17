@@ -100,7 +100,19 @@ export class DeviceLogService {
   async getDeviceLogByEncryptedDeviceIdAndFieldName(
     deviceEncryptedId,
     fieldName,
+    userId = '',
+    isAdmin = false,
   ) {
+    const foundDevices = (await this.deviceService.getDeviceInfoByEncryptedId(
+      deviceEncryptedId,
+      userId,
+      isAdmin,
+    )) as any;
+
+    if (foundDevices?.success == false) {
+      return foundDevices;
+    }
+
     let foundActivities: any = null;
 
     let query = {
@@ -182,7 +194,19 @@ export class DeviceLogService {
     endYear,
     endMonth,
     endDay,
+    userId = '',
+    isAdmin = false,
   ) {
+    const foundDevices = (await this.deviceService.getDeviceInfoByEncryptedId(
+      deviceEncryptedId,
+      userId,
+      isAdmin,
+    )) as any;
+
+    if (foundDevices?.success == false) {
+      return foundDevices;
+    }
+
     let foundDeviceLogs: any = null;
 
     let query = {
@@ -205,7 +229,19 @@ export class DeviceLogService {
     deviceEncryptedId,
     fieldName,
     daysBefore,
+    userId = '',
+    isAdmin = false,
   ) {
+    const foundDevices = (await this.deviceService.getDeviceInfoByEncryptedId(
+      deviceEncryptedId,
+      userId,
+      isAdmin,
+    )) as any;
+
+    if (foundDevices?.success == false) {
+      return foundDevices;
+    }
+
     let foundDeviceLogs: any = null;
 
     let endDate = new Date();

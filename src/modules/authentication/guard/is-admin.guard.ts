@@ -2,8 +2,8 @@ import {
   Injectable,
   CanActivate,
   ExecutionContext,
-  UnauthorizedException,
   Inject,
+  ForbiddenException,
 } from '@nestjs/common';
 import { UserService } from 'src/modules/user/services/user/user.service';
 
@@ -16,18 +16,19 @@ export class IsAdminGuard implements CanActivate {
     const user = request.user;
 
     if (user) {
-      const res = await this.userService.findAUserById(user.userId);
+      const res = (await this.userService.findAUserById(user.userId)) as any;
 
-      if (res) {
-        setTimeout(() => {
-          console.log('User Datas Is:', res);
-        }, 5000);
-        return true;
+      if (
+        !res ||
+        !res?.roles[0]?.name ||
+        res?.roles[0]?.name != 'super_admin'
+      ) {
+        throw new ForbiddenException('You do not have admin privileges.');
       } else {
-        throw new UnauthorizedException('You do not have admin privileges.');
+        return true;
       }
     } else {
-      throw new UnauthorizedException('You do not have admin privileges.');
+      throw new ForbiddenException('User not found.');
     }
   }
 }

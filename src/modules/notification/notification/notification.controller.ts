@@ -28,11 +28,31 @@ import {
   EditNotificationRequestBodyDto,
   ReadNotificationRequestBodyDto,
 } from '../dto/notification.dto';
+import { IsAdminGuard } from 'src/modules/authentication/guard/is-admin.guard';
+import { UserService } from 'src/modules/user/services/user/user.service';
 
 @ApiTags('Notification')
 @Controller('app/v1/notification')
 export class NotificationController {
-  constructor(private service: NotificationService) {}
+  constructor(
+    private service: NotificationService,
+    private readonly userService?: UserService,
+  ) {}
+
+  async isAdmin(userId: string) {
+    const profile = (await this.userService.getUserProfileByIdFromUser(
+      userId,
+    )) as any;
+    if (
+      !profile ||
+      !profile?.roles[0]?.name ||
+      profile?.roles[0]?.name != 'super_admin'
+    ) {
+      return false;
+    } else {
+      return true;
+    }
+  }
 
   @Post('/sendToken')
   @UseGuards(JwtAuthGuard)
@@ -49,12 +69,12 @@ export class NotificationController {
     return this.service.sendToken(token, request.user.userId);
   }
 
-  @Post('/sendMessage')
-  //@UseGuards(JwtAuthGuard)
+  /* @Post('/sendMessage')
   @ApiOperation({
     summary: 'user send firebase token and server save it.',
     description: '',
   })
+  //@UseGuards(JwtAuthGuard)
   //@ApiBearerAuth()
   async sendNotification(@Body() body: SendNotificationRequestBodyDto) {
     const { user } = body;
@@ -64,10 +84,10 @@ export class NotificationController {
         'userId must be valid type',
       );
     return this.service.sendNotification(body);
-  }
+  } */
 
   @Post('/add-notification-by-user-id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, IsAdminGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'add notification for user when opening app or site.',
@@ -81,7 +101,7 @@ export class NotificationController {
   }
 
   @Post('/add-notification-by-user-email')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, IsAdminGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'add notification for user when opening app or site.',
@@ -94,7 +114,7 @@ export class NotificationController {
   }
 
   @Post('/add-public-notification')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, IsAdminGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'add notification for all users when opening app or site.',
@@ -114,7 +134,16 @@ export class NotificationController {
     summary: 'get notification for user when opening app or site.',
     description: '',
   })
-  async getUnreadNotifications(@Param('userId') userId: string) {
+  async getUnreadNotifications(
+    @Param('userId') userId: string,
+    @Request() request,
+  ) {
+    const isAdmin = await this.isAdmin(request.user.userId);
+
+    if (isAdmin === false && request.user.userId !== userId) {
+      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+    }
+
     return this.service.getUserNotificationsByUserId(userId);
   }
 
@@ -125,7 +154,15 @@ export class NotificationController {
     summary: 'get notification for user when opening app or site.',
     description: '',
   })
-  async getAllNotification(@Param('userId') userId: string) {
+  async getAllNotification(
+    @Param('userId') userId: string,
+    @Request() request,
+  ) {
+    const isAdmin = await this.isAdmin(request.user.userId);
+
+    if (isAdmin === false && request.user.userId !== userId) {
+      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+    }
     return this.service.getAllUserNotificationsByUserId(userId);
   }
 
@@ -158,8 +195,13 @@ export class NotificationController {
     summary: 'add notification for user when opening app or site.',
     description: '',
   })
-  async readNotification(@Body() body: ReadNotificationRequestBodyDto) {
-    return this.service.readNotificationsByNotificationIds(body.notifications);
+  async readNotification(
+    @Body() body: ReadNotificationRequestBodyDto,
+    @Request() request,
+  ) {
+    return this.service.readNotificationsByNotificationIds(
+      body.notifications,
+    );
   }
 
   @Patch('/edit-notification-by-id')
@@ -173,7 +215,8 @@ export class NotificationController {
     @Body() body: EditNotificationRequestBodyDto,
     @Request() request,
   ) {
+    const isAdmin = await this.isAdmin(request.user.userId);
     const { notifId, ...rest } = body;
-    return this.service.editNotificationById(notifId, rest as any);
+    return this.service.editNotificationById(notifId, request.user.userId, isAdmin, rest as any);
   }
 }

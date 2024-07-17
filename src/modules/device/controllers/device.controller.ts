@@ -30,13 +30,33 @@ import { insertDeviceDto } from '../data-transfer-objects/insert-device.dto';
 import { renameDeviceDto } from '../data-transfer-objects/rename-device.dto';
 import { DeviceService } from '../services/device.service';
 import { EditDeviceDto } from '../data-transfer-objects/edit-device.dto';
+import { UserService } from 'src/modules/user/services/user/user.service';
+import { IsAdminGuard } from 'src/modules/authentication/guard/is-admin.guard';
 
 @ApiTags('Manage Devices')
 @Controller('app')
 export class DeviceController {
   private result;
 
-  constructor(private readonly deviceService: DeviceService) {}
+  constructor(
+    private readonly deviceService: DeviceService,
+    private readonly userService?: UserService,
+  ) {}
+
+  async isAdmin(userId: string) {
+    const profile = (await this.userService.getUserProfileByIdFromUser(
+      userId,
+    )) as any;
+    if (
+      !profile ||
+      !profile?.roles[0]?.name ||
+      profile?.roles[0]?.name != 'super_admin'
+    ) {
+      return false;
+    } else {
+      return true;
+    }
+  }
 
   @Get('v1/device/check-device-is-exists/:deviceMac')
   @HttpCode(200)
@@ -68,7 +88,11 @@ export class DeviceController {
       'This api requires user device profile. Parameters are array of JSON objects like: [{"a1":"v1"},{"a2":"v2"},...], Locations and Geometries are like: "location": {"type":"Point","coordinates": [50,40]}, "geometry": {"type":"Polygon","coordinates": [[50,40],[20,10],[30,60]]}  for default set to "location": {}, "geometry": {}',
   })
   async insertDevice(@Body() body: insertDeviceDto, @Request() request) {
-    return await this.deviceService.insertDevice(body);
+    const newBody = {
+      ...body,
+      userId: request.user.userId,
+    };
+    return await this.deviceService.insertDevice(newBody);
   }
 
   @Patch('v1/device/edit')
@@ -96,8 +120,10 @@ export class DeviceController {
       );
     }
 
+    const isAdmin = await this.isAdmin(request.user.userId);
+
     await this.deviceService
-      .editDevice(body, request.user.userId)
+      .editDevice(body, request.user.userId, isAdmin)
       .then((data) => {
         this.result = data;
       })
@@ -120,7 +146,10 @@ export class DeviceController {
     summary: 'Get user devices by user id.',
     description: 'Gets user devices by user id. This api requires a user id.',
   })
-  async getDevicesByUserId(@Param('userId') userId: string) {
+  async getDevicesByUserId(
+    @Param('userId') userId: string,
+    @Request() request,
+  ) {
     if (
       userId === null ||
       userId === undefined ||
@@ -129,8 +158,14 @@ export class DeviceController {
     ) {
       throw new GereralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-        'Home id is required and must be entered and must be entered correctly.',
+        'User id is required and must be entered and must be entered correctly.',
       );
+    }
+
+    const isAdmin = await this.isAdmin(request.user.userId);
+
+    if (isAdmin === false && request.user.userId !== userId) {
+      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
 
     await this.deviceService
@@ -161,6 +196,7 @@ export class DeviceController {
   })
   async getDevicesWithEncryptedDeviceIdByUserId(
     @Param('userId') userId: string,
+    @Request() request,
   ) {
     if (
       userId === null ||
@@ -172,6 +208,12 @@ export class DeviceController {
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         'User id is required and must be entered and must be entered correctly.',
       );
+    }
+
+    const isAdmin = await this.isAdmin(request.user.userId);
+
+    if (isAdmin === false && request.user.userId !== userId) {
+      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
 
     await this.deviceService
@@ -216,8 +258,10 @@ export class DeviceController {
       );
     }
 
+    const isAdmin = await this.isAdmin(request.user.userId);
+
     await this.deviceService
-      .renameDevice(body, request.user.userId)
+      .renameDevice(body, request.user.userId, isAdmin)
       .then((data) => {
         this.result = data;
       })
@@ -234,7 +278,7 @@ export class DeviceController {
 
   @Get('v1/device/get-installed-devices-by-date')
   @HttpCode(200)
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, IsAdminGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary:
@@ -286,7 +330,7 @@ export class DeviceController {
     return this.result;
   }
 
-  @Get('v1/device/get-number-of-payloads-sent-by-devices-by-date')
+  /* @Get('v1/device/get-number-of-payloads-sent-by-devices-by-date')
   @HttpCode(200)
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -338,7 +382,7 @@ export class DeviceController {
       });
 
     return this.result;
-  }
+  } */
 
   @Get('v1/device/get-all-shared-devices')
   @HttpCode(200)
@@ -369,7 +413,7 @@ export class DeviceController {
 
   @Get('v1/device/get-all-devices')
   @HttpCode(200)
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, IsAdminGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get all installed devices.',
@@ -400,10 +444,15 @@ export class DeviceController {
   @ApiOperation({
     summary: 'Get all installed devices.',
     description: 'Gets all installed devices.',
-  }) //QTA6NzY6NEU6NTc6REY6RDg=
-  async getDeviceInfoByEncryptedId(@Param('encryptedId') encryptedId: string) {
+  })
+  async getDeviceInfoByEncryptedId(
+    @Param('encryptedId') encryptedId: string,
+    @Request() request,
+  ) {
+    const isAdmin = await this.isAdmin(request.user.userId);
+
     await this.deviceService
-      .getDeviceInfoByEncryptedId(encryptedId)
+      .getDeviceInfoByEncryptedId(encryptedId, request.user.userId, isAdmin)
       .then((data) => {
         this.result = data;
       })
@@ -424,7 +473,10 @@ export class DeviceController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Deletes a device with id.' })
-  async deleteDeviceByDeviceId(@Param('deviceId') deviceId: string) {
+  async deleteDeviceByDeviceId(
+    @Param('deviceId') deviceId: string,
+    @Request() request,
+  ) {
     if (
       deviceId === null ||
       deviceId === undefined ||
@@ -438,8 +490,10 @@ export class DeviceController {
       );
     }
 
+    const isAdmin = await this.isAdmin(request.user.userId);
+
     await this.deviceService
-      .deleteDeviceByDeviceId(deviceId)
+      .deleteDeviceByDeviceId(deviceId, request.user.userId, isAdmin)
       .then((data) => {
         this.result = data;
       })

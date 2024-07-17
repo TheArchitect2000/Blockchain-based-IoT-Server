@@ -80,21 +80,21 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
     MediaService,
     MediaRepository,
     MulterConfigService,
-    CategoryService,
+    /* CategoryService,
     CategoryRepository,
     TagService,
-    TagRepository,
+    TagRepository, */
     CustomValidatorService,
   ],
-  controllers: [CategoryController, TagController],
+  controllers: [/* CategoryController, TagController */],
   exports: [
     OTPService,
     SMSService,
     MailService,
     MediaService,
     MulterConfigService,
-    CategoryService,
-    TagService,
+/*     CategoryService,
+    TagService, */
     CustomValidatorService,
   ],
 })

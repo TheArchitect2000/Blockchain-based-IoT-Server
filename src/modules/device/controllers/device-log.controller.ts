@@ -119,6 +119,21 @@ export class DeviceLogController {
     }, 24 * 60 * 60 * 1000);
   }
 
+  async isAdmin(userId: string) {
+    const profile = (await this.userService.getUserProfileByIdFromUser(
+      userId,
+    )) as any;
+    if (
+      !profile ||
+      !profile?.roles[0]?.name ||
+      profile?.roles[0]?.name != 'super_admin'
+    ) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   @Get('v1/device-log/get-last-device-log-by-encrypted-deviceid-and-field-name')
   @HttpCode(200)
   @UseGuards(JwtAuthGuard)
@@ -143,13 +158,23 @@ export class DeviceLogController {
   async getLastDeviceLogByEncryptedDeviceIdAndFieldName(
     @Query('deviceEncryptedId') deviceEncryptedId: string,
     @Query('fieldName') fieldName: string,
+    @Request() request,
   ) {
+    const isAdmin = await this.isAdmin(request.user.userId);
+
     await this.deviceLogService
-      .getDeviceLogByEncryptedDeviceIdAndFieldName(deviceEncryptedId, fieldName)
+      .getDeviceLogByEncryptedDeviceIdAndFieldName(
+        deviceEncryptedId,
+        fieldName,
+        request.user.userId,
+        isAdmin,
+      )
       .then((data) => {
         this.result = data;
       })
       .catch((error) => {
+        console.log(error);
+
         let errorMessage =
           'Some errors occurred while fetching last device log!';
 
@@ -186,6 +211,7 @@ export class DeviceLogController {
   async getLastDevicesLogByUserIdAndFieldName(
     @Query('userId') userId: string,
     @Query('fieldName') fieldName: string,
+    @Request() request,
   ) {
     if (
       userId === null ||
@@ -197,6 +223,12 @@ export class DeviceLogController {
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         'User id is required and must be entered and must be entered correctly.',
       );
+    }
+
+    const isAdmin = await this.isAdmin(request.user.userId);
+
+    if (isAdmin === false && request.user.userId !== userId) {
+      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
 
     await this.deviceLogService
@@ -285,7 +317,10 @@ export class DeviceLogController {
     @Query('endYear') endYear: number,
     @Query('endMonth') endMonth: number,
     @Query('endDay') endDay: number,
+    @Request() request,
   ) {
+    const isAdmin = await this.isAdmin(request.user.userId);
+
     await this.deviceLogService
       .getDeviceLogByEncryptedDeviceIdAndFieldNameAndDate(
         deviceEncryptedId,
@@ -296,6 +331,8 @@ export class DeviceLogController {
         endYear,
         endMonth,
         endDay,
+        request.user.userId,
+        isAdmin,
       )
       .then((data) => {
         this.result = data;
@@ -346,24 +383,51 @@ export class DeviceLogController {
     @Query('deviceEncryptedId') deviceEncryptedId: string,
     @Query('fieldName') fieldName: string,
     @Query('daysBefore') daysBefore: number,
+    @Request() request?,
   ) {
-    await this.deviceLogService
-      .getDeviceLogByEncryptedDeviceIdAndFieldNameAndNumberOfDaysBefore(
-        deviceEncryptedId,
-        fieldName,
-        daysBefore,
-      )
-      .then((data) => {
-        this.result = data;
-      })
-      .catch((error) => {
-        let errorMessage = 'Some errors occurred while fetching devices logs!';
+    const isAdmin = await this.isAdmin(request.user.userId);
+    // if storX saving is not working check this section
+    if (request) {
+      await this.deviceLogService
+        .getDeviceLogByEncryptedDeviceIdAndFieldNameAndNumberOfDaysBefore(
+          deviceEncryptedId,
+          fieldName,
+          daysBefore,
+          request?.user?.userId,
+          isAdmin,
+        )
+        .then((data) => {
+          this.result = data;
+        })
+        .catch((error) => {
+          let errorMessage =
+            'Some errors occurred while fetching devices logs!';
 
-        throw new GereralException(
-          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-          errorMessage,
-        );
-      });
+          throw new GereralException(
+            ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+            errorMessage,
+          );
+        });
+    } else {
+      await this.deviceLogService
+        .getDeviceLogByEncryptedDeviceIdAndFieldNameAndNumberOfDaysBefore(
+          deviceEncryptedId,
+          fieldName,
+          daysBefore,
+        )
+        .then((data) => {
+          this.result = data;
+        })
+        .catch((error) => {
+          let errorMessage =
+            'Some errors occurred while fetching devices logs!';
+
+          throw new GereralException(
+            ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+            errorMessage,
+          );
+        });
+    }
 
     return this.result;
   }

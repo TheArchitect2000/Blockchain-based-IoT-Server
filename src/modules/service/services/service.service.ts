@@ -38,7 +38,7 @@ export class ServiceService {
     return insertedService;
   }
 
-  async editService(body, userId): Promise<any> {
+  async editService(body, userId, isAdmin=false): Promise<any> {
     let whereCondition = { _id: body.serviceId };
     let populateCondition = [];
     let selectCondition =
@@ -67,6 +67,19 @@ export class ServiceService {
 
     // if(foundService && foundService !== undefined && foundService.deletable){
     if (foundService && foundService !== undefined) {
+      if (
+        foundService.userId.toString() !== userId.toString() &&
+        isAdmin == false
+      ) {
+        let errorMessage = 'Access Denied!';
+        this.result = {
+          message: errorMessage,
+          success: false,
+          date: new Date(),
+        };
+        return this.result;
+      }
+
       if (
         foundService.published === true ||
         foundService.publishRequested === true ||
@@ -367,7 +380,7 @@ export class ServiceService {
     return this.result;
   }
 
-  async getServiceById(serviceId) {
+  async getServiceById(serviceId, userId, isAdmin=false) {
     let whereCondition = { isDeleted: false };
     let populateCondition = [];
     let selectCondition =
@@ -390,6 +403,21 @@ export class ServiceService {
           let errorMessage = 'Some errors occurred while finding a service!';
           throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
         });
+    }
+
+    if (
+      foundService &&
+      foundService != undefined &&
+      foundService.userId != userId &&
+      isAdmin == false
+    ) {
+      let errorMessage = 'Access Denied!';
+      this.result = {
+        message: errorMessage,
+        success: false,
+        date: new Date(),
+      };
+      return this.result;
     }
 
     return foundService;
@@ -551,7 +579,7 @@ export class ServiceService {
     return response;
   }
 
-  async deleteServiceByServiceId(serviceId, userId): Promise<any> {
+  async deleteServiceByServiceId(serviceId, userId, isAdmin=false): Promise<any> {
     let whereCondition = { isDeleted: false };
     let populateCondition = [];
     let selectCondition =
@@ -576,6 +604,18 @@ export class ServiceService {
 
     // if(foundService && foundService !== undefined && foundService.deletable){
     if (foundService && foundService !== undefined) {
+      if (
+        foundService.userId.toString() !== userId.toString() &&
+        isAdmin == false
+      ) {
+        let errorMessage = 'Access Denied!';
+        this.result = {
+          message: errorMessage,
+          success: false,
+          date: new Date(),
+        };
+        return this.result;
+      }
       if (
         foundService.published === true ||
         foundService.publishRequested === true ||

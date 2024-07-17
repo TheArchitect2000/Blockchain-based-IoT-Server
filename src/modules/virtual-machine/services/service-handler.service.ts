@@ -1,11 +1,10 @@
 import { Script, createContext } from 'vm';
 import mqtt from 'mqtt';
-import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { MailService } from 'src/modules/utility/services/mail.service';
 import { UserService } from 'src/modules/user/services/user/user.service';
 import { DeviceService } from 'src/modules/device/services/device.service';
 import { InstalledServiceService } from 'src/modules/service/services/installed-service.service';
-import axios from 'axios';
 
 @Injectable()
 export class VirtualMachineHandlerService {
@@ -20,6 +19,11 @@ export class VirtualMachineHandlerService {
   ) {}
 
   async createVirtualMachine(body, installedServiceId) {
+    if (this.vmContexts[installedServiceId.toString()]) {
+      console.log('Vm with this installedServiceId is created before !');
+      return false;
+    }
+
     let userCode = body.code.toString();
 
     let serviceOutPut = userCode.toString().replaceAll(/\r?\n|\r/g, ' ');
