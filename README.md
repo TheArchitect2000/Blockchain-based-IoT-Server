@@ -289,9 +289,11 @@ assets/certificates/webpublic.pem
 ```
 
 ## 8- Installation of packages
-In the project root directory run the following command:
+In the project root directory run the following commands to install npm packages and then, build the project:
 ```
+cd ~/server_backend_developer
 npm install
+npm run build
 ```
 
 ## 9- Run the project with pm2
