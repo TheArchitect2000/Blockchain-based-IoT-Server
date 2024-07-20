@@ -223,7 +223,6 @@ sudo nano .env
 ```
 Inside the `.env` file, past the parameters.
 ```
-API_Mode = "Productionn"
 PORT = 5000
 SWAGGER_LOCAL_SERVER = http://localhost:5000
 
