@@ -13,7 +13,7 @@ Install MongoDB version 4.4
 ```
 curl -fsSL https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
 apt-key list
-$ echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
+echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
 sudo apt update
 sudo apt install -y mongodb-org
 ```
@@ -96,8 +96,6 @@ http {
 
 	gzip on;
 
-	application/xml application/xml+rss text/javascript;
-
 	server {
 		listen 443 ssl;
 		listen [::]:443 ssl;
@@ -168,10 +166,17 @@ npm i -g @nestjs/cli
 ```
 
 ## 5- Configure Firewall 
-### Allow ssh connection
+### Allow connections
+Install `ufw`
+```
+apt install ufw
+```
+Allow OpenSSH connection
 ```
 sudo ufw allow OpenSSH
+```
 Allow nginx connection
+```
 sudo ufw allow 'nginx full'
 ```
 Allow Mobile App to connect to the server through port 3000 
@@ -200,7 +205,11 @@ sudo ufw enable
 sudo ufw status
 ```
 ## 6- Clone the project
-In root directory clone the project
+Install `git`
+```
+apt install git
+```
+In the root directory clone the project
 ```
 cd /root
 git clone https://github.com/FidesInnova/server_backend_developer.git
