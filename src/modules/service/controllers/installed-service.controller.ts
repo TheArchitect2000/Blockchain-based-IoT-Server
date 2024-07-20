@@ -85,7 +85,7 @@ export class InstalledServiceController {
     return res;
   }
 
-  @Post('v1/installed-service/create-all-virtual-machines')
+  /* @Post('v1/installed-service/create-all-virtual-machines')
   @HttpCode(201)
   @UseGuards(JwtAuthGuard, IsAdminGuard)
   @ApiBearerAuth()
@@ -100,7 +100,7 @@ export class InstalledServiceController {
     } else {
       return false;
     }
-  }
+  } */
 
   @Patch('v1/installed-service/edit')
   @HttpCode(200)

@@ -63,6 +63,7 @@ import { editUserAndInfoByUserDto } from '../data-transfer-objects/user/edit-use
 import { editUserByUserDto } from '../data-transfer-objects/user/edit-user-by-user.dto';
 import { verifyEmailDto } from '../data-transfer-objects/user/verify-email.dto';
 import { IsAdminGuard } from 'src/modules/authentication/guard/is-admin.guard';
+import { VirtualMachineHandlerService } from 'src/modules/virtual-machine/services/service-handler.service';
 var fs = require('fs');
 
 @ApiTags('Manage Users')
@@ -72,7 +73,8 @@ export class UserController {
 
   constructor(
     private readonly userService: UserService,
-    private readonly mailService: MailService, /// Test
+    private readonly mailService: MailService,
+    private readonly VirtualMachineService?: VirtualMachineHandlerService,
   ) {}
 
   async isAdmin(userId: string) {
@@ -1200,6 +1202,8 @@ export class UserController {
     if (isAdmin === false && request.user.userId !== userId) {
       throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
+
+    await this.VirtualMachineService.deleteAllUserVirtualMachines(userId);
 
     await this.userService
       .deleteAllUserDataPermanently(userId)

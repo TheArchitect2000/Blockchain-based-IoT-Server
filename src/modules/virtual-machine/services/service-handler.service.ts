@@ -8,6 +8,7 @@ import { InstalledServiceService } from 'src/modules/service/services/installed-
 
 @Injectable()
 export class VirtualMachineHandlerService {
+  private static instance: VirtualMachineHandlerService;
   private vmContexts = {};
   private allResults;
 
@@ -16,10 +17,27 @@ export class VirtualMachineHandlerService {
     private readonly mailService?: MailService,
     private readonly userService?: UserService,
     private readonly deviceService?: DeviceService,
-  ) {}
+  ) {
+    if (VirtualMachineHandlerService.instance) {
+      return VirtualMachineHandlerService.instance;
+    }
+    VirtualMachineHandlerService.instance = this;
+    setTimeout(() => {
+      this.createAllVirtualMachines()
+    }, 5000);
+  }
+
+  async isVmExist(installedServiceId) {
+    if (this.vmContexts[installedServiceId.toString()]) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
   async createVirtualMachine(body, installedServiceId) {
-    if (this.vmContexts[installedServiceId.toString()]) {
+    const isExist = await this.isVmExist(installedServiceId);
+    if (isExist == true) {
       console.log('Vm with this installedServiceId is created before !');
       return false;
     }
@@ -307,26 +325,56 @@ export class VirtualMachineHandlerService {
     console.log(
       `Virtual Machine With ID ${installedServiceId} Created Successfully`,
     );
+
+    return true
   }
 
   async deleteVirtualMachinByServiceId(installedServiceId) {
+    console.log('Deletingggggggggg');
+
     try {
-      this.vmContexts[installedServiceId.toString()].terminateVm();
-      delete this.vmContexts[installedServiceId.toString()];
+      if (this.vmContexts[installedServiceId.toString()]) {
+        this.vmContexts[installedServiceId.toString()].terminateVm();
+        delete this.vmContexts[installedServiceId.toString()];
+        console.log(
+          `${installedServiceId} Virtual Machine Deleted Succesfully !`,
+        );
+      }
       return true;
     } catch (e) {
+      console.log('Errrrorrrrr:', e);
+
       return false;
     }
   }
 
+  async deleteAllUserVirtualMachines(userId: string) {
+    let count = 0;
+    await this.installedServiceService
+      .getInstalledServicesByUserId(userId)
+      .then((data) => {
+        data.map((service) => {
+          this.deleteVirtualMachinByServiceId(service._id.toString());
+        });
+      })
+      .catch((error) => {
+        let errorMessage =
+          'Some errors occurred while fetching installed services!';
+        return errorMessage;
+      });
+
+    return true;
+  }
+
   async createAllVirtualMachines() {
-    console.log('Installed Service Service:', this.installedServiceService);
+    let count = 0
     await this.installedServiceService
       .getAllInstalledServices()
       .then((data) => {
         data.map((service) => {
           if (service.code) {
             this.createVirtualMachine(service, service._id);
+            count = count + 1
           }
         });
       })
@@ -335,6 +383,8 @@ export class VirtualMachineHandlerService {
           'Some errors occurred while fetching installed services!';
         return errorMessage;
       });
+    console.log(`All virtual machines created successfully (Count: ${count})`);
+    
     return this.allResults;
   }
 }

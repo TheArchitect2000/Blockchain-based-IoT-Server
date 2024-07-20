@@ -24,6 +24,7 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { PanelModule } from '../panel/panel.module';
 import { DeviceModule } from '../device/device.module';
 import { ServiceModule } from '../service/service.module';
+import { VirtualMachineModule } from '../virtual-machine/virtual-machine.module';
 // import { AuthenticationModule } from './../authentication/authentication.module';
 
 @Module({
@@ -33,6 +34,7 @@ import { ServiceModule } from '../service/service.module';
     MongooseModule.forFeature(userRoleFeature),
     MongooseModule.forFeature(userPermissionFeature),
     MongooseModule.forFeature(otpFeature),
+    forwardRef(() => VirtualMachineModule),
     // forwardRef(() => AuthenticationModule),
     // AuthenticationModule,
     forwardRef(() => ServiceModule),
