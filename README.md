@@ -248,6 +248,7 @@ MONGO_USER = Administrator
 MONGO_PORT = 27017
 MONGO_HOST = mongodb://127.0.0.1
 MONGO_CONNECTION = mongodb://127.0.0.1:27017/fidesinnova
+MONGO_CONNECTION_PANEL = mongodb://127.0.0.1:27017/iasystem
 
 # Email Configuration
 NOTIFICATION_BY_MAIL = 'enabled'
@@ -312,8 +313,8 @@ sudo npm i -g pm2
 ```
 ### Run the project with pm2
 ```
-cd /root
-pm2 start server_backend_developer/dist/main.js --name "Backend Server"
+cd ~/server_backend_developer
+pm2 start dist/main.js --name "Backend Server"
 pm2 save
 pm2 startup
 ```
