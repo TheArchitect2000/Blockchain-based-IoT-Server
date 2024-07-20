@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import mongoose from 'mongoose';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { GereralException } from 'src/modules/utility/exceptions/general.exception';
 import { InstalledServiceRepository } from '../repositories/installed-service.repository';
+import { VirtualMachineHandlerService } from 'src/modules/virtual-machine/services/service-handler.service';
 
 export type InstalledService = any;
 
@@ -12,6 +13,7 @@ export class InstalledServiceService {
 
   constructor(
     private readonly installedServiceRepository?: InstalledServiceRepository,
+    /* private readonly VirtualMachineService?: VirtualMachineHandlerService, */
   ) {}
 
   async insertInstalledService(body) {
@@ -339,6 +341,36 @@ export class InstalledServiceService {
   }
 
   async deleteAllUserInstalledServicesPermanently(userId) {
+    let whereCondition = { isDeleted: false };
+    let populateCondition = [];
+    let selectCondition =
+      '_id userId serviceId installedServiceName description deviceMap installedServiceImage activationStatus insertedBy insertDate updatedBy updateDate';
+
+    const installedServices =
+      await this.installedServiceRepository.getInstalledServicesByUserId(
+        userId,
+        whereCondition,
+        populateCondition,
+        selectCondition,
+      );
+
+    /* Installed Services Are: [
+           {
+             _id: new ObjectId("6698cae3fd3eb511ff55ea52"),
+             userId: new ObjectId("6698c929fd3eb511ff55e882"),
+             serviceId: new ObjectId("6671295f9b95696aeb855918"),
+             installedServiceName: 'Service Image',
+             description: 'this is for testing upload image api',
+             deviceMap: { MULTI_SENSOR_1: 'MTI6YXM6M2E6Zzc6YmM=' },
+             installedServiceImage: 'https://developer.fidesinnova.io/app/uploads/file-1718697876645-253018426.png',
+             activationStatus: 'active',
+             insertedBy: new ObjectId("6698c929fd3eb511ff55e882"),
+             insertDate: 2024-07-18T07:57:23.505Z,
+             updatedBy: new ObjectId("6698c929fd3eb511ff55e882"),
+             updateDate: 2024-07-18T07:57:23.505Z
+           }
+         ] */
+
     await this.installedServiceRepository
       .deleteAllUserInstalledServicesPermanently(userId)
       .then((data) => {

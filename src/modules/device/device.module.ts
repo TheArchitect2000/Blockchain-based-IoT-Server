@@ -19,8 +19,8 @@ import { UserModule } from '../user/user.module';
     MongooseModule.forFeature(deviceFeature),
     MongooseModule.forFeature(deviceLogFeature),
     MongooseModule.forFeature(deviceTypeFeature),
-    forwardRef(() => UserModule), // For avoid circular dependency
-    // UserModule,
+    forwardRef(() => UserModule),
+
   ],
   providers: [
     DeviceService,

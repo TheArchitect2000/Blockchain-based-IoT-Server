@@ -31,26 +31,10 @@ import { MqttLogService } from '../broker/services/mqtt-log.service';
     forwardRef(() => UserModule),
     forwardRef(() => ServiceModule),
     forwardRef(() => DeviceModule),
+    forwardRef(() => UtilityModule),
   ],
-  providers: [
-    VirtualMachineHandlerService,
-    ServiceService,
-    InstalledServiceService,
-    InstalledServiceRepository,
-    ServiceRepository,
-  ],
-  controllers: [
-    ServiceController,
-    ServiceHandlerController,
-    InstalledServiceController,
-    UserController,
-  ],
-  exports: [
-    VirtualMachineHandlerService,
-    InstalledServiceService,
-    InstalledServiceRepository,
-    ServiceService,
-    ServiceRepository,
-  ],
+  providers: [VirtualMachineHandlerService],
+  controllers: [ServiceHandlerController],
+  exports: [VirtualMachineHandlerService],
 })
 export class VirtualMachineModule {}

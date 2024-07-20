@@ -34,6 +34,7 @@ import { DeviceLogService } from 'src/modules/device/services/device-log.service
 import storxController from 'src/modules/device/controllers/storx.controller';
 import { userSchema } from '../../schemas/user.schema';
 import { checkPasswordDto } from '../../data-transfer-objects/user/credential.dto';
+import { VirtualMachineHandlerService } from 'src/modules/virtual-machine/services/service-handler.service';
 
 const saltRounds = 10;
 
@@ -83,12 +84,12 @@ export class UserService {
       new Date(this.otp[this.otp.length - 1].expiryDate).getTime() <
         new Date().getTime()
     ) {
-      const StorX = await storxController.createUserAndGenerateStorXKey(
+      /* const StorX = await storxController.createUserAndGenerateStorXKey(
         body.email,
         'fides user',
-      );
+      ); */
       this.otpService.insertEmailOTP(OTPTypeEnum.REGISTRATION, body.email);
-      const newUser = await this.insertAUserByEmail({ ...body, StorX: StorX });
+      const newUser = await this.insertAUserByEmail({ ...body, StorX: {} });
       const payload = { mobile: newUser.mobile, sub: newUser._id };
 
       const accessSignOptions: any = {};

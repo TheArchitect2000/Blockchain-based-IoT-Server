@@ -8,11 +8,9 @@ import { InstalledServiceController } from './controllers/installed-service.cont
 import { InstalledServiceService } from './services/installed-service.service';
 import { InstalledServiceRepository } from './repositories/installed-service.repository';
 import { installedServiceFeature } from './features/installed-service.feature';
-import { MailService } from '../utility/services/mail.service';
-import { UserService } from '../user/services/user/user.service';
 import { UserModule } from '../user/user.module';
 import { DeviceModule } from '../device/device.module';
-import { VirtualMachineHandlerService } from '../virtual-machine/services/service-handler.service';
+import { VirtualMachineModule } from '../virtual-machine/virtual-machine.module';
 
 @Module({
   imports: [
@@ -20,21 +18,15 @@ import { VirtualMachineHandlerService } from '../virtual-machine/services/servic
     MongooseModule.forFeature(installedServiceFeature),
     forwardRef(() => UserModule),
     forwardRef(() => DeviceModule),
+    forwardRef(() => VirtualMachineModule),
   ],
   providers: [
     ServiceService,
     ServiceRepository,
     InstalledServiceService,
-    MailService,
-    VirtualMachineHandlerService,
     InstalledServiceRepository,
   ],
   controllers: [ServiceController, InstalledServiceController],
-  exports: [
-    ServiceService,
-    InstalledServiceService,
-    MailService,
-    VirtualMachineHandlerService,
-  ],
+  exports: [ServiceService, InstalledServiceService],
 })
 export class ServiceModule {}
