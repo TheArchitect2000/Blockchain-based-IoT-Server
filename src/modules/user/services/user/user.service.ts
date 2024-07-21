@@ -971,7 +971,7 @@ export class UserService {
   async findAUserByUserName(userName) {
     const whereCondition = { isDeleted: false };
     const populateCondition = [];
-    const selectCondition = '';
+    const selectCondition = this.getUserKeys();
 
     return await this.userRepository.findAUserByUserName(
       userName,
@@ -979,6 +979,50 @@ export class UserService {
       populateCondition,
       selectCondition,
     );
+  }
+
+  async makeUserAdmin(userName: string) {
+    const fullControllPermission = await this.userRoleService
+      .findARoleByName('super_admin')
+      .catch((error) => {
+        let errorMessage =
+          'Some errors occurred while finding user permission!';
+        throw new GereralException(
+          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+          errorMessage,
+        );
+      });
+
+    const adminRoleId = fullControllPermission._id;
+
+    const userRes = await this.findAUserByUserName(userName);
+
+    if (!userRes) {
+      throw new GereralException(
+        ErrorTypeEnum.NOT_FOUND,
+        'Account not found for making admin!',
+      );
+    }
+
+    const newData = {
+      ...userRes,
+    };
+    
+    const result = await this.userRepository.editUser(userRes._id, {roles: [adminRoleId]});
+    
+    if (result) {
+      return {
+        success: true,
+        message: "User turned into admin successfully.",
+        date: new Date(),
+      }
+    } else {
+      return {
+        success: false,
+        message: "An error occurred while making user admin.",
+        date: new Date(),
+      }
+    }
   }
 
   async editUserByUser(userId, data) {

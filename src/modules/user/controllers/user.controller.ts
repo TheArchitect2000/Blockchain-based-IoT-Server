@@ -64,6 +64,7 @@ import { editUserByUserDto } from '../data-transfer-objects/user/edit-user-by-us
 import { verifyEmailDto } from '../data-transfer-objects/user/verify-email.dto';
 import { IsAdminGuard } from 'src/modules/authentication/guard/is-admin.guard';
 import { VirtualMachineHandlerService } from 'src/modules/virtual-machine/services/service-handler.service';
+import { makeUserAdminDto } from '../data-transfer-objects/user/make-user-admin.dto';
 var fs = require('fs');
 
 @ApiTags('Manage Users')
@@ -887,6 +888,37 @@ export class UserController {
     }
 
     return await this.userService.insertUserByPanel(body, request.user.userId);
+  }
+
+  @Post('user/make-admin')
+  @HttpCode(201)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Make an user into admin.',
+    description: 'This api will make user into super_admin.',
+  })
+  async makeUserAdmin(@Body() body: makeUserAdminDto, @Request() request) {
+    if (body.userName) {
+      if (
+        body.userName === null ||
+        body.userName === undefined ||
+        body.userName === ''
+      ) {
+        throw new GereralException(
+          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+          'userName is required and must be entered and must be entered correctly.',
+        );
+      }
+    }
+
+    const emails = process.env.SUPER_ADMIN_EMAILS;
+
+    if (!emails.includes(request.user.email.toString())) {
+      throw new GereralException(ErrorTypeEnum.UNAUTHORIZED, 'Access Denied !');
+    }
+
+    return await this.userService.makeUserAdmin(body.userName);
   }
 
   /* @Patch('v1/user/edit-user-by-panel/:userId')

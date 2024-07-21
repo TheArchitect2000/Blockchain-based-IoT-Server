@@ -349,7 +349,6 @@ export class VirtualMachineHandlerService {
   }
 
   async deleteAllUserVirtualMachines(userId: string) {
-    let count = 0;
     await this.installedServiceService
       .getInstalledServicesByUserId(userId)
       .then((data) => {
