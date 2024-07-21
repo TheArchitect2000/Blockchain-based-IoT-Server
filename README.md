@@ -232,6 +232,9 @@ HOST_NAME_OR_IP = 'panel.YOUR_DOMAIN.COM'
 HOST_PORT = '3000'
 HOST_SUB_DIRECTORY = 'app'
 
+# Node Servers
+NODE_SERVERS=[{"Name":"EnergyWise","MQTT":"panel.fidesinnova.io","API":"panel.fidesinnova.io/app"},{"Name":"Cherry","MQTT":"panel.cherrynode.tech","API":"panel.cherrynode.tech/app"},{"Name":"Developer","MQTT":"developer.fidesinnova.io","API":"developer.fidesinnova.io/app"}]
+
 # StorX Config
 STORX_BUCKET_NAME = 'fidesinnova'
 STORX_HOST = 'https://b2.storx.io'
