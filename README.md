@@ -247,7 +247,6 @@ MONGO_USER = Administrator
 MONGO_PORT = 27017
 MONGO_HOST = mongodb://127.0.0.1
 MONGO_CONNECTION = mongodb://127.0.0.1:27017/fidesinnova
-MONGO_CONNECTION_PANEL = mongodb://127.0.0.1:27017/iasystem
 
 # Email Configuration
 NOTIFICATION_BY_MAIL = 'enabled'
