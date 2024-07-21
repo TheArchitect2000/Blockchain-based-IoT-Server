@@ -2,6 +2,7 @@
 /dist
 /node_modules
 
+/uploads
 !/uploads
 /uploads/*
 !/uploads/avatars/
