@@ -2,7 +2,13 @@
 /dist
 /node_modules
 
-
+/uploads
+!/uploads
+/uploads/*
+!/uploads/avatars/
+/uploads/avatars/*
+!/uploads/avatars/
+/uploads/sprites.png
 
 # Project configuration files
 assets/certificates/webprivate.pem
