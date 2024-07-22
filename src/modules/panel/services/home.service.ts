@@ -19,14 +19,12 @@ export class HomeService {
     private readonly homeRepository?: HomeRepository,
   ) {}
 
-  async insertHome(body) {
+  /* async insertHome(body) {
     let newHome = {
       Address: null,
       CustomerId: body.customerId,
       Name: body.name,
       Type: body.type,
-      /*  IsActive: body.isActive,
-            Guard: body.guard, */
       Timezone: body.timezone,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -74,5 +72,5 @@ export class HomeService {
       });
 
     return this.result;
-  }
+  } */
 }

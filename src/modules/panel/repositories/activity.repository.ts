@@ -11,11 +11,11 @@ export class ActivityRepository {
   private result;
 
   constructor(
-    @InjectModel('iaactivity', 'panelDb') // panelDb is defined in app.module.ts
-    private readonly activityModel?: ActivityModel,
+    /* @InjectModel('iaactivity', 'panelDb') // panelDb is defined in app.module.ts
+    private readonly activityModel?: ActivityModel, */
   ) {}
 
-  async getDeviceActivityByEncryptedDeviceIdAndFieldName(query) {
+  /* async getDeviceActivityByEncryptedDeviceIdAndFieldName(query) {
     return await this.activityModel
       .findOne(query)
       .sort({ $natural: -1 })
@@ -42,5 +42,5 @@ export class ActivityRepository {
       });
 
     return this.result;
-  }
+  } */
 }

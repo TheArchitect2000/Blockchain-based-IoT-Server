@@ -36,7 +36,7 @@ export class ActivityController {
 
   constructor(private readonly activityService: ActivityService) {}
 
-  @Get(
+  /* @Get(
     'v1/panel-activity/get-device-activity-by-encrypted-deviceid-and-field-name',
   )
   @HttpCode(200)
@@ -176,5 +176,5 @@ export class ActivityController {
       });
 
     return this.result;
-  }
+  } */
 }

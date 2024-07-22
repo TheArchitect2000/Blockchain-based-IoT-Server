@@ -9,11 +9,11 @@ export class DeviceTypeRepository {
   private result;
 
   constructor(
-    @InjectModel('iadevicetype', 'panelDb') // panelDb is defined in app.module.ts
-    private readonly deviceTypeModel?: DeviceTypeModel,
+    /* @InjectModel('iadevicetype', 'panelDb') // panelDb is defined in app.module.ts
+    private readonly deviceTypeModel?: DeviceTypeModel, */
   ) {}
 
-  async insertDeviceType(data) {
+  /* async insertDeviceType(data) {
     await this.deviceTypeModel
       .create(data)
       .then((data) => {
@@ -42,5 +42,5 @@ export class DeviceTypeRepository {
       .where(whereCondition)
       .populate(populateCondition)
       .select(selectCondition);
-  }
+  } */
 }

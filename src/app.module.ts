@@ -44,13 +44,13 @@ import { AdminModule } from './modules/admin/admin.module';
         connectionName: 'appDb',
       } */
     ),
-    MongooseModule.forRoot(
+    /* MongooseModule.forRoot(
       process.env.MONGO_CONNECTION_PANEL,
       // 'mongodb+srv://<username>:<passowrd>@cluster0-igk.mongodb.net/WildLife?retryWrites=true&w=majority'
       {
         connectionName: 'panelDb',
       },
-    ),
+    ), */
     ServeStaticModule.forRoot({
       rootPath: './uploads',
       serveRoot: '/app/uploads',

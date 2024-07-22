@@ -26,7 +26,7 @@ export class DeviceTypeService {
     private readonly deviceTypeRepository?: DeviceTypeRepository,
   ) {}
 
-  async getAllDeviceTypes() {
+  /* async getAllDeviceTypes() {
     let whereCondition = {};
     let populateCondition = [];
     let selectCondition =
@@ -62,5 +62,5 @@ export class DeviceTypeService {
     console.log('response are: ', response);
 
     return response;
-  }
+  } */
 }

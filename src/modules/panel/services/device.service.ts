@@ -28,7 +28,7 @@ export class DeviceService {
     private readonly deviceRepository?: DeviceRepository,
   ) {}
 
-  async generatePassword(len) {
+  /* async generatePassword(len) {
     return randompassword.randomPassword({
       length: len,
       characters:
@@ -38,23 +38,6 @@ export class DeviceService {
         '^&*()',
     });
   }
-
-  /* encryptDeviceId(deviceId, encryptionPassword) {
-        let cipher = crypto.createCipher(algorithm, encryptionPassword || defaultEncryptionPassword);
-        let encrypted = cipher.update(deviceId, 'utf8', 'base64');
-        encrypted += cipher.final('base64');
-        encrypted = encrypted.replace(/\//g, '~').replace(/\+/g, '_');
-        return encrypted;
-    }
-
-    decryptDeviceId(encryptedDeviceId, encryptionPassword) {
-        encryptedDeviceId = encryptedDeviceId.replace(/_/g, '+').replace(/~/g, '/');
-        let decipher = crypto.createDecipher(algorithm, encryptionPassword || defaultEncryptionPassword);
-        let decrypted = decipher.update(encryptedDeviceId, 'base64', 'utf8');
-        decrypted += decipher.final('utf8');
-        // console.log('decryptid', text, dec);
-        return decrypted;
-    } */
 
   encryptDeviceId(deviceId) {
     console.log('deviceId: ', deviceId);
@@ -362,5 +345,5 @@ export class DeviceService {
       });
 
     return this.result;
-  }
+  } */
 }

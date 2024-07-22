@@ -24,11 +24,11 @@ import { UtilityModule } from '../utility/utility.module';
 
 @Module({
   imports: [
-    MongooseModule.forFeature(customerFeature, 'panelDb'),
+    /* MongooseModule.forFeature(customerFeature, 'panelDb'),
     MongooseModule.forFeature(homeFeature, 'panelDb'),
     MongooseModule.forFeature(deviceTypeFeature, 'panelDb'),
     MongooseModule.forFeature(deviceFeature, 'panelDb'),
-    MongooseModule.forFeature(activityFeature, 'panelDb'),
+    MongooseModule.forFeature(activityFeature, 'panelDb'), */
     UtilityModule,
   ],
   providers: [

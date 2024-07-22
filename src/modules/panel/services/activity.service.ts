@@ -20,7 +20,7 @@ export class ActivityService {
     private readonly activityRepository?: ActivityRepository,
   ) {}
 
-  async getDeviceActivityByEncryptedDeviceIdAndFieldName(
+  /* async getDeviceActivityByEncryptedDeviceIdAndFieldName(
     deviceEncryptedId,
     fieldName,
   ) {
@@ -92,5 +92,5 @@ export class ActivityService {
       });
 
     return this.result;
-  }
+  } */
 }

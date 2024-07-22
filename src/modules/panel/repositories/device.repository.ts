@@ -11,11 +11,11 @@ export class DeviceRepository {
   private result;
 
   constructor(
-    @InjectModel('iadevice', 'panelDb') // panelDb is defined in app.module.ts
-    private readonly deviceModel?: DeviceModel,
+    /* @InjectModel('iadevice', 'panelDb') // panelDb is defined in app.module.ts
+    private readonly deviceModel?: DeviceModel, */
   ) {}
 
-  async insertDevice(data) {
+  /* async insertDevice(data) {
     await this.deviceModel
       .create(data)
       .then((data) => {
@@ -114,5 +114,5 @@ export class DeviceRepository {
       });
 
     return this.result;
-  }
+  } */
 }

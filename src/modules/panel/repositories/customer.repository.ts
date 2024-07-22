@@ -10,11 +10,11 @@ export class CustomerRepository {
   private result;
 
   constructor(
-    @InjectModel('iacustomer', 'panelDb') // panelDb is defined in app.module.ts
-    private readonly customerModel?: CustomerModel,
+    /* @InjectModel('iacustomer', 'panelDb') // panelDb is defined in app.module.ts
+    private readonly customerModel?: CustomerModel, */
   ) {}
 
-  async insertCustomer(data) {
+  /* async insertCustomer(data) {
     await this.customerModel
       .create(data)
       .then((data) => {
@@ -96,5 +96,5 @@ export class CustomerRepository {
       });
 
     return this.result;
-  }
+  } */
 }

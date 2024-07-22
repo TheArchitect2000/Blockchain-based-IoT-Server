@@ -47,7 +47,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
       transport: {
         // host: 'mail.cpvanda.com',
         host: process.env.MAIL_HOST,
-        port: 587,
+        port: Number(process.env.MAIL_PORT),
         secure: false,
         auth: {
           // user: 'noreply@fidesinnova.io',

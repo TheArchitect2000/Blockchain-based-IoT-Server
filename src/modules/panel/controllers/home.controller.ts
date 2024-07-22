@@ -36,7 +36,7 @@ export class HomeController {
 
   constructor(private readonly homeService: HomeService) {}
 
-  @Post('v1/panel-home/insert')
+  /* @Post('v1/panel-home/insert')
   @HttpCode(201)
   @ApiOperation({
     summary: 'inserts a customer home in the panel.',
@@ -82,5 +82,5 @@ export class HomeController {
       });
 
     return this.result;
-  }
+  } */
 }

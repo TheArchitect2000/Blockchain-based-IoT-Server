@@ -10,11 +10,11 @@ export class HomeRepository {
   private result;
 
   constructor(
-    @InjectModel('iahome', 'panelDb') // panelDb is defined in app.module.ts
-    private readonly homeModel?: HomeModel,
+    /* @InjectModel('iahome', 'panelDb') // panelDb is defined in app.module.ts
+    private readonly homeModel?: HomeModel, */
   ) {}
 
-  async insertHome(data) {
+  /* async insertHome(data) {
     await this.homeModel
       .create(data)
       .then((data) => {
@@ -66,5 +66,5 @@ export class HomeRepository {
       });
 
     return this.result;
-  }
+  } */
 }

@@ -44,7 +44,7 @@ export class DeviceLogController {
     private readonly deviceLogService: DeviceLogService,
     private readonly deviceService: DeviceService,
   ) {
-    setInterval(async () => {
+    /* setInterval(async () => {
       const usersRes = await this.userService.getAllUsers();
       const devicesRes = await this.deviceService.getAllDevices();
 
@@ -96,27 +96,26 @@ export class DeviceLogController {
             }
 
             console.log('------------------------------------------------');
-
-            /* const writer = [];
-          const startTime = new Date();
-          startTime.setDate(startTime.getDate() - 10);
-          startTime.setHours(0, 0, 0, 0);
+          // const writer = [];
+          //const startTime = new Date();
+          //startTime.setDate(startTime.getDate() - 10);
+          //startTime.setHours(0, 0, 0, 0);
   
-          const endTime = new Date();
-          endTime.setDate(endTime.getDate() + 1);
-          endTime.setHours(23, 59, 59, 0);
+          //const endTime = new Date();
+          //endTime.setDate(endTime.getDate() + 1);
+          //endTime.setHours(23, 59, 59, 0);
   
-          const uploadedData = await storxController.DownloadFiles({
-            writer: writer,
-            bucketName: this.storxBucket,
-            deviceID: device.deviceEncryptedId,
-            endTime: endTime,
-            startTime: startTime,
-          }); */
+          //const uploadedData = await storxController.DownloadFiles({
+          //  writer: writer,
+          //  bucketName: this.storxBucket,
+          //  deviceID: device.deviceEncryptedId,
+          //  endTime: endTime,
+          //  startTime: startTime,
+          //});
           }
         });
       });
-    }, 24 * 60 * 60 * 1000);
+    }, 24 * 60 * 60 * 1000); */
   }
 
   async isAdmin(userId: string) {
@@ -393,7 +392,7 @@ export class DeviceLogController {
           deviceEncryptedId,
           fieldName,
           daysBefore,
-          request?.user?.userId,
+          request.user.userId,
           isAdmin,
         )
         .then((data) => {

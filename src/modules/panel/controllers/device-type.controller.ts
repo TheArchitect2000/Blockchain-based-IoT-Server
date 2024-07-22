@@ -36,7 +36,7 @@ export class DeviceTypeController {
 
   constructor(private readonly deviceTypeService: DeviceTypeService) {}
 
-  @Get('v1/panel-device-type/get-all-device-types')
+  /* @Get('v1/panel-device-type/get-all-device-types')
   @HttpCode(200)
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -60,5 +60,5 @@ export class DeviceTypeController {
       });
 
     return this.result;
-  }
+  } */
 }

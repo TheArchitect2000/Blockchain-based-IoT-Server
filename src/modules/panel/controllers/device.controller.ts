@@ -37,7 +37,7 @@ export class DeviceController {
 
   constructor(private readonly deviceService: DeviceService) {}
 
-  @Get('v1/panel-device/check-device-is-exists/:deviceMac')
+  /* @Get('v1/panel-device/check-device-is-exists/:deviceMac')
   @HttpCode(200)
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -220,5 +220,5 @@ export class DeviceController {
       });
 
     return this.result;
-  }
+  } */
 }

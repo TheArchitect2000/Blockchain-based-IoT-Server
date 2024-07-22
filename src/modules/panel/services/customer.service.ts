@@ -37,7 +37,7 @@ export class CustomerService {
     return [salt, hash].join('$');
   }
 
-  async findACustomerByEmail(
+  /* async findACustomerByEmail(
     email,
     whereCondition,
     populateCondition,
@@ -265,5 +265,5 @@ export class CustomerService {
       });
 
     return this.result;
-  }
+  } */
 }

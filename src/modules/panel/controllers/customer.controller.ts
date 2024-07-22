@@ -36,7 +36,7 @@ export class CustomerController {
 
   constructor(private readonly customerService: CustomerService) {}
 
-  @Get('v1/panel-customer/check-customer-email-is-exists/:customerEmail')
+  /* @Get('v1/panel-customer/check-customer-email-is-exists/:customerEmail')
   @HttpCode(200)
   // @UseGuards(JwtAuthGuard)
   // @ApiBearerAuth()
@@ -176,5 +176,5 @@ export class CustomerController {
       });
 
     return this.result;
-  }
+  } */
 }
