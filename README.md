@@ -247,7 +247,6 @@ MONGO_USER = Administrator
 MONGO_PORT = 27017
 MONGO_HOST = mongodb://127.0.0.1
 MONGO_CONNECTION = mongodb://127.0.0.1:27017/fidesinnova
-MONGO_CONNECTION_PANEL = mongodb://127.0.0.1:27017/iasystem
 
 # Email Configuration
 NOTIFICATION_BY_MAIL = 'enabled'
@@ -275,6 +274,7 @@ REFRESH_TOKEN_ALGORITHM = 'HS384'
 
 ADMIN_MOBILE = '0123456789'
 ADMIN_PASSWORD = '9876543210'
+SUPER_ADMIN_EMAILS = ["admin.email.@example.com"] # your admins emails that can make other users into admin
 
 # Multer Configuration     # Multer is a node.js middleware for handling multipart/form-data, which is primarily used for uploading files.
 MULTER_MEDIA_PATH = ./storages/resources
