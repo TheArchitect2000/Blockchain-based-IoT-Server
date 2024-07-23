@@ -212,13 +212,13 @@ apt install git
 In the root directory clone the project
 ```
 cd /root
-git clone https://github.com/FidesInnova/server_backend_developer.git
+git clone https://github.com/FidesInnova/fidesinnova_node_iot.git
 ```
 
 ## 7- Prepare app host configuration
 -  In project root folder, create `.env` file and edit parameters based on your node URL info
 ```
-cd ~/server_backend_developer
+cd ~/fidesinnova_node_iot/backend
 sudo nano .env
 ```
 Inside the `.env` file, past the parameters.
@@ -300,7 +300,7 @@ assets/certificates/webpublic.pem
 ## 8- Installation of packages
 In the project root directory run the following commands to install npm packages and then, build the project:
 ```
-cd ~/server_backend_developer
+cd ~/fidesinnova_node_iot/backend
 npm install
 npm run build
 ```
@@ -312,7 +312,7 @@ sudo npm i -g pm2
 ```
 ### Run the project with pm2
 ```
-cd ~/server_backend_developer
+cd ~/fidesinnova_node_iot/backend
 pm2 start dist/main.js --name "Backend Server"
 pm2 save
 pm2 startup
