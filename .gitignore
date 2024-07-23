@@ -1,7 +1,3 @@
-# compiled output
-/dist
-/node_modules
-
 
 /uploads/*
 !/uploads/avatars/
@@ -15,37 +11,51 @@ assets/certificates/webpublic.pem
 logs
 *.log
 npm-debug.log*
-pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
 lerna-debug.log*
 
-# OS
-.DS_Store
+# env
 *.env
 .env*
 .env
+
 
 # Tests
 /coverage
 /.nyc_output
 
 # IDEs and editors
-/.idea
 .project
 .classpath
 .c9/
 *.launch
 .settings/
 *.sublime-workspace
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.vite-cache/
 
 # IDE - VSCode
-.vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
-!.vscode/extensions.json
+
 
 simple client
 simple notif app
 react client
+
+node_modules
+dist
+dist-ssr
+build
+*.local
