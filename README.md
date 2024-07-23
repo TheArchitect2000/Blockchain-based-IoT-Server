@@ -385,7 +385,7 @@ VITE_URL='https://panel.YOUR_DOMAIN.COM/app/'
 cd ~/fidesinnova_node_iot/web_app/Source_webapp
 npm run build
 ```
-**The build artifacts will be stored in the `fidesinnova_node_iot/web_app/Source_webapp/build/` directory, you must copy the contents of the `build` folder into the `web_app_panel/Runner_webapp/frontend`.
+**The build artifacts will be stored in the `fidesinnova_node_iot/web_app/Source_webapp/build/` directory, you must copy the contents of the `build` folder into the `fidesinnova_node_iot/web_app/Runner_webapp/frontend`.
 **
 
 
