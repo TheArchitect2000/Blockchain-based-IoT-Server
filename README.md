@@ -372,7 +372,7 @@ sudo nano .env
 Inside the `.env` file, past the parameters.
 *  Make sure to add `/app/` to the end of the `VITE_URL` path!
 ```
-VITE_URL='panel.YOUR_DOMAIN.COM/app/'
+VITE_URL='https://panel.YOUR_DOMAIN.COM/app/'
 ```
 ### Put SSL certificate files in the following path:
 ```
