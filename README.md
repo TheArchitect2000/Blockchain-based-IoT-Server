@@ -418,3 +418,76 @@ node main.js
 ```
 npm run start:prod
 ```
+
+-------------------------------------------------------------------------------------------------
+
+<p align="center">
+  <a href="http://fidesonnova.io/" target="blank"><img src="https://fidesinnova.io/Download/FidesInnova-Token-Logo.png" width="200" alt="FidesInnova Logo" /></a>
+</p>
+<p align="center">Step-by-step Installation Instructions for <a href="http://fidesinnova.io" target="_blank">FidesInnova Admin Web App</a>.</p>
+<p align="center">
+
+### Note:
+  * The program's source is situated in the folder "Source_webapp". After building it from the source, you can place it in the "Runner_webapp/frontend". The runner section has already been executed on the server following the provided instructions.
+  * If you are a Node owner, contact FidesInnova team at info@fidesinnova.io to add your Admin Web App URL address to FidesInnova website.
+## 1- Installation of packages
+```
+cd ~/fidesinnova_node_iot/admin_web_app/Source_webapp
+npm install
+```
+
+## 2- Prepare app configuration
+-  In project root folder, create `.env` file and edit parameters based on your node URL info
+```
+cd ~/fidesinnova_node_iot/admin_web_app/Source_webapp
+sudo nano .env
+```
+Inside the `.env` file, past the parameters.
+*  Make sure to add `/app/` to the end of the `VITE_URL` path!
+```
+VITE_URL='https://panel.YOUR_DOMAIN.COM/app/'
+```
+### Put SSL certificate files in the following path:
+```
+/root/fidesinnova_node_iot/admin_web_app/Runner_webapp/assets/certificates/webpublic.pem
+/root/fidesinnova_node_iot/admin_web_app/Runner_webapp/assets/certificates/webprivate.pem
+```
+
+## 3- Build
+```
+cd ~/fidesinnova_node_iot/admin_web_app/Source_webapp
+npm run build
+```
+**The build artifacts will be stored in the `fidesinnova_node_iot/admin_web_app/Source_webapp/build/` directory, you must copy the contents of the `build` folder into the `fidesinnova_node_iot/admin_web_app/Runner_webapp/frontend`.
+**
+
+
+## 4- Configure Firewall
+Allow Admin Web App to connect to the server through port 5000 
+```
+sudo ufw allow 5000
+```
+## 5- Install npm packages for Runner
+```
+cd ~/fidesinnova_node_iot/admin_web_app/Runner_webapp
+npm i
+```
+
+## 6- Run the project with pm2
+```
+cd ~/fidesinnova_node_iot/admin_web_app/Runner_webapp
+pm2 start main.js --name "Admin Web App"
+```
+## 7- Running the project in developer mode
+### Build the project
+```
+tsc
+```
+### Run the program
+```
+node main.js
+```
+### production mode (For developers)
+```
+npm run start:prod
+```
