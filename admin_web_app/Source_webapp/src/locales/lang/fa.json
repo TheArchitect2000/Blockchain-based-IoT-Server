@@ -1,0 +1,136 @@
+{
+    "nav": {
+        "apps": "برنامه‌ها",
+        "appsProject": {
+            "project": "پروژه",
+            "dashboard": "داشبورد",
+            "projectList": "لیست پروژه‌ها",
+            "scrumBoard": "تخته Scrum",
+            "issue": "مشکل"
+        },
+        "appsCrm": {
+            "crm": "مدیریت مشتریان (CRM)",
+            "dashboard": "داشبورد",
+            "calendar": "تقویم",
+            "customers": "مشتریان",
+            "customerDetails": "جزئیات مشتری",
+            "mail": "ایمیل"
+        },
+        "appsSales": {
+            "sales": "فروش",
+            "dashboard": "داشبورد",
+            "productList": "لیست محصولات",
+            "productEdit": "ویرایش محصول",
+            "productNew": "محصول جدید",
+            "orderList": "لیست سفارشات",
+            "orderDetails": "جزئیات سفارش"
+        },
+        "appsCrypto": {
+            "crypto": "رمزارزها",
+            "dashboard": "داشبورد",
+            "portfolio": "نمایه",
+            "market": "بازار",
+            "wallets": "کیف پول‌ها"
+        },
+        "appsknowledgeBase": {
+            "knowledgeBase": "مرجع دانش",
+            "helpCenter": "مرکز راهنما",
+            "article": "مقاله",
+            "manageArticles": "مدیریت مقالات",
+            "editArticle": "ویرایش مقاله"
+        },
+        "appsAccount": {
+            "account": "حساب کاربری",
+            "settings": "تنظیمات",
+            "invoice": "فاکتور",
+            "activityLog": "گزارش فعالیت",
+            "kycForm": "فرم KYC"
+        },
+        "uiComponents": "کامپوننت‌های رابط کاربری",
+        "uiComponentsCommon": {
+            "common": "عمومی",
+            "button": "دکمه",
+            "typography": "تایپوگرافی",
+            "icons": "آیکون‌ها"
+        },
+        "uiComponentsFeeback": {
+            "feedback": "بازخورد",
+            "alert": "هشدار",
+            "dialog": "گفتگو",
+            "drawer": "کشویی",
+            "progress": "پیشرفت",
+            "skeleton": "استخوان",
+            "spinner": "چرخاننده",
+            "toast": "پنیر تست"
+        },
+        "uiComponentsDataDisplay": {
+            "dataDisplay": "نمایش داده",
+            "avatar": "آواتار",
+            "badge": "نشان",
+            "calendar": "تقویم",
+            "cards": "کارت‌ها",
+            "table": "جدول",
+            "tag": "برچسب",
+            "timeline": "زمان‌خط",
+            "tooltip": "راهنمای ابزار"
+        },
+        "uiComponentsForms": {
+            "forms": "فرم‌ها",
+            "checkbox": "چک باکس",
+            "datePicker": "انتخاب تاریخ",
+            "formControl": "کنترل فرم",
+            "input": "ورودی",
+            "inputGroup": "گروه ورودی",
+            "radio": "رادیو",
+            "segment": "قطعه",
+            "select": "انتخاب کنید",
+            "switcher": "سوئیچر",
+            "timeInput": "ورودی زمان",
+            "upload": "بارگذاری"
+        },
+        "uiComponentsNavigation": {
+            "navigation": "ناوبری",
+            "dropdown": "منو کشویی",
+            "menu": "منو",
+            "pagination": "صفحه‌بندی",
+            "steps": "مراحل",
+            "tabs": "تب‌ها"
+        },
+        "uiComponentsGraph": {
+            "graph": "نمودار",
+            "charts": "نمودارها",
+            "maps": "نقشه‌ها"
+        },
+        "pages": {
+            "pages": "صفحات",
+            "welcome": "خوش آمدید",
+            "accessDenied": "دسترسی ممنوع"
+        },
+        "authentication": {
+            "authentication": "احراز هویت",
+            "signIn": "ورود",
+            "signInSimple": "ساده",
+            "signInSide": "جانبی",
+            "signInCover": "کاور",
+            "signUp": "ثبت نام",
+            "signUpSimple": "ساده",
+            "signUpSide": "جانبی",
+            "signUpCover": "کاور",
+            "forgotPassword": "فراموشی رمزعبور",
+            "forgotPasswordSimple": "ساده",
+            "forgotPasswordSide": "جانبی",
+            "forgotPasswordCover": "کاور",
+            "resetPassword": "بازیابی رمزعبور",
+            "resetPasswordSimple": "ساده",
+            "resetPasswordSide": "جانبی",
+            "resetPasswordCover": "کاور"
+        },
+        "docs": {
+            "guide": "راهنما",
+            "documentation": "مستندات",
+            "sharedComponentDoc": "مستندات کامپوننت مشترک",
+            "utilsDoc": "مستندات ابزارها",
+            "changeLog": "گزارش تغییرات"
+        }
+    }
+}
