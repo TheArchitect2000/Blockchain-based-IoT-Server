@@ -1,8 +1,10 @@
 <p align="center">
   <a href="http://fidesonnova.io/" target="blank"><img src="https://fidesinnova.io/Download/FidesInnova-Token-Logo.png" width="200" alt="FidesInnova Logo" /></a>
 </p>
-<p align="center">Step-by-step Installation Instructions for <a href="http://fidesinnova.io" target="_blank">FidesInnova Server Backend</a>.</p>
+<p align="center">Step-by-step Installation Instructions for <a href="http://fidesinnova.io" target="_blank">FidesInnova Node (IoT section)</a>.</p>
 <p align="center">
+
+# How to Install BackEnd
 
 ## 1- Prepare operating system
 First of all install Ubuntu 20.04 LTS on your server. 
@@ -348,11 +350,7 @@ npm run test:cov
 
 -------------------------------------------------------------------------------------------------
 
-<p align="center">
-  <a href="http://fidesonnova.io/" target="blank"><img src="https://fidesinnova.io/Download/FidesInnova-Token-Logo.png" width="200" alt="FidesInnova Logo" /></a>
-</p>
-<p align="center">Step-by-step Installation Instructions for <a href="http://fidesinnova.io" target="_blank">FidesInnova Web App</a>.</p>
-<p align="center">
+# How to Install WebApp
 
 ### Note:
   * The program's source is situated in the folder "Source_webapp". After building it from the source, you can place it in the "Runner_webapp/frontend". The runner section has already been executed on the server following the provided instructions.
@@ -421,11 +419,7 @@ npm run start:prod
 
 -------------------------------------------------------------------------------------------------
 
-<p align="center">
-  <a href="http://fidesonnova.io/" target="blank"><img src="https://fidesinnova.io/Download/FidesInnova-Token-Logo.png" width="200" alt="FidesInnova Logo" /></a>
-</p>
-<p align="center">Step-by-step Installation Instructions for <a href="http://fidesinnova.io" target="_blank">FidesInnova Admin Web App</a>.</p>
-<p align="center">
+# How to Install Admin WebApp
 
 ### Note:
   * The program's source is situated in the folder "Source_webapp". After building it from the source, you can place it in the "Runner_webapp/frontend". The runner section has already been executed on the server following the provided instructions.
