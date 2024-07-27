@@ -30,9 +30,31 @@ export class OTPService {
     private readonly mailService?: MailService,
   ) {}
 
+  
+  async insertOTPCode(type, email) {
+    const randomNumber = Math.floor(Math.floor(100000 + Math.random() * 900000)) + 1;
+    const salt = bcrypt.genSaltSync(saltRounds);
+    const hashRandomNumber = bcrypt.hashSync(String(randomNumber), salt);
+
+    let expiryDate = new Date().setMinutes(new Date().getMinutes() + 5); // 2 minutes exire time for otp
+
+    let newOTP = {
+      type: type,
+      email: email,
+      sentCode: hashRandomNumber,
+      issueDate: new Date(),
+      expiryDate: expiryDate,
+      insertedBy: null,
+      insertDate: new Date(),
+    };
+
+    this.otp = await this.repository.insertOTP(newOTP);
+
+    return randomNumber.toString() as string
+  }
+
   async insertEmailOTP(type, email): Promise<any> {
-    let randomNumber =
-      Math.floor(Math.floor(100000 + Math.random() * 900000)) + 1;
+    const randomNumber = Math.floor(Math.floor(100000 + Math.random() * 900000)) + 1;
     const salt = bcrypt.genSaltSync(saltRounds);
     const hashRandomNumber = bcrypt.hashSync(String(randomNumber), salt);
 
@@ -82,8 +104,7 @@ export class OTPService {
   }
 
   async insertOTP(type, mobile): Promise<any> {
-    let randomNumber =
-      Math.floor(Math.floor(100000 + Math.random() * 900000)) + 1;
+    let randomNumber = Math.floor(Math.floor(100000 + Math.random() * 900000)) + 1;
     const salt = bcrypt.genSaltSync(saltRounds);
     const hashRandomNumber = bcrypt.hashSync(String(randomNumber), salt);
 
@@ -165,7 +186,6 @@ export class OTPService {
             });
           } catch (error) {
             console.log("Error Catched:", error);
-            
           }
           return true;
           /* if (newThis.validateOTPExpiryDate(findOTP.expiryDate)) {

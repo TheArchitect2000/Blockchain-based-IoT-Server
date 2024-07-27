@@ -66,6 +66,7 @@ import { IsAdminGuard } from 'src/modules/authentication/guard/is-admin.guard';
 import { VirtualMachineHandlerService } from 'src/modules/virtual-machine/services/service-handler.service';
 import { makeUserAdminDto } from '../data-transfer-objects/user/make-user-admin.dto';
 var fs = require('fs');
+import { promises as fsPromise } from 'fs';
 
 @ApiTags('Manage Users')
 @Controller('app')
@@ -288,41 +289,23 @@ export class UserController {
     console.log('Email is: ', email);
     console.log('otp is: ', otp);
 
-    let otpIsVerified: boolean = false;
+    let otpCode: string = '';
 
-    // let otpIsVerified = await this.userService.verifyOtpCodeSentByEmailForResetPassword(body);
+    // Read the HTML file
+    const filePath = join(__dirname, '../../../../assets/web-pages/reset-pass-page.html');
+    let htmlContent = await fsPromise.readFile(filePath, 'utf8');
+    htmlContent = htmlContent.replace('{{ url }}', `${process.env.HOST_PROTOCOL}${process.env.HOST_NAME_OR_IP}/app/v1/user/reset-password-by-otp-code`);
+    
+    htmlContent = htmlContent.replace('{{ email }}', email);
 
-    await this.userService
-      .verifyOtpCodeSentByEmailForResetPassword(body)
+    await this.userService.verifyOtpCodeSentByEmailForResetPassword(body)
       .then((data) => {
-        otpIsVerified = data;
-
-        // Show congratulations page.
-
-        fs.readFile(
-          join(
-            __dirname,
-            '../../../../assets/web-pages/reset-pass-congrat-msg.html',
-          ),
-          function (error, pgResp) {
-            if (error) {
-              res.writeHead(404);
-              res.write('Response web page does not found!');
-            } else {
-              if (otpIsVerified) {
-                res.writeHead(200, { 'Content-Type': 'text/html' });
-                // res.write('<h1> successful </h1>');
-                res.write(pgResp);
-              } else {
-                res.writeHead(200, { 'Content-Type': 'text/html' });
-                res.write('<h1> unsuccessful </h1>');
-              }
-              res.end();
-            }
-
-            res.end();
-          },
-        );
+        otpCode = data;
+        htmlContent = htmlContent.replace('{{ otp }}', otpCode);
+        console.log("otpCode:", otpCode);
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.write(htmlContent);
+        res.end();
       })
       .catch((error) => {
         // Show unsuccessful page.
@@ -337,17 +320,9 @@ export class UserController {
               res.writeHead(404);
               res.write('Response web page does not found!');
             } else {
-              if (!otpIsVerified) {
-                res.writeHead(200, { 'Content-Type': 'text/html' });
-                // res.write('<h1> successful </h1>');
-                res.write(pgResp);
-              } else {
-                res.writeHead(200, { 'Content-Type': 'text/html' });
-                res.write('<h1> unsuccessful </h1>');
-              }
-              res.end();
+              res.writeHead(200, { 'Content-Type': 'text/html' });
+              res.write(pgResp);
             }
-
             res.end();
           },
         );
@@ -501,14 +476,24 @@ export class UserController {
     return await this.userService.sendOTPCode(mobile);
   }
 
-  @Patch('v1/user/verify-otp-code')
+  @Patch('v1/user/reset-password-by-otp-code')
   @HttpCode(200)
   @ApiOperation({
     summary: 'Verifies otp code received by user.',
-    description: 'Verifies otp code received by user and register or login.',
+    description: 'Verifies otp code received by user for reseting password.',
   })
   async verifyOtpCode(@Body() body: verifyOtpCodeDto, @Request() request) {
-    return await this.userService.verifyOtpCode(body);
+    
+    const res1 = await this.userService.verifyOtpCode(body);
+    if (res1 === true) {
+      console.log("Password Changed");
+      
+      await this.userService.changePasswordAndActivateAccount({...body, newPassword: body.password});
+      return true
+    } else {
+      console.log("Password not Changed");
+      return false
+    }
   }
 
   @Post('v1/user/credential')
@@ -744,7 +729,9 @@ export class UserController {
       'Register a user by user mobile. This api requires a user mobile.',
   })
   async sendOTPForChangePassword(@Request() request) {
-    return await this.userService.sendOTPForChangePassword(request.user.mobile);
+    console.log("user email: ", request.user.email);
+    
+    return await this.userService.sendOTPForChangePassword(request.user.email);
   }
 
   @Patch('v1/user/verify-reset-password-code')

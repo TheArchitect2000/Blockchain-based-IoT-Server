@@ -480,8 +480,12 @@ export class UserService {
       body.otp,
     );
 
-    if (verifyOTP) {
-      const whereCondition = { isDeleted: false };
+    const otp = await this.otpService.insertOTPCode(OTPTypeEnum.RESET_PASSWORD, body.email)
+
+    return otp
+
+    /* if (verifyOTP) {
+       const whereCondition = { isDeleted: false };
       const populateCondition = [];
       const selectCondition = this.getUserKeys();
 
@@ -521,25 +525,25 @@ export class UserService {
         await this.userRepository.editUser(this.user._id, this.user);
 
         // Start of finding a customer in panel...
-        /* console.log("Activating a customer in panel...");
+        //console.log("Activating a customer in panel...");
 
-                let whereCondition={};
-                let populateCondition=[];
-                let selectCondition='IsActive Email Username Password NewPassword firstName lastName avatar lang title Mobile createdAt updatedAt';
-                let foundCustomer = null;
-                
-                foundCustomer = await this.customerService.findACustomerByEmail(body.email, whereCondition, populateCondition, selectCondition);
+        //        let whereCondition={};
+        //        let populateCondition=[];
+        //        let selectCondition='IsActive Email Username Password NewPassword firstName lastName avatar lang title Mobile createdAt updatedAt';
+        //        let foundCustomer = null;
+        //        
+        //        foundCustomer = await this.customerService.findACustomerByEmail(body.email, whereCondition, populateCondition, selectCondition);
 
-                if(foundCustomer){
-                    console.log("Customer found!\n", foundCustomer);
-                    foundCustomer.Password = foundCustomer.NewPassword;
-                    foundCustomer.updatedAt = new Date();
+        //        if(foundCustomer){
+        //            console.log("Customer found!\n", foundCustomer);
+        //            foundCustomer.Password = foundCustomer.NewPassword;
+        //            foundCustomer.updatedAt = new Date();
 
-                    await this.customerService.editCustomer(foundCustomer._id, foundCustomer);
-                } else {
-                    console.log("Customer not found!");
-                    throw new GereralException(ErrorTypeEnum.NOT_FOUND,'Customer does not exist.');
-                } */
+        //            await this.customerService.editCustomer(foundCustomer._id, foundCustomer);
+        //        } else {
+        //            console.log("Customer not found!");
+        //            throw new GereralException(ErrorTypeEnum.NOT_FOUND,'Customer does not exist.');
+        //        }
         // End of finding a customer in panel.
 
         // return await this.findAUserById(this.user._id);
@@ -551,13 +555,13 @@ export class UserService {
         // return console.log('There is not such user!');
 
         return true;
-      }
-
+      } 
+      return true
       // return console.log('Correct code');
     } else {
       // return console.log('expired code');
       return false;
-    }
+    } */
   }
 
   async changePasswordAndActivateAccount(data) {
@@ -616,9 +620,9 @@ export class UserService {
   }
 
   async verifyOtpCode(body) {
-    this.otp = await this.otpService.findOTP(
-      body.mobile,
-      OTPTypeEnum.REGISTRATION,
+    this.otp = await this.otpService.findOTPByEmail(
+      body.email,
+      OTPTypeEnum.RESET_PASSWORD,
     );
 
     const verifyOTP = await this.otpService.verifyOTP(
@@ -626,170 +630,23 @@ export class UserService {
       body.otp,
     );
 
-    if (verifyOTP) {
-      const whereCondition = { isDeleted: false };
-      const populateCondition = [
-        {
-          path: 'roles',
-          populate: {
-            path: 'permissions',
-            select: 'name module label description routes',
-          },
-        },
-      ];
-      const selectCondition = this.getUserKeys();
-
-      await this.findAUserByMobile(
-        body.mobile,
-        whereCondition,
-        populateCondition,
-        selectCondition,
-      );
-
-      await this.otpService.setVerificationStatus(
-        this.otp[this.otp.length - 1]._id,
-        VerificationStatusEnum.VERIFIED,
-        VerificationStatusChangeReasonsEnum.VERIFICATION_BY_EMAIL_VIA_EMAIL,
-      );
-
-      if (this.user) {
-        const payload = { mobile: this.user.mobile, sub: this.user._id };
-
-        const accessSignOptions: any = {};
-        accessSignOptions.expiresIn = process.env.ACCESS_TOKEN_EXPIRATION_TIME;
-        accessSignOptions.issuer = process.env.ACCESS_TOKEN_ISSUER;
-        accessSignOptions.algorithm = process.env.ACCESS_TOKEN_ALGORITHM;
-
-        const refreshSignOptions: any = {};
-        refreshSignOptions.expiresIn =
-          process.env.REFRESH_TOKEN_EXPIRATION_TIME;
-        refreshSignOptions.issuer = process.env.REFRESH_TOKEN_ISSUER;
-        refreshSignOptions.algorithm = process.env.REFRESH_TOKEN_ALGORITHM;
-
-        const accessToken = this.jwtService.sign(payload, {
-          ...accessSignOptions,
-          secret: process.env.ACCESS_TOKEN_SECRET_KEY,
-        });
-        const refreshToken = this.jwtService.sign(payload, {
-          ...refreshSignOptions,
-          secret: process.env.REFRESH_TOKEN_SECRET_KEY,
-        });
-
-        const tokens = {
-          accessToken: accessToken,
-          refreshToken: refreshToken,
-        };
-
-        const response: any = await this.myProfileResponse(this.user);
-        response.tokens = tokens;
-
-        return await response;
-      } else {
-        const roles: any[] = [];
-        const ordinaryUserRole = await this.userRoleRepository.findARoleByName(
-          RolesEnum.ORDINARY,
-        );
-
-        if (ordinaryUserRole) {
-          roles.push(ordinaryUserRole);
-        }
-
-        const newUser = {
-          mobile: body.mobile,
-          userName: body.mobile,
-          roles: roles,
-          insertDate: new Date(),
-          updateDate: new Date(),
-        };
-
-        const insertedUser = await this.userRepository.insertUser(newUser);
-
-        const whereCondition = { isDeleted: false };
-        const populateCondition = [
-          {
-            path: 'info',
-            select:
-              'nationalCode nickName fatherName email website telephone fax biography levelOfEducation',
-            populate: [
-              {
-                path: 'profileImage',
-              },
-              {
-                path: 'headerImage',
-              },
-            ],
-          },
-          {
-            path: 'roles',
-            populate: {
-              path: 'permissions',
-              select: 'name module label description routes',
-            },
-          },
-        ];
-        const selectCondition = this.getUserKeys();
-
-        const foundedNewUser = (await this.userRepository.findUserById(
-          insertedUser._id,
-          whereCondition,
-          populateCondition,
-          selectCondition,
-        )) as any;
-
-        const payload = {
-          mobile: foundedNewUser.tel.number || '',
-          sub: foundedNewUser._id,
-        };
-
-        const accessSignOptions: any = {};
-        accessSignOptions.expiresIn = process.env.ACCESS_TOKEN_EXPIRATION_TIME;
-        accessSignOptions.issuer = process.env.ACCESS_TOKEN_ISSUER;
-        accessSignOptions.algorithm = process.env.ACCESS_TOKEN_ALGORITHM;
-
-        const refreshSignOptions: any = {};
-        refreshSignOptions.expiresIn =
-          process.env.REFRESH_TOKEN_EXPIRATION_TIME;
-        refreshSignOptions.issuer = process.env.REFRESH_TOKEN_ISSUER;
-        refreshSignOptions.algorithm = process.env.REFRESH_TOKEN_ALGORITHM;
-
-        const accessToken = this.jwtService.sign(payload, {
-          ...accessSignOptions,
-          secret: process.env.ACCESS_TOKEN_SECRET_KEY,
-        });
-        const refreshToken = this.jwtService.sign(payload, {
-          ...refreshSignOptions,
-          secret: process.env.REFRESH_TOKEN_SECRET_KEY,
-        });
-
-        const tokens = {
-          accessToken: accessToken,
-          refreshToken: refreshToken,
-        };
-
-        const response: any = await this.myProfileResponse(foundedNewUser);
-        response.tokens = tokens;
-
-        return await response;
-      }
-    } else {
-      return console.log('expired code');
-    }
+    return verifyOTP as boolean
   }
 
-  async sendOTPForChangePassword(mobile) {
+  async sendOTPForChangePassword(email) {
     const whereCondition = { isDeleted: false };
     const populateCondition = [];
     const selectCondition = '';
 
-    this.user = await this.findAUserByMobile(
-      mobile,
+    this.user = await this.findAUserByEmail(
+      email,
       whereCondition,
       populateCondition,
       selectCondition,
     );
 
     this.otp = await this.otpService.findOTP(
-      mobile,
+      email,
       OTPTypeEnum.CHANGE_PASSWORD,
     );
 
@@ -797,12 +654,13 @@ export class UserService {
       throw new GereralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
     }
 
+
     if (
       this.otp.length == 0 ||
       new Date(this.otp[this.otp.length - 1].expiryDate).getTime() <
         new Date().getTime()
     ) {
-      return this.otpService.insertOTP(OTPTypeEnum.CHANGE_PASSWORD, mobile);
+      return this.otpService.insertEmailOTP(OTPTypeEnum.CHANGE_PASSWORD, email);
     } else {
       throw new requestActivationCodeRepeatedlyException(
         (new Date(this.otp[this.otp.length - 1].expiryDate).getTime() -
@@ -851,7 +709,7 @@ export class UserService {
 
   async otpVerificationAndChangePassword(data) {
     this.otp = await this.otpService.findOTP(
-      data.mobile,
+      data.email,
       OTPTypeEnum.CHANGE_PASSWORD,
     );
 
@@ -865,8 +723,8 @@ export class UserService {
       const populateCondition = [];
       const selectCondition = '';
 
-      await this.findAUserByMobile(
-        data.mobile,
+      await this.findAUserByEmail(
+        data.email,
         whereCondition,
         populateCondition,
         selectCondition,
