@@ -1,1 +1,0 @@
-function u(...t){return t.filter(n=>n!==null&&typeof n<"u").reduce((n,e)=>{if(typeof e!="function")throw new Error("Invalid Argument Type, must only provide functions, undefined, or null.");return n===void 0?e:function(...i){n.apply(this,i),e.apply(this,i)}},void 0)}export{u as c};
