@@ -3,7 +3,8 @@
 !/uploads/avatars/
 !/uploads/sprites.png
 
-/frontend/*
+admin_web_app/Runner_webapp/frontend/*
+web_app/Runner_webapp/frontend/*
 
 # Project configuration files
 *webprivate.pem
