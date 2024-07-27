@@ -812,65 +812,6 @@ export class UserService {
     }
   }
 
-  async insertDefaultUsers(): Promise<any> {
-    const isExist = await this.checkUserNameIsExist(process.env.ADMIN_EMAIL.toString())
-    console.log(isExist.toString());
-    
-    if (!isExist) {
-      const roles: string[] = [];
-      const fullControllPermission = await this.userRoleService
-        .findARoleByName('super_admin')
-        .catch((error) => {
-          let errorMessage =
-            'Some errors occurred while finding user permission!';
-          throw new GereralException(
-            ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-            errorMessage,
-          );
-        });
-
-      roles.push(fullControllPermission._id);
-
-      const salt = bcrypt.genSaltSync(saltRounds);
-      const hashedPassword = bcrypt.hashSync(
-        String(process.env.ADMIN_PASSWORD),
-        salt,
-      );
-
-      const newUser = {
-        firstName: 'Main Default',
-        lastName: 'System Account',
-        userName: process.env.ADMIN_EMAIL,
-        email: process.env.ADMIN_EMAIL,
-        mobile: process.env.ADMIN_MOBILE,
-        password: hashedPassword,
-        roles: roles,
-        deletable: false,
-        activationStatus: UserActivationStatusEnum.ACTIVE,
-        verificationStatus: UserVerificationStatusEnum.VERIFIED,
-        insertDate: new Date(),
-        updateDate: new Date(),
-      };
-
-      await this.userRepository
-        .insertUser(newUser)
-        .then((data) => {
-          this.result = data;
-        })
-        .catch((error) => {
-          const errorMessage =
-            'Some errors occurred while inserting a admin user!';
-          console.log(error);
-          throw new GereralException(
-            ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-            errorMessage,
-          );
-        });
-    }
-
-    return this.result;
-  }
-
   async checkUserNameIsExist(userName) {
     const theUser = await this.findAUserByUserName(userName);
     

@@ -54,22 +54,6 @@ export class AppController {
         );
       });
 
-    await this.userService
-      .insertDefaultUsers()
-      .then((data) => {
-        this.result = data;
-      })
-      .catch((error) => {
-        let errorMessage =
-          'Some errors occurred while inserting default users!';
-        console.log(error);
-
-        throw new GereralException(
-          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-          errorMessage,
-        );
-      });
-
     return this.result;
   }
 }
