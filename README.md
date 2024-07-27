@@ -281,8 +281,6 @@ REFRESH_TOKEN_EXPIRATION_TIME = 2400000000    # Miliseconds
 REFRESH_TOKEN_SECRET_KEY = 'Cn3ZU$EQcpc_C9Yyqc*t3pur#Rg_Q9xUt4GUVnf8=Q4ruE?f@8^ngFgKpE7Nh=gytxzY3!tcpBZ4STj-ehCfb2k-&C43sFgYfSfZ&ALP!XJhe3R%hNGTMmHXCMsm9Bfv'
 REFRESH_TOKEN_ALGORITHM = 'HS384'
 
-ADMIN_MOBILE = '0123456789'
-ADMIN_PASSWORD = '9876543210'
 SUPER_ADMIN_EMAILS = ["admin.email.@example.com"] # your admins emails that can make other users into admin
 
 # Multer Configuration     # Multer is a node.js middleware for handling multipart/form-data, which is primarily used for uploading files.
