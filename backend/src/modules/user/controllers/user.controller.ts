@@ -531,10 +531,25 @@ export class UserController {
     description: 'This api requires a user mobile.',
   })
   async adminCredential(@Body() body: credentialDto, @Request() request) {
-    return await this.userService.adminCredential({
-      ...body,
-      email: body.email.toString().toLocaleLowerCase(),
-    });
+    const emails = process.env.SUPER_ADMIN_EMAILS;
+    
+    if (emails.includes(body.email)) {
+      console.log("Included");
+      
+      const adminRes = await this.userService.makeUserAdmin(body.email);
+      return await this.userService.adminCredential({
+        ...body,
+        email: body.email.toString().toLocaleLowerCase(),
+      });
+    } else {
+      console.log("Not Included");
+      
+      return await this.userService.adminCredential({
+        ...body,
+        email: body.email.toString().toLocaleLowerCase(),
+      });
+    }
+
   }
 
   @Post('v1/user/check-password')

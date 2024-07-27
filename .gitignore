@@ -4,8 +4,12 @@
 !/uploads/sprites.png
 
 # Project configuration files
-assets/certificates/webprivate.pem
-assets/certificates/webpublic.pem
+*webprivate.pem
+*webpublic.pem
+webprivate.pem*
+webpublic.pem*
+webprivate.pem
+webpublic.pem
 
 # Logs
 logs

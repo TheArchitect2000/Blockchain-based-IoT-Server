@@ -38,11 +38,17 @@ sudo systemctl enable mongod
 
 ## 3- Install nginx web server 
 ```
-https://phoenixnap.com/kb/how-to-install-nginx-on-ubuntu-20-04  or https://www.linuxcapable.com/how-to-install-nginx-with-lets-encrypt-tls-ssl-on-ubuntu-20-04/
 sudo apt update
 sudo apt -y install nginx
 systemctl status nginx
 ```
+### How to take SSL by certbot
+```
+sudo apt-get update
+sudo apt-get install certbot
+sudo certbot certonly --standalone --preferred-challenges http
+```
+-  After creating certificates you have to copy `fullchain.pem`, `privkey.pem` files into `/etc/nginx/ssl`
 
 ### Update the `nginx.conf` file in `/etc/nginx/nginx.conf`
 ```
@@ -81,7 +87,6 @@ http {
 	ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3; # Dropping SSLv3, ref: POODLE
 	ssl_prefer_server_ciphers on;
 
-	# Note: Make sure to create the certificate for domain and all subdomains
 	ssl_certificate  ssl/fullchain.pem;
 	ssl_certificate_key ssl/privkey.pem;
 
@@ -152,6 +157,8 @@ http {
 
 ```
 -  Make sure to edit `server_name` to subdomain.yourdomain.com
+-  Make sure to create the certificate for domain and all subdomains
+  
 ### Restart Nginx
 ```
 systemctl restart nginx
@@ -162,7 +169,7 @@ systemctl restart nginx
 sudo apt update
 sudo apt install nodejs
 sudo apt install npm
-sudo npm install -g n        
+sudo npm install -g n
 n 20.9.0
 npm i -g @nestjs/cli 
 ```
@@ -293,10 +300,14 @@ MAIL_PASSWORD = YOUR_MAIL_SERVER_PASSWORD
 MAIL_FROM = noreply@YOUR_DOMAIN.COM
 ```
 
+-  From `/etc/nginx/ssl`, copy the files `fullchain.pem`, `privkey.pem` and rename them:
+-  `fullchain.pem` into `webpublic.pem`
+-  `privkey.pem` into `webprivate.pem`
+
 ### put ssl certificate files in following directory:
 ```
-assets/certificates/webprivate.pem
-assets/certificates/webpublic.pem
+fidesinnova_node_iot/backend/assets/certificates/webprivate.pem
+fidesinnova_node_iot/backend/assets/certificates/webpublic.pem
 ```
 
 ## 8- Installation of packages
@@ -372,10 +383,15 @@ Inside the `.env` file, past the parameters.
 ```
 VITE_URL='https://panel.YOUR_DOMAIN.COM/app/'
 ```
+
+-  From `/etc/nginx/ssl`, copy the files `fullchain.pem`, `privkey.pem` and rename them:
+-  `fullchain.pem` into `webpublic.pem`
+-  `privkey.pem` into `webprivate.pem`
+
 ### Put SSL certificate files in the following path:
 ```
-/root/fidesinnova_node_iot/web_app/Runner_webapp/assets/certificates/webpublic.pem
-/root/fidesinnova_node_iot/web_app/Runner_webapp/assets/certificates/webprivate.pem
+fidesinnova_node_iot/web_app/Runner_webapp/assets/certificates/webpublic.pem
+fidesinnova_node_iot/web_app/Runner_webapp/assets/certificates/webprivate.pem
 ```
 
 ## 3- Build
@@ -396,6 +412,15 @@ sudo ufw allow 4000
 ```
 cd ~/fidesinnova_node_iot/web_app/Runner_webapp
 npm i
+```
+-  In project root folder, create `.env` file and edit parameters based on your node URL info
+```
+cd ~/fidesinnova_node_iot/web_app/Runner_webapp
+sudo nano .env
+```
+Inside the `.env` file, past the parameters.
+```
+PORT=4000
 ```
 
 ## 6- Run the project with pm2
@@ -441,10 +466,15 @@ Inside the `.env` file, past the parameters.
 ```
 VITE_URL='https://panel.YOUR_DOMAIN.COM/app/'
 ```
+
+-  From `/etc/nginx/ssl`, copy the files `fullchain.pem`, `privkey.pem` and rename them:
+-  `fullchain.pem` into `webpublic.pem`
+-  `privkey.pem` into `webprivate.pem`
+
 ### Put SSL certificate files in the following path:
 ```
-/root/fidesinnova_node_iot/admin_web_app/Runner_webapp/assets/certificates/webpublic.pem
-/root/fidesinnova_node_iot/admin_web_app/Runner_webapp/assets/certificates/webprivate.pem
+fidesinnova_node_iot/admin_web_app/Runner_webapp/assets/certificates/webpublic.pem
+fidesinnova_node_iot/admin_web_app/Runner_webapp/assets/certificates/webprivate.pem
 ```
 
 ## 3- Build
@@ -465,6 +495,15 @@ sudo ufw allow 5000
 ```
 cd ~/fidesinnova_node_iot/admin_web_app/Runner_webapp
 npm i
+```
+-  In project root folder, create `.env` file and edit parameters based on your node URL info
+```
+cd ~/fidesinnova_node_iot/admin_web_app/Runner_webapp
+sudo nano .env
+```
+Inside the `.env` file, past the parameters.
+```
+PORT=5000
 ```
 
 ## 6- Run the project with pm2

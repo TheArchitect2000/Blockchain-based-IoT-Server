@@ -1,0 +1,1 @@
+import{ac as t}from"./index-f1a5ff0b.js";async function s(e){return t.fetchData({url:"/sales/products",method:"post",data:e})}async function r(e){return t.fetchData({url:"/sales/products/delete",method:"delete",data:e})}export{s as a,r as b};

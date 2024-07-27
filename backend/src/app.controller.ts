@@ -16,19 +16,12 @@ export class AppController {
     private readonly userService: UserService,
     private readonly userPermissionService: UserPermissionService,
     private readonly userRoleService: UserRoleService,
-  ) {}
-
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  ) {
+    setTimeout(() => {
+      this.initializeApplication()
+    }, 2000);
   }
 
-  /**
-   * Database initializations:
-   */
-
-  @ApiTags('Initializations')
-  @Get('initializations')
   async initializeApplication() {
     await this.userPermissionService
       .insertDefaultPermissions()

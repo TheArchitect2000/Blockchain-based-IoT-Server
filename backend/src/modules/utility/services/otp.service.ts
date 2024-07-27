@@ -50,6 +50,9 @@ export class OTPService {
 
     this.otp = await this.repository.insertOTP(newOTP);
 
+    console.log("Type Issss:", type);
+    
+
     if (this.otp) {
       if (type === OTPTypeEnum.REGISTRATION) {
         return await this.mailService.sendRegistrationOTP(

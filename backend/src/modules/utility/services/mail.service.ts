@@ -4,7 +4,6 @@ import { User } from './user.entity';
 import { GereralException } from '../exceptions/general.exception';
 import { ErrorTypeEnum } from '../enums/error-type.enum';
 import { join } from 'path';
-
 import * as fs from 'fs';
 import https from 'https';
 import axios, { isCancel, AxiosError, AxiosRequestConfig } from 'axios';
@@ -130,7 +129,7 @@ export class MailService {
     console.log(
       'We are in sendChangePasswordOTP email is: ',
       email,
-      '   and OTP is: ',
+      ', and OTP is: ',
       otp,
     );
 
@@ -144,43 +143,35 @@ export class MailService {
       '&otp=' +
       otp;
 
-    console.log('url: ', url);
+    console.log('url 22: ', url);
 
-    await this.mailerService
+    try {
+      console.log("Sending email");
+      
+      await this.mailerService
       .sendMail({
         to: email,
-        // from: '"Support Team" <support@example.com>', // override default from
         subject: 'FidesInnova. Password Reset. ',
-        template: './reset-password-with-otp', // `.hbs` extension is appended automatically
+        template: './reset-password-with-otp',
         context: {
-          // filling curly brackets with content
           name: email,
           url: url,
         },
-        /*attachments: [
-          {
-            filename: 'logo-fidesinnova-black.png',
-            // path: __dirname +'../../../../../assets/images/logo-fidesinnova-black.png',
-            path: join(
-              __dirname,
-              '../../../../assets/images/logo-fidesinnova-black.png',
-            ),
-            cid: 'logo',
-          },
-        ],*/
       })
       .then((data) => {
         console.log(data);
       })
-      .catch((error) => {
-        console.log(error);
+      console.log("email sended");
+    } catch (error) {
+      console.log(error);
 
         let errorMessage = 'Some errors occurred while sending email';
         throw new GereralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
-      });
+    }
+    console.log("email sended 2");
   }
 
   async sendVerifyEmailOTP(email: string, otp: string, otpType: string) {

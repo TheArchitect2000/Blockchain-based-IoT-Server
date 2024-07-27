@@ -813,7 +813,10 @@ export class UserService {
   }
 
   async insertDefaultUsers(): Promise<any> {
-    if (!(await this.checkUserNameIsExist('system'))) {
+    const isExist = await this.checkUserNameIsExist(process.env.ADMIN_EMAIL.toString())
+    console.log(isExist.toString());
+    
+    if (!isExist) {
       const roles: string[] = [];
       const fullControllPermission = await this.userRoleService
         .findARoleByName('super_admin')
@@ -837,7 +840,8 @@ export class UserService {
       const newUser = {
         firstName: 'Main Default',
         lastName: 'System Account',
-        userName: 'system',
+        userName: process.env.ADMIN_EMAIL,
+        email: process.env.ADMIN_EMAIL,
         mobile: process.env.ADMIN_MOBILE,
         password: hashedPassword,
         roles: roles,
@@ -868,9 +872,9 @@ export class UserService {
   }
 
   async checkUserNameIsExist(userName) {
-    await this.findAUserByUserName(userName);
-
-    if (this.user) {
+    const theUser = await this.findAUserByUserName(userName);
+    
+    if (theUser) {
       return true;
     } else {
       return false;

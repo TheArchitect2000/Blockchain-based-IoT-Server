@@ -27,7 +27,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 
 @Module({
   imports: [
-    ConfigModule.forRoot(), //  It will load the contents of the .env file automatically.
+    ConfigModule.forRoot(),
     MongooseModule.forFeature(otpFeature),
     MongooseModule.forFeature(mediaFeature),
     MongooseModule.forFeature(tagFeature),
@@ -36,36 +36,25 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
       useClass: MulterConfigService,
     }),
     MailerModule.forRoot({
-      //  Add this code in nest-cli.json:
-      //  "compilerOptions": {
-      //    "assets": ["modules/utility/templates/mail-templates/**/*"],
-      //    "watchAssets": true
-      //   }
-
-      // transport: 'smtps://user@example.com:topsecret@smtp.example.com',
-      // or
       transport: {
-        // host: 'mail.cpvanda.com',
         host: process.env.MAIL_HOST,
-        port: Number(process.env.MAIL_PORT),
+        port: Number(process.env.MAIL_PORT.toString()),
         secure: false,
         auth: {
-          // user: 'noreply@fidesinnova.io',
           user: process.env.MAIL_USER,
-          // pass: 'salam1234',
           pass: process.env.MAIL_PASSWORD,
         },
         tls: {
           rejectUnauthorized: false,
         },
+        connectionTimeout: 10000,
       },
       defaults: {
-        // from: '"FidesInnova" <noreply@fidesinnova.io>',
         from: '"FidesInnova" <' + process.env.MAIL_FROM + '>',
       },
       template: {
         dir: join(__dirname, 'templates/mail-templates'),
-        adapter: new HandlebarsAdapter(), // or new PugAdapter() or new EjsAdapter()
+        adapter: new HandlebarsAdapter(),
         options: {
           strict: true,
         },
