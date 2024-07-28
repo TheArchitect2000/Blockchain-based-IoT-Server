@@ -270,6 +270,13 @@ MAIL_FROM = noreply@YOUR_DOMAIN.COM
 # optional
 MAIL_TRANSPORT = smtp://${MAIL_USER}:${MAIL_PASSWORD}@${MAIL_HOST}
 
+# Mobile theme ( hex color code without # )
+THEME_LOGO = "www.example.com/image.png"
+THEME_TEXT = "ffffff"
+THEME_BACKGROUND = "212838"
+THEME_BOX = "2d355c"
+THEME_BUTTON = "4e46e7"
+
 ACCESS_TOKEN_ISSUER = 'https://fidesinnova.io'
 ACCESS_TOKEN_EXPIRATION_TIME = 1200000000     # Miliseconds
 ACCESS_TOKEN_SECRET_KEY = '?#6KRVytq*zn5zhWWLHksL$MJj7Krkan^&^^BzZD?fqUjs4mhWNExZZ8S7CPXXkPGYMEzj2y$bK7@TWwYaja=7j^+ccFqG8#EpM4&4ppmST?A7?F_a3bq=m6B&CwRrb3'
@@ -296,6 +303,8 @@ MAIL_PORT = 465
 MAIL_USER = noreply@YOUR_DOMAIN.COM
 MAIL_PASSWORD = YOUR_MAIL_SERVER_PASSWORD
 MAIL_FROM = noreply@YOUR_DOMAIN.COM
+
+THEME_LOGO = 'your.logo.url'
 ```
 
 -  From `/etc/nginx/ssl`, copy the files `fullchain.pem`, `privkey.pem` and rename them:
