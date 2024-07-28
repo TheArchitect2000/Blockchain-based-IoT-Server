@@ -11,10 +11,10 @@ web_app/Runner_webapp/frontend/*
 # Project configuration files
 *webprivate.pem
 *webpublic.pem
-webprivate.pem*
-webpublic.pem*
-webprivate.pem
-webpublic.pem
+*/webprivate.pem*
+*/webpublic.pem*
+*/webprivate.pem
+*/webpublic.pem
 
 # Logs
 logs
