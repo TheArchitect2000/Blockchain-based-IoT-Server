@@ -160,13 +160,7 @@ export class UserService {
     console.log('this.user', this.user);
 
     // Check if user found
-    if (this.user) {
-      return true;
-    } else {
-      // User not found.
-
-      console.log('User not found for verify email.');
-
+    if (!this.user) {
       throw new GereralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
     }
   }
@@ -188,67 +182,9 @@ export class UserService {
         OTPTypeEnum.CHANGE_PASSWORD,
         body.email,
       );
-    }
-
-    const whereCondition = { isDeleted: false };
-    const populateCondition = [];
-    const selectCondition = '';
-    await this.findAUserByEmail(
-      body.email,
-      whereCondition,
-      populateCondition,
-      selectCondition,
-    );
-
-    console.log('this.user', this.user);
-
-    // Check if user found
-    if (this.user) {
-      // User found.
-      console.log('User found for password change.');
-      console.log('New Password: ', body.newPassword);
-
-      const salt = bcrypt.genSaltSync(saltRounds);
-      const hashedNewPassword = bcrypt.hashSync(String(body.newPassword), salt);
-
-      this.user.newPassword = hashedNewPassword;
-      this.user.updateDate = new Date();
-
-      await this.userRepository.editUser(this.user._id, this.user);
-
-      // Start of finding a customer in panel...
-      /* console.log("Finding a customer in panel...");
-
-            let whereCondition={};
-            let populateCondition=[];
-            let selectCondition='IsActive Email Username Password NewPassword FirstName LastName Mobile createdAt updatedAt';
-            let foundCustomer = null;
-            
-            foundCustomer = await this.customerService.findACustomerByEmail(body.email, whereCondition, populateCondition, selectCondition);
-
-            if(foundCustomer){
-                console.log("Customer found!\n", foundCustomer);
-
-                foundCustomer.NewPassword = await this.customerService.hashPassword(body.newPassword);
-                foundCustomer.updatedAt = new Date();
-
-                console.log("Edited Customer found!\n", foundCustomer);
-                
-                await this.customerService.editCustomer(foundCustomer._id, foundCustomer);
-
-            } else {
-                console.log("Customer not found!");
-                throw new GereralException(ErrorTypeEnum.NOT_FOUND,'Customer does not exist.');
-            } */
-      // End of finding a customer in panel.
-
-      return await this.findAUserById(this.user._id);
+      return true
     } else {
-      // User not found.
-
-      console.log('User not found for password change.');
-
-      throw new GereralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
+      throw new GereralException(ErrorTypeEnum.CONFLICT, 'Email already sended.');
     }
   }
 
@@ -479,6 +415,10 @@ export class UserService {
       this.otp[this.otp.length - 1],
       body.otp,
     );
+
+    if (!this.otp || verifyOTP == false) {
+      throw new GereralException(ErrorTypeEnum.NOT_FOUND, 'Otp is not valid');
+    }
 
     const otp = await this.otpService.insertOTPCode(OTPTypeEnum.RESET_PASSWORD, body.email)
 

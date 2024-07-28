@@ -21,6 +21,10 @@ export class OTPRepository {
     return await this.otpModel.updateOne({ _id: id }, editedData);
   }
 
+  async deleteOTP(id) {
+    return await this.otpModel.deleteOne({ _id: id });
+  }
+
   async findOTPByEmail(userEmail, otpType) {
     const nowDate = new Date();
     return await this.otpModel

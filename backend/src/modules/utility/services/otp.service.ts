@@ -36,7 +36,7 @@ export class OTPService {
     const salt = bcrypt.genSaltSync(saltRounds);
     const hashRandomNumber = bcrypt.hashSync(String(randomNumber), salt);
 
-    let expiryDate = new Date().setMinutes(new Date().getMinutes() + 5); // 2 minutes exire time for otp
+    let expiryDate = new Date().setMinutes(new Date().getMinutes() + 5); // 5 minutes exire time for otp
 
     let newOTP = {
       type: type,
@@ -58,7 +58,7 @@ export class OTPService {
     const salt = bcrypt.genSaltSync(saltRounds);
     const hashRandomNumber = bcrypt.hashSync(String(randomNumber), salt);
 
-    let expiryDate = new Date().setMinutes(new Date().getMinutes() + 2); // 2 minutes exire time for otp
+    let expiryDate = new Date().setMinutes(new Date().getMinutes() + 5); // 5 minutes exire time for otp
 
     let newOTP = {
       type: type,
@@ -179,11 +179,7 @@ export class OTPService {
       .then(async function (result) {
         if (result) {
           try {
-            const expiredDate = new Date();
-            expiredDate.setHours(expiredDate.getHours() - 1);
-            const res = await newThis.repository.editOTP(findOTP._id, {
-              expiryDate: expiredDate,
-            });
+            await newThis.repository.deleteOTP(findOTP._id);
           } catch (error) {
             console.log("Error Catched:", error);
           }

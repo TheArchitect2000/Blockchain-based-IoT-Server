@@ -1,11 +1,12 @@
-import { Controller, Get } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Request, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AppService } from './app.service';
 import { UserPermissionService } from './modules/user/services/user-permission/user-permission.service';
 import { UserRoleService } from './modules/user/services/user-role/user-role.service';
 import { UserService } from './modules/user/services/user/user.service';
 import { ErrorTypeEnum } from './modules/utility/enums/error-type.enum';
 import { GereralException } from './modules/utility/exceptions/general.exception';
+import { JwtAuthGuard } from './modules/authentication/guard/jwt-auth.guard';
 
 @Controller('app')
 export class AppController {
@@ -56,4 +57,22 @@ export class AppController {
 
     return this.result;
   }
+
+  @Get('/v1/theme')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'get mobile them colors.',
+    description: '',
+  })
+  async getThemeColors() {
+    return {
+      "logo": process.env.THEME_LOGO,
+      "text": process.env.THEME_TEXT,
+      "background": process.env.THEME_BACKGROUND,
+      "box": process.env.THEME_BOX,
+      "button": process.env.THEME_BUTTON,
+    }
+  }
+
 }

@@ -473,6 +473,8 @@
 				special: document.getElementById("special"),
 			};
 
+			let loading = false
+
 			const validatePassword = () => {
 				const value = password.value;
 				conditions.length.firstElementChild.className =
@@ -506,8 +508,12 @@
 
 			submitBtn.addEventListener("click", (e) => {
 				e.preventDefault();
-				validatePassword();
 
+				if (loading == true) {
+					return window.alert("please wait");
+				}
+
+				validatePassword();
 				const isValid = Object.values(conditions).every((condition) =>
 					condition.firstElementChild.classList.contains("icon-check")
 				);
@@ -516,6 +522,8 @@
 						return window.alert("Passwords do not match");
 					} else {
 						console.log("New password: ", password.value);
+						document.getElementById("submitBtn").disabled = true;
+						loading = true
 						fetch("{{ url }}", {
 							method: "PATCH",
 							headers: {
@@ -529,7 +537,8 @@
 						})
 							.then((response) => response.json())
 							.then((data) => {
-								document.getElementById("success").className = "";
+								document.getElementById("success").className =
+									"";
 								document.getElementById("container").remove();
 								document.getElementById("submitBtn").remove();
 							})

@@ -295,7 +295,6 @@ export class UserController {
     const filePath = join(__dirname, '../../../../assets/web-pages/reset-pass-page.html');
     let htmlContent = await fsPromise.readFile(filePath, 'utf8');
     htmlContent = htmlContent.replace('{{ url }}', `${process.env.HOST_PROTOCOL}${process.env.HOST_NAME_OR_IP}/app/v1/user/reset-password-by-otp-code`);
-    
     htmlContent = htmlContent.replace('{{ email }}', email);
 
     await this.userService.verifyOtpCodeSentByEmailForResetPassword(body)
