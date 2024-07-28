@@ -330,7 +330,9 @@ export class UserService {
       body.otp,
     );
 
-    
+    if (!this.otp || verifyOTP == false) {
+      throw new GereralException(ErrorTypeEnum.NOT_FOUND, 'Otp is not valid');
+    }
 
     if (verifyOTP) {
       const whereCondition = { isDeleted: false };
