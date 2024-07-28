@@ -330,6 +330,8 @@ export class UserService {
       body.otp,
     );
 
+    
+
     if (verifyOTP) {
       const whereCondition = { isDeleted: false };
       const populateCondition = [];
