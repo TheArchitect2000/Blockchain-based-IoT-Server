@@ -461,8 +461,6 @@ export class UserController {
     @Request() request,
   ) {
     console.log('We are in changePasswordAndActivateAccount function!');
-    console.log('New password :', body.newPassword);
-
     return await this.userService.changePasswordAndActivateAccount(body);
   }
 

@@ -22,18 +22,10 @@ interface ForgotPasswordFormProps extends CommonProps {
 
 type ForgotPasswordFormSchema = {
     email: string
-    newPassword: string
-    newPasswordConfirm: string
 }
 
 const validationSchema = Yup.object().shape({
     email: Yup.string().required('Please enter your email'),
-    newPassword: Yup.string()
-        .required('Enter your new password')
-        .matches(/^[A-Za-z0-9_-]*$/, 'Only Letters & Numbers Allowed'),
-    newPasswordConfirm: Yup.string()
-        .required('Enter your confirm password')
-        .oneOf([Yup.ref('newPassword'), ''], 'Password not match'),
 })
 
 const ForgotPasswordForm = (props: ForgotPasswordFormProps) => {
@@ -54,7 +46,7 @@ const ForgotPasswordForm = (props: ForgotPasswordFormProps) => {
             if (existRes.data?.data) {
                 const resetRes = await apiRequestResetPassword(
                     values.email,
-                    values.newPassword
+           
                 )
                 setEmailSent(true)
             }
@@ -94,8 +86,6 @@ const ForgotPasswordForm = (props: ForgotPasswordFormProps) => {
                 enableReinitialize
                 initialValues={{
                     email: '',
-                    newPassword: '',
-                    newPasswordConfirm: '',
                 }}
                 validationSchema={validationSchema}
                 onSubmit={(values, { setSubmitting }) => {
@@ -121,38 +111,6 @@ const ForgotPasswordForm = (props: ForgotPasswordFormProps) => {
                                         name="email"
                                         disabled={isSubmitting}
                                         placeholder="email@example.com"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem
-                                    invalid={
-                                        errors.newPassword &&
-                                        touched.newPassword
-                                    }
-                                    errorMessage={errors.newPassword}
-                                >
-                                    <Field
-                                        type="password"
-                                        autoComplete="off"
-                                        name="newPassword"
-                                        disabled={isSubmitting}
-                                        placeholder="New password"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem
-                                    invalid={
-                                        errors.newPasswordConfirm &&
-                                        touched.newPasswordConfirm
-                                    }
-                                    errorMessage={errors.newPasswordConfirm}
-                                >
-                                    <Field
-                                        type="password"
-                                        autoComplete="off"
-                                        name="newPasswordConfirm"
-                                        disabled={isSubmitting}
-                                        placeholder="Re-Enter new password"
                                         component={Input}
                                     />
                                 </FormItem>

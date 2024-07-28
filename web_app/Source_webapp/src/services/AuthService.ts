@@ -34,7 +34,7 @@ export async function apiCheckEmailExist(email: string) {
     return res
 }
 
-export async function apiRequestResetPassword(email: string, newPassword: string) {
+export async function apiRequestResetPassword(email: string) {
     const res = ApiService.fetchData<SignInResponse>({
         url:
             import.meta.env.VITE_URL +
@@ -42,7 +42,6 @@ export async function apiRequestResetPassword(email: string, newPassword: string
         method: 'post',
         data: {
             email: email,
-            newPassword: newPassword,
         },
     })
 

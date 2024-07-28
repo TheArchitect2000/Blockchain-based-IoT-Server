@@ -6,9 +6,4 @@ export class changePasswordByEmailDto {
   @IsString({ message: 'email must be string.' })
   @ApiProperty({ required: true })
   email: string;
-
-  @IsNotEmpty({ message: 'newPassword is required and must be entered.' })
-  @IsNumber({}, { message: 'newPassword must be number.' })
-  @ApiProperty({ required: true })
-  newPassword: string;
 }
