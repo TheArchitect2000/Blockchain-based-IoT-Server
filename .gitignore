@@ -4,7 +4,9 @@
 !/uploads/sprites.png
 
 admin_web_app/Runner_webapp/frontend/*
+!admin_web_app/Runner_webapp/frontend/t.txt
 web_app/Runner_webapp/frontend/*
+!web_app/Runner_webapp/frontend/t.txt
 
 # Project configuration files
 *webprivate.pem
