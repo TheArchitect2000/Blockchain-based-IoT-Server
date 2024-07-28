@@ -40,18 +40,22 @@ const ForgotPasswordForm = (props: ForgotPasswordFormProps) => {
         setSubmitting: (isSubmitting: boolean) => void
     ) => {
         setSubmitting(true)
+        let existRes: any = false
         try {
-            const existRes = (await apiCheckEmailExist(values.email)) as any
-            setSubmitting(false)
-            if (existRes.data?.data) {
-                const resetRes = await apiRequestResetPassword(
-                    values.email,
-           
-                )
-                setEmailSent(true)
-            }
+            existRes = (await apiCheckEmailExist(values.email)) as any
         } catch (errors) {
             setMessage('Email not found')
+            setSubmitting(false)
+        }
+
+        try {
+            if (existRes.data?.data) {
+                const resetRes = await apiRequestResetPassword(values.email)
+                setEmailSent(true)
+            }
+            setSubmitting(false)
+        } catch (error) {
+            setMessage('Email already sended')
             setSubmitting(false)
         }
     }

@@ -16,8 +16,6 @@ export async function apiSignIn(data: SignInCredential) {
         data,
     })
 
-    console.log(res)
-
     return res
 }
 
@@ -28,8 +26,6 @@ export async function apiCheckEmailExist(email: string) {
             `v1/user/check-user-email-is-exists/${email}`,
         method: 'get',
     })
-
-    console.log(res)
 
     return res
 }
@@ -45,8 +41,6 @@ export async function apiRequestResetPassword(email: string) {
         },
     })
 
-    console.log(res)
-
     return res
 }
 
@@ -56,8 +50,6 @@ export async function apiCheckPassword(data: CheckPassword) {
         method: 'post',
         data,
     })
-
-    console.log(res)
 
     return res
 }

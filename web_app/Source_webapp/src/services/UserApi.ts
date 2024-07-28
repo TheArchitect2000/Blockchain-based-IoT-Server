@@ -23,7 +23,9 @@ export async function apiChangePasswordByEmail<T>(
     newPassword: string
 ) {
     return ApiService.fetchData<T>({
-        url: `${import.meta.env.VITE_URL}v1/user/change-password-and-activate-account`,
+        url: `${
+            import.meta.env.VITE_URL
+        }v1/user/change-password-and-activate-account`,
         method: 'post',
         data: {
             email: userEmail,
@@ -32,7 +34,17 @@ export async function apiChangePasswordByEmail<T>(
     })
 }
 
-
+export async function apiRequestVerifyEmail<T>(email: string) {
+    return ApiService.fetchData<T>({
+        url: `${
+            import.meta.env.VITE_URL
+        }v1/user/request-otp-code-for-verify-email`,
+        method: 'post',
+        data: {
+            email: email,
+        },
+    })
+}
 
 export async function apiGetUserProfileByUserId<T>(userId: string) {
     return ApiService.fetchData<T>({

@@ -29,6 +29,7 @@ type GetAccountSettingData = AccountSetting
 const Profile = lazy(() => import('./components/Profile'))
 const Address = lazy(() => import('./components/Address'))
 const Password = lazy(() => import('./components/Password'))
+const Verify = lazy(() => import('./components/Verify'))
 
 const { TabNav, TabList } = Tabs
 
@@ -41,6 +42,7 @@ const settingsMenu: Record<
 > = {
     profile: { label: 'Profile', path: 'profile' },
     address: { label: 'Address', path: 'address' },
+    verify: { label: 'Verify', path: 'verify' },
     password: { label: 'Password', path: 'password' },
 }
 
@@ -94,7 +96,10 @@ const Settings = () => {
                             <Profile data={data.profile as any} />
                         )}
                         {currentTab === 'password' && (
-                            <Password data={data.profile as any} />
+                            <Password />
+                        )}
+                        {currentTab === 'verify' && (
+                            <Verify />
                         )}
                         {currentTab === 'address' && <Address />}
                     </Suspense>

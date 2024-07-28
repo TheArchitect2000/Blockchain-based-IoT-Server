@@ -36,18 +36,6 @@ type PasswordFormModel = {
     confirmNewPassword: string
 }
 
-const LoginHistoryIcon = ({ type }: { type: string }) => {
-    switch (type) {
-        case 'Desktop':
-            return <HiOutlineDesktopComputer />
-        case 'Mobile':
-            return <HiOutlineDeviceMobile />
-        case 'Tablet':
-            return <HiOutlineDeviceTablet />
-        default:
-            return <HiOutlineDesktopComputer />
-    }
-}
 
 const validationSchema = Yup.object().shape({
     password: Yup.string().required('Password Required'),
