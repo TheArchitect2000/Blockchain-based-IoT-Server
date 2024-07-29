@@ -12,6 +12,50 @@ export type UserRole = any;
 @Injectable()
 export class UserRoleService {
   private result;
+  public defaultRoles = [
+    {
+      short: 'super',
+      roleName: 'super_admin',
+      roleLabel: 'main_admin',
+      permissionName: 'full_controll',
+      roleDepartment: RoleDepartmentsEnum.ADMINS,
+    },
+    {
+      short: 'user',
+      roleName: 'user-admin',
+      roleLabel: 'regular_admin',
+      permissionName: 'users',
+      roleDepartment: RoleDepartmentsEnum.ADMINS,
+    },
+    {
+      short: 'device',
+      roleName: 'device-admin',
+      roleLabel: 'regular_admin',
+      permissionName: 'devices',
+      roleDepartment: RoleDepartmentsEnum.ADMINS,
+    },
+    {
+      short: 'service',
+      roleName: 'service-admin',
+      roleLabel: 'regular_admin',
+      permissionName: 'services',
+      roleDepartment: RoleDepartmentsEnum.ADMINS,
+    },
+    {
+      short: 'request',
+      roleName: 'request-admin',
+      roleLabel: 'regular_admin',
+      permissionName: 'requests',
+      roleDepartment: RoleDepartmentsEnum.ADMINS,
+    },
+    {
+      short: 'normal',
+      roleName: 'ordinary',
+      roleLabel: 'ordinary_user',
+      permissionName: 'read_content',
+      roleDepartment: RoleDepartmentsEnum.USERS,
+    },
+  ];
 
   constructor(
     private readonly userRoleRepository?: UserRoleRepository,
@@ -19,86 +63,45 @@ export class UserRoleService {
   ) {}
 
   async insertDefaultRoles(): Promise<any> {
-    if (!(await this.roleExists('super_admin'))) {
-      let permissions: string[] = [];
-      let fullControllPermission = await this.userPermissionService
-        .findAPermissionByName('full_controll')
-        .catch((error) => {
-          let errorMessage =
-            'Some errors occurred while finding user permission!';
-          throw new GereralException(
-            ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-            errorMessage,
-          );
-        });
+    for (const role of this.defaultRoles) {
+      try {
+        if (!(await this.roleExists(role.roleName))) {
+          let permissions: string[] = [];
+          let fullControllPermission = await this.userPermissionService
+            .findAPermissionByName(role.permissionName)
+            .catch((error) => {
+              let errorMessage =
+                'Some errors occurred while finding user permission!';
+              throw new GereralException(
+                ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+                errorMessage,
+              );
+            });
 
-      permissions.push(fullControllPermission._id);
+          permissions.push(fullControllPermission._id);
 
-      let newRole = {
-        name: 'super_admin',
-        department: RoleDepartmentsEnum.ADMINS,
-        label: 'main_admin',
-        deletable: false,
-        permissions: permissions,
-        activationStatus: RoleActivationStatusEnum.ACTIVATED,
-        insertDate: new Date(),
-        updateDate: new Date(),
-      };
+          let newRole = {
+            name: role.roleName,
+            department: role.roleDepartment,
+            label: role.roleLabel,
+            deletable: false,
+            permissions: permissions,
+            activationStatus: RoleActivationStatusEnum.ACTIVATED,
+            insertDate: new Date(),
+            updateDate: new Date(),
+          };
 
-      await this.userRoleRepository
-        .insertRole(newRole)
-        .then((data) => {
-          this.result = data;
-        })
-        .catch((error) => {
-          let errorMessage =
-            'Some errors occurred while inserting a admin user!';
-          throw new GereralException(
-            ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-            errorMessage,
-          );
-        });
-    }
-
-    if (!(await this.roleExists('ordinary'))) {
-      let permissions: string[] = [];
-      let fullControllPermission = await this.userPermissionService
-        .findAPermissionByName('read_content')
-        .catch((error) => {
-          let errorMessage =
-            'Some errors occurred while finding user permission!';
-          throw new GereralException(
-            ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-            errorMessage,
-          );
-        });
-
-      permissions.push(fullControllPermission._id);
-
-      let newRole = {
-        name: 'ordinary',
-        department: RoleDepartmentsEnum.USERS,
-        label: 'ordinary_user',
-        deletable: false,
-        permissions: permissions,
-        activationStatus: RoleActivationStatusEnum.ACTIVATED,
-        insertDate: new Date(),
-        updateDate: new Date(),
-      };
-
-      await this.userRoleRepository
-        .insertRole(newRole)
-        .then((data) => {
-          this.result = data;
-        })
-        .catch((error) => {
-          let errorMessage =
-            'Some errors occurred while inserting a admin user!';
-          throw new GereralException(
-            ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-            errorMessage,
-          );
-        });
+          await this.userRoleRepository.insertRole(newRole).then((data) => {
+            this.result = data;
+          });
+        }
+      } catch (error) {
+        let errorMessage = 'Some errors occurred while inserting a admin user!';
+        throw new GereralException(
+          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+          errorMessage,
+        );
+      }
     }
 
     return this.result;
@@ -183,6 +186,26 @@ export class UserRoleService {
   }
 
   async findARoleByName(roleName): Promise<UserRole | undefined> {
+    await this.userRoleRepository
+      .findARoleByName(roleName)
+      .then((data) => {
+        this.result = data;
+      })
+      .catch((error) => {
+        let errorMessage = 'Some errors occurred while finding a role!';
+        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+      });
+
+    return this.result;
+  }
+
+  async findARoleByShortName(shortName: string): Promise<UserRole | undefined> {
+    let roleName = '';
+    this.defaultRoles.forEach((role) => {
+      if (role.short == shortName) {
+        roleName = role.roleName;
+      }
+    });
     await this.userRoleRepository
       .findARoleByName(roleName)
       .then((data) => {

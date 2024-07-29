@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { User } from './user.entity';
 import { GereralException } from '../exceptions/general.exception';
@@ -7,10 +7,14 @@ import { join } from 'path';
 import * as fs from 'fs';
 import https from 'https';
 import axios, { isCancel, AxiosError, AxiosRequestConfig } from 'axios';
+import { NotificationService } from 'src/modules/notification/notification/notification.service';
+
 
 @Injectable()
 export class MailService {
-  constructor(private mailerService: MailerService) {}
+  constructor(
+    private mailerService: MailerService
+  ) {}
 
   async sendUserConfirmation(user: User, token: string) {
     // const url = `example.com/auth/confirm?token=${token}`;
@@ -146,32 +150,32 @@ export class MailService {
     console.log('url 22: ', url);
 
     try {
-      console.log("Sending email");
-      
+      console.log('Sending email');
+
       await this.mailerService
-      .sendMail({
-        to: email,
-        subject: 'FidesInnova. Password Reset. ',
-        template: './reset-password-with-otp',
-        context: {
-          name: email,
-          url: url,
-        },
-      })
-      .then((data) => {
-        console.log(data);
-      })
-      console.log("email sended");
+        .sendMail({
+          to: email,
+          subject: 'FidesInnova. Password Reset. ',
+          template: './reset-password-with-otp',
+          context: {
+            name: email,
+            url: url,
+          },
+        })
+        .then((data) => {
+          console.log(data);
+        });
+      console.log('email sended');
     } catch (error) {
       console.log(error);
 
-        let errorMessage = 'Some errors occurred while sending email';
-        throw new GereralException(
-          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-          errorMessage,
-        );
+      let errorMessage = 'Some errors occurred while sending email';
+      throw new GereralException(
+        ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+        errorMessage,
+      );
     }
-    console.log("email sended 2");
+    console.log('email sended 2');
   }
 
   async sendVerifyEmailOTP(email: string, otp: string, otpType: string) {
@@ -308,20 +312,6 @@ export class MailService {
       '   and notification message is: ',
       notificationMessage,
     );
-
-    // const url =
-    //   process.env.HOST_PROTOCOL +
-    //   process.env.HOST_NAME_OR_IP +
-    //   '/' +
-    //   process.env.HOST_SUB_DIRECTORY +
-    //   '/v1/notification/sendMessage?message=' +
-    //   notificationMessage +
-    //   'title' +
-    //   notificationTitle +
-    //   'user' +
-    //   userId;
-
-    // console.log('url: ', url);
 
     const host = 'https://' + process.env.HOST_NAME_OR_IP;
     if (process.env.NOTIFICATION_BY_NOTIFICATION == 'enabled') {

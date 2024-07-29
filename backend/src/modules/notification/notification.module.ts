@@ -5,11 +5,13 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { notificationFeature } from './notification/notification.feature';
 import { NotificationRepository } from './notification/notification.repository';
 import { UserModule } from '../user/user.module';
+import { UtilityModule } from '../utility/utility.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature(notificationFeature),
     forwardRef(() => UserModule),
+    forwardRef(() => UtilityModule),
   ],
   controllers: [NotificationController],
   providers: [NotificationService, NotificationRepository],

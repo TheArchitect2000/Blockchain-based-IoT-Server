@@ -54,7 +54,7 @@ export class InstalledServiceController {
     if (
       !profile ||
       !profile?.roles[0]?.name ||
-      profile?.roles[0]?.name != 'super_admin'
+      profile?.roles.some((role) => role.name === 'super_admin') == false
     ) {
       return false;
     } else {
@@ -210,12 +210,17 @@ export class InstalledServiceController {
       'Gets user installed services by user id. This api requires a user id.',
   })
   async getInstalledServicesByDeviceEncryptedId(
-    @Param('deviceEncryptedId') deviceEncryptedId: string, @Request() request,
+    @Param('deviceEncryptedId') deviceEncryptedId: string,
+    @Request() request,
   ) {
     const isAdmin = await this.isAdmin(request.user.userId);
 
     await this.installedServiceService
-      .getInstalledServicesByDeviceEncryptedId(deviceEncryptedId, request.user.userId, isAdmin)
+      .getInstalledServicesByDeviceEncryptedId(
+        deviceEncryptedId,
+        request.user.userId,
+        isAdmin,
+      )
       .then((data) => {
         this.result = data;
       })
@@ -293,7 +298,7 @@ export class InstalledServiceController {
       .deleteInstalledServiceByInstalledServiceId(
         installedServiceId,
         request.user.userId,
-        isAdmin
+        isAdmin,
       )
       .then((data) => {
         this.result = data;

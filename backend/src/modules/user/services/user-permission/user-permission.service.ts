@@ -8,64 +8,48 @@ import { UserPermissionRepository } from '../../repositories/user-permission.rep
 @Injectable()
 export class UserPermissionService {
   private result;
+  private defaultPremissions = [
+    { Name: 'full_controll', Label: 'system' },
+    { Name: 'read_content', Label: 'system' },
+    { Name: 'users', Label: 'admin' },
+    { Name: 'devices', Label: 'admin' },
+    { Name: 'services', Label: 'admin' },
+    { Name: 'requests', Label: 'admin' },
+  ];
 
   constructor(
     private readonly userPermissionRepository?: UserPermissionRepository,
   ) {}
 
   async insertDefaultPermissions(): Promise<any> {
-    if (!(await this.userPermissionExists('full_controll'))) {
-      let newAdminPermission = {
-        name: 'full_controll',
-        module: 'user_permission',
-        label: 'system',
-        routes: [],
-        deletable: false,
-        activationStatus: PermissionActivationStatusEnum.ACTIVATED,
-        insertDate: new Date(),
-        updateDate: new Date(),
-      };
+    for (const perms of this.defaultPremissions) {
+      try {
+        if (!(await this.userPermissionExists(perms.Name))) {
+          let newAdminPermission = {
+            name: perms.Name,
+            module: 'user_permission',
+            label: perms.Label,
+            routes: [],
+            deletable: false,
+            activationStatus: PermissionActivationStatusEnum.ACTIVATED,
+            insertDate: new Date(),
+            updateDate: new Date(),
+          };
 
-      await this.userPermissionRepository
-        .insertPermission(newAdminPermission)
-        .then((data) => {
-          this.result = data;
-        })
-        .catch((error) => {
-          let errorMessage =
-            'Some errors occurred while inserting main permissions!';
-          throw new GereralException(
-            ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-            errorMessage,
-          );
-        });
-    }
-
-    if (!(await this.userPermissionExists('read_content'))) {
-      let newUserPermission = {
-        name: 'read_content',
-        module: 'user_permission',
-        label: 'system',
-        routes: [],
-        deletable: false,
-        activationStatus: PermissionActivationStatusEnum.ACTIVATED,
-        insertDate: new Date(),
-        updateDate: new Date(),
-      };
-
-      await this.userPermissionRepository
-        .insertPermission(newUserPermission)
-        .then((data) => {
-          this.result = data;
-        })
-        .catch((error) => {
-          let errorMessage =
-            'Some errors occurred while inserting main permissions!';
-          throw new GereralException(
-            ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-            errorMessage,
-          );
-        });
+          await this.userPermissionRepository
+            .insertPermission(newAdminPermission)
+            .then((data) => {
+              this.result = data;
+            });
+        }
+      } catch (error) {
+        let errorMessage =
+          'Some errors occurred while inserting main permissions!';
+        throw new GereralException(
+          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+          errorMessage,
+        );
+      }
     }
 
     return this.result;

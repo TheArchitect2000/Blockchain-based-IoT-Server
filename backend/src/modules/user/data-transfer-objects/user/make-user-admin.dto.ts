@@ -9,5 +9,10 @@ export class makeUserAdminDto {
   @IsString({ message: 'userName must be string.' })
   @ApiProperty({ required: true })
   userName: string;
+  
+  @IsOptional()
+  @IsString({ message: 'roleNames must be array of strings.' })
+  @ApiProperty({ required: true })
+  roleNames: Array<string>;
 }
 

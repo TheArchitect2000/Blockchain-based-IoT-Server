@@ -182,9 +182,12 @@ export class UserService {
         OTPTypeEnum.CHANGE_PASSWORD,
         body.email,
       );
-      return true
+      return true;
     } else {
-      throw new GereralException(ErrorTypeEnum.CONFLICT, 'Email already sended.');
+      throw new GereralException(
+        ErrorTypeEnum.CONFLICT,
+        'Email already sended.',
+      );
     }
   }
 
@@ -424,9 +427,12 @@ export class UserService {
       throw new GereralException(ErrorTypeEnum.NOT_FOUND, 'Otp is not valid');
     }
 
-    const otp = await this.otpService.insertOTPCode(OTPTypeEnum.RESET_PASSWORD, body.email)
+    const otp = await this.otpService.insertOTPCode(
+      OTPTypeEnum.RESET_PASSWORD,
+      body.email,
+    );
 
-    return otp
+    return otp;
 
     /* if (verifyOTP) {
        const whereCondition = { isDeleted: false };
@@ -574,7 +580,7 @@ export class UserService {
       body.otp,
     );
 
-    return verifyOTP as boolean
+    return verifyOTP as boolean;
   }
 
   async sendOTPForChangePassword(email) {
@@ -598,7 +604,6 @@ export class UserService {
       throw new GereralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
     }
 
-
     if (
       this.otp.length == 0 ||
       new Date(this.otp[this.otp.length - 1].expiryDate).getTime() <
@@ -616,7 +621,7 @@ export class UserService {
 
   async checkUserNameIsExist(userName) {
     const theUser = await this.findAUserByUserName(userName);
-    
+
     if (theUser) {
       return true;
     } else {
@@ -717,7 +722,14 @@ export class UserService {
 
   async findAUserByUserName(userName) {
     const whereCondition = { isDeleted: false };
-    const populateCondition = [];
+    const populateCondition = [
+      {
+        path: 'roles',
+        populate: {
+          path: 'permissions',
+        },
+      },
+    ];
     const selectCondition = this.getUserKeys();
 
     return await this.userRepository.findAUserByUserName(
@@ -728,19 +740,30 @@ export class UserService {
     );
   }
 
-  async makeUserAdmin(userName: string) {
-    const fullControllPermission = await this.userRoleService
-      .findARoleByName('super_admin')
-      .catch((error) => {
+  async makeUserAdmin(userName: string, roleNames: Array<string>) {
+    let newRoles = [];
+
+    for (const theRole of roleNames) {
+      const adminRolePermissions = await this.userRoleService
+        .findARoleByShortName(theRole)
+        .catch((error) => {
+          let errorMessage =
+            'Some errors occurred while finding user permission!';
+          throw new GereralException(
+            ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+            errorMessage,
+          );
+        });
+      if (!adminRolePermissions) {
         let errorMessage =
           'Some errors occurred while finding user permission!';
         throw new GereralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
-      });
-
-    const adminRoleId = fullControllPermission._id;
+      }
+      newRoles.push(adminRolePermissions._id);
+    }
 
     const userRes = await this.findAUserByUserName(userName);
 
@@ -751,25 +774,49 @@ export class UserService {
       );
     }
 
-    const newData = {
-      ...userRes,
+    const result = await this.userRepository.editUser(userRes._id, {
+      roles: [
+        ...userRes.roles,
+        ...newRoles.filter((role) => !userRes.roles.includes(role)),
+      ],
+    });
+    return {
+      success: true,
+      message: 'User turned into admin successfully.',
+      date: new Date(),
     };
-    
-    const result = await this.userRepository.editUser(userRes._id, {roles: [adminRoleId]});
-    
-    if (result) {
-      return {
-        success: true,
-        message: "User turned into admin successfully.",
-        date: new Date(),
-      }
-    } else {
-      return {
-        success: false,
-        message: "An error occurred while making user admin.",
-        date: new Date(),
-      }
+  }
+
+  async takeUserAdminRanks(userName: string, roleNames: Array<string>) {
+    const userRes = await this.findAUserByUserName(userName);
+
+    if (!userRes) {
+      throw new GereralException(
+        ErrorTypeEnum.NOT_FOUND,
+        'Account not found for taking admin ranks!',
+      );
     }
+
+    const hasToRemoveRoles = this.userRoleService.defaultRoles
+      .map((roles) => {
+        if (roleNames.includes(roles.short)) {
+          return roles.roleName;
+        }
+      })
+      .filter((roleName) => roleName !== undefined);
+
+    const existRolesIds = userRes.roles
+      .filter((role: any) => !hasToRemoveRoles.includes(role.name))
+      .map((roles: any) => roles._id);
+
+    await this.userRepository.editUser(userRes._id, {
+      roles: [...existRolesIds],
+    });
+    return {
+      success: true,
+      message: 'User admin ranks revoked.',
+      date: new Date(),
+    };
   }
 
   async editUserByUser(userId, data) {
@@ -1773,13 +1820,11 @@ export class UserService {
       selectCondition,
     );
 
-    console.log('this.user:', this.user);
-
     if (this.user) {
       if (
         !this.user ||
-        !this.user?.roles[0].name ||
-        this.user?.roles[0].name != 'super_admin'
+        !this.user.roles ||
+        this.user.roles.some((role) => role.name === 'super_admin') == false
       ) {
         throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied.');
       }

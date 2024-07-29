@@ -67,6 +67,7 @@ import { VirtualMachineHandlerService } from 'src/modules/virtual-machine/servic
 import { makeUserAdminDto } from '../data-transfer-objects/user/make-user-admin.dto';
 var fs = require('fs');
 import { promises as fsPromise } from 'fs';
+import { UserRoleService } from '../services/user-role/user-role.service';
 
 @ApiTags('Manage Users')
 @Controller('app')
@@ -76,6 +77,7 @@ export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly mailService: MailService,
+    private readonly userRoleService: UserRoleService,
     private readonly VirtualMachineService?: VirtualMachineHandlerService,
   ) {}
 
@@ -86,7 +88,7 @@ export class UserController {
     if (
       !profile ||
       !profile?.roles[0]?.name ||
-      profile?.roles[0]?.name != 'super_admin'
+      profile?.roles.some((role) => role.name === 'super_admin') == false
     ) {
       return false;
     } else {
@@ -292,16 +294,23 @@ export class UserController {
     let otpCode: string = '';
 
     // Read the HTML file
-    const filePath = join(__dirname, '../../../../assets/web-pages/reset-pass-page.html');
+    const filePath = join(
+      __dirname,
+      '../../../../assets/web-pages/reset-pass-page.html',
+    );
     let htmlContent = await fsPromise.readFile(filePath, 'utf8');
-    htmlContent = htmlContent.replace('{{ url }}', `${process.env.HOST_PROTOCOL}${process.env.HOST_NAME_OR_IP}/app/v1/user/reset-password-by-otp-code`);
+    htmlContent = htmlContent.replace(
+      '{{ url }}',
+      `${process.env.HOST_PROTOCOL}${process.env.HOST_NAME_OR_IP}/app/v1/user/reset-password-by-otp-code`,
+    );
     htmlContent = htmlContent.replace('{{ email }}', email);
 
-    await this.userService.verifyOtpCodeSentByEmailForResetPassword(body)
+    await this.userService
+      .verifyOtpCodeSentByEmailForResetPassword(body)
       .then((data) => {
         otpCode = data;
         htmlContent = htmlContent.replace('{{ otp }}', otpCode);
-        console.log("otpCode:", otpCode);
+        console.log('otpCode:', otpCode);
         res.writeHead(200, { 'Content-Type': 'text/html' });
         res.write(htmlContent);
         res.end();
@@ -480,16 +489,18 @@ export class UserController {
     description: 'Verifies otp code received by user for reseting password.',
   })
   async verifyOtpCode(@Body() body: verifyOtpCodeDto, @Request() request) {
-    
     const res1 = await this.userService.verifyOtpCode(body);
     if (res1 === true) {
-      console.log("Password Changed");
-      
-      await this.userService.changePasswordAndActivateAccount({...body, newPassword: body.password});
-      return true
+      console.log('Password Changed');
+
+      await this.userService.changePasswordAndActivateAccount({
+        ...body,
+        newPassword: body.password,
+      });
+      return true;
     } else {
-      console.log("Password not Changed");
-      return false
+      console.log('Password not Changed');
+      return false;
     }
   }
 
@@ -514,24 +525,25 @@ export class UserController {
   })
   async adminCredential(@Body() body: credentialDto, @Request() request) {
     const emails = process.env.SUPER_ADMIN_EMAILS;
-    
+
     if (emails.includes(body.email)) {
-      console.log("Included");
-      
-      const adminRes = await this.userService.makeUserAdmin(body.email);
+      console.log('Included');
+
+      const adminRes = await this.userService.makeUserAdmin(body.email, [
+        'super',
+      ]);
       return await this.userService.adminCredential({
         ...body,
         email: body.email.toString().toLocaleLowerCase(),
       });
     } else {
-      console.log("Not Included");
-      
+      console.log('Not Included');
+
       return await this.userService.adminCredential({
         ...body,
         email: body.email.toString().toLocaleLowerCase(),
       });
     }
-
   }
 
   @Post('v1/user/check-password')
@@ -726,8 +738,8 @@ export class UserController {
       'Register a user by user mobile. This api requires a user mobile.',
   })
   async sendOTPForChangePassword(@Request() request) {
-    console.log("user email: ", request.user.email);
-    
+    console.log('user email: ', request.user.email);
+
     return await this.userService.sendOTPForChangePassword(request.user.email);
   }
 
@@ -895,7 +907,7 @@ export class UserController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Make an user into admin.',
-    description: 'This api will make user into super_admin.',
+    description: 'This api will give user admin ranks.',
   })
   async makeUserAdmin(@Body() body: makeUserAdminDto, @Request() request) {
     if (body.userName) {
@@ -917,7 +929,38 @@ export class UserController {
       throw new GereralException(ErrorTypeEnum.UNAUTHORIZED, 'Access Denied !');
     }
 
-    return await this.userService.makeUserAdmin(body.userName);
+    return await this.userService.makeUserAdmin(body.userName, body.roleNames);
+  }
+
+  @Post('user/take-admin')
+  @HttpCode(201)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Take an user admin ranks.',
+    description: 'This api will take user admin ranks.',
+  })
+  async takeUserAdminRanks(@Body() body: makeUserAdminDto, @Request() request) {
+    if (body.userName) {
+      if (
+        body.userName === null ||
+        body.userName === undefined ||
+        body.userName === ''
+      ) {
+        throw new GereralException(
+          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+          'userName is required and must be entered and must be entered correctly.',
+        );
+      }
+    }
+
+    const emails = process.env.SUPER_ADMIN_EMAILS;
+
+    if (!emails.includes(request.user.email.toString())) {
+      throw new GereralException(ErrorTypeEnum.UNAUTHORIZED, 'Access Denied !');
+    }
+
+    return await this.userService.takeUserAdminRanks(body.userName, body.roleNames);
   }
 
   /* @Patch('v1/user/edit-user-by-panel/:userId')

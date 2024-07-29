@@ -46,7 +46,7 @@ export class NotificationController {
     if (
       !profile ||
       !profile?.roles[0]?.name ||
-      profile?.roles[0]?.name != 'super_admin'
+      profile?.roles.some((role) => role.name === 'super_admin') == false
     ) {
       return false;
     } else {
@@ -69,7 +69,7 @@ export class NotificationController {
     return this.service.sendToken(token, request.user.userId);
   }
 
-  /* @Post('/sendMessage')
+  @Post('/sendMessage')
   @ApiOperation({
     summary: 'user send firebase token and server save it.',
     description: '',
@@ -84,7 +84,7 @@ export class NotificationController {
         'userId must be valid type',
       );
     return this.service.sendNotification(body);
-  } */
+  }
 
   @Post('/add-notification-by-user-id')
   @UseGuards(JwtAuthGuard, IsAdminGuard)
@@ -199,9 +199,7 @@ export class NotificationController {
     @Body() body: ReadNotificationRequestBodyDto,
     @Request() request,
   ) {
-    return this.service.readNotificationsByNotificationIds(
-      body.notifications,
-    );
+    return this.service.readNotificationsByNotificationIds(body.notifications);
   }
 
   @Patch('/edit-notification-by-id')
@@ -217,6 +215,11 @@ export class NotificationController {
   ) {
     const isAdmin = await this.isAdmin(request.user.userId);
     const { notifId, ...rest } = body;
-    return this.service.editNotificationById(notifId, request.user.userId, isAdmin, rest as any);
+    return this.service.editNotificationById(
+      notifId,
+      request.user.userId,
+      isAdmin,
+      rest as any,
+    );
   }
 }

@@ -1,5 +1,5 @@
 import { MailerModule } from '@nestjs-modules/mailer';
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MulterModule } from '@nestjs/platform-express';
@@ -24,6 +24,7 @@ import { SMSService } from './services/sms.service';
 import { TagService } from './services/tag.service';
 import { join } from 'path';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
     MongooseModule.forFeature(mediaFeature),
     MongooseModule.forFeature(tagFeature),
     MongooseModule.forFeature(categoryFeature),
+    forwardRef(() => NotificationModule),
     MulterModule.registerAsync({
       useClass: MulterConfigService,
     }),

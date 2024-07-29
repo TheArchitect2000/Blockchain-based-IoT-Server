@@ -21,7 +21,7 @@ export class IsAdminGuard implements CanActivate {
       if (
         !res ||
         !res?.roles[0]?.name ||
-        res?.roles[0]?.name != 'super_admin'
+        res?.roles.some((role) => role.name === 'super_admin') == false
       ) {
         throw new ForbiddenException('You do not have admin privileges.');
       } else {

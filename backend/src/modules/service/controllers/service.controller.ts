@@ -50,7 +50,7 @@ export class ServiceController {
     if (
       !profile ||
       !profile?.roles[0]?.name ||
-      profile?.roles[0]?.name != 'super_admin'
+      profile?.roles.some((role) => role.name === 'super_admin') == false
     ) {
       return false;
     } else {
@@ -69,8 +69,9 @@ export class ServiceController {
   })
   async insertService(@Body() body: insertServiceDto, @Request() request) {
     const data = {
-      ...body, userId: request.user.userId
-    }
+      ...body,
+      userId: request.user.userId,
+    };
     return await this.serviceService.insertService(data);
   }
 
@@ -185,7 +186,10 @@ export class ServiceController {
     summary: 'Get user services by user id.',
     description: 'Gets user services by user id. This api requires a user id.',
   })
-  async getServicesByUserId(@Param('userId') userId: string, @Request() request) {
+  async getServicesByUserId(
+    @Param('userId') userId: string,
+    @Request() request,
+  ) {
     if (
       userId === null ||
       userId === undefined ||
@@ -228,9 +232,13 @@ export class ServiceController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get user service by service id.',
-    description: 'Gets user service by service id. This api requires a service id.',
+    description:
+      'Gets user service by service id. This api requires a service id.',
   })
-  async getServiceById(@Param('serviceId') serviceId: string, @Request() request) {
+  async getServiceById(
+    @Param('serviceId') serviceId: string,
+    @Request() request,
+  ) {
     if (
       serviceId === null ||
       serviceId === undefined ||
