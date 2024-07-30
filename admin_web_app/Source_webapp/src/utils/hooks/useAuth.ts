@@ -35,20 +35,6 @@ function useAuth() {
     > => {
         try {
             const resp = await apiSignIn(values)
-            console.log(resp)
-
-            const resData = resp?.data?.data
-
-            if (
-                !resData ||
-                !resData?.roles[0].name ||
-                resData?.roles[0].name != 'super_admin'
-            ) {
-                return {
-                    status: 'permission',
-                    message: 'Access Denied',
-                }
-            }
 
             if (resp.data) {
                 const token = resp.data.data.tokens.accessToken
