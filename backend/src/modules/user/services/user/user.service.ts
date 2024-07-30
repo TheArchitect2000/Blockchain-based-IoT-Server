@@ -1874,6 +1874,21 @@ export class UserService {
     }
   }
 
+  async getUserShortRolesByUserName(userName) {
+    const userRes = await this.findAUserByUserName(userName);
+    if (!userRes) {
+      throw new GereralException(ErrorTypeEnum.NOT_FOUND, 'Account not found!');
+    }
+
+    const shortRoles = userRes.roles.flatMap((userRole: any) => {
+      return this.userRoleService.defaultRoles
+        .filter((sysRole) => sysRole.roleName === userRole.name)
+        .map((sysRole) => sysRole.short);
+    });
+
+    return shortRoles;
+  }
+
   async validateUserPassword(enteredPassword, userPassword) {
     let isValidPassword = null;
 

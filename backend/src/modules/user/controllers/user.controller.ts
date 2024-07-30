@@ -901,7 +901,7 @@ export class UserController {
     return await this.userService.insertUserByPanel(body, request.user.userId);
   }
 
-  @Post('user/make-admin')
+  @Post('user/give-admin')
   @HttpCode(201)
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -930,6 +930,38 @@ export class UserController {
     }
 
     return await this.userService.makeUserAdmin(body.userName, body.roleNames);
+  }
+
+  @Get('user/get-short-roles/:userName')
+  @HttpCode(201)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Get user roles short names.',
+    description: 'This api will return short name of the user roles.',
+  })
+  async getUserShortRoles(@Param('userName') userName: string, @Request() request) {
+    if (userName) {
+      if (
+        userName === null ||
+        userName === undefined ||
+        userName === ''
+      ) {
+        throw new GereralException(
+          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+          'userName is required and must be entered and must be entered correctly.',
+        );
+      }
+    }
+
+    const isAdmin = await this.isAdmin(request.user.userId);
+
+    if (isAdmin === false && request.user.email !== userName) {
+      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+    }
+
+    return this.userService.getUserShortRolesByUserName(userName)
+    
   }
 
   @Post('user/take-admin')
