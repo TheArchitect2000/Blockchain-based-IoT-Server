@@ -62,7 +62,6 @@ import { join } from 'path';
 import { editUserAndInfoByUserDto } from '../data-transfer-objects/user/edit-user-and-info-by-user.dto';
 import { editUserByUserDto } from '../data-transfer-objects/user/edit-user-by-user.dto';
 import { verifyEmailDto } from '../data-transfer-objects/user/verify-email.dto';
-import { IsAdminGuard } from 'src/modules/authentication/guard/is-admin.guard';
 import { VirtualMachineHandlerService } from 'src/modules/virtual-machine/services/service-handler.service';
 import { makeUserAdminDto } from '../data-transfer-objects/user/make-user-admin.dto';
 var fs = require('fs');
@@ -88,7 +87,8 @@ export class UserController {
     if (
       !profile ||
       !profile?.roles[0]?.name ||
-      profile?.roles.some((role) => role.name === 'super_admin') == false
+      (profile?.roles.some((role) => role.name === 'super_admin') == false &&
+        profile?.roles.some((role) => role.name === 'user_admin') == false)
     ) {
       return false;
     } else {
@@ -1132,13 +1132,20 @@ export class UserController {
 
   @Get('v1/user/get-all-users')
   @HttpCode(200)
-  @UseGuards(JwtAuthGuard, IsAdminGuard)
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get all users.',
     description: 'Gets all users.',
   })
-  async getAllUsers() {
+  async getAllUsers(@Request() request) {
+
+    const isAdmin = await this.isAdmin(request.user.userId);
+
+    if (isAdmin === false) {
+      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+    }
+
     await this.userService
       .getAllUsers()
       .then((data) => {

@@ -762,10 +762,10 @@ export class UserService {
           errorMessage,
         );
       }
-      newRoles.push(adminRolePermissions._id);
+      newRoles.push(adminRolePermissions._id.toString());
     }
 
-    const userRes = await this.findAUserByUserName(userName);
+    let userRes = (await this.findAUserByUserName(userName)) as any;
 
     if (!userRes) {
       throw new GereralException(
@@ -774,12 +774,13 @@ export class UserService {
       );
     }
 
-    const result = await this.userRepository.editUser(userRes._id, {
+    await this.userRepository.editUser(userRes._id, {
       roles: [
-        ...userRes.roles,
-        ...newRoles.filter((role) => !userRes.roles.includes(role)),
+        ...userRes.roles.filter((role: any) => !newRoles.includes(role._id.toString())),
+        ...newRoles,
       ],
     });
+
     return {
       success: true,
       message: 'User turned into admin successfully.',
@@ -1824,7 +1825,7 @@ export class UserService {
       if (
         !this.user ||
         !this.user.roles ||
-        this.user.roles.some((role) => role.name === 'super_admin') == false
+        this.user.roles.some((role) => role.department === 'admins') == false
       ) {
         throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied.');
       }

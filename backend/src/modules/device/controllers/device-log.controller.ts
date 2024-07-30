@@ -125,7 +125,8 @@ export class DeviceLogController {
     if (
       !profile ||
       !profile?.roles[0]?.name ||
-      profile?.roles.some((role) => role.name === 'super_admin') == false
+      (profile?.roles.some((role) => role.name === 'super_admin') == false &&
+        profile?.roles.some((role) => role.name === 'device_admin') == false)
     ) {
       return false;
     } else {

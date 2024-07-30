@@ -31,7 +31,6 @@ import { renameDeviceDto } from '../data-transfer-objects/rename-device.dto';
 import { DeviceService } from '../services/device.service';
 import { EditDeviceDto } from '../data-transfer-objects/edit-device.dto';
 import { UserService } from 'src/modules/user/services/user/user.service';
-import { IsAdminGuard } from 'src/modules/authentication/guard/is-admin.guard';
 
 @ApiTags('Manage Devices')
 @Controller('app')
@@ -50,7 +49,8 @@ export class DeviceController {
     if (
       !profile ||
       !profile?.roles[0]?.name ||
-      profile?.roles.some((role) => role.name === 'super_admin') == false
+      (profile?.roles.some((role) => role.name === 'super_admin') == false &&
+        profile?.roles.some((role) => role.name === 'device_admin') == false)
     ) {
       return false;
     } else {
@@ -278,7 +278,7 @@ export class DeviceController {
 
   @Get('v1/device/get-installed-devices-by-date')
   @HttpCode(200)
-  @UseGuards(JwtAuthGuard, IsAdminGuard)
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary:
@@ -307,7 +307,14 @@ export class DeviceController {
     @Query('installationYear') installationYear: number,
     @Query('installationMonth') installationMonth: number,
     @Query('installationDay') installationDay: number,
+    @Request() request,
   ) {
+    const isAdmin = await this.isAdmin(request.user.userId);
+
+    if (isAdmin === false) {
+      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+    }
+
     await this.deviceService
       .getInstalledDevicesByDate(
         installationYear,
@@ -413,13 +420,18 @@ export class DeviceController {
 
   @Get('v1/device/get-all-devices')
   @HttpCode(200)
-  @UseGuards(JwtAuthGuard, IsAdminGuard)
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get all installed devices.',
     description: 'Gets all installed devices.',
   })
-  async getAllInstalledServices() {
+  async getAllInstalledServices(@Request() request) {
+    const isAdmin = await this.isAdmin(request.user.userId);
+
+    if (isAdmin === false) {
+      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+    }
     await this.deviceService
       .getAllDevices()
       .then((data) => {

@@ -33,7 +33,6 @@ import { MailService } from 'src/modules/utility/services/mail.service';
 import { UserService } from 'src/modules/user/services/user/user.service';
 import { DeviceService } from 'src/modules/device/services/device.service';
 import { VirtualMachineHandlerService } from 'src/modules/virtual-machine/services/service-handler.service';
-import { IsAdminGuard } from 'src/modules/authentication/guard/is-admin.guard';
 
 @ApiTags('Manage Installed Services')
 @Controller('app')
@@ -54,7 +53,8 @@ export class InstalledServiceController {
     if (
       !profile ||
       !profile?.roles[0]?.name ||
-      profile?.roles.some((role) => role.name === 'super_admin') == false
+      (profile?.roles.some((role) => role.name === 'super_admin') == false &&
+        profile?.roles.some((role) => role.name === 'service_admin') == false)
     ) {
       return false;
     } else {
@@ -239,13 +239,18 @@ export class InstalledServiceController {
 
   @Get('v1/installed-service/get-all-installed-services')
   @HttpCode(200)
-  @UseGuards(JwtAuthGuard, IsAdminGuard)
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get all installed services.',
     description: 'Gets all installed services.',
   })
-  async getAllInstalledServices() {
+  async getAllInstalledServices(@Request() request) {
+    const isAdmin = await this.isAdmin(request.user.userId);
+
+    if (isAdmin === false) {
+      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+    }
     await this.installedServiceService
       .getAllInstalledServices()
       .then((data) => {

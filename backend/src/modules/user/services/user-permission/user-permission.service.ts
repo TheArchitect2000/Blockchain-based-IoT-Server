@@ -15,6 +15,7 @@ export class UserPermissionService {
     { Name: 'devices', Label: 'admin' },
     { Name: 'services', Label: 'admin' },
     { Name: 'requests', Label: 'admin' },
+    { Name: 'notifications', Label: 'admin' },
   ];
 
   constructor(

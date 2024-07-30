@@ -31,7 +31,6 @@ import { insertServiceDto } from '../data-transfer-objects/insert-service.dto';
 import { editServiceDto } from '../data-transfer-objects/edit-service.dto';
 import { publishServiceDto } from '../data-transfer-objects/publish-service.dto';
 import { UserService } from 'src/modules/user/services/user/user.service';
-import { IsAdminGuard } from 'src/modules/authentication/guard/is-admin.guard';
 
 @ApiTags('Manage Services')
 @Controller('app')
@@ -50,7 +49,8 @@ export class ServiceController {
     if (
       !profile ||
       !profile?.roles[0]?.name ||
-      profile?.roles.some((role) => role.name === 'super_admin') == false
+      (profile?.roles.some((role) => role.name === 'super_admin') == false &&
+        profile?.roles.some((role) => role.name === 'service_admin') == false)
     ) {
       return false;
     } else {
@@ -96,7 +96,7 @@ export class ServiceController {
 
   @Patch('v1/service/publish-service')
   @HttpCode(201)
-  @UseGuards(JwtAuthGuard, IsAdminGuard)
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Publishing a user service.',
@@ -104,12 +104,17 @@ export class ServiceController {
       'This API will publish an service that is sended a request for publishing.',
   })
   async publishService(@Body() body: publishServiceDto, @Request() request) {
+    const isAdmin = await this.isAdmin(request.user.userId);
+
+    if (isAdmin === false) {
+      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+    }
     return await this.serviceService.publishService(body, request.user.userId);
   }
 
   @Patch('v1/service/reject-service')
   @HttpCode(201)
-  @UseGuards(JwtAuthGuard, IsAdminGuard)
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Publishing a user service.',
@@ -117,12 +122,17 @@ export class ServiceController {
       'This API will publish an service that is sended a request for publishing.',
   })
   async rejectService(@Body() body: publishServiceDto, @Request() request) {
+    const isAdmin = await this.isAdmin(request.user.userId);
+
+    if (isAdmin === false) {
+      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+    }
     return await this.serviceService.rejectService(body, request.user.userId);
   }
 
   @Patch('v1/service/cancel-service-request')
   @HttpCode(201)
-  @UseGuards(JwtAuthGuard, IsAdminGuard)
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Canceling a user service request.',
@@ -130,6 +140,11 @@ export class ServiceController {
       'This API will cancel the service request that is sended for publishing.',
   })
   async cancelRequest(@Body() body: publishServiceDto, @Request() request) {
+    const isAdmin = await this.isAdmin(request.user.userId);
+
+    if (isAdmin === false) {
+      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+    }
     return await this.serviceService.cancelServiceRequest(
       body,
       request.user.userId,
@@ -299,13 +314,18 @@ export class ServiceController {
 
   @Get('v1/service/get-all-publish-requested-services')
   @HttpCode(200)
-  @UseGuards(JwtAuthGuard, IsAdminGuard)
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get all publish requested services.',
     description: 'Gets all the services that are requesting for publish.',
   })
-  async getAllPublishRequestedServices() {
+  async getAllPublishRequestedServices(@Request() request) {
+    const isAdmin = await this.isAdmin(request.user.userId);
+
+    if (isAdmin === false) {
+      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+    }
     await this.serviceService
       .getAllPublishRequestedServices()
       .then((response) => {
@@ -325,13 +345,18 @@ export class ServiceController {
 
   @Get('v1/service/get-all-services')
   @HttpCode(200)
-  @UseGuards(JwtAuthGuard, IsAdminGuard)
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get all services.',
     description: 'Gets all services.',
   })
-  async getAllServices() {
+  async getAllServices(@Request() request) {
+    const isAdmin = await this.isAdmin(request.user.userId);
+
+    if (isAdmin === false) {
+      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+    }
     await this.serviceService
       .getAllServices()
       .then((response) => {

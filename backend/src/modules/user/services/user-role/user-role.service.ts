@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { GereralException } from 'src/modules/utility/exceptions/general.exception';
-import { RoleActivationStatusEnum } from '../../enums/role-activation-status.enum';
 import { RoleDepartmentsEnum } from '../../enums/role-departments.enum';
 import { UserRoleRepository } from '../../repositories/user-role.repository';
 import { UserPermissionService } from '../user-permission/user-permission.service';
+import { RoleActivationStatusEnum } from '../../enums/role-activation-status.enum';
 
 // This should be a real class/interface representing a user entity
 export type UserRole = any;
@@ -22,30 +22,37 @@ export class UserRoleService {
     },
     {
       short: 'user',
-      roleName: 'user-admin',
+      roleName: 'user_admin',
       roleLabel: 'regular_admin',
       permissionName: 'users',
       roleDepartment: RoleDepartmentsEnum.ADMINS,
     },
     {
       short: 'device',
-      roleName: 'device-admin',
+      roleName: 'device_admin',
       roleLabel: 'regular_admin',
       permissionName: 'devices',
       roleDepartment: RoleDepartmentsEnum.ADMINS,
     },
     {
       short: 'service',
-      roleName: 'service-admin',
+      roleName: 'service_admin',
       roleLabel: 'regular_admin',
       permissionName: 'services',
       roleDepartment: RoleDepartmentsEnum.ADMINS,
     },
     {
       short: 'request',
-      roleName: 'request-admin',
+      roleName: 'request_admin',
       roleLabel: 'regular_admin',
       permissionName: 'requests',
+      roleDepartment: RoleDepartmentsEnum.ADMINS,
+    },
+    {
+      short: 'notification',
+      roleName: 'notification_admin',
+      roleLabel: 'regular_admin',
+      permissionName: 'notifications',
       roleDepartment: RoleDepartmentsEnum.ADMINS,
     },
     {

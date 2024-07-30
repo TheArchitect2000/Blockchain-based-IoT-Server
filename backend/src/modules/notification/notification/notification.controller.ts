@@ -28,7 +28,6 @@ import {
   EditNotificationRequestBodyDto,
   ReadNotificationRequestBodyDto,
 } from '../dto/notification.dto';
-import { IsAdminGuard } from 'src/modules/authentication/guard/is-admin.guard';
 import { UserService } from 'src/modules/user/services/user/user.service';
 
 @ApiTags('Notification')
@@ -46,7 +45,9 @@ export class NotificationController {
     if (
       !profile ||
       !profile?.roles[0]?.name ||
-      profile?.roles.some((role) => role.name === 'super_admin') == false
+      (profile?.roles.some((role) => role.name === 'super_admin') == false &&
+        profile?.roles.some((role) => role.name === 'notification_admin') ==
+          false)
     ) {
       return false;
     } else {
@@ -87,7 +88,7 @@ export class NotificationController {
   }
 
   @Post('/add-notification-by-user-id')
-  @UseGuards(JwtAuthGuard, IsAdminGuard)
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'add notification for user when opening app or site.',
@@ -97,11 +98,16 @@ export class NotificationController {
     @Body() body: AddNotificationRequestBodyDto,
     @Request() request,
   ) {
+    const isAdmin = await this.isAdmin(request.user.userId);
+
+    if (isAdmin === false) {
+      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+    }
     return this.service.addNotificationForUserById(body, request.user.userId);
   }
 
   @Post('/add-notification-by-user-email')
-  @UseGuards(JwtAuthGuard, IsAdminGuard)
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'add notification for user when opening app or site.',
@@ -109,12 +115,18 @@ export class NotificationController {
   })
   async addNotificationByEmail(
     @Body() body: AddNotificationByEmailRequestBodyDto,
+    @Request() request,
   ) {
+    const isAdmin = await this.isAdmin(request.user.userId);
+
+    if (isAdmin === false) {
+      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+    }
     return this.service.addNotificationForUserByEmail(body);
   }
 
   @Post('/add-public-notification')
-  @UseGuards(JwtAuthGuard, IsAdminGuard)
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'add notification for all users when opening app or site.',
@@ -124,6 +136,11 @@ export class NotificationController {
     @Body() body: AddPublicNotificationRequestBodyDto,
     @Request() request,
   ) {
+    const isAdmin = await this.isAdmin(request.user.userId);
+
+    if (isAdmin === false) {
+      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+    }
     return this.service.addPublicNotification(body, request.user.userId);
   }
 
