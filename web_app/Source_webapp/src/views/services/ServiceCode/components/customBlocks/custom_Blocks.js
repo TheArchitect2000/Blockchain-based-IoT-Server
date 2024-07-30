@@ -838,8 +838,8 @@ Blockly.Blocks['door_options'] = {
                     type: 'field_dropdown',
                     name: 'DROPDOWN',
                     options: [
-                        ['open', 'Open'],
-                        ['close', 'Close'],
+                        ['open', 'open'],
+                        ['close', 'close'],
                         // Add more options as needed
                     ],
                 },
@@ -879,8 +879,8 @@ Blockly.Blocks['movement_options'] = {
                     type: 'field_dropdown',
                     name: 'DROPDOWN',
                     options: [
-                        ['detected', 'Detected'],
-                        ['Scanning', 'Scanning...'],
+                        ['detected', 'detected'],
+                        ['Scanning', 'scanning...'],
                         // Add more options as needed
                     ],
                 },
@@ -920,8 +920,8 @@ Blockly.Blocks['button_options'] = {
                     type: 'field_dropdown',
                     name: 'DROPDOWN',
                     options: [
-                        ['pressed', 'Pressed'],
-                        ['not pressed', 'NOT Pressed'],
+                        ['pressed', 'pressed'],
+                        ['not pressed', 'not pressed'],
                         // Add more options as needed
                     ],
                 },
