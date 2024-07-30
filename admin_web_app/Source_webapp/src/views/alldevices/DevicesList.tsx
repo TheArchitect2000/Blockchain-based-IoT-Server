@@ -8,18 +8,34 @@ import { Loading } from '@/components/shared'
 import { useEffect, useState } from 'react'
 
 import DevicesTable from './components/DeviceTable'
+import { useCheckPage } from '../security/CheckPage'
+import { useNavigate } from 'react-router-dom'
 
 injectReducer('salesProductList', reducer)
 
 const ProductList = () => {
     const [dataCount, setDataCount] = useState(0)
+    const navigateTo = useNavigate()
+    const { loading, result } = useCheckPage('device')
+    if (loading == false) {
+        if (result == false) {
+            navigateTo('/')
+        }
+    }
 
     return (
         <AdaptableCard className="h-full" bodyClass="h-full">
-            <div className="lg:flex items-center justify-between mb-4">
-                <h3 className="mb-4 lg:mb-0">All Devices List ( { dataCount } )</h3>
-            </div>
-            <DevicesTable setCount={setDataCount} />
+            {(loading == false && (
+                <>
+                    <div className="lg:flex items-center justify-between mb-4">
+                        <h3 className="mb-4 lg:mb-0">
+                            All Devices List ( {dataCount} )
+                        </h3>
+                    </div>
+                    <DevicesTable setCount={setDataCount} />
+                </>
+            )) || <Loading loading={true} />}
+
             {/* <ProductTable /> */}
         </AdaptableCard>
     )

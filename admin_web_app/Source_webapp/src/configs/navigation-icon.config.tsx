@@ -12,7 +12,11 @@ import {
     HiDeviceMobile,
     HiQuestionMarkCircle,
     HiDocumentText,
-    HiInformationCircle
+    HiInformationCircle,
+    HiShieldCheck,
+    HiChip,
+    HiAdjustments,
+    HiUsers
 } from 'react-icons/hi'
 
 export type NavigationIcons = Record<string, JSX.Element>
@@ -21,6 +25,7 @@ const navigationIcon: NavigationIcons = {
     home: <HiOutlineHome />,
     download:<HiCloudDownload/>, 
     myService:<HiOutlineIdentification/>, 
+    admins:<HiUsers />, 
     notification:<HiInformationCircle />, 
     singleMenu: <HiOutlineViewGridAdd />,
     requests: <HiQuestionMarkCircle />,

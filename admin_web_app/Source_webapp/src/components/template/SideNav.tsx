@@ -10,10 +10,14 @@ import {
     LOGO_X_GUTTER,
 } from '@/constants/theme.constant'
 import Logo from '@/components/template/Logo'
-import navigationConfig from '@/configs/navigation.config'
+import {
+    fixNavigationWithRoles,
+} from '@/configs/navigation.config'
 import VerticalMenuContent from '@/components/template/VerticalMenuContent'
 import useResponsive from '@/utils/hooks/useResponsive'
 import { useAppSelector } from '@/store'
+import { useEffect, useState } from 'react'
+import { NavigationTree } from '@/@types/navigation'
 
 const sideNavStyle = {
     width: SIDE_NAV_WIDTH,
@@ -26,6 +30,7 @@ const sideNavCollapseStyle = {
 }
 
 const SideNav = () => {
+    const [nav, setNav] = useState<NavigationTree[]>([])
     const themeColor = useAppSelector((state) => state.theme.themeColor)
     const primaryColorLevel = useAppSelector(
         (state) => state.theme.primaryColorLevel
@@ -40,6 +45,8 @@ const SideNav = () => {
         (state) => state.theme.layout.sideNavCollapse
     )
     const userAuthority = useAppSelector((state) => state.auth.user.authority)
+
+    const { email: userEmail } = useAppSelector((state) => state.auth.user)
 
     const { larger } = useResponsive()
 
@@ -62,11 +69,19 @@ const SideNav = () => {
         return navMode
     }
 
+    useEffect(() => {
+        async function fetchData() {
+            const navConf = await fixNavigationWithRoles(userEmail || '')
+            setNav(navConf)
+        }
+        fetchData()
+    }, [])
+
     const menuContent = (
         <VerticalMenuContent
             navMode={navMode}
             collapsed={sideNavCollapse}
-            navigationTree={navigationConfig}
+            navigationTree={nav}
             routeKey={currentRouteKey}
             userAuthority={userAuthority as string[]}
             direction={direction}
@@ -88,15 +103,16 @@ const SideNav = () => {
                 >
                     <div className="side-nav-header">
                         {
-                        <Logo
-                            mode={logoMode()}
-                            type={sideNavCollapse ? 'streamline' : 'full'}
-                            className={
-                                sideNavCollapse
-                                    ? SIDE_NAV_CONTENT_GUTTER
-                                    : LOGO_X_GUTTER
-                            }
-                        /> }
+                            <Logo
+                                mode={logoMode()}
+                                type={sideNavCollapse ? 'streamline' : 'full'}
+                                className={
+                                    sideNavCollapse
+                                        ? SIDE_NAV_CONTENT_GUTTER
+                                        : LOGO_X_GUTTER
+                                }
+                            />
+                        }
                     </div>
                     {sideNavCollapse ? (
                         menuContent

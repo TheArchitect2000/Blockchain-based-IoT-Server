@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Logo from '@/components/template/Logo'
 import Menu from '@/components/ui/Menu'
 import ScrollBar from '@/components/ui/ScrollBar'
@@ -10,7 +10,7 @@ import {
 } from '@/constants/theme.constant'
 import { NAV_ITEM_TYPE_ITEM } from '@/constants/navigation.constant'
 import AuthorityCheck from '@/components/shared/AuthorityCheck'
-import navigationConfig from '@/configs/navigation.config'
+import { fixNavigationWithRoles } from '@/configs/navigation.config'
 import navigationIcon from '@/configs/navigation-icon.config'
 import useMenuActive from '@/utils/hooks/useMenuActive'
 import isEmpty from 'lodash/isEmpty'
@@ -18,6 +18,7 @@ import { Link } from 'react-router-dom'
 import type { NavigationTree } from '@/@types/navigation'
 import type { Direction, NavMode, Mode } from '@/@types/theme'
 import type { CommonProps } from '@/@types/common'
+import { useAppSelector } from '@/store'
 
 export type SelectedMenuItem = {
     key?: string
@@ -50,8 +51,19 @@ const StackedSideNavMini = (props: StackedSideNavMiniProps) => {
         direction,
         ...rest
     } = props
+    const [nav, setNav] = useState<NavigationTree[]>([])
 
-    const { includedRouteTree } = useMenuActive(navigationConfig, routeKey)
+    const { email: userEmail } = useAppSelector((state) => state.auth.user)
+
+    useEffect(() => {
+        async function fetchData() {
+            const navConf = await fixNavigationWithRoles(userEmail || '')
+            setNav(navConf)
+        }
+        fetchData()
+    }, [])
+
+    const { includedRouteTree } = useMenuActive(nav, routeKey)
 
     const logoMode = () => {
         if (navMode === NAV_MODE_THEMED) {
@@ -108,7 +120,7 @@ const StackedSideNavMini = (props: StackedSideNavMiniProps) => {
                     variant={navMode}
                     defaultActiveKeys={activeKeys || [includedRouteTree.key]}
                 >
-                    {navigationConfig.map((nav) => (
+                    {nav.map((nav) => (
                         <AuthorityCheck
                             key={nav.key}
                             authority={nav.authority}

@@ -18,11 +18,6 @@ const ServiceTable = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const dawdawd = await apiReadNotificationsByNotifIdList([
-                    '668513e6035b767073c307b7',
-                ])
-                console.log('Ghol:', dawdawd)
-
                 const datas = (await apiGetAllPublishedServices()) as any
                 setAllServices(datas.data.data)
             } catch (error) {

@@ -1,4 +1,3 @@
-import navigationConfig from '@/configs/navigation.config'
 import Dropdown from '@/components/ui/Dropdown'
 import AuthorityCheck from '@/components/shared/AuthorityCheck'
 import HorizontalMenuItem from './HorizontalMenuItem'
@@ -10,6 +9,10 @@ import {
 } from '@/constants/navigation.constant'
 import { useTranslation } from 'react-i18next'
 import type { NavMode } from '@/@types/theme'
+import { useEffect, useState } from 'react'
+import { NavigationTree } from '@/@types/navigation'
+import { useAppSelector } from '@/store'
+import { fixNavigationWithRoles } from '@/configs/navigation.config'
 
 type HorizontalMenuContentProps = {
     manuVariant: NavMode
@@ -21,10 +24,21 @@ const HorizontalMenuContent = ({
     userAuthority = [],
 }: HorizontalMenuContentProps) => {
     const { t } = useTranslation()
+    const [nav, setNav] = useState<NavigationTree[]>([])
+
+    const { email: userEmail } = useAppSelector((state) => state.auth.user)
+
+    useEffect(() => {
+        async function fetchData() {
+            const navConf = await fixNavigationWithRoles(userEmail || '')
+            setNav(navConf)
+        }
+        fetchData()
+    }, [])
 
     return (
         <span className="flex items-center">
-            {navigationConfig.map((nav) => {
+            {nav.map((nav) => {
                 if (
                     nav.type === NAV_ITEM_TYPE_TITLE ||
                     nav.type === NAV_ITEM_TYPE_COLLAPSE

@@ -1,4 +1,4 @@
-import { useState, Suspense, lazy } from 'react'
+import { useState, Suspense, lazy, useEffect } from 'react'
 import classNames from 'classnames'
 import Drawer from '@/components/ui/Drawer'
 import {
@@ -8,9 +8,10 @@ import {
 } from '@/constants/theme.constant'
 import withHeaderItem, { WithHeaderItemProps } from '@/utils/hoc/withHeaderItem'
 import NavToggle from '@/components/shared/NavToggle'
-import navigationConfig from '@/configs/navigation.config'
 import useResponsive from '@/utils/hooks/useResponsive'
 import { useAppSelector } from '@/store'
+import { NavigationTree } from '@/@types/navigation'
+import { fixNavigationWithRoles } from '@/configs/navigation.config'
 
 const VerticalMenuContent = lazy(
     () => import('@/components/template/VerticalMenuContent')
@@ -34,6 +35,18 @@ const MobileNav = () => {
     const onDrawerClose = () => {
         setIsOpen(false)
     }
+
+    const [nav, setNav] = useState<NavigationTree[]>([])
+
+    const { email: userEmail } = useAppSelector((state) => state.auth.user)
+
+    useEffect(() => {
+        async function fetchData() {
+            const navConf = await fixNavigationWithRoles(userEmail || '')
+            setNav(navConf)
+        }
+        fetchData()
+    }, [])
 
     const themeColor = useAppSelector((state) => state.theme.themeColor)
     const primaryColorLevel = useAppSelector(
@@ -85,7 +98,7 @@ const MobileNav = () => {
                                 <VerticalMenuContent
                                     navMode={navMode}
                                     collapsed={sideNavCollapse}
-                                    navigationTree={navigationConfig}
+                                    navigationTree={nav}
                                     routeKey={currentRouteKey}
                                     userAuthority={userAuthority as string[]}
                                     direction={direction}

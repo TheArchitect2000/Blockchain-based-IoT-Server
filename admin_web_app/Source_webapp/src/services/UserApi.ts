@@ -25,7 +25,9 @@ export async function apiGetUserProfileByUserId<T>(userId: string) {
 
 export async function apiDeleteUserById<T>(userId: string) {
     return ApiService.fetchData<T>({
-        url: import.meta.env.VITE_URL + `v1/user/delete-all-user-data?userId=${userId}`,
+        url:
+            import.meta.env.VITE_URL +
+            `v1/user/delete-all-user-data?userId=${userId}`,
         method: 'delete',
     })
 }
@@ -34,6 +36,38 @@ export async function apiGetAllUsers<T>() {
     return ApiService.fetchData<T>({
         url: import.meta.env.VITE_URL + 'v1/user/get-all-users',
         method: 'get',
+    })
+}
+
+export async function apiGetUserAdminRoles<T>(userName: string) {
+    return ApiService.fetchData<T>({
+        url: `${import.meta.env.VITE_URL}user/get-short-roles/${userName}`,
+        method: 'get',
+    })
+}
+
+export async function apiGiveUserAdminRank<T>(
+    userEmail: string,
+    roleNames: Array<string>
+) {
+    return ApiService.fetchData<T>({
+        url: `${import.meta.env.VITE_URL}user/give-admin`,
+        method: 'post',
+        data: {
+            userName: userEmail,
+            roleNames: roleNames,
+        },
+    })
+}
+
+export async function apiTakeUserAdminRank<T>(
+    userEmail: string,
+    roleNames: Array<string>
+) {
+    return ApiService.fetchData<T>({
+        url: `${import.meta.env.VITE_URL}user/take-admin`,
+        method: 'post',
+        data: { userName: userEmail, roleNames: roleNames },
     })
 }
 
