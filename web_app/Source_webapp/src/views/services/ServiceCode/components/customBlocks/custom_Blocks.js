@@ -205,8 +205,8 @@ Blockly.Blocks['customized_door_sensor'] = {
                     type: 'field_dropdown',
                     name: 'sensor',
                     options: [
-                        ['opened', 'opened'],
-                        ['closed', 'closed'],
+                        ['opened', 'OPENED'],
+                        ['closed', 'CLOSED'],
                         // Add more options as needed
                     ],
                 },
