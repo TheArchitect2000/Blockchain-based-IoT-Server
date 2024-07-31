@@ -13,6 +13,7 @@ import useMenuActive from '@/utils/hooks/useMenuActive'
 import { useTranslation } from 'react-i18next'
 import { Direction, NavMode } from '@/@types/theme'
 import type { NavigationTree } from '@/@types/navigation'
+import { apiGetNodeTheme } from '@/services/UserApi'
 
 export interface VerticalMenuContentProps {
     navMode: NavMode
@@ -120,15 +121,34 @@ const VerticalMenuContent = (props: VerticalMenuContentProps) => {
         }
     }
 
+    const [nodeLogo, setNodeLogo] = useState('')
+
+    useEffect(() => {
+        async function fetchData() {
+            const res = (await apiGetNodeTheme()) as any
+            setNodeLogo(res?.data?.data.logo)
+        }
+        fetchData()
+    }, [])
+
+    
+
     return (
         <Menu
-            className="px-4 pb-4"
+            className="px-4 pb-4 flex flex-col h-full"
             variant={navMode}
             sideCollapsed={collapsed}
             defaultActiveKeys={activedRoute?.key ? [activedRoute.key] : []}
             defaultExpandedKeys={defaulExpandKey}
         >
             {navigationTree.map((nav) => getNavItem(nav))}
+            {nodeLogo && (
+                <img
+                    src={nodeLogo}
+                    className="aspect-auto mt-auto mx-auto w-1/2"
+                    alt="logo"
+                />
+            )}
         </Menu>
     )
 }

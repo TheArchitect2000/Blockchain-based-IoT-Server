@@ -1,8 +1,9 @@
-import { cloneElement } from 'react'
+import { cloneElement, useEffect, useState } from 'react'
 import Avatar from '@/components/ui/Avatar'
 import Logo from '@/components/template/Logo'
 import { APP_NAME } from '@/constants/app.constant'
 import type { CommonProps } from '@/@types/common'
+import { apiGetNodeTheme } from '@/services/UserApi'
 
 interface SideProps extends CommonProps {
     content?: React.ReactNode
@@ -10,6 +11,16 @@ interface SideProps extends CommonProps {
 
 //TODO:
 const Side = ({ children, content, ...rest }: SideProps) => {
+    const [nodeLogo, setNodeLogo] = useState('')
+
+    useEffect(() => {
+        async function fetchData() {
+            const res = (await apiGetNodeTheme()) as any
+            setNodeLogo(res?.data?.data.logo)
+        }
+        fetchData()
+    }, [])
+
     return (
         <div className="grid lg:grid-cols-3 h-full">
             <div
@@ -18,7 +29,18 @@ const Side = ({ children, content, ...rest }: SideProps) => {
                     backgroundImage: `url('/img/others/auth-side-bg.jpg')`,
                 }}
             >
-                <img src="/img/logo/logo-captcha.png" className='aspect-auto w-1/2' alt="logo" />
+                <img
+                    src="/img/logo/logo-captcha.png"
+                    className="aspect-auto w-5/12 max-w-[225px]"
+                    alt="logo"
+                />
+                {nodeLogo && (
+                    <img
+                        src={nodeLogo}
+                        className="aspect-auto w-5/12 max-w-[225px]"
+                        alt="logo"
+                    />
+                )}
                 {/* <Logo mode="dark" /> */}
                 {/* <div>
                     <div className="mb-6 flex items-center gap-4">

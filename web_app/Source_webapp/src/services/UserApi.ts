@@ -52,3 +52,10 @@ export async function apiGetUserProfileByUserId<T>(userId: string) {
         method: 'get',
     })
 }
+
+export async function apiGetNodeTheme<T>() {
+    return ApiService.fetchData<T>({
+        url: import.meta.env.VITE_URL + `v1/theme`,
+        method: 'get',
+    })
+}

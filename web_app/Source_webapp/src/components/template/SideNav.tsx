@@ -14,6 +14,8 @@ import navigationConfig from '@/configs/navigation.config'
 import VerticalMenuContent from '@/components/template/VerticalMenuContent'
 import useResponsive from '@/utils/hooks/useResponsive'
 import { useAppSelector } from '@/store'
+import { useEffect, useState } from 'react'
+import { apiGetNodeTheme } from '@/services/UserApi'
 
 const sideNavStyle = {
     width: SIDE_NAV_WIDTH,
@@ -23,6 +25,7 @@ const sideNavStyle = {
 const sideNavCollapseStyle = {
     width: SIDE_NAV_COLLAPSED_WIDTH,
     minWidth: SIDE_NAV_COLLAPSED_WIDTH,
+    height: "100%",
 }
 
 const SideNav = () => {
@@ -74,42 +77,40 @@ const SideNav = () => {
     )
 
     return (
-        <>
+        <main>
             {larger.md && (
                 <div
                     style={
                         sideNavCollapse ? sideNavCollapseStyle : sideNavStyle
                     }
                     className={classNames(
-                        'side-nav',
+                        'side-nav w-full',
                         sideNavColor(),
                         !sideNavCollapse && 'side-nav-expand'
                     )}
                 >
                     <div className="side-nav-header">
                         {
-                        <Logo
-                            mode={logoMode()}
-                            type={sideNavCollapse ? 'streamline' : 'full'}
-                            className={
-                                sideNavCollapse
-                                    ? SIDE_NAV_CONTENT_GUTTER
-                                    : LOGO_X_GUTTER
-                            }
-                        /> }
+                            <Logo
+                                mode={logoMode()}
+                                type={sideNavCollapse ? 'streamline' : 'full'}
+                                className={`${
+                                    sideNavCollapse
+                                        ? SIDE_NAV_CONTENT_GUTTER
+                                        : LOGO_X_GUTTER
+                                } mb-4`}
+                            />
+                        }
                     </div>
-                    {sideNavCollapse ? (
-                        menuContent
-                    ) : (
-                        <div className="side-nav-content">
-                            <ScrollBar autoHide direction={direction}>
-                                {menuContent}
-                            </ScrollBar>
-                        </div>
-                    )}
+                    <div className="side-nav-content">
+                        <ScrollBar autoHide direction={direction}>
+                            {menuContent}
+                        </ScrollBar>
+
+                    </div>
                 </div>
             )}
-        </>
+        </main>
     )
 }
 

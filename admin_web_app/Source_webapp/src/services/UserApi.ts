@@ -81,3 +81,11 @@ export async function apiEditUserProfile<T>(
         data: userProfileData,
     })
 }
+
+
+export async function apiGetNodeTheme<T>() {
+    return ApiService.fetchData<T>({
+        url: import.meta.env.VITE_URL + `v1/theme`,
+        method: 'get',
+    })
+}
