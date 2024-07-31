@@ -59,8 +59,8 @@ export class AppController {
   }
 
   @Get('/v1/theme')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  /* @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth() */
   @ApiOperation({
     summary: 'get mobile them colors.',
     description: '',
