@@ -2293,7 +2293,13 @@ export class UserService {
 
   async getAllUsers() {
     const whereCondition = { isDeleted: false };
-    const populateCondition = [];
+    const populateCondition = [{
+      path: 'roles',
+      populate: {
+        path: 'permissions',
+        select: 'name module label description routes',
+      },
+    }];
     const selectCondition = this.getUserKeys();
 
     let foundUsers: any = null;
