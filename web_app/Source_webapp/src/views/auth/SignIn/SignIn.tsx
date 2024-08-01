@@ -1,6 +1,10 @@
+import { useEffect } from 'react'
 import SignInForm from './SignInForm'
+import ThemApply from '@/components/layouts/ThemApply'
 
 const SignIn = () => {
+    ThemApply()
+
     return (
         <>
             <div className="mb-8">

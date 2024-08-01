@@ -3,7 +3,8 @@ import Avatar from '@/components/ui/Avatar'
 import Logo from '@/components/template/Logo'
 import { APP_NAME } from '@/constants/app.constant'
 import type { CommonProps } from '@/@types/common'
-import { apiGetNodeTheme } from '@/services/UserApi'
+import { apiGetMainNodeTheme, apiGetNodeTheme } from '@/services/UserApi'
+import { nodeThemeApi } from '@/configs/theme.config'
 
 interface SideProps extends CommonProps {
     content?: React.ReactNode
@@ -11,12 +12,15 @@ interface SideProps extends CommonProps {
 
 //TODO:
 const Side = ({ children, content, ...rest }: SideProps) => {
-    const [nodeLogo, setNodeLogo] = useState('')
+    const [nodeData, setNodeData] = useState<nodeThemeApi>()
+    const [mainNodeData, setMainNodeData] = useState<nodeThemeApi>()
 
     useEffect(() => {
         async function fetchData() {
             const res = (await apiGetNodeTheme()) as any
-            setNodeLogo(res?.data?.data.logo)
+            setNodeData(res?.data?.data as nodeThemeApi)
+            const mainRes = (await apiGetMainNodeTheme()) as any
+            setMainNodeData(mainRes?.data?.data as nodeThemeApi)
         }
         fetchData()
     }, [])
@@ -26,7 +30,7 @@ const Side = ({ children, content, ...rest }: SideProps) => {
             <div
                 className="bg-no-repeat bg-cover py-6 px-16 flex-col justify-center items-center hidden lg:flex"
                 style={{
-                    backgroundImage: `url('/img/others/auth-side-bg.jpg')`,
+                    background: `linear-gradient(to bottom, #${mainNodeData?.button}, #${nodeData?.button})`,
                 }}
             >
                 <img
@@ -34,9 +38,9 @@ const Side = ({ children, content, ...rest }: SideProps) => {
                     className="aspect-auto w-5/12 max-w-[225px]"
                     alt="logo"
                 />
-                {nodeLogo && (
+                {nodeData && (
                     <img
-                        src={nodeLogo}
+                        src={nodeData.logo}
                         className="aspect-auto w-5/12 max-w-[225px]"
                         alt="logo"
                     />

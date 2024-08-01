@@ -37,7 +37,7 @@ export type UserData = {
     deleteDate: string | null
     deletionReason: string | null
     updatedBy: string
-    updateDate: string
+    updateDate: Date
 }
 
 // Define the type for user roles

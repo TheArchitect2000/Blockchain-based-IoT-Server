@@ -4,7 +4,22 @@ import {
     apiGiveUserAdminRank,
     apiTakeUserAdminRank,
 } from '@/services/UserApi'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+
+
+function formatRankString(str: string) {
+    return str
+        .split('_') // Split the string by underscores
+        .map(
+            (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+        ) // Capitalize the first letter of each word
+        .join(' ') // Join the words with a space
+}
+
+function validateEmail(email: string) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return emailRegex.test(email)
+}
 
 export default function MakeAdmin() {
     const adminRanks = [
@@ -38,10 +53,25 @@ export default function MakeAdmin() {
     }
 
     async function handleSearch() {
+        if (!validateEmail(inputValue)) {
+            return toast.push(
+                <Notification title={'Enter a valid email'} type="danger" />,
+                {
+                    placement: 'top-center',
+                }
+            )
+        }
         try {
             setSearching(true)
             const res = (await apiGetUserProfileByEmail(inputValue)) as any
-            if (!res || !res.data || res.data.data == null) {
+            if (
+                !res ||
+                !res.data ||
+                !res.data.data ||
+                res.data.data == null ||
+                res.data.data == undefined
+            ) {
+                setSearching(false)
                 return toast.push(
                     <Notification title={'User not found'} type="danger" />,
                     {
@@ -126,8 +156,8 @@ export default function MakeAdmin() {
     return (
         <section className="w-full flex flex-col gap-4">
             <h3>Manage Admins</h3>
-            <div className="flex flex-col md:flex-row gap-10">
-                <div className="w-full md:w-1/2 flex flex-col gap-4">
+            <div className="flex flex-col lg:flex-row gap-10 ">
+                <div className="w-full lg:w-1/2 flex flex-col gap-4">
                     <Input
                         className="w-full"
                         type="email"
@@ -137,7 +167,7 @@ export default function MakeAdmin() {
                         disabled={searching || selected ? true : false}
                     />
 
-                    <div className="w-full flex flex-col xl:flex-row gap-2 overflow-hidden">
+                    <div className="w-full flex flex-col lg:flex-row gap-2 overflow-hidden">
                         <Button
                             onClick={handleSearch}
                             className="xl:w-1/3 w-full"
@@ -169,17 +199,18 @@ export default function MakeAdmin() {
                         </Button>
                     </div>
                 </div>
-                <div className="w-full md:w-1/2 flex flex-col gap-4">
+                <div className="w-full lg:w-1/2 grid grid-cols-2 gap-4 px-4 py-6 border rounded-lg">
+                    <h4 className='col-span-2 mb-2 mx-auto'> Rank Selection</h4>
                     {adminRanks.map((rank, index) => (
                         <div
                             key={index}
-                            className="flex justify-center items-center gap-2"
+                            className="flex mx-auto justify-start items-center gap-2"
                         >
                             <label
                                 className="text-[1.1rem] font-bold"
                                 htmlFor={rank.short}
                             >
-                                {rank.roleName}
+                                {formatRankString(rank.roleName)}
                             </label>
                             <Checkbox
                                 checked={selectedRanks.includes(rank.short)}

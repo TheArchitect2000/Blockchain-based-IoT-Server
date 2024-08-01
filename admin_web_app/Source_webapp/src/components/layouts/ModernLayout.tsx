@@ -6,6 +6,7 @@ import MobileNav from '@/components/template/MobileNav'
 import SideNav from '@/components/template/SideNav'
 import View from '@/views'
 import Notification from '@/components/template/Notification'
+import ThemApply from './ThemeApply'
 
 const HeaderActionsStart = () => {
     return (
@@ -21,13 +22,15 @@ const HeaderActionsEnd = () => {
         <>
             {/* <LanguageSelector />*/}
             {/* <Notification /> */}
-            <SidePanel />
+            {/* <SidePanel /> */}
             <UserDropdown hoverable={false} />
         </>
     )
 }
 
 const ModernLayout = () => {
+    ThemApply()
+
     return (
         <div className="app-layout-modern flex flex-auto flex-col">
             <div className="flex flex-auto min-w-0">

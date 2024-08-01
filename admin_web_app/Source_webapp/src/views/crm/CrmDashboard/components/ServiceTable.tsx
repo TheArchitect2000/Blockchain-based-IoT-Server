@@ -1,19 +1,22 @@
-import { Loading } from '@/components/shared'
 import { Button, Card } from '@/components/ui'
-import Avatar from '@/components/ui/Avatar/Avatar'
 import Table from '@/components/ui/Table'
-import { ServiceData, useGetServices } from '@/utils/hooks/useGetServices'
+import { ServiceData } from '@/utils/hooks/useGetServices'
 import { useNavigate } from 'react-router-dom'
 import './style.css'
-import { useEffect, useState } from 'react'
 import { apiGetAllPublishedServices } from '@/services/ServiceAPI'
-import { apiReadNotificationsByNotifIdList } from '@/services/NotificationService'
+import { useEffect, useState } from 'react'
+import { useConfig } from '@/components/ui/ConfigProvider'
+import useColorLevel from '@/components/ui/hooks/useColorLevel'
+import { ColorLevel } from '@/components/ui/@types/common'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
 const ServiceTable = () => {
     const navigate = useNavigate()
     const [allServices, setAllServices] = useState([])
+
+    const { themeColor, controlSize, primaryColorLevel } = useConfig()
+    const [increaseLevel, decreaseLevel] = useColorLevel(primaryColorLevel as any)
 
     useEffect(() => {
         const fetchData = async () => {
@@ -52,7 +55,7 @@ const ServiceTable = () => {
                     </THead>
                     <TBody>
                         {allServices
-                            ?.slice(0, 5)
+                            ?.slice(0, 4)
                             .map((service: ServiceData, i) => (
                                 <Tr key={i}>
                                     <Td>
@@ -60,7 +63,7 @@ const ServiceTable = () => {
                                             <div
                                                 className={`flex ${
                                                     !service.serviceImage &&
-                                                    'bg-[#4F46E5]'
+                                                    `bg-${themeColor}-${increaseLevel}`
                                                 } w-[40px] h-[30px] rounded-md overflow-hidden`}
                                             >
                                                 <img

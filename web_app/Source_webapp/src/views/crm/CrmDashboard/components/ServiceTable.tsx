@@ -5,12 +5,18 @@ import { useNavigate } from 'react-router-dom'
 import './style.css'
 import { apiGetAllPublishedServices } from '@/services/ServiceAPI'
 import { useEffect, useState } from 'react'
+import { useConfig } from '@/components/ui/ConfigProvider'
+import useColorLevel from '@/components/ui/hooks/useColorLevel'
+import { ColorLevel } from '@/components/ui/@types/common'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
 const ServiceTable = () => {
     const navigate = useNavigate()
     const [allServices, setAllServices] = useState([])
+
+    const { themeColor, controlSize, primaryColorLevel } = useConfig()
+    const [increaseLevel, decreaseLevel] = useColorLevel(primaryColorLevel as any)
 
     useEffect(() => {
         const fetchData = async () => {
@@ -57,7 +63,7 @@ const ServiceTable = () => {
                                             <div
                                                 className={`flex ${
                                                     !service.serviceImage &&
-                                                    'bg-[#4F46E5]'
+                                                    `bg-${themeColor}-${increaseLevel}`
                                                 } w-[40px] h-[30px] rounded-md overflow-hidden`}
                                             >
                                                 <img

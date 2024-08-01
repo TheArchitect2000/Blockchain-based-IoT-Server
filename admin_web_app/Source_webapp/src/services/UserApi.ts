@@ -89,3 +89,11 @@ export async function apiGetNodeTheme<T>() {
         method: 'get',
     })
 }
+
+
+export async function apiGetMainNodeTheme<T>() {
+    return ApiService.fetchData<T>({
+        url: `https://panel.fidesinnova.io/app/v1/theme`,
+        method: 'get',
+    })
+}

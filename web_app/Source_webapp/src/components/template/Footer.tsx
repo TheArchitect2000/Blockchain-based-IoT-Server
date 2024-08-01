@@ -2,6 +2,7 @@ import classNames from 'classnames'
 import Container from '@/components/shared/Container'
 import { APP_NAME } from '@/constants/app.constant'
 import { PAGE_CONTAINER_GUTTER_X } from '@/constants/theme.constant'
+import packageJson from '@/../package.json';
 
 export type FooterPageContainerType = 'gutterless' | 'contained'
 
@@ -15,7 +16,7 @@ const FooterContent = () => {
             <span>
                 Copyright &copy; {`${new Date().getFullYear()}`}{' '}
                 <span className="font-semibold">{`${APP_NAME}`}</span> All
-                rights reserved.
+                rights reserved ( v{packageJson.version} )
             </span>
             <div className="">
                 <a

@@ -1,6 +1,9 @@
+import ThemApply from '@/components/layouts/ThemApply'
 import SignUpForm from './SignUpForm'
 
 const SignUp = () => {
+    ThemApply()
+
     return (
         <>
             <div className="mb-8">

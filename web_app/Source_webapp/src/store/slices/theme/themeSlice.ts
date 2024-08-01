@@ -33,6 +33,9 @@ const initialNavMode = () => {
 
 export type ThemeState = {
     themeColor: string
+    themeBox: string
+    themeText: string
+    themeBackground: string
     direction: Direction
     mode: Mode
     primaryColorLevel: ColorLevel
@@ -47,7 +50,10 @@ export type ThemeState = {
 }
 
 const initialState: ThemeState = {
-    themeColor: themeConfig.themeColor,
+    themeColor: '#ffffff',
+    themeBox: '#ffffff',
+    themeText: '#000000',
+    themeBackground: '#ffffff',
     direction: themeConfig.direction,
     mode: themeConfig.mode,
     primaryColorLevel: themeConfig.primaryColorLevel,
@@ -150,6 +156,15 @@ export const themeSlice = createSlice({
         setThemeColor: (state, action: PayloadAction<string>) => {
             state.themeColor = action.payload
         },
+        setThemeBox: (state, action: PayloadAction<string>) => {
+            state.themeBox = action.payload
+        },
+        setThemeText: (state, action: PayloadAction<string>) => {
+            state.themeText = action.payload
+        },
+        setThemeBackground: (state, action: PayloadAction<string>) => {
+            state.themeBackground = action.payload
+        },
         setThemeColorLevel: (state, action) => {
             state.primaryColorLevel = action.payload
         },
@@ -164,6 +179,9 @@ export const {
     setNavMode,
     setPanelExpand,
     setThemeColor,
+    setThemeBox,
+    setThemeText,
+    setThemeBackground,
     setThemeColorLevel,
     setPreviousLayout,
 } = themeSlice.actions

@@ -1,154 +1,38 @@
-import { useEffect, useState } from 'react'
-import Table from '@/components/ui/Table'
+import { Loading } from '@/components/shared'
+import { Avatar, Button, Table } from '@/components/ui'
+import Sorter from '@/components/ui/Table/Sorter'
+import TBody from '@/components/ui/Table/TBody'
+import Td from '@/components/ui/Table/Td'
+import Th from '@/components/ui/Table/Th'
+import THead from '@/components/ui/Table/THead'
+import Tr from '@/components/ui/Table/Tr'
+import { apiGetAllUsers } from '@/services/UserApi'
+import { UserData } from '@/utils/hooks/useGetCurUserProfile'
+import DownloadCSVButton from '@/views/account/Settings/components/DownloadCsv'
+import { formatISODate } from '@/views/allusers/components/UserTable'
 import {
+    ColumnDef,
+    ColumnSort,
     flexRender,
     getCoreRowModel,
     getSortedRowModel,
     useReactTable,
 } from '@tanstack/react-table'
-import type { ColumnDef, ColumnSort } from '@tanstack/react-table'
-import { UserData } from '@/utils/hooks/useGetDevices'
-import {
-    apiDeleteUserById,
-    apiGetAllUsers,
-    apiGetUserProfileByEmail,
-} from '@/services/UserApi'
-import { Loading } from '@/components/shared'
-import DownloadCSVButton from '@/views/account/Settings/components/DownloadCsv'
-import { Avatar, Button, Dialog, Notification, toast } from '@/components/ui'
-import { HiTrash, HiUser } from 'react-icons/hi'
-import PaginatedList from '@/views/market/components/PaginationList'
+import { useEffect, useState } from 'react'
+import { HiCheck, HiUser, HiX } from 'react-icons/hi'
 
-const { Tr, Th, Td, THead, TBody, Sorter } = Table
-
-interface UsersTableProps {
-    setCount: (count: number) => void
-}
-
-export function formatISODate(isoDate: string) {
-    // Create a new Date object from the ISO string
-    const date = new Date(isoDate)
-
-    // Extract date components
-    const year = date.getUTCFullYear()
-    const month = String(date.getUTCMonth() + 1).padStart(2, '0') // Months are zero-indexed
-    const day = String(date.getUTCDate()).padStart(2, '0')
-
-    // Extract time components
-    const hours = String(date.getUTCHours()).padStart(2, '0')
-    const minutes = String(date.getUTCMinutes()).padStart(2, '0')
-    const seconds = String(date.getUTCSeconds()).padStart(2, '0')
-
-    // Format the date and time
-    const formattedDate = `${year}-${month}-${day}`
-    const formattedTime = `${hours}:${minutes}:${seconds}`
-
-    // Combine date and time with a comma
-    return `${formattedDate} , ${formattedTime}`
-}
-
-const UsersTable: React.FC<UsersTableProps> = ({ setCount }) => {
+export default function AdminsList() {
     const [sorting, setSorting] = useState<ColumnSort[]>([])
     const [data, setData] = useState<UserData[]>([])
     const [filteredData, setFilteredData] = useState<UserData[]>([])
     const [loading, setLoading] = useState(true)
     const [searchQuery, setSearchQuery] = useState('')
     const [refresh, setRefresh] = useState(0)
-    const [deleteDialog, setDeleteDialog] = useState(false)
-    const [deleteData, setDeleteData] = useState<any>({})
-
-    const ActionColumn = ({ row }: { row: any }) => {
-        async function handleDeleteDevice() {
-            const res = (await apiDeleteUserById(deleteData._id)) as any
-            setDeleteDialog(false)
-            refreshPage()
-            if (res?.data?.success) {
-                toast.push(
-                    <Notification
-                        title={'User deleted successfully'}
-                        type="success"
-                    />,
-                    {
-                        placement: 'top-center',
-                    }
-                )
-            } else {
-                toast.push(
-                    <Notification
-                        title={'Error while deleting User'}
-                        type="danger"
-                    />,
-                    {
-                        placement: 'top-center',
-                    }
-                )
-            }
-        }
-
-        return (
-            <div className="flex justify-end text-lg">
-                <Dialog
-                    isOpen={deleteDialog}
-                    onClose={() => setDeleteDialog(false)}
-                >
-                    <h3 className="mb-8">Delete Device</h3>
-                    <p className="text-center text-[1.1rem] mb-6">
-                        Are you sure about deleting '{deleteData.email}' device
-                        ?
-                    </p>
-                    <div className="flex w-2/3 mx-auto justify-between">
-                        <Button
-                            onClick={handleDeleteDevice}
-                            variant="solid"
-                            color="red"
-                        >
-                            Delete
-                        </Button>
-                        <Button
-                            onClick={() => setDeleteDialog(false)}
-                            variant="solid"
-                            color="green"
-                        >
-                            Cancel
-                        </Button>
-                    </div>
-                </Dialog>
-                <span
-                    className="cursor-pointer p-2 hover:${textTheme}"
-                    onClick={() => {
-                        setDeleteData(row)
-                        setDeleteDialog(true)
-                    }}
-                >
-                    <HiTrash />
-                </span>
-            </div>
-        )
-    }
+    const [count, setCount] = useState(0)
 
     function refreshPage() {
         setRefresh(refresh + 1)
     }
-
-    useEffect(() => {
-        setLoading(true)
-        async function fetchUsers() {
-            const response = await apiGetAllUsers()
-            const data = response.data as any
-            setData(data.data)
-            setFilteredData(data.data)
-            setCount(data.data.length)
-            setLoading(false)
-            if (searchQuery.toString().length > 0) {
-                handleSearch({
-                    target: {
-                        value: searchQuery,
-                    },
-                })
-            }
-        }
-        fetchUsers()
-    }, [refresh])
 
     const handleSearch = (e: any) => {
         setSearchQuery(e.target.value)
@@ -165,32 +49,12 @@ const UsersTable: React.FC<UsersTableProps> = ({ setCount }) => {
                 user.email
                     ?.toLowerCase()
                     .includes(e.target.value.toLowerCase()) ||
-                '' ||
-                user.mobile
-                    ?.toLowerCase()
-                    .includes(e.target.value.toLowerCase()) ||
-                '' ||
-                'Not-Verified'
-                    ?.toLowerCase()
-                    .includes(e.target.value.toLowerCase()) ||
-                '' ||
-                user.creationDate
-                    ?.toLowerCase()
-                    .includes(e.target.value.toLowerCase()) ||
                 ''
         )
         setFilteredData(searchFilteredData)
     }
 
     const columns: ColumnDef<UserData>[] = [
-        {
-            header: '_id',
-            accessorKey: '_id',
-            cell: (props) => {
-                const row = props.row.original
-                return <span>{row._id}</span>
-            },
-        },
         {
             header: 'profile',
             accessorKey: 'profile',
@@ -225,58 +89,100 @@ const UsersTable: React.FC<UsersTableProps> = ({ setCount }) => {
             },
         },
         {
-            header: 'First Name',
-            accessorKey: 'firstName',
-            cell: (props) => {
-                const row = props.row.original
-                return row.firstName && <span>{row.firstName}</span>
-            },
-        },
-        {
-            header: 'Last Name',
-            accessorKey: 'lastName',
-            cell: (props) => {
-                const row = props.row.original
-                return row.lastName && <span>{row.lastName}</span>
-            },
-        },
-
-        {
-            header: 'Mobile',
-            accessorKey: 'mobile',
-            cell: (props) => {
-                const row = props.row.original
-                return <span>{(row.mobile && row.mobile) || '_'}</span>
-            },
-        },
-
-        {
-            header: 'status',
-            accessorKey: 'activationStatus',
+            header: 'Super Admin',
+            accessorKey: '',
             cell: (props) => {
                 const row = props.row.original
                 return (
                     <span>
-                        {(row.activationStatus == 'active' && 'Verified') ||
-                            'Not-Verified'}
+                        {(row.roles.some(
+                            (role: any) => role.name == 'super_admin'
+                        ) && <HiCheck className="text-[1.5rem]" />) || (
+                            <HiX className="text-[1.5rem]" />
+                        )}
                     </span>
                 )
             },
         },
-
         {
-            header: 'Creation Date',
-            accessorKey: 'insertDate',
+            header: 'User Admin',
+            accessorKey: '',
             cell: (props) => {
-                const row = props.row.original as any
-                return <span>{formatISODate(row.insertDate)}</span>
+                const row = props.row.original
+                return (
+                    <span>
+                        {(row.roles.some(
+                            (role: any) => role.name == 'user_admin'
+                        ) && <HiCheck className="text-[1.5rem]" />) || (
+                            <HiX className="text-[1.5rem]" />
+                        )}
+                    </span>
+                )
             },
         },
-
         {
-            header: '',
-            id: 'action',
-            cell: (props) => <ActionColumn row={props.row.original} />,
+            header: 'Device Admin',
+            accessorKey: '',
+            cell: (props) => {
+                const row = props.row.original
+                return (
+                    <span>
+                        {(row.roles.some(
+                            (role: any) => role.name == 'device_admin'
+                        ) && <HiCheck className="text-[1.5rem]" />) || (
+                            <HiX className="text-[1.5rem]" />
+                        )}
+                    </span>
+                )
+            },
+        },
+        {
+            header: 'Service Admin',
+            accessorKey: '',
+            cell: (props) => {
+                const row = props.row.original
+                return (
+                    <span>
+                        {(row.roles.some(
+                            (role: any) => role.name == 'service_admin'
+                        ) && <HiCheck className="text-[1.5rem]" />) || (
+                            <HiX className="text-[1.5rem]" />
+                        )}
+                    </span>
+                )
+            },
+        },
+        {
+            header: 'Request Admin',
+            accessorKey: '',
+            cell: (props) => {
+                const row = props.row.original
+                return (
+                    <span>
+                        {(row.roles.some(
+                            (role: any) => role.name == 'request_admin'
+                        ) && <HiCheck className="text-[1.5rem]" />) || (
+                            <HiX className="text-[1.5rem]" />
+                        )}
+                    </span>
+                )
+            },
+        },
+        {
+            header: 'Notification Admin',
+            accessorKey: '',
+            cell: (props) => {
+                const row = props.row.original
+                return (
+                    <span>
+                        {(row.roles.some(
+                            (role: any) => role.name == 'notification_admin'
+                        ) && <HiCheck className="text-[1.5rem]" />) || (
+                            <HiX className="text-[1.5rem]" />
+                        )}
+                    </span>
+                )
+            },
         },
     ]
 
@@ -291,8 +197,33 @@ const UsersTable: React.FC<UsersTableProps> = ({ setCount }) => {
         getSortedRowModel: getSortedRowModel(),
     })
 
+    useEffect(() => {
+        setLoading(true)
+        async function fetchUsers() {
+            const response = (await apiGetAllUsers()) as any
+            const data = (await response?.data?.data?.filter(
+                (user: UserData) =>
+                    user.roles.some((role) => role.department == 'admins') ==
+                    true
+            )) as any
+            setData(data)
+            setFilteredData(data)
+            setCount(data.length)
+            setLoading(false)
+            if (searchQuery.toString().length > 0) {
+                handleSearch({
+                    target: {
+                        value: searchQuery,
+                    },
+                })
+            }
+        }
+        fetchUsers()
+    }, [refresh])
+
     return (
-        <>
+        <main>
+            <h3 className='mb-6'>All Admins List ( {count} )</h3>
             <div className="flex justify-between mb-4">
                 <input
                     type="text"
@@ -381,8 +312,6 @@ const UsersTable: React.FC<UsersTableProps> = ({ setCount }) => {
                     <h1>Data not found !</h1>
                 </div>
             )}
-        </>
+        </main>
     )
 }
-
-export default UsersTable

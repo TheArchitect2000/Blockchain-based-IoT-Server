@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCheckPage } from '../security/CheckPage'
 import MakeAdmin from './components/MakeAdmin'
+import AdminsList from './components/AdminsList'
 
 export default function Admins() {
     const [dataCount, setDataCount] = useState(0)
@@ -16,11 +17,9 @@ export default function Admins() {
     return (
         <AdaptableCard className="h-full" bodyClass="h-full">
             {(loading == false && (
-                <main className="flex flex-col gap-4">
+                <main className="flex flex-col gap-10">
                     <MakeAdmin />
-                    {/* <h3>
-                        All Admins List ( {dataCount} )
-                    </h3> */}
+                    <AdminsList />
                 </main>
             )) || <Loading loading={true} />}
         </AdaptableCard>

@@ -4,6 +4,9 @@ import type { TypeAttributes, ColorLevel } from '../@types/common'
 
 export type Config = {
     themeColor: string
+    themeBox: string
+    themeText: string
+    themeBackground: string
     mode: 'light' | 'dark'
     locale: string
     primaryColorLevel: ColorLevel
@@ -14,7 +17,10 @@ export type Config = {
 }
 
 export const defaultConfig = {
-    themeColor: 'indigo',
+    themeColor: '#ffffff',
+    themeBox: '#ffffff',
+    themeText: '#ffffff',
+    themeBackground: '#ffffff',
     direction: 'ltr',
     mode: 'light',
     locale: 'en',

@@ -8,8 +8,19 @@ import {
     LayoutType,
 } from '@/@types/theme'
 
+export type nodeThemeApi = {
+    logo: string
+    text: string
+    background: string
+    box: string
+    button: string
+}
+
 export type ThemeConfig = {
     themeColor: string
+    themeBox: string
+    themeText: string
+    themeBackground: string
     direction: Direction
     mode: Mode
     primaryColorLevel: ColorLevel
@@ -28,7 +39,10 @@ export type ThemeConfig = {
  * we recommend to use the configuration that generated from demo.
  */
 export const themeConfig: ThemeConfig = {
-    themeColor: 'indigo',
+    themeColor: '#ffffff',
+    themeBox: '#ffffff',
+    themeText: '#000000',
+    themeBackground: '#ffffff',
     direction: THEME_ENUM.DIR_LTR,
     mode: THEME_ENUM.MODE_DARK,
     primaryColorLevel: 600,
