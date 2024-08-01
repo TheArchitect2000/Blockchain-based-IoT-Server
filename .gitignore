@@ -1,7 +1,7 @@
 
-/uploads/*
-!/uploads/avatars/
-!/uploads/sprites.png
+/backend/uploads/*
+!/backend/uploads/avatars/
+!/backend/uploads/sprites.png
 
 admin_web_app/Runner_webapp/frontend/*
 !admin_web_app/Runner_webapp/frontend/t.txt
