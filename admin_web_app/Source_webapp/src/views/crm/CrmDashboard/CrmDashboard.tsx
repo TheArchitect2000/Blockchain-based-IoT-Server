@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import reducer, {
     getCrmDashboardData,
     useAppDispatch,
@@ -11,39 +11,11 @@ import Statistic from './components/Statistic'
 import LeadByCountries from './components/LeadByCountries'
 import EmailSent from './components/UserRatio'
 import Leads from './components/Leads'
-import { useGetServices } from '@/utils/hooks/useGetServices'
 import ServiceTable from './components/ServiceTable'
+import MapComponent from '@/components/map/MapComponent'
+import { useGetSharedDevices } from '@/utils/hooks/useGetDevices'
 
 injectReducer('crmDashboard', reducer)
-
-//mock data
-
-const leadByRegionDataMock = [
-    {
-        name: 'Canada',
-        value: "#1",
-    },
-    {
-        name: 'United States of America',
-        value: "#2",
-    },
-    {
-        name: 'France',
-        value: "#3",
-    },
-    {
-        name: 'Hong Kong',
-        value: "#4",
-    },
-    {
-        name: 'United Arab Emirates',
-        value: "#5",
-    },
-    {
-        name: 'Germany',
-        value: "#6",
-    },
-]
 
 const CrmDashboard = () => {
     const dispatch = useAppDispatch()
@@ -61,7 +33,19 @@ const CrmDashboard = () => {
         dispatch(getCrmDashboardData())
     }
 
-    //TODO:
+    const { devices } = useGetSharedDevices()
+
+    const [positions, setPositions] = useState<[number, number][]>([])
+
+    useEffect(() => {
+        if (devices?.data.data) {
+            const newPositions = devices.data.data
+                .filter((item) => item.location.coordinates)
+                .map((item) => item.location.coordinates as [number, number])
+            setPositions(newPositions)
+        }
+    }, [devices])
+
     return (
         <div className="flex flex-col gap-4 h-full">
             <Loading loading={false}>
@@ -73,10 +57,8 @@ const CrmDashboard = () => {
                     <ServiceTable />
                 </div>
 
-                <LeadByCountries
-                    className="xl:col-span-5"
-                    data={leadByRegionDataMock}
-                />
+                <MapComponent positions={positions} />
+
                 {/* <Leads data={recentLeadsData} /> */}
             </Loading>
         </div>
