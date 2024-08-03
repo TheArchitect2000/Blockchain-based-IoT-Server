@@ -13,7 +13,7 @@ import {
     apiSendNotificationToUserByEmail,
     apiSendPublicNotification,
 } from '@/services/NotificationService'
-import { DatePicker, Dialog, Notification, toast } from '@/components/ui'
+import { Card, DatePicker, Dialog, Notification, toast } from '@/components/ui'
 import useApiData from '@/utils/hooks/useApi'
 import { Loading } from '@/components/shared'
 import PaginatedList from '../market/components/PaginationList'
@@ -206,7 +206,7 @@ export default function NotificationPage() {
             {(loading == false && (
                 <main className="w-full min-h-[70dvh] flex flex-col gap-20">
                     <section className="flex gap-4 w-full">
-                        <div className="w-1/2 border-4 rounded-xl p-6 border-[#374151] flex flex-col">
+                        <Card className="w-1/2 rounded-xl p-4 flex flex-col">
                             <Formik
                                 initialValues={{
                                     title: '',
@@ -220,7 +220,10 @@ export default function NotificationPage() {
                                 }}
                             >
                                 {({ isSubmitting, touched, errors }) => {
-                                    const validatorProps = { touched, errors }
+                                    const validatorProps = {
+                                        touched,
+                                        errors,
+                                    }
                                     return (
                                         <Form>
                                             <FormContainer>
@@ -287,8 +290,9 @@ export default function NotificationPage() {
                                     )
                                 }}
                             </Formik>
-                        </div>
-                        <div className="w-1/2 border-4 rounded-xl p-6 border-[#374151] flex flex-col">
+                        </Card>
+
+                        <Card className="w-1/2 rounded-xl p-4 flex flex-col">
                             <Formik
                                 initialValues={{
                                     title: '',
@@ -382,7 +386,7 @@ export default function NotificationPage() {
                                     )
                                 }}
                             </Formik>
-                        </div>
+                        </Card>
                     </section>
                     <section className="w-full flex flex-col">
                         <div className="flex justify-between">
@@ -408,7 +412,10 @@ export default function NotificationPage() {
                                             index: any
                                         ) => {
                                             return (
-                                                <div className="flex w-full p-4 border-4 border-[#374151] rounded-xl">
+                                                <Card
+                                                    bodyClass="flex w-full"
+                                                    className="w-full p-4 rounded-xl"
+                                                >
                                                     <div className="flex flex-col gap-1 w-11/12">
                                                         <h4 className="text-[1.3rem]">
                                                             {notif.title}
@@ -647,7 +654,7 @@ export default function NotificationPage() {
                                                             </div>
                                                         </Dialog>
                                                     </div>
-                                                </div>
+                                                </Card>
                                             )
                                         }
                                     )}

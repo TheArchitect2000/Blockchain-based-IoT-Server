@@ -222,7 +222,7 @@ export default function AdminsList() {
     }, [refresh])
 
     return (
-        <main>
+        <main className='p-6'>
             <h3 className='mb-6'>All Admins List ( {count} )</h3>
             <div className="flex justify-between mb-4">
                 <input

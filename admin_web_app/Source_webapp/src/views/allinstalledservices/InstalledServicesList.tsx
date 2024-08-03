@@ -24,7 +24,7 @@ const ProductList = () => {
     }
 
     return (
-        <AdaptableCard className="h-full" bodyClass="h-full">
+        <AdaptableCard className="h-full p-6" bodyClass="h-full">
             {(loading == false && (
                 <>
                     <div className="lg:flex items-center justify-between mb-4">

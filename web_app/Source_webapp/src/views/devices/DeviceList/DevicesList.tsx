@@ -16,7 +16,7 @@ const ProductList = () => {
 
     if (loading) return <Loading loading={loading} />
     return (
-        <AdaptableCard className="h-full" bodyClass="h-full">
+        <AdaptableCard className="h-full p-6" bodyClass="h-full">
             <div className="lg:flex items-center justify-between mb-4">
                 <h3 className="mb-4 lg:mb-0">Device List</h3>
                 <ProductTableTools />

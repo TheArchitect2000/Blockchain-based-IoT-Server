@@ -1,3 +1,4 @@
+import { Card } from '@/components/ui'
 import PaginatedList from '@/components/ui/PaginationList/PaginationList'
 import {
     apiGetAllUserNotificationsByUserId,
@@ -97,17 +98,20 @@ export default function MyNotifications() {
                             const notReaded = notif.read == false
 
                             return (
-                                <div
+                                <Card
                                     key={notif._id}
                                     onClick={() =>
                                         handleReadClick(
                                             notif as NotificationProps
                                         )
                                     }
-                                    className={`flex flex-col w-full gap-1 p-4 border-4 ${
-                                        (notReaded &&
-                                            'hover:shadow-2xl cursor-pointer border-[red]') ||
-                                        'border-[#374151]'
+                                    style={{
+                                        borderColor:
+                                            (notReaded && 'red') || '#374151',
+                                    }}
+                                    className={`flex flex-col w-full gap-1 p-4 border-2 ${
+                                        notReaded &&
+                                        'hover:shadow-2xl cursor-pointer '
                                     } rounded-xl`}
                                 >
                                     <h4 className="text-[1.3rem]">
@@ -132,7 +136,7 @@ export default function MyNotifications() {
                                         <strong>Date:</strong>{' '}
                                         {formatISODate(notif.insertDate)}
                                     </p>
-                                </div>
+                                </Card>
                             )
                         })}
                 </PaginatedList>

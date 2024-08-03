@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 //import { useMQTT } from 'mqtt-vue-hook'
 //import mqtt from 'mqtt'
 import { DeviceData } from '@/utils/hooks/useGetDevices'
+import { Card } from '@/components/ui'
 
 const DeviceField = ({
     title,
@@ -105,7 +106,7 @@ function DeviceSpecifics({ data }: { data: DeviceData }) {
     }, [])
 
     return (
-        <div className="p-6">
+        <Card className="p-6 h-full">
             <h2 className="mb-4">Device Details</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-y-7 gap-x-4 mt-8">
                 <DeviceField title="Device Name" value={data.deviceName} />
@@ -126,7 +127,7 @@ function DeviceSpecifics({ data }: { data: DeviceData }) {
                     value={data.firmwareVersion}
                 />
             </div>
-        </div>
+        </Card>
     )
 }
 

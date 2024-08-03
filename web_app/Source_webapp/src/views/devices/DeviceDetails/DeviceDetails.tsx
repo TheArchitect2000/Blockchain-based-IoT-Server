@@ -14,7 +14,7 @@ import {
     apiGetUserProfileByUserId,
 } from '@/services/UserApi'
 import Chart from '@/views/account/Settings/components/ReChart'
-import { DatePicker } from '@/components/ui'
+import { Card, DatePicker } from '@/components/ui'
 import { useAppSelector } from '@/store'
 import { convertToTimeZone } from '@/views/account/Settings/components/TimezoneSelector'
 import Table2D from '@/views/account/Settings/components/Table2D'
@@ -188,7 +188,10 @@ function DeviceDetails() {
                         <DeviceSpecifics data={data} />
                     </div>
                 </div>
-                <section className="flex flex-col gap-10 w-full min-h-[65dvh] mt-10 card card-border py-10">
+                <Card
+                    bodyClass="flex flex-col gap-10 py-10"
+                    className=" w-full min-h-[65dvh] mt-10 card card-border"
+                >
                     <h1 className="ms-10">Device Log</h1>
                     <div className="flex px-10">
                         <DatePicker
@@ -203,8 +206,11 @@ function DeviceDetails() {
                     {(logLoading && <Loading loading={true} />) || (
                         <Chart data={chartData.chart} loading={logLoading} />
                     )}
-                </section>
-                <section className="flex justify-center px-5 gap-5 w-full min-h-[65dvh] mt-10 card card-border py-10">
+                </Card>
+                <Card
+                    bodyClass="flex h-full justify-center px-5 gap-5 py-10"
+                    className="w-full min-h-[65dvh] mt-10 card card-border"
+                >
                     {(logLoading && <Loading loading={true} />) || (
                         <>
                             {chartData?.button &&
@@ -242,7 +248,7 @@ function DeviceDetails() {
                                 )}
                         </>
                     )}
-                </section>
+                </Card>
             </div>
         )
 }

@@ -356,18 +356,24 @@ export default function ThemApply() {
             const res = (await apiGetNodeTheme()) as any
             const data = res?.data?.data as nodeThemeApi
 
-            const colorSplited = findClosestTailwindColor(
+            const buttonColorSplited = findClosestTailwindColor(
                 '#' + data.button
             ).split('-')
 
             console.log('Theme apply')
 
-            dispatch(setThemeColor(colorSplited[0]))
-            dispatch(setThemeColorLevel(colorSplited[1]))
+            dispatch(setThemeColor(buttonColorSplited[0]))
+            dispatch(setThemeColorLevel(buttonColorSplited[1]))
+
+            dispatch(
+                setThemeBackground(
+                    findClosestTailwindColor('#' + data.background)
+                )
+            )
+
+            dispatch(setThemeBox(findClosestTailwindColor('#' + data.box)))
 
             dispatch(setThemeText('#' + data.text))
-            dispatch(setThemeBackground('#' + data.background))
-            dispatch(setThemeBox('#' + data.box))
         }
         getServerTheme()
     }, [])

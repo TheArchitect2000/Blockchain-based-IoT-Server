@@ -6,6 +6,7 @@ import UserDropdown from '@/components/template/UserDropdown'
 import SideNav from '@/components/template/SideNav'
 import View from '@/views'
 import Notification from '../template/Notification'
+import ThemApply from './ThemeApply'
 
 const HeaderActionsStart = () => {
     return (
@@ -27,6 +28,8 @@ const HeaderActionsEnd = () => {
 }
 
 const ClassicLayout = () => {
+    ThemApply()
+
     return (
         <div className="app-layout-classic flex flex-auto flex-col">
             <div className="flex flex-auto min-w-0">

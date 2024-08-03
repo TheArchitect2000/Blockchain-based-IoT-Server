@@ -154,7 +154,7 @@ export default function MakeAdmin() {
     }
 
     return (
-        <section className="w-full flex flex-col gap-4">
+        <section className="w-full p-6 flex flex-col gap-4">
             <h3>Manage Admins</h3>
             <div className="flex flex-col lg:flex-row gap-10 ">
                 <div className="w-full lg:w-1/2 flex flex-col gap-4">
@@ -199,7 +199,7 @@ export default function MakeAdmin() {
                         </Button>
                     </div>
                 </div>
-                <div className="w-full lg:w-1/2 grid grid-cols-2 gap-4 px-4 py-6 border rounded-lg">
+                <div className="w-full lg:w-1/2 grid grid-cols-2 gap-4 px-4 py-6 border border-gray-600 rounded-lg">
                     <h4 className='col-span-2 mb-2 mx-auto'> Rank Selection</h4>
                     {adminRanks.map((rank, index) => (
                         <div

@@ -21,7 +21,9 @@ export interface CardProps
 }
 
 const Card = forwardRef<HTMLDivElement, CardProps>((props, ref) => {
-    const { cardBordered } = useConfig()
+    const { cardBordered, themeColor, themeBox, controlSize, primaryColorLevel } =
+        useConfig()
+
 
     const {
         children,
@@ -41,7 +43,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>((props, ref) => {
     } = props
 
     const cardClass = classNames(
-        'card',
+        `card dark:bg-${themeBox}`,
         className,
         bordered ? `card-border` : `card-shadow`,
         clickable && 'cursor-pointer user-select-none'

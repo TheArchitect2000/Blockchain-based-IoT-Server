@@ -4,6 +4,7 @@ import type { ReactNode } from 'react'
 import type { CommonProps } from '@/@types/common'
 import { Button } from '@/components/ui'
 import { useNavigate } from 'react-router-dom'
+import { useConfig } from '../ui/ConfigProvider'
 
 interface HeaderProps extends CommonProps {
     headerStart?: ReactNode
@@ -18,8 +19,11 @@ const Header = (props: HeaderProps) => {
     const onCreateNewService = () => {
         navigate(`/services/new`)
     }
+
+    const { themeBackground } = useConfig()
+
     return (
-        <header className={classNames('header', className)}>
+        <header className={classNames('header', `dark:bg-${themeBackground}`, className)}>
             <div
                 className={classNames(
                     'header-wrapper',
@@ -39,10 +43,7 @@ const Header = (props: HeaderProps) => {
                 <div className="flex flex-row">
                     <div className="flex mt-1 justify-end">
                         {' '}
-                        <Button
-                            onClick={onCreateNewService}
-                            variant='solid'
-                        >
+                        <Button onClick={onCreateNewService} variant="solid">
                             Create New Service
                         </Button>{' '}
                     </div>
