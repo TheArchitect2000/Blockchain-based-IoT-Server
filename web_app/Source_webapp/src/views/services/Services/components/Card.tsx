@@ -286,6 +286,7 @@ const ServiceCard = ({
                         <Button
                             disabled={disableAll}
                             variant="solid"
+                            color='yellow'
                             size="sm"
                             onClick={() => setCodeModal(true)}
                             className="w-1/2"
@@ -296,6 +297,7 @@ const ServiceCard = ({
                         <Button
                             disabled={disableAll}
                             variant="solid"
+                            color='green'
                             size="sm"
                             className="w-1/2"
                             onClick={handlePublishRequest}

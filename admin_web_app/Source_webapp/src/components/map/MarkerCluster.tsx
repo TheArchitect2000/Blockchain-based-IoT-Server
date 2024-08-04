@@ -7,7 +7,7 @@ import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 import { useMap } from 'react-leaflet'
 
 interface MarkerClusterProps {
-    positions: [number, number/* , number */][]
+    positions: [number, number, number, number][]
 }
 
 const MarkerCluster: React.FC<MarkerClusterProps> = ({ positions }) => {
@@ -16,9 +16,9 @@ const MarkerCluster: React.FC<MarkerClusterProps> = ({ positions }) => {
     useEffect(() => {
         const markers = L.markerClusterGroup()
 
-        positions.forEach(([lat, lng/* , temp */]) => {
+        positions.forEach(([lat, lng, temp, humidtiy]) => {
             const marker = L.marker([lat, lng])/* .bindTooltip(
-                `Temperature: ${temp}°C`,
+                `Temperature: ${temp}°C | Humidity: ${humidtiy}%`,
                 {
                     direction: 'top',
                     offset: L.point(0, -10),

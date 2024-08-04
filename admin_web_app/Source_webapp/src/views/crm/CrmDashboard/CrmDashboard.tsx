@@ -17,6 +17,10 @@ import { useGetSharedDevices } from '@/utils/hooks/useGetDevices'
 
 injectReducer('crmDashboard', reducer)
 
+function getRandomInt(max: number) {
+    return Math.floor(Math.random() * max)
+}
+
 const CrmDashboard = () => {
     const dispatch = useAppDispatch()
 
@@ -35,13 +39,22 @@ const CrmDashboard = () => {
 
     const { devices } = useGetSharedDevices()
 
-    const [positions, setPositions] = useState<[number, number][]>([])
+    const [positions, setPositions] = useState<
+        [number, number, number, number][]
+    >([])
 
     useEffect(() => {
         if (devices?.data.data) {
-            const newPositions = devices.data.data
-                .filter((item) => item.location.coordinates)
-                .map((item) => item.location.coordinates as [number, number])
+            const newPositions: [number, number, number, number][]  = devices.data.data
+                .filter((item: any) => item.location.coordinates)
+                .map(
+                    (item: any) =>
+                        [
+                            ...item.location.coordinates,
+                            getRandomInt(55),
+                            getRandomInt(80),
+                        ] as [number, number, number, number]
+                )
             setPositions(newPositions)
         }
     }, [devices])
