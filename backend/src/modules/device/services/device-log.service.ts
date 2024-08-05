@@ -102,6 +102,7 @@ export class DeviceLogService {
     fieldName,
     userId = '',
     isAdmin = false,
+    onlyPublished = false,
   ) {
     const foundDevices = (await this.deviceService.getDeviceInfoByEncryptedId(
       deviceEncryptedId,
@@ -115,9 +116,14 @@ export class DeviceLogService {
 
     let foundActivities: any = null;
 
-    let query = {
+    let query: any = {
       deviceEncryptedId: deviceEncryptedId,
     };
+
+    if (onlyPublished) {
+      query.event = 'published';
+    }
+
     query[fieldName] = { $exists: true };
 
     foundActivities =

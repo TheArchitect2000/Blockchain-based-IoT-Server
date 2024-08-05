@@ -533,7 +533,31 @@ export class DeviceService {
       selectCondition,
     );
 
-    //console.log('Found devices are: ', foundDevices);
+    const logPromises = foundDevices.map(async (device) => {
+      try {
+        console.log('Device encrypt isssss:', device.deviceEncryptedId);
+
+        const res =
+          await this.deviceLogService.getDeviceLogByEncryptedDeviceIdAndFieldName(
+            device.deviceEncryptedId,
+            'a',
+            '',
+            true,
+            true,
+          );
+
+        device.lastLog = res;
+
+        console.log('Result is:', res);
+      } catch (error) {
+        console.error(
+          `Error fetching log for device ${device.deviceEncryptedId}:`,
+          error,
+        );
+      }
+    });
+
+    await Promise.all(logPromises);
 
     foundDevices.forEach((element) => {
       response.push({
@@ -541,6 +565,7 @@ export class DeviceService {
         deviceName: element.deviceName,
         deviceType: element.deviceType,
         mac: element.mac,
+        lastLog: element.lastLog,
         deviceEncryptedId: element.deviceEncryptedId,
         hardwareVersion: element.hardwareVersion,
         firmwareVersion: element.firmwareVersion,
@@ -678,7 +703,6 @@ export class DeviceService {
 
     // if(foundDevice && foundDevice !== undefined && foundDevice.deletable){
     if (foundDevice && foundDevice !== undefined) {
-
       if (
         userId.length > 0 &&
         foundDevice &&
