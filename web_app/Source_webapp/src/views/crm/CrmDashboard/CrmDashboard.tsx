@@ -45,16 +45,21 @@ const CrmDashboard = () => {
 
     useEffect(() => {
         if (devices?.data.data) {
-            const newPositions: [number, number, number, number][]  = devices.data.data
-                .filter((item) => item.location.coordinates)
-                .map(
-                    (item) =>
-                        [
-                            ...item.location.coordinates,
-                            getRandomInt(55),
-                            getRandomInt(80),
-                        ] as [number, number, number, number]
-                )
+            const newPositions: [number, number, number, number][] =
+                devices.data.data
+                    .filter((item) => item.location.coordinates)
+                    .map(
+                        (item: any) =>
+                            [
+                                ...item.location.coordinates,
+                                (item.lastLog &&
+                                    item.lastLog?.data?.Temperature) ||
+                                    null,
+                                (item.lastLog &&
+                                    item.lastLog?.data?.Humidity) ||
+                                    null,
+                            ] as [number, number, number, number]
+                    )
             setPositions(newPositions)
         }
     }, [devices])

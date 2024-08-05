@@ -29,7 +29,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ positions }) => {
                     />
                     Markers
                 </label>
-                {/* <label className="mr-4">
+                <label className="mr-4">
                     <input
                         type="radio"
                         name="view"
@@ -50,7 +50,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ positions }) => {
                         className="mr-2"
                     />
                     Humidity
-                </label> */}
+                </label>
             </div>
             <MapContainer
                 center={[51.505, -0.09]}
