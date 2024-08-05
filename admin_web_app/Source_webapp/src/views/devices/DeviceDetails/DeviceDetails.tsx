@@ -6,6 +6,7 @@ import DeviceSpecifics from './componetns/DeviceSpecifics'
 import UserInfo from './componetns/UserInfo'
 import { useEffect, useState } from 'react'
 import {
+    apiGetAllDevices,
     apiGetDeviceLogByEncryptedIdAndNumberOfDays,
     apiGetDevices,
 } from '@/services/DeviceApi'
@@ -56,14 +57,15 @@ function DeviceDetails() {
 
     useEffect(() => {
         async function fetchUsers() {
-            const response = await apiGetDevices(userId || '')
+            const response = await apiGetAllDevices()
             const data = response.data as any
             const deviceData = data.data.filter(
                 (device: any) => device._id === deviceId
             )[0] as DeviceData
+            
             setData(deviceData)
             const resData = (await apiGetUserProfileByUserId(
-                userId || ''
+                deviceData.userId
             )) as any
             setProfileData(resData.data.data)
             setLoading(false)
