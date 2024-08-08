@@ -22,6 +22,7 @@ import {
 } from '@/services/UserApi'
 import { apiCheckPassword } from '@/services/AuthService'
 import { useEffect, useState } from 'react'
+import { PasswordInput } from '@/components/shared'
 
 type LoginHistory = {
     type: string
@@ -35,7 +36,6 @@ type PasswordFormModel = {
     newPassword: string
     confirmNewPassword: string
 }
-
 
 const validationSchema = Yup.object().shape({
     password: Yup.string().required('Password Required'),
@@ -54,8 +54,7 @@ const Password = () => {
         async function fetchData() {
             const resData = (await apiGetCurUserProfile()) as any
             setApiData(resData.data.data)
-            console.log(resData.data.data);
-            
+            console.log(resData.data.data)
         }
         fetchData()
     }, [])
@@ -73,10 +72,7 @@ const Password = () => {
 
         if (isChecked.data?.data === false) {
             toast.push(
-                <Notification
-                    title={'Invalid credentials'}
-                    type="danger"
-                />,
+                <Notification title={'Invalid credentials'} type="danger" />,
                 {
                     placement: 'top-center',
                 }
@@ -85,19 +81,30 @@ const Password = () => {
             return false
         }
 
-        const res = await apiChangePasswordByEmail(apiData.email ,values.confirmNewPassword) as any
-        
+        const res = (await apiChangePasswordByEmail(
+            apiData.email,
+            values.confirmNewPassword
+        )) as any
+
         if (res.data?.success) {
-            toast.push(<Notification title={'Password updated'} type="success" />, {
-                placement: 'top-center',
-            })
+            toast.push(
+                <Notification title={'Password updated'} type="success" />,
+                {
+                    placement: 'top-center',
+                }
+            )
         } else {
-            toast.push(<Notification title={'Error while updating password'} type="danger" />, {
-                placement: 'top-center',
-            })
+            toast.push(
+                <Notification
+                    title={'Error while updating password'}
+                    type="danger"
+                />,
+                {
+                    placement: 'top-center',
+                }
+            )
         }
-        
-        
+
         setSubmitting(false)
         console.log('values', values)
     }
@@ -130,11 +137,10 @@ const Password = () => {
                                     {...validatorProps}
                                 >
                                     <Field
-                                        type="password"
                                         autoComplete="off"
                                         name="password"
                                         placeholder="Current Password"
-                                        component={Input}
+                                        component={PasswordInput}
                                     />
                                 </FormRow>
                                 <FormRow
@@ -143,11 +149,10 @@ const Password = () => {
                                     {...validatorProps}
                                 >
                                     <Field
-                                        type="password"
                                         autoComplete="off"
                                         name="newPassword"
                                         placeholder="New Password"
-                                        component={Input}
+                                        component={PasswordInput}
                                     />
                                 </FormRow>
                                 <FormRow
@@ -156,11 +161,10 @@ const Password = () => {
                                     {...validatorProps}
                                 >
                                     <Field
-                                        type="password"
                                         autoComplete="off"
                                         name="confirmNewPassword"
                                         placeholder="Confirm Password"
-                                        component={Input}
+                                        component={PasswordInput}
                                     />
                                 </FormRow>
                                 <div className="mt-4 ltr:text-right">

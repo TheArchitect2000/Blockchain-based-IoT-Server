@@ -1,9 +1,6 @@
 import { useEffect } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import 'leaflet.markercluster'
-import 'leaflet.markercluster/dist/MarkerCluster.css'
-import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 import { useMap } from 'react-leaflet'
 
 interface MarkerClusterProps {
@@ -14,24 +11,23 @@ const MarkerCluster: React.FC<MarkerClusterProps> = ({ positions }) => {
     const map = useMap()
 
     useEffect(() => {
-        const markers = L.markerClusterGroup()
-
-        positions.forEach(([lat, lng, temp, humidtiy]) => {
+        // Create an array to hold the markers
+        const markers = positions.map(([lat, lng, temp, humidity]) => {
             const marker = L.marker([lat, lng])/* .bindTooltip(
-                `Temperature: ${temp}°C | Humidity: ${humidtiy}%`,
+                `Temperature: ${temp}°C | Humidity: ${humidity}%`,
                 {
                     direction: 'top',
                     offset: L.point(0, -10),
                     permanent: false,
                 }
             ) */
-            markers.addLayer(marker)
+            marker.addTo(map)
+            return marker
         })
 
-        map.addLayer(markers)
-
+        // Clean up markers on component unmount
         return () => {
-            map.removeLayer(markers)
+            markers.forEach(marker => map.removeLayer(marker))
         }
     }, [map, positions])
 

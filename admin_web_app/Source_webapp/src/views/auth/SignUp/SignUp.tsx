@@ -1,9 +1,9 @@
-import ThemApply from '@/components/layouts/ThemeApply'
+import ThemeApply from '@/components/layouts/ThemeApply'
 import SignUpForm from './SignUpForm'
 
 const SignUp = () => {
-    ThemApply()
-    
+    ThemeApply()
+
     return (
         <>
             <div className="mb-8">

@@ -76,7 +76,7 @@ const Settings = () => {
 
     return (
         <Container>
-            <AdaptableCard>
+            <AdaptableCard className='p-4'>
                 <Tabs value={currentTab} onChange={(val) => onTabChange(val)}>
                     <TabList>
                         {Object.keys(settingsMenu).map((key) => (
@@ -89,7 +89,7 @@ const Settings = () => {
                 <div className="px-4 py-6">
                     <Suspense fallback={<></>}>
                         {currentTab === 'profile' && (
-                            <Profile data={data.profile} />
+                            <Profile />
                         )}
                         {currentTab === 'password' && (
                             <Password data={data.loginHistory} />

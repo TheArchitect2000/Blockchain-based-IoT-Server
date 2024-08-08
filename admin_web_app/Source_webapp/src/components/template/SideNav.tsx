@@ -14,8 +14,6 @@ import navigationConfig from '@/configs/navigation.config'
 import VerticalMenuContent from '@/components/template/VerticalMenuContent'
 import useResponsive from '@/utils/hooks/useResponsive'
 import { useAppSelector } from '@/store'
-import { useEffect, useState } from 'react'
-import { apiGetNodeTheme } from '@/services/UserApi'
 
 const sideNavStyle = {
     width: SIDE_NAV_WIDTH,
@@ -25,7 +23,9 @@ const sideNavStyle = {
 const sideNavCollapseStyle = {
     width: SIDE_NAV_COLLAPSED_WIDTH,
     minWidth: SIDE_NAV_COLLAPSED_WIDTH,
-    height: '100%',
+    height: "100vh",
+    position: "sticky",
+    top: "0px",
 }
 
 const SideNav = () => {
@@ -106,6 +106,7 @@ const SideNav = () => {
                         <ScrollBar autoHide direction={direction}>
                             {menuContent}
                         </ScrollBar>
+
                     </div>
                 </div>
             )}

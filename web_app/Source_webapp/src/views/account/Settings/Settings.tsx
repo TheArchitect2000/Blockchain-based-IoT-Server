@@ -80,7 +80,7 @@ const Settings = () => {
 
     return (
         <Container>
-            <AdaptableCard>
+            <AdaptableCard className='p-4'>
                 <Tabs value={currentTab} onChange={(val) => onTabChange(val)}>
                     <TabList>
                         {Object.keys(settingsMenu).map((key) => (

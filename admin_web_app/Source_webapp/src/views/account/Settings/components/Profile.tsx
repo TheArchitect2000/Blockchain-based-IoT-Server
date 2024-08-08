@@ -126,7 +126,7 @@ const CustomControl = ({
     )
 }
 
-const Profile = ({}: ProfileProps) => {
+const Profile = ({  }: ProfileProps) => {
     const [apiData, setApiData] = useState<any>({})
     const [imageSrc, setImageSrc] = useState('')
     const [imageFile, setImageFile] = useState('')

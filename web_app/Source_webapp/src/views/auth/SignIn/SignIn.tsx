@@ -1,9 +1,9 @@
 import { useEffect } from 'react'
 import SignInForm from './SignInForm'
-import ThemApply from '@/components/layouts/ThemApply'
+import ThemeApply from '@/components/layouts/ThemeApply'
 
 const SignIn = () => {
-    ThemApply()
+    ThemeApply()
 
     return (
         <>

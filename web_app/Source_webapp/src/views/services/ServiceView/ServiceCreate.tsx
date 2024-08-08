@@ -210,7 +210,8 @@ const createService = ({
                     const res = (await apiEditService({
                         ...values,
                         serviceId: serviceId,
-                        serviceImage: result?.data?.data?.url || '',
+                        serviceImage:
+                            result?.data?.data?.url || data.serviceImage,
                     })) as any
                     setSubmitting(false)
                     if (res?.data?.data?.success === false) {

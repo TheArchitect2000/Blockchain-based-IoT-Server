@@ -348,7 +348,7 @@ function findClosestTailwindColor(hex: string): string {
     return closestColor
 }
 
-export default function ThemApply() {
+export default function ThemeApply() {
     const dispatch = useAppDispatch()
 
     useEffect(() => {

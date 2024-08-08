@@ -7,7 +7,8 @@ import {
     HiCloudDownload ,
     HiDocumentDownload,
     HiOutlineCollection,
-    HiOutlineIdentification
+    HiOutlineIdentification,
+    HiUserGroup
 } from 'react-icons/hi'
 
 export type NavigationIcons = Record<string, JSX.Element>
@@ -19,6 +20,7 @@ const navigationIcon: NavigationIcons = {
     singleMenu: <HiOutlineViewGridAdd />,
     documentDownload: <HiDocumentDownload />,
     list: <HiOutlineCollection />,
+    building: <HiUserGroup />,
     collapseMenu: <HiOutlineTemplate />,
     groupSingleMenu: <HiOutlineDesktopComputer />,
     groupCollapseMenu: <HiOutlineColorSwatch />,

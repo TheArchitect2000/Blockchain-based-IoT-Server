@@ -48,6 +48,24 @@ export const protectedRoutes = [
         authority: [],
     },
     {
+        key: 'buildings',
+        path: '/buildings',
+        component: lazy(() => import('@/views/building')),
+        authority: [],
+    },
+    {
+        key: 'buildings.manage',
+        path: '/buildings/:type',
+        component: lazy(() => import('@/views/building/pages/createedit')),
+        authority: [],
+    },
+    {
+        key: 'buildings.see',
+        path: '/buildings/details/:id',
+        component: lazy(() => import('@/views/building/pages/details')),
+        authority: [],
+    },
+    {
         key: 'notifications',
         path: '/notifications',
         component: lazy(() => import('@/views/notification')),

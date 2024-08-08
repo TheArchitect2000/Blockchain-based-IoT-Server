@@ -26,6 +26,16 @@ const navigationConfig: NavigationTree[] = [
         authority: [],
         subMenu: [],
     },
+    {
+        key: 'buildings',
+        path: '/buildings',
+        title: 'Manage Buildings',
+        translateKey: 'Manage Buildings',
+        icon: 'building',
+        type: NAV_ITEM_TYPE_ITEM,
+        authority: [],
+        subMenu: [],
+    },
     /** Example purpose only, please remove */
     {
         key: 'services',

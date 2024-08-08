@@ -1,9 +1,9 @@
-import ThemApply from '@/components/layouts/ThemeApply'
+import ThemeApply from '@/components/layouts/ThemeApply'
 import SignInForm from './SignInForm'
 
 const SignIn = () => {
-    ThemApply()
-    
+    ThemeApply()
+
     return (
         <>
             <div className="mb-8">

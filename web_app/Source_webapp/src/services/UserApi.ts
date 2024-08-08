@@ -34,6 +34,56 @@ export async function apiChangePasswordByEmail<T>(
     })
 }
 
+export async function apiCreateNewBuilding<T>(data: any) {
+    return ApiService.fetchData<T>({
+        url: `${import.meta.env.VITE_URL}v1/building/create`,
+        method: 'post',
+        data: {
+            name: data.name,
+            details: data.details,
+        },
+    })
+}
+
+export async function apiDeleteByBuildId<T>(buildId: string) {
+    return ApiService.fetchData<T>({
+        url: `${import.meta.env.VITE_URL}v1/building/delete-by-build-id/${buildId}`,
+        method: 'delete',
+    })
+}
+
+export async function apiEditBuildingByBuildId<T>(
+    buildId: string,
+    data: object
+) {
+    return ApiService.fetchData<T>({
+        url: `${import.meta.env.VITE_URL}v1/building/edit-by-build-id`,
+        method: 'patch',
+        data: {
+            buildId: buildId,
+            data: data,
+        },
+    })
+}
+
+export async function apiGetBuildingsByUserId<T>(
+    userId: string,
+) {
+    return ApiService.fetchData<T>({
+        url: `${import.meta.env.VITE_URL}v1/building/get-buildings-by-user-id/${userId}`,
+        method: 'get',
+    })
+}
+
+export async function apiGetBuildingByBuildId<T>(buildId: string) {
+    return ApiService.fetchData<T>({
+        url: `${
+            import.meta.env.VITE_URL
+        }v1/building/get-building-by-build-id/${buildId}`,
+        method: 'get',
+    })
+}
+
 export async function apiRequestVerifyEmail<T>(email: string) {
     return ApiService.fetchData<T>({
         url: `${
