@@ -21,6 +21,7 @@ import { ResponseTransformInterceptor } from './modules/utility/interceptors/res
 import { UtilityModule } from './modules/utility/utility.module';
 import { MediaModule } from './modules/media/media.module';
 import { AdminModule } from './modules/admin/admin.module';
+import { BuildingModule } from './modules/building/building.module';
 //import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
@@ -68,6 +69,7 @@ import { AdminModule } from './modules/admin/admin.module';
     ServiceModule,
     BlocklyModule,
     NotificationModule,
+    BuildingModule,
     ZkpModule,
     MediaModule,
     AdminModule,
@@ -82,5 +84,3 @@ import { AdminModule } from './modules/admin/admin.module';
   ],
 })
 export class AppModule {}
-
-
