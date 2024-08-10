@@ -5,6 +5,7 @@ import 'leaflet/dist/leaflet.css'
 import MarkerCluster from './MarkerCluster'
 import { Card } from '../ui'
 import CirclesLayer from './CirclesLayer'
+import { HiLocationMarker } from 'react-icons/hi'
 
 interface MapComponentProps {
     positions: [number, number, number, number][]

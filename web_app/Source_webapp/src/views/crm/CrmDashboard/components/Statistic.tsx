@@ -1,8 +1,14 @@
 import classNames from 'classnames'
 import Card from '@/components/ui/Card'
 import Avatar from '@/components/ui/Avatar'
-import { HiOutlineTrendingUp, HiOutlineTrendingDown } from 'react-icons/hi'
-import { FcShipped, FcAutomotive, FcSupport } from 'react-icons/fc'
+import {
+    HiOutlineTrendingUp,
+    HiOutlineTrendingDown,
+    HiDatabase,
+    HiBan,
+    HiExclamation,
+} from 'react-icons/hi'
+import { FcShipped, FcAutomotive, FcSupport, FcRefresh } from 'react-icons/fc'
 import type { Statistic } from '../store'
 import { useAppSelector } from '@/store'
 import { useEffect, useState } from 'react'
@@ -12,6 +18,8 @@ import {
     apiGetService,
 } from '@/services/ServiceAPI'
 import { Loading } from '@/components/shared'
+import { apiGetUserProfileByUserId } from '@/services/UserApi'
+import { useNavigate } from 'react-router-dom'
 
 const GrowShrink = ({ value }: { value: number }) => {
     return (
@@ -68,25 +76,54 @@ const StatisticIcon = ({ type }: { type?: string }) => {
                     icon={<FcShipped />}
                 />
             )
+        case 'verify':
+            return (
+                <Avatar
+                    size={55}
+                    className="bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-100"
+                    icon={<HiExclamation />}
+                />
+            )
         default:
             return <div></div>
     }
 }
 
-const StatisticCard = ({ data = {} }: { data: Partial<Statistic> }) => {
+const StatisticCard = ({
+    onClick,
+    className,
+    data = {},
+}: {
+    className?: string
+    onClick?: any
+    data: Partial<Statistic>
+}) => {
     return (
-        <Card>
-            <div className="flex items-center gap-4">
+        <Card className={className && className} onClick={onClick && onClick} bodyClass="h-full">
+            <div className="flex h-full items-center gap-4">
                 <StatisticIcon type={data.key} />
-                <div>
+                <div className="flex flex-col justify-center">
                     <div className="flex gap-1.5 items-end mb-2">
                         <h3 className="font-bold leading-none">{data.value}</h3>
-                        <p className="font-semibold">{data.label}</p>
+                        <p
+                            className={`${
+                                data.desc && 'text-[1rem] text-white'
+                            } font-bold`}
+                        >
+                            {data.label}
+                        </p>
                     </div>
-                    <p className="flex items-center gap-1">
-                        <GrowShrink value={data.growShrink || 0} />
-                        <span>this month</span>
-                    </p>
+                    {data.growShrink && (
+                        <p className="flex items-center gap-1">
+                            <GrowShrink value={data.growShrink || 0} />
+                            <span>this month</span>
+                        </p>
+                    )}
+                    {data.desc && (
+                        <p className="flex items-center gap-1">
+                            <span className="text-red-200">{data.desc}</span>
+                        </p>
+                    )}
                 </div>
             </div>
         </Card>
@@ -98,7 +135,9 @@ const Statistic = ({ data = [] }: { data?: Partial<Statistic>[] }) => {
     const [myServices, setMyServices] = useState<any[]>([])
     const [allServices, setAllServices] = useState<any[]>([])
     const [installedServices, setInstalledServices] = useState<any[]>([])
+    const [userData, setUserData] = useState<any>()
     const [loading, setLoading] = useState(true)
+    const navigateTo = useNavigate()
 
     useEffect(() => {
         const fetchAllDatas = async () => {
@@ -106,6 +145,11 @@ const Statistic = ({ data = [] }: { data?: Partial<Statistic>[] }) => {
                 const myRes = await apiGetService<any>(userId || '') // Fetch installed services
                 const myData = myRes.data // Extract data from AxiosResponse
                 setMyServices(myData.data) // Update state with fetched services data
+
+                const userRes = await apiGetUserProfileByUserId<any>(
+                    userId || ''
+                )
+                setUserData(userRes?.data?.data)
 
                 const marketRes = await apiGetAllPublishedServices<any>()
                 const marketData = marketRes.data
@@ -130,7 +174,30 @@ const Statistic = ({ data = [] }: { data?: Partial<Statistic>[] }) => {
     }, [])
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div
+            className={`grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-${
+                (loading === false &&
+                    userData.verificationStatus !== 'verified' &&
+                    4) ||
+                3
+            } gap-4`}
+        >
+            {loading === false &&
+                userData.verificationStatus !== 'verified' && (
+                    <StatisticCard
+                    className='cursor-pointer'
+                        onClick={() => {
+                            navigateTo('/account/settings/verify')
+                        }}
+                        key={'verify'}
+                        data={{
+                            key: 'verify',
+                            label: 'Verify Account',
+                            desc: 'Your account is not verified. Please verify your account to access all features',
+                        }}
+                    />
+                )}
+
             <StatisticCard
                 key={'myServices'}
                 data={{

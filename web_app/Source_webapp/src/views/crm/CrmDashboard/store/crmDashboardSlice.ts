@@ -5,7 +5,8 @@ export type Statistic = {
     key: string
     label: string
     value: any
-    growShrink: number
+    growShrink?: number
+    desc?: string
 }
 
 export type LeadRegion = {
