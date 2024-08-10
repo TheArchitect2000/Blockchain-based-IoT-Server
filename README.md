@@ -233,6 +233,7 @@ sudo nano .env
 Inside the `.env` file, past the parameters.
 ```
 PORT = 5000
+NODE_NAME = "your.node.name"
 SWAGGER_LOCAL_SERVER = http://localhost:5000
 
 # Server Configuration
@@ -296,6 +297,8 @@ MULTER_MEDIA_SIZE = 10000000    # 10 MB
 ```
 Update these parameters:
 ```
+NODE_NAME = "your.node.name"
+
 HOST_NAME_OR_IP = 'panel.YOUR_DOMAIN.COM'
 
 MAIL_HOST = YOUR_HOST_MAIL_SERVER_PROVIDER
