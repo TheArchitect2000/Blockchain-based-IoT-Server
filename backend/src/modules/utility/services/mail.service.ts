@@ -29,6 +29,7 @@ export class MailService {
         context: {
           // filling curly brackets with content
           name: user.name,
+          NodeName: process.env.NODE_NAME,
           url,
         },
       })
@@ -52,11 +53,12 @@ export class MailService {
       .sendMail({
         to: user.email,
         // from: '"Support Team" <support@example.com>', // override default from
-        subject: 'Welcome to FidesInnova! Confirm your Email',
+        subject: `Welcome to ${process.env.NODE_NAME}! Confirm your Email`,
         template: './signup-with-token', // `.hbs` extension is appended automatically
         context: {
           // filling curly brackets with content
           name: user.name,
+          NodeName: process.env.NODE_NAME,
           url,
         },
       })
@@ -96,11 +98,12 @@ export class MailService {
       .sendMail({
         to: email,
         // from: '"Support Team" <support@example.com>', // override default from
-        subject: 'Welcome to FidesInnova! Confirm your Email',
+        subject: `Welcome to ${process.env.NODE_NAME}! Confirm your Email`,
         template: './signup-with-otp', // `.hbs` extension is appended automatically
         context: {
           // filling curly brackets with content
           name: email,
+          NodeName: process.env.NODE_NAME,
           url: url,
         },
         /*attachments: [
@@ -155,10 +158,11 @@ export class MailService {
       await this.mailerService
         .sendMail({
           to: email,
-          subject: 'FidesInnova. Password Reset. ',
+          subject: `${process.env.NODE_NAME}. Password Reset.`,
           template: './reset-password-with-otp',
           context: {
             name: email,
+            NodeName: process.env.NODE_NAME,
             url: url,
           },
         })
@@ -202,11 +206,12 @@ export class MailService {
       .sendMail({
         to: email,
         // from: '"Support Team" <support@example.com>', // override default from
-        subject: 'FidesInnova. Confirm Your Email. ',
+        subject: `${process.env.NODE_NAME}. Confirm Your Email.`,
         template: './verify-email-with-otp.hbs', // `.hbs` extension is appended automatically
         context: {
           // filling curly brackets with content
           name: email,
+          NodeName: process.env.NODE_NAME,
           url: url,
         },
         /*attachments: [
@@ -262,11 +267,12 @@ export class MailService {
         .sendMail({
           to: email,
           // from: '"Support Team" <support@example.com>', // override default from
-          subject: 'FidesInnova: Device Notification',
+          subject: `${process.env.NODE_NAME}: Device Notification`,
           template: './send-notification', // `.hbs` extension is appended automatically
           context: {
             // filling curly brackets with content
             name: email,
+            NodeName: process.env.NODE_NAME,
             notificationMessage: String(notificationMessage),
             subject: subject,
           },

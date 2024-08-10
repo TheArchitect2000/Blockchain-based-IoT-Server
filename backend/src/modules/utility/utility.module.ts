@@ -52,7 +52,7 @@ import { NotificationModule } from '../notification/notification.module';
         connectionTimeout: 10000,
       },
       defaults: {
-        from: '"FidesInnova" <' + process.env.MAIL_FROM + '>',
+        from: `"${process.env.NODE_NAME}" <` + process.env.MAIL_FROM + '>',
       },
       template: {
         dir: join(__dirname, 'templates/mail-templates'),
