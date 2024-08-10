@@ -390,8 +390,10 @@ sudo nano .env
 ```
 Inside the `.env` file, past the parameters.
 *  Make sure to add `/app/` to the end of the `VITE_URL` path!
+*  Enter your node name in `VITE_NODE_NAME` for showing in website
 ```
 VITE_URL='https://panel.YOUR_DOMAIN.COM/app/'
+VITE_NODE_NAME = 'your.node.name'
 ```
 
 -  From `/etc/nginx/ssl`, copy the files `fullchain.pem`, `privkey.pem` and rename them:
@@ -473,8 +475,10 @@ sudo nano .env
 ```
 Inside the `.env` file, past the parameters.
 *  Make sure to add `/app/` to the end of the `VITE_URL` path!
+*  Enter your node name in `VITE_NODE_NAME` for showing in website
 ```
 VITE_URL='https://panel.YOUR_DOMAIN.COM/app/'
+VITE_NODE_NAME = 'your.node.name'
 ```
 
 -  From `/etc/nginx/ssl`, copy the files `fullchain.pem`, `privkey.pem` and rename them:
