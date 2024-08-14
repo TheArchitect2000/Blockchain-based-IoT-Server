@@ -13,7 +13,9 @@ import { NotificationService } from 'src/modules/notification/notification/notif
 @Injectable()
 export class MailService {
   constructor(
-    private mailerService: MailerService
+    private readonly mailerService?: MailerService,
+    private readonly notificationService?: NotificationService,
+
   ) {}
 
   async sendUserConfirmation(user: User, token: string) {
