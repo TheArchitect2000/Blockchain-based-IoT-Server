@@ -7,6 +7,7 @@ import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { UserService } from 'src/modules/user/services/user/user.service';
 import { DeviceLogService } from './device-log.service';
 import { EditDeviceDto } from '../data-transfer-objects/edit-device.dto';
+import { NotificationService } from 'src/modules/notification/notification/notification.service';
 
 // Nodejs encryption with CTR
 let crypto = require('crypto');
@@ -28,6 +29,7 @@ export class DeviceService {
     @Inject(forwardRef(() => DeviceLogService)) // For avoid circular dependency
     private readonly deviceLogService?: DeviceLogService,
     private readonly deviceRepository?: DeviceRepository,
+    /* private readonly notificationService?: NotificationService, */
   ) {}
 
   async generatePassword(len) {

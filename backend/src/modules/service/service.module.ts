@@ -11,13 +11,13 @@ import { installedServiceFeature } from './features/installed-service.feature';
 import { UserModule } from '../user/user.module';
 import { DeviceModule } from '../device/device.module';
 import { VirtualMachineModule } from '../virtual-machine/virtual-machine.module';
-import { BrokerModule } from '../broker/broker.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature(serviceFeature),
     MongooseModule.forFeature(installedServiceFeature),
     forwardRef(() => UserModule),
+    forwardRef(() => DeviceModule),
     forwardRef(() => VirtualMachineModule),
     DeviceModule,
   ],

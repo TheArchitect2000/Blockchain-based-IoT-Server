@@ -19,9 +19,8 @@ export class NotificationService {
   firebaseApp: firebase.app.App;
 
   constructor(
-    @Inject(UserService)
-    private userService?: UserService,
-    private notificationRepository?: NotificationRepository,
+    private readonly userService?: UserService,
+    private readonly notificationRepository?: NotificationRepository,
   ) {
     this.firebaseApp = firebase.initializeApp({
       credential: firebase.credential.cert(serviceAccount as any),

@@ -10,8 +10,8 @@ import { UtilityModule } from '../utility/utility.module';
 @Module({
   imports: [
     MongooseModule.forFeature(notificationFeature),
-    forwardRef(() => UserModule),
     forwardRef(() => UtilityModule),
+    forwardRef(() => UserModule),
   ],
   controllers: [NotificationController],
   providers: [NotificationService, NotificationRepository],

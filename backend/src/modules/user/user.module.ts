@@ -32,9 +32,9 @@ import { VirtualMachineModule } from '../virtual-machine/virtual-machine.module'
     MongooseModule.forFeature(otpFeature),
     forwardRef(() => VirtualMachineModule),
     forwardRef(() => ServiceModule),
+    forwardRef(() => DeviceModule),
     UtilityModule,
     PanelModule,
-    forwardRef(() => DeviceModule),
     MulterModule.registerAsync({
       useClass: MulterConfigService,
     }),

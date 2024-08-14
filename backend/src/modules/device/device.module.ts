@@ -13,6 +13,7 @@ import { DeviceController } from './controllers/device.controller';
 import { DeviceTypeController } from './controllers/device-type.controller';
 import { DeviceLogController } from './controllers/device-log.controller';
 import { UserModule } from '../user/user.module';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { UserModule } from '../user/user.module';
     MongooseModule.forFeature(deviceLogFeature),
     MongooseModule.forFeature(deviceTypeFeature),
     forwardRef(() => UserModule),
+    forwardRef(() => NotificationModule),
   ],
   providers: [
     DeviceService,

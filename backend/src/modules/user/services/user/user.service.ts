@@ -3,7 +3,6 @@ import { Types } from 'mongoose';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { OTPTypeEnum } from 'src/modules/utility/enums/otp-type.enum';
 import { GereralException } from 'src/modules/utility/exceptions/general.exception';
-// import { OTPException } from 'src/modules/utility/exceptions/otp.exception';
 import { OTPService } from 'src/modules/utility/services/otp.service';
 import { RolesEnum } from '../../enums/roles.enum';
 import { UserActivationStatusEnum } from '../../enums/user-activation-status.enum';
@@ -14,27 +13,22 @@ import { UserVerificationStatusEnum } from '../../enums/user-verification-status
 import { UserRoleService } from '../user-role/user-role.service';
 import { MediaService } from 'src/modules/utility/services/media.service';
 import { JwtService } from '@nestjs/jwt';
-// import { waitingTimeException } from './../../exception/waiting-time.exception';
 import { requestActivationCodeRepeatedlyException } from './../../exception/request-activation-code-repeatedly.exception';
 import { UserInfoRepository } from './../../repositories/user-info.repository';
-import { sign, SignOptions, verify } from 'jsonwebtoken';
+import { verify } from 'jsonwebtoken';
 import { VerificationStatusEnum } from 'src/modules/utility/enums/verification-status.enum';
 import { ActivationStatusEnum } from 'src/modules/utility/enums/activation-status.enum';
 import { CustomerService } from 'src/modules/panel/services/customer.service';
 import { UserActivationStatusChangeReasonsEnum } from '../../enums/user-activation-status-change-reasons.enum';
 import { UserVerificationStatusChangeReasonsEnum } from '../../enums/user-verification-status-change-reasons.enum';
 import { VerificationStatusChangeReasonsEnum } from 'src/modules/utility/enums/verification-status-change-reasons.enum';
-import { CustomerRepository } from 'src/modules/panel/repositories/customer.repository';
-import { Media } from 'src/modules/utility/interfaces/media.interface';
-import { log } from 'console';
 import { ServiceService } from 'src/modules/service/services/service.service';
 import { InstalledServiceService } from 'src/modules/service/services/installed-service.service';
 import { DeviceService } from 'src/modules/device/services/device.service';
 import { DeviceLogService } from 'src/modules/device/services/device-log.service';
-import storxController from 'src/modules/device/controllers/storx.controller';
 import { userSchema } from '../../schemas/user.schema';
 import { checkPasswordDto } from '../../data-transfer-objects/user/credential.dto';
-import { VirtualMachineHandlerService } from 'src/modules/virtual-machine/services/service-handler.service';
+
 
 const saltRounds = 10;
 
@@ -59,8 +53,6 @@ export class UserService {
     private readonly userRoleRepository?: UserRoleRepository,
     private jwtService?: JwtService,
     private readonly mediaService?: MediaService,
-    private readonly customerService?: CustomerService,
-    @Inject(forwardRef(() => DeviceService)) // For avoid circular dependency
     private readonly deviceService?: DeviceService,
     private readonly deviceLogService?: DeviceLogService,
     private readonly serviceService?: ServiceService,
