@@ -20,7 +20,6 @@ import { UserModule } from '../user/user.module';
     MongooseModule.forFeature(deviceLogFeature),
     MongooseModule.forFeature(deviceTypeFeature),
     forwardRef(() => UserModule),
-
   ],
   providers: [
     DeviceService,

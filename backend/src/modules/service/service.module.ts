@@ -18,8 +18,8 @@ import { BrokerModule } from '../broker/broker.module';
     MongooseModule.forFeature(serviceFeature),
     MongooseModule.forFeature(installedServiceFeature),
     forwardRef(() => UserModule),
-    forwardRef(() => DeviceModule),
     forwardRef(() => VirtualMachineModule),
+    DeviceModule,
   ],
   providers: [
     ServiceService,

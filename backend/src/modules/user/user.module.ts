@@ -34,8 +34,7 @@ import { VirtualMachineModule } from '../virtual-machine/virtual-machine.module'
     forwardRef(() => ServiceModule),
     UtilityModule,
     PanelModule,
-    forwardRef(() => DeviceModule), // For avoid circular dependency
-    // DeviceModule,
+    forwardRef(() => DeviceModule),
     MulterModule.registerAsync({
       useClass: MulterConfigService,
     }),

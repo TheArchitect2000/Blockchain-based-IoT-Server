@@ -10,8 +10,8 @@ import { BuildingRepository } from './buildings/building.repository';
 @Module({
   imports: [
     MongooseModule.forFeature(buildingFeature),
-    forwardRef(() => UserModule),
-    forwardRef(() => UtilityModule),
+    UserModule,
+    UtilityModule,
   ],
   controllers: [BuildingController],
   providers: [BuildingService, BuildingRepository],
