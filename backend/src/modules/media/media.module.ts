@@ -28,22 +28,3 @@ import { diskStorage } from 'multer';
   exports: [MediaService],
 })
 export class MediaModule {}
-
-/* 
-{
-  "statusCode": 200,
-  "success": true,
-  "date": "2024-05-30T07:41:36.469Z",
-  "message": "Your request was successful.",
-  "data": {
-    "_id": "66582db0c732077c8ff776d2",
-    "fileName": "file-1717054896424-640798276.png",
-    "path": "uploads/file-1717054896424-640798276.png",
-    "size": 9694,
-    "type": "content",
-    "destination": "./uploads",
-    "mediaType": "image/png",
-    "encoding": "7bit"
-  }
-}
-*/

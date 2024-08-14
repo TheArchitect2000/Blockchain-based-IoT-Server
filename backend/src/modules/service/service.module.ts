@@ -19,7 +19,6 @@ import { VirtualMachineModule } from '../virtual-machine/virtual-machine.module'
     forwardRef(() => UserModule),
     forwardRef(() => DeviceModule),
     forwardRef(() => VirtualMachineModule),
-    DeviceModule,
   ],
   providers: [
     ServiceService,

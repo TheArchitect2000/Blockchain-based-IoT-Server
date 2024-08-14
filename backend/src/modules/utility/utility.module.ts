@@ -20,6 +20,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 import { NotificationModule } from '../notification/notification.module';
 import { DeviceModule } from '../device/device.module';
 
+
 @Module({
   imports: [
     ConfigModule.forRoot(),

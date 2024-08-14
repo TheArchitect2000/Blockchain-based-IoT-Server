@@ -1,5 +1,5 @@
 import { log } from 'console';
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
 import { UserService } from 'src/modules/user/services/user/user.service';
 import { SendNotificationRequestBodyDto } from '../dto/send-notif-dto';
 import firebase from 'firebase-admin';
@@ -19,6 +19,7 @@ export class NotificationService {
   firebaseApp: firebase.app.App;
 
   constructor(
+    @Inject(forwardRef(() => UserService))
     private readonly userService?: UserService,
     private readonly notificationRepository?: NotificationRepository,
   ) {

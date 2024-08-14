@@ -24,12 +24,11 @@ export class DeviceService {
   private result;
 
   constructor(
-    @Inject(forwardRef(() => UserService)) // For avoid circular dependency
+    @Inject(forwardRef(() => UserService))
     private readonly userService?: UserService,
-    @Inject(forwardRef(() => DeviceLogService)) // For avoid circular dependency
     private readonly deviceLogService?: DeviceLogService,
     private readonly deviceRepository?: DeviceRepository,
-    /* private readonly notificationService?: NotificationService, */
+    private readonly notificationService?: NotificationService,
   ) {}
 
   async generatePassword(len) {
