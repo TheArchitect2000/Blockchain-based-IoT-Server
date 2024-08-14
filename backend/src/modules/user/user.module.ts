@@ -17,15 +17,11 @@ import { UserPermissionService } from './services/user-permission/user-permissio
 import { UserRoleService } from './services/user-role/user-role.service';
 import { UserService } from './services/user/user.service';
 import { MulterConfigService } from '../utility/services/multer-configuration.service';
-// import { UserInfoController } from './controllers/user-info.controller';
-import { UserRoleController } from './controllers/user-role.controller';
-import { UserPermissionController } from './controllers/user-permission.controller';
-import { JwtModule, JwtService } from '@nestjs/jwt';
+import { JwtModule } from '@nestjs/jwt';
 import { PanelModule } from '../panel/panel.module';
 import { DeviceModule } from '../device/device.module';
 import { ServiceModule } from '../service/service.module';
 import { VirtualMachineModule } from '../virtual-machine/virtual-machine.module';
-// import { AuthenticationModule } from './../authentication/authentication.module';
 
 @Module({
   imports: [
@@ -35,8 +31,6 @@ import { VirtualMachineModule } from '../virtual-machine/virtual-machine.module'
     MongooseModule.forFeature(userPermissionFeature),
     MongooseModule.forFeature(otpFeature),
     forwardRef(() => VirtualMachineModule),
-    // forwardRef(() => AuthenticationModule),
-    // AuthenticationModule,
     forwardRef(() => ServiceModule),
     UtilityModule,
     PanelModule,
