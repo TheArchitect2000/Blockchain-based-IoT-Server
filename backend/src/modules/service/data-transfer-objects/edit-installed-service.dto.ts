@@ -28,17 +28,17 @@ export class editInstalledServiceDto {
   @ApiProperty({ required: true })
   installedServiceId: string;
 
-  @IsNotEmpty({ message: 'serviceId is required and must be entered.' })
+  /* @IsNotEmpty({ message: 'serviceId is required and must be entered.' })
   @IsString({ message: 'serviceId must be string.' })
   @ApiProperty({ required: true })
-  serviceId: string;
+  serviceId: string; */
 
   @IsOptional()
   @IsString({ message: 'installedServiceName must be string.' })
   @ApiProperty({ required: false })
   installedServiceName: string;
 
-  @IsOptional()
+  /* @IsOptional()
   @IsString({ message: 'installedServiceName must be string.' })
   @ApiProperty({ required: false })
   description: string;
@@ -50,5 +50,5 @@ export class editInstalledServiceDto {
   })
   @IsJSON({ message: 'deviceMap must be string and in json format.' })
   @ApiProperty({ required: false })
-  deviceMap: string;
+  deviceMap: string; */
 }

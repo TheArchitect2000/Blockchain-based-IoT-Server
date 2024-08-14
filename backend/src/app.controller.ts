@@ -11,6 +11,15 @@ import { JwtAuthGuard } from './modules/authentication/guard/jwt-auth.guard';
 @Controller('app')
 export class AppController {
   private result;
+  private baseUrl =
+    process.env.HOST_PROTOCOL +
+    process.env.HOST_NAME_OR_IP +
+    '/' +
+    process.env.HOST_SUB_DIRECTORY +
+    '/uploads/devices/';
+  private deviceList = [
+    { url: `${this.baseUrl}multi-sensor.png`, title: 'Multi Sensor' },
+  ];
 
   constructor(
     private readonly appService: AppService,
@@ -19,7 +28,7 @@ export class AppController {
     private readonly userRoleService: UserRoleService,
   ) {
     setTimeout(() => {
-      this.initializeApplication()
+      this.initializeApplication();
     }, 2000);
   }
 
@@ -67,12 +76,22 @@ export class AppController {
   })
   async getThemeColors() {
     return {
-      "logo": process.env.THEME_LOGO,
-      "text": process.env.THEME_TEXT,
-      "background": process.env.THEME_BACKGROUND,
-      "box": process.env.THEME_BOX,
-      "button": process.env.THEME_BUTTON,
-    }
+      logo: process.env.THEME_LOGO,
+      text: process.env.THEME_TEXT,
+      background: process.env.THEME_BACKGROUND,
+      box: process.env.THEME_BOX,
+      button: process.env.THEME_BUTTON,
+    };
   }
 
+  @Get('/v1/devices')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'get device.',
+    description: '',
+  })
+  async getDevices() {
+    return this.deviceList;
+  }
 }

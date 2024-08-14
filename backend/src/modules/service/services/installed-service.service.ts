@@ -13,7 +13,7 @@ export class InstalledServiceService {
 
   constructor(
     private readonly installedServiceRepository?: InstalledServiceRepository,
-    /* private readonly VirtualMachineService?: VirtualMachineHandlerService, */
+    /* private readonly virtualMachineHandlerService?: VirtualMachineHandlerService, */
   ) {}
 
   async insertInstalledService(body) {
@@ -189,7 +189,7 @@ export class InstalledServiceService {
 
   async getInstalledServicesByDeviceEncryptedId(
     deviceEncryptedId,
-    userId,
+    userId = '',
     isAdmin = false,
   ) {
     let whereCondition = { isDeleted: false };
@@ -214,7 +214,10 @@ export class InstalledServiceService {
       });
 
     if (
-      foundService.userId.toString() !== userId.toString() &&
+      userId &&
+      foundService.every(
+        (service) => service.userId.toString() === userId.toString(),
+      ) &&
       isAdmin == false
     ) {
       let errorMessage = 'Access Denied!';
@@ -271,7 +274,7 @@ export class InstalledServiceService {
 
   async deleteInstalledServiceByInstalledServiceId(
     installedServiceId,
-    userId,
+    userId = '',
     isAdmin = false,
   ): Promise<any> {
     let whereCondition = { isDeleted: false };
@@ -298,7 +301,7 @@ export class InstalledServiceService {
 
     // if(foundInstalledService && foundInstalledService !== undefined && foundInstalledService.deletable){
     if (foundInstalledService && foundInstalledService !== undefined) {
-      if (
+      if ( userId &&
         foundInstalledService.userId.toString() !== userId.toString() &&
         isAdmin == false
       ) {
