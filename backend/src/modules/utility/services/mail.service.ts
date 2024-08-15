@@ -9,13 +9,11 @@ import https from 'https';
 import axios, { isCancel, AxiosError, AxiosRequestConfig } from 'axios';
 import { NotificationService } from 'src/modules/notification/notification/notification.service';
 
-
 @Injectable()
 export class MailService {
   constructor(
     private readonly mailerService?: MailerService,
     private readonly notificationService?: NotificationService,
-
   ) {}
 
   async sendUserConfirmation(user: User, token: string) {
@@ -323,23 +321,17 @@ export class MailService {
 
     const host = 'https://' + process.env.HOST_NAME_OR_IP;
     if (process.env.NOTIFICATION_BY_NOTIFICATION == 'enabled') {
-      axios
+      this.notificationService.sendNotification({
+        message: notificationMessage,
+        title: notificationTitle,
+        user: userId,
+      });
+      /* axios
         .post(host + '/app/v1/notification/sendMessage', {
           message: notificationMessage,
           title: notificationTitle,
           user: userId,
-        })
-        .then(function (response) {
-          // handle success
-          //console.log(response);
-        })
-        .catch(function (error) {
-          // handle error
-          //console.log(error);
-        })
-        .finally(function () {
-          // always executed
-        });
+        }) */
     } else if (process.env.NOTIFICATION_BY_NOTIFICATION == 'disabled') {
       console.log(`\x1b[33m \nSending notifications is disabled.\x1b[0m`);
     }

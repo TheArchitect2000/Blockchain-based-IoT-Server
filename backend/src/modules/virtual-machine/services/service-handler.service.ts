@@ -1,6 +1,6 @@
 import { Script, createContext } from 'vm';
 import mqtt from 'mqtt';
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { MailService } from 'src/modules/utility/services/mail.service';
 import { UserService } from 'src/modules/user/services/user/user.service';
 import { DeviceService } from 'src/modules/device/services/device.service';
@@ -13,9 +13,11 @@ export class VirtualMachineHandlerService {
   private allResults;
 
   constructor(
+    @Inject(forwardRef(() => UserService))
+    private readonly userService?: UserService,
+    @Inject(forwardRef(() => InstalledServiceService))
     private readonly installedServiceService?: InstalledServiceService,
     private readonly mailService?: MailService,
-    private readonly userService?: UserService,
     private readonly deviceService?: DeviceService,
   ) {
     if (VirtualMachineHandlerService.instance) {

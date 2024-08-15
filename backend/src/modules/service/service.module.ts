@@ -11,6 +11,8 @@ import { installedServiceFeature } from './features/installed-service.feature';
 import { UserModule } from '../user/user.module';
 import { DeviceModule } from '../device/device.module';
 import { VirtualMachineModule } from '../virtual-machine/virtual-machine.module';
+import { UtilityModule } from '../utility/utility.module';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
   imports: [
@@ -19,6 +21,7 @@ import { VirtualMachineModule } from '../virtual-machine/virtual-machine.module'
     forwardRef(() => UserModule),
     forwardRef(() => DeviceModule),
     forwardRef(() => VirtualMachineModule),
+    forwardRef(() => NotificationModule),
   ],
   providers: [
     ServiceService,

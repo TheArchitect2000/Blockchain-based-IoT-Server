@@ -14,6 +14,8 @@ import { DeviceTypeController } from './controllers/device-type.controller';
 import { DeviceLogController } from './controllers/device-log.controller';
 import { UserModule } from '../user/user.module';
 import { NotificationModule } from '../notification/notification.module';
+import { ServiceModule } from '../service/service.module';
+import { VirtualMachineModule } from '../virtual-machine/virtual-machine.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { NotificationModule } from '../notification/notification.module';
     MongooseModule.forFeature(deviceTypeFeature),
     forwardRef(() => UserModule),
     forwardRef(() => NotificationModule),
+    forwardRef(() => ServiceModule),
+    forwardRef(() => VirtualMachineModule),
   ],
   providers: [
     DeviceService,

@@ -293,10 +293,6 @@ export class InstalledServiceController {
       );
     }
 
-    await this.VirtualMachineService.deleteVirtualMachinByServiceId(
-      installedServiceId,
-    );
-
     const isAdmin = await this.isAdmin(request.user.userId);
 
     await this.installedServiceService

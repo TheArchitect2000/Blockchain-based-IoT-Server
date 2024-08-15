@@ -70,13 +70,13 @@ export class NotificationController {
     return this.service.sendToken(token, request.user.userId);
   }
 
-  @Post('/sendMessage')
+  /* @Post('/sendMessage')
   @ApiOperation({
     summary: 'user send firebase token and server save it.',
     description: '',
   })
-  //@UseGuards(JwtAuthGuard)
-  //@ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   async sendNotification(@Body() body: SendNotificationRequestBodyDto) {
     const { user } = body;
     if (!Types.ObjectId.isValid(String(user)))
@@ -85,7 +85,7 @@ export class NotificationController {
         'userId must be valid type',
       );
     return this.service.sendNotification(body);
-  }
+  } */
 
   @Post('/add-notification-by-user-id')
   @UseGuards(JwtAuthGuard)

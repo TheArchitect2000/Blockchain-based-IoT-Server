@@ -8,6 +8,7 @@ import { UserService } from 'src/modules/user/services/user/user.service';
 import { DeviceLogService } from './device-log.service';
 import { EditDeviceDto } from '../data-transfer-objects/edit-device.dto';
 import { NotificationService } from 'src/modules/notification/notification/notification.service';
+import { InstalledServiceService } from 'src/modules/service/services/installed-service.service';
 
 // Nodejs encryption with CTR
 let crypto = require('crypto');
@@ -29,6 +30,8 @@ export class DeviceService {
     private readonly deviceLogService?: DeviceLogService,
     private readonly deviceRepository?: DeviceRepository,
     private readonly notificationService?: NotificationService,
+    @Inject(forwardRef(() => InstalledServiceService))
+    private readonly installedService?: InstalledServiceService,
   ) {}
 
   async generatePassword(len) {
@@ -726,6 +729,18 @@ export class DeviceService {
     }
 
     console.log('Updated found device for deletion is: ', foundDevice);
+
+    const installedServices =
+      await this.installedService.getInstalledServicesByDeviceEncryptedId(
+        foundDevice.deviceEncryptedId,
+      );
+
+    installedServices.map((insService) => {
+      this.installedService.deleteInstalledServiceByInstalledServiceId(
+        insService._id,
+        userId, false, `Installed service with name "${insService.installedServiceName}" has been delete beacuse device is't avalable anymore`
+      );
+    });
 
     await this.deviceRepository
       .editDevice(foundDevice._id, foundDevice)

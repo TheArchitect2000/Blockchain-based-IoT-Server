@@ -19,6 +19,7 @@ import { join } from 'path';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { NotificationModule } from '../notification/notification.module';
 import { DeviceModule } from '../device/device.module';
+import { ServiceModule } from '../service/service.module';
 
 
 @Module({

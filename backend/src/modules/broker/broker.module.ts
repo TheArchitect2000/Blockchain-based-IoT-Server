@@ -18,7 +18,7 @@ import { MongooseModule } from '@nestjs/mongoose';
     forwardRef(() => VirtualMachineModule),
     forwardRef(() => UserModule),
     forwardRef(() => ServiceModule),
-    DeviceModule,
+    forwardRef(() => DeviceModule),
   ],
   providers: [
     MqttService,

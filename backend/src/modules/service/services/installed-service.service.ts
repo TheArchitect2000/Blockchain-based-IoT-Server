@@ -4,6 +4,7 @@ import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { GereralException } from 'src/modules/utility/exceptions/general.exception';
 import { InstalledServiceRepository } from '../repositories/installed-service.repository';
 import { VirtualMachineHandlerService } from 'src/modules/virtual-machine/services/service-handler.service';
+import { NotificationService } from 'src/modules/notification/notification/notification.service';
 
 export type InstalledService = any;
 
@@ -13,7 +14,9 @@ export class InstalledServiceService {
 
   constructor(
     private readonly installedServiceRepository?: InstalledServiceRepository,
-    /* private readonly virtualMachineHandlerService?: VirtualMachineHandlerService, */
+    @Inject(forwardRef(() => VirtualMachineHandlerService))
+    private readonly virtualMachineHandlerService?: VirtualMachineHandlerService,
+    private readonly notificationService?: NotificationService,
   ) {}
 
   async insertInstalledService(body) {
@@ -276,6 +279,7 @@ export class InstalledServiceService {
     installedServiceId,
     userId = '',
     isAdmin = false,
+    messageToOwner: string = '',
   ): Promise<any> {
     let whereCondition = { isDeleted: false };
     let populateCondition = [];
@@ -301,7 +305,8 @@ export class InstalledServiceService {
 
     // if(foundInstalledService && foundInstalledService !== undefined && foundInstalledService.deletable){
     if (foundInstalledService && foundInstalledService !== undefined) {
-      if ( userId &&
+      if (
+        userId &&
         foundInstalledService.userId.toString() !== userId.toString() &&
         isAdmin == false
       ) {
@@ -326,6 +331,21 @@ export class InstalledServiceService {
       foundInstalledService,
     );
 
+    await this.virtualMachineHandlerService.deleteVirtualMachinByServiceId(
+      installedServiceId,
+    );
+
+    if (messageToOwner && messageToOwner.length > 0) {
+      console.log('Messageeeee sendedddddddd');
+      this.notificationService.addNotificationForUserById(
+        {
+          message: messageToOwner,
+          title: 'Installed service warning',
+          userId: foundInstalledService.userId.toString(),
+        },
+        userId,
+      );
+    }
     await this.installedServiceRepository
       .editInstalledService(foundInstalledService._id, foundInstalledService)
       .then((data) => {
@@ -356,6 +376,12 @@ export class InstalledServiceService {
         populateCondition,
         selectCondition,
       );
+
+    installedServices.map((insService) => {
+      this.virtualMachineHandlerService.deleteVirtualMachinByServiceId(
+        insService._id,
+      );
+    });
 
     /* Installed Services Are: [
            {
