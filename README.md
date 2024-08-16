@@ -250,7 +250,7 @@ git clone https://github.com/FidesInnova/iot_node_backend_web_app.git
 ## 7- Prepare app host configuration
 -  In project root folder, create `.env` file and edit parameters based on your node URL info
 ```
-cd ~/fidesinnova_node_iot/backend
+cd ~/iot_node_backend_web_app/backend
 sudo nano .env
 ```
 Inside the `.env` file, past the parameters.
@@ -339,14 +339,14 @@ THEME_LOGO = 'your.logo.url'
 
 ### put ssl certificate files in following directory:
 ```
-fidesinnova_node_iot/backend/assets/certificates/webprivate.pem
-fidesinnova_node_iot/backend/assets/certificates/webpublic.pem
+iot_node_backend_web_app/backend/assets/certificates/webprivate.pem
+iot_node_backend_web_app/backend/assets/certificates/webpublic.pem
 ```
 
 ## 8- Installation of packages
 In the project root directory run the following commands to install npm packages and then, build the project:
 ```
-cd ~/fidesinnova_node_iot/backend
+cd ~/iot_node_backend_web_app/backend
 npm install
 npm run build
 ```
@@ -401,14 +401,14 @@ npm run test:cov
   * If you are a Node owner, contact FidesInnova team at info@fidesinnova.io to add your Web App URL address to FidesInnova website.
 ## 1- Installation of packages
 ```
-cd ~/fidesinnova_node_iot/web_app/Source_webapp
+cd ~/iot_node_backend_web_app/web_app/Source_webapp
 npm install
 ```
 
 ## 2- Prepare app configuration
 -  In project root folder, create `.env` file and edit parameters based on your node URL info
 ```
-cd ~/fidesinnova_node_iot/web_app/Source_webapp
+cd ~/iot_node_backend_web_app/web_app/Source_webapp
 sudo nano .env
 ```
 Inside the `.env` file, past the parameters.
@@ -425,16 +425,16 @@ VITE_NODE_NAME = 'your.node.name'
 
 ### Put SSL certificate files in the following path:
 ```
-fidesinnova_node_iot/web_app/Runner_webapp/assets/certificates/webpublic.pem
-fidesinnova_node_iot/web_app/Runner_webapp/assets/certificates/webprivate.pem
+iot_node_backend_web_app/web_app/Runner_webapp/assets/certificates/webpublic.pem
+iot_node_backend_web_app/web_app/Runner_webapp/assets/certificates/webprivate.pem
 ```
 
 ## 3- Build
 ```
-cd ~/fidesinnova_node_iot/web_app/Source_webapp
+cd ~/iot_node_backend_web_app/web_app/Source_webapp
 npm run build
 ```
-**The build artifacts will be stored in the `fidesinnova_node_iot/web_app/Source_webapp/build/` directory, you must copy the contents of the `build` folder into the `fidesinnova_node_iot/web_app/Runner_webapp/frontend`.
+**The build artifacts will be stored in the `iot_node_backend_web_app/web_app/Source_webapp/build/` directory, you must copy the contents of the `build` folder into the `iot_node_backend_web_app/web_app/Runner_webapp/frontend`.
 **
 
 
@@ -445,12 +445,12 @@ sudo ufw allow 4000
 ```
 ## 5- Install npm packages for Runner
 ```
-cd ~/fidesinnova_node_iot/web_app/Runner_webapp
+cd ~/iot_node_backend_web_app/web_app/Runner_webapp
 npm i
 ```
 -  In project root folder, create `.env` file and edit parameters based on your node URL info
 ```
-cd ~/fidesinnova_node_iot/web_app/Runner_webapp
+cd ~/iot_node_backend_web_app/web_app/Runner_webapp
 sudo nano .env
 ```
 Inside the `.env` file, past the parameters.
@@ -460,7 +460,7 @@ PORT=4000
 
 ## 6- Run the project with pm2
 ```
-cd ~/fidesinnova_node_iot/web_app/Runner_webapp
+cd ~/iot_node_backend_web_app/web_app/Runner_webapp
 pm2 start main.js --name "Web App"
 ```
 ## 7- Running the project in developer mode
@@ -486,14 +486,14 @@ npm run start:prod
   * If you are a Node owner, contact FidesInnova team at info@fidesinnova.io to add your Admin Web App URL address to FidesInnova website.
 ## 1- Installation of packages
 ```
-cd ~/fidesinnova_node_iot/admin_web_app/Source_webapp
+cd ~/iot_node_backend_web_app/admin_web_app/Source_webapp
 npm install
 ```
 
 ## 2- Prepare app configuration
 -  In project root folder, create `.env` file and edit parameters based on your node URL info
 ```
-cd ~/fidesinnova_node_iot/admin_web_app/Source_webapp
+cd ~/iot_node_backend_web_app/admin_web_app/Source_webapp
 sudo nano .env
 ```
 Inside the `.env` file, past the parameters.
@@ -510,16 +510,16 @@ VITE_NODE_NAME = 'your.node.name'
 
 ### Put SSL certificate files in the following path:
 ```
-fidesinnova_node_iot/admin_web_app/Runner_webapp/assets/certificates/webpublic.pem
-fidesinnova_node_iot/admin_web_app/Runner_webapp/assets/certificates/webprivate.pem
+iot_node_backend_web_app/admin_web_app/Runner_webapp/assets/certificates/webpublic.pem
+iot_node_backend_web_app/admin_web_app/Runner_webapp/assets/certificates/webprivate.pem
 ```
 
 ## 3- Build
 ```
-cd ~/fidesinnova_node_iot/admin_web_app/Source_webapp
+cd ~/iot_node_backend_web_app/admin_web_app/Source_webapp
 npm run build
 ```
-**The build artifacts will be stored in the `fidesinnova_node_iot/admin_web_app/Source_webapp/build/` directory, you must copy the contents of the `build` folder into the `fidesinnova_node_iot/admin_web_app/Runner_webapp/frontend`.
+**The build artifacts will be stored in the `iot_node_backend_web_app/admin_web_app/Source_webapp/build/` directory, you must copy the contents of the `build` folder into the `iot_node_backend_web_app/admin_web_app/Runner_webapp/frontend`.
 **
 
 
@@ -530,12 +530,12 @@ sudo ufw allow 5000
 ```
 ## 5- Install npm packages for Runner
 ```
-cd ~/fidesinnova_node_iot/admin_web_app/Runner_webapp
+cd ~/iot_node_backend_web_app/admin_web_app/Runner_webapp
 npm i
 ```
 -  In project root folder, create `.env` file and edit parameters based on your node URL info
 ```
-cd ~/fidesinnova_node_iot/admin_web_app/Runner_webapp
+cd ~/iot_node_backend_web_app/admin_web_app/Runner_webapp
 sudo nano .env
 ```
 Inside the `.env` file, past the parameters.
@@ -545,7 +545,7 @@ PORT=5000
 
 ## 6- Run the project with pm2
 ```
-cd ~/fidesinnova_node_iot/admin_web_app/Runner_webapp
+cd ~/iot_node_backend_web_app/admin_web_app/Runner_webapp
 pm2 start main.js --name "Admin Web App"
 ```
 ## 7- Running the project in developer mode
