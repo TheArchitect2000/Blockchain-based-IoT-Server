@@ -358,7 +358,7 @@ sudo npm i -g pm2
 ```
 ### Run the project with pm2
 ```
-cd ~/fidesinnova_node_iot/backend
+cd ~/iot_node_backend_web_app/backend
 pm2 start dist/main.js --name "Backend Server"
 pm2 save
 pm2 startup
