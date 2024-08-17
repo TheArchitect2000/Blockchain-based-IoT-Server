@@ -157,6 +157,11 @@ http {
 
 
 	server {
+
+
+                ssl_certificate  ssl/fullchainadmin.pem;
+                ssl_certificate_key ssl/privkeyadmin.pem;
+
 		listen 443 ssl;
 		listen [::]:443 ssl;
 		server_name admin.YOUR_DOMAIN.io;
@@ -419,14 +424,25 @@ VITE_URL='https://panel.YOUR_DOMAIN.COM/app/'
 VITE_NODE_NAME = 'your.node.name'
 ```
 
--  From `/etc/nginx/ssl`, copy the files `fullchain.pem`, `privkey.pem` and rename them:
+### To obtain a new certificate for the admin domain:
+
+```
+sudo certbot certonly --standalone --preferred-challenges http
+```
+-  From `/etc/letsencrypt/live/admin.<Your Domain>`, copy the files `fullchain.pem`, `privkey.pem` and rename them:
 -  `fullchain.pem` into `webpublic.pem`
 -  `privkey.pem` into `webprivate.pem`
+-   `fullchain.pem` into `fullchainadmin.pem`
+-  `privkey.pem` into `privkeyadmin.pem`
 
 ### Put SSL certificate files in the following path:
 ```
 iot_node_backend_web_app/web_app/Runner_webapp/assets/certificates/webpublic.pem
 iot_node_backend_web_app/web_app/Runner_webapp/assets/certificates/webprivate.pem
+
+etc/nginx/ssl/fullchainadmin.pem
+etc/nginx/ssl/privkeyadmin.pem
+
 ```
 
 ## 3- Build
