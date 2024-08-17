@@ -566,6 +566,26 @@ export class UserController {
     return await this.userService.refreshTokens(body);
   }
 
+  @Get('v1/user/validate-remix-ide')
+  @HttpCode(200)
+  @ApiOperation({
+    summary: 'Validates remix IDE user and pass.',
+    description: 'This API validates the remix IDE user and pass.',
+  })
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  async validateRemixIDE(
+    @Query('user') user: string,
+    @Query('pass') pass: string,
+    @Request() request,
+  ) {
+    if (process.env.REMIX_USER === user && process.env.REMIX_PASS === pass) {
+      return true
+    } else {
+      return false
+    }
+  }
+
   @Get('v1/user/get-my-profile')
   @HttpCode(200)
   @ApiOperation({
@@ -940,13 +960,12 @@ export class UserController {
     summary: 'Get user roles short names.',
     description: 'This api will return short name of the user roles.',
   })
-  async getUserShortRoles(@Param('userName') userName: string, @Request() request) {
+  async getUserShortRoles(
+    @Param('userName') userName: string,
+    @Request() request,
+  ) {
     if (userName) {
-      if (
-        userName === null ||
-        userName === undefined ||
-        userName === ''
-      ) {
+      if (userName === null || userName === undefined || userName === '') {
         throw new GereralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           'userName is required and must be entered and must be entered correctly.',
@@ -960,8 +979,7 @@ export class UserController {
       throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
 
-    return this.userService.getUserShortRolesByUserName(userName)
-    
+    return this.userService.getUserShortRolesByUserName(userName);
   }
 
   @Post('user/take-admin')
@@ -992,7 +1010,10 @@ export class UserController {
       throw new GereralException(ErrorTypeEnum.UNAUTHORIZED, 'Access Denied !');
     }
 
-    return await this.userService.takeUserAdminRanks(body.userName, body.roleNames);
+    return await this.userService.takeUserAdminRanks(
+      body.userName,
+      body.roleNames,
+    );
   }
 
   /* @Patch('v1/user/edit-user-by-panel/:userId')
@@ -1139,7 +1160,6 @@ export class UserController {
     description: 'Gets all users.',
   })
   async getAllUsers(@Request() request) {
-
     const isAdmin = await this.isAdmin(request.user.userId);
 
     if (isAdmin === false) {

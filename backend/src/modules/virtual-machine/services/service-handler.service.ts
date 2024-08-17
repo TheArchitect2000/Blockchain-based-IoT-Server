@@ -25,7 +25,7 @@ export class VirtualMachineHandlerService {
     }
     VirtualMachineHandlerService.instance = this;
     setTimeout(() => {
-      this.createAllVirtualMachines()
+      this.createAllVirtualMachines();
     }, 5000);
   }
 
@@ -156,13 +156,17 @@ export class VirtualMachineHandlerService {
                         data.data = {
                             ...data.data, 
                             mac: deviceInfos.mac,
-                            name: deviceInfos.deviceName,
-                            type: deviceInfos.deviceType
                         };
             
                         data.data = uppercaseKeys(data.data);
                         data.data = lowercaseStrings(data.data);
             
+                        data.data = {
+                            ...data.data, 
+                            type: deviceInfos.deviceType,
+                            name: deviceInfos.deviceName,
+                        };
+
                         console.log("The data is:", data);
                     } else {
                         console.error("Device info not found for topic:", topic);
@@ -328,7 +332,7 @@ export class VirtualMachineHandlerService {
       `Virtual Machine With ID ${installedServiceId} Created Successfully`,
     );
 
-    return true
+    return true;
   }
 
   async deleteVirtualMachinByServiceId(installedServiceId) {
@@ -368,14 +372,14 @@ export class VirtualMachineHandlerService {
   }
 
   async createAllVirtualMachines() {
-    let count = 0
+    let count = 0;
     await this.installedServiceService
       .getAllInstalledServices()
       .then((data) => {
         data.map((service) => {
           if (service.code) {
             this.createVirtualMachine(service, service._id);
-            count = count + 1
+            count = count + 1;
           }
         });
       })
@@ -385,7 +389,7 @@ export class VirtualMachineHandlerService {
         return errorMessage;
       });
     console.log(`All virtual machines created successfully (Count: ${count})`);
-    
+
     return this.allResults;
   }
 }

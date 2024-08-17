@@ -240,6 +240,18 @@ export class MailService {
       });
   }
 
+  async getCurrentTimeFormatted() {
+    const now = new Date();
+  
+    const month = (now.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-indexed
+    const day = now.getDate().toString().padStart(2, '0');
+    const year = now.getFullYear();
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+  
+    return `${month}/${day}/${year}, ${hours}:${minutes}`;
+  }
+
   async sendEmailFromService(
     email: string,
     notificationMessage: string,
@@ -275,6 +287,7 @@ export class MailService {
             NodeName: process.env.NODE_NAME,
             notificationMessage: String(notificationMessage),
             subject: subject,
+            date: this.getCurrentTimeFormatted(),
           },
           /*attachments: [
             {
