@@ -94,7 +94,7 @@ const Dialog = (props: DialogProps) => {
             {...rest}
         >
             <motion.div
-                className={`${dialogClass} absolute inset-0 m-auto w-1/3 h-fit`}
+                className={`${dialogClass} absolute inset-0 m-auto w-full sm:w-8/12 lg:w-6/12 2xl:w-5/12 h-fit`}
                 initial={{ transform: 'scale(0.9)' }}
                 animate={{
                     transform: isOpen ? 'scale(1)' : 'scale(0.9)',

@@ -178,6 +178,10 @@ const toolbox = {
                 },
                 {
                     kind: 'block',
+                    type: 'customized_concrete_sensor_temperature_humidity',
+                },
+                {
+                    kind: 'block',
                     type: 'customized_thermometer_hygrometer',
                 },
                 {

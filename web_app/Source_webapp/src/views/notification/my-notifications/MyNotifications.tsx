@@ -12,6 +12,7 @@ import {
     useAppSelector,
 } from '@/store'
 import useApiData from '@/utils/hooks/useApi'
+import { convertToUserTimeZone, formatToCustomDateTime } from '@/views/devices/DeviceDetails/DeviceDetails'
 import { formatISODate } from '@/views/services/Services/components/Card'
 import { useState, useEffect } from 'react'
 
@@ -134,7 +135,7 @@ export default function MyNotifications() {
                                     </p>
                                     <p>
                                         <strong>Date:</strong>{' '}
-                                        {formatISODate(notif.insertDate)}
+                                        {formatToCustomDateTime(convertToUserTimeZone(notif.insertDate))}
                                     </p>
                                 </Card>
                             )

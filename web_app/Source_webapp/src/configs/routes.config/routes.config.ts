@@ -48,6 +48,12 @@ export const protectedRoutes = [
         authority: [],
     },
     {
+        key: 'remix',
+        path: '/remix',
+        component: lazy(() => import('@/views/remix')),
+        authority: [],
+    },
+    {
         key: 'buildings',
         path: '/buildings',
         component: lazy(() => import('@/views/building')),
