@@ -3,3 +3,10 @@
 .build-p {
     text-wrap: nowrap;
 }
+
+.building-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr); /* 1 column for the floor and 6 columns for the units */
+    gap: 1rem;
+    align-items: center;
+}

@@ -8,7 +8,7 @@ interface FormDesriptionProps extends ComponentPropsWithoutRef<'div'> {
 const FormDesription = ({ title, desc, ...rest }: FormDesriptionProps) => {
     return (
         <div {...rest}>
-            <h5>{title}</h5>
+            <h4>{title}</h4>
             <p>{desc}</p>
         </div>
     )

@@ -95,9 +95,23 @@ export default function BuildingDetails() {
                                             className="flex flex-col p-6 gap-2 flex-1 min-w-[250px] items-center justify-center border"
                                         >
                                             <h4>
-                                                {utils.formatBuildingStrings(
-                                                    unitKey
-                                                )}
+                                                {`${
+                                                    utils.sliceBuildingStrings(
+                                                        unitKey
+                                                    )[0]
+                                                } ${
+                                                    Number(
+                                                        utils.sliceBuildingStrings(
+                                                            floorKey
+                                                        )[1]
+                                                    ) *
+                                                        100 +
+                                                    Number(
+                                                        utils.sliceBuildingStrings(
+                                                            unitKey
+                                                        )[1]
+                                                    )
+                                                }`}
                                             </h4>
                                             <p>
                                                 Name:{' '}

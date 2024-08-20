@@ -53,7 +53,7 @@ export type ProfileFormModel = {
     firstName: string
     lastName: string
     email: string
-    walletAddress: string
+    //walletAddress: string
     title: string
     avatar: string
     lang: string
@@ -74,11 +74,17 @@ type LanguageOption = {
 }
 
 const validationSchema = Yup.object().shape({
-    firstName: Yup.string().notRequired().min(0, 'Too Short!').max(20, 'Too Long!'),
-    lastName: Yup.string().notRequired().min(0, 'Too Short!').max(20, 'Too Long!'),
+    firstName: Yup.string()
+        .notRequired()
+        .min(0, 'Too Short!')
+        .max(20, 'Too Long!'),
+    lastName: Yup.string()
+        .notRequired()
+        .min(0, 'Too Short!')
+        .max(20, 'Too Long!'),
     email: Yup.string().email('Invalid email').required('Email Required'),
-    walletAddress: Yup.string().notRequired(),
     avatar: Yup.string().notRequired(),
+    //walletAddress: Yup.string().notRequired(),
     //mobile: Yup.string(),
     //title: Yup.string(),
     //lang: Yup.string(),
@@ -126,8 +132,8 @@ const Profile = ({}: ProfileProps) => {
                 }
             )
             if (resData.data.data.timezone) {
-                console.log(resData.data.data.timezone);
-                
+                console.log(resData.data.data.timezone)
+
                 setSelectedTimeZone({
                     label: resData.data.data.timezone,
                     value: resData.data.data.timezone,
@@ -309,7 +315,7 @@ const Profile = ({}: ProfileProps) => {
                                         prefix={<HiPhone className="text-xl" />}
                                     />
                                 </FormRow>
-                                <FormRow
+                                {/* <FormRow
                                     name="walletAddress"
                                     label="Wallet Address"
                                     {...validatorProps}
@@ -324,7 +330,7 @@ const Profile = ({}: ProfileProps) => {
                                             <HiCurrencyDollar className="text-xl" />
                                         }
                                     />
-                                </FormRow>
+                                </FormRow> */}
                                 <FormRow
                                     name="timeZone"
                                     label="Time Zone"
