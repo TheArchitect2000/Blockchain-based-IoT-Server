@@ -32,7 +32,7 @@ const Verify = () => {
         return regex.test(address)
     }
 
-    async function handleRequestFauset() {
+    async function handleRequestFaucet() {
         toast.push(<Notification title="Coming Soon" type="info" />, {
             placement: 'top-center',
         })
@@ -90,11 +90,11 @@ const Verify = () => {
                         <div className="flex items-center gap-8">
                             <p className="text-[1rem]">Wallet value: 0 FDS</p>
                             <Button
-                                onClick={handleRequestFauset}
+                                onClick={handleRequestFaucet}
                                 variant="solid"
                                 color="green"
                             >
-                                Request Fauset
+                                Request Faucet
                             </Button>
                         </div>
                         <div className="flex justify-between gap-4">

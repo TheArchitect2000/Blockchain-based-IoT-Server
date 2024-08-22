@@ -409,11 +409,11 @@ Blockly.Blocks['customized_multi_sensor_temperature_humidity'] = {
     },
 }
 
-Blockly.Blocks['customized_concrete_sensor_temperature_humidity'] = {
+Blockly.Blocks['customized_concrete_sensor_temperature_strength'] = {
     init: function () {
         this.jsonInit({
-            type: 'customized_concrete_sensor_temperature_humidity',
-            message0: '%1 Concrete Sensor %2 last %3 %4',
+            type: 'customized_concrete_sensor_temperature_strength',
+            message0: '%1 Concrete Sensor (Smart Rock) %2 last %3 %4',
             args0: [
                 {
                     type: 'field_image',
@@ -436,7 +436,98 @@ Blockly.Blocks['customized_concrete_sensor_temperature_humidity'] = {
                     name: 'sensor',
                     options: [
                         ['temperature', 'TEMPERATURE'],
-                        ['humidity', 'HUMIDITY'],
+                        ['strength', 'STRENGTH'],
+                        // Add more options as needed
+                    ],
+                },
+                {
+                    type: 'input_value',
+                    name: 'inputs',
+                },
+            ],
+            inputsInline: false,
+            output: null,
+            colour: 300,
+            tooltip: "Checks Concrete Sensor's Temperature or Humidity.",
+            helpUrl: 'https://example.com', // Replace with your help URL
+        })
+    },
+}
+
+Blockly.Blocks['customized_gas_sensor'] = {
+    init: function () {
+        this.jsonInit({
+            type: 'customized_gas_sensor',
+            message0: '%1 Gas Sensor %2 last %3 %4',
+            args0: [
+                {
+                    type: 'field_image',
+                    src: '/img/blockly/devices.jpg',
+                    width: 15,
+                    height: 15,
+                    alt: '*',
+                    flipRtl: false,
+                },
+                {
+                    type: 'field_dropdown',
+                    name: 'device',
+                    options: [
+                        ['gas 1', 'MULTI_SENSOR_1'],
+                        // Add more options as needed
+                    ],
+                },
+                {
+                    type: 'field_dropdown',
+                    name: 'sensor',
+                    options: [
+                        ['ppm', 'PPM'],
+                        // Add more options as needed
+                    ],
+                },
+                {
+                    type: 'input_value',
+                    name: 'inputs',
+                },
+            ],
+            inputsInline: false,
+            output: null,
+            colour: 300,
+            tooltip: "Checks Concrete Sensor's Temperature or Humidity.",
+            helpUrl: 'https://example.com', // Replace with your help URL
+        })
+    },
+}
+
+Blockly.Blocks['customized_car_sensor'] = {
+    init: function () {
+        this.jsonInit({
+            type: 'customized_gas_sensor',
+            message0: '%1 Car Sensor %2 last %3 %4',
+            args0: [
+                {
+                    type: 'field_image',
+                    src: '/img/blockly/devices.jpg',
+                    width: 15,
+                    height: 15,
+                    alt: '*',
+                    flipRtl: false,
+                },
+                {
+                    type: 'field_dropdown',
+                    name: 'device',
+                    options: [
+                        ['car 1', 'MULTI_SENSOR_1'],
+                        // Add more options as needed
+                    ],
+                },
+                {
+                    type: 'field_dropdown',
+                    name: 'sensor',
+                    options: [
+                        ['speed', 'SPEED'],
+                        ['distance', 'DISTANCE'],
+                        ['temperature', 'TEMPERATURE'],
+                        ['remaining fuel', 'REMAINING_FUEL'],
                         // Add more options as needed
                     ],
                 },
@@ -722,7 +813,9 @@ const deviceBlocks = [
     'customized_thermometer_hygrometer',
     'customized_device_info',
     'customized_multi_sensor_temperature_humidity',
-    'customized_concrete_sensor_temperature_humidity',
+    'customized_concrete_sensor_temperature_strength',
+    'customized_gas_sensor',
+    'customized_car_sensor',
 ]
 
 deviceBlocks.forEach((blockName) => {

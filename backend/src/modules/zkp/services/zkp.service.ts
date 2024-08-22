@@ -70,7 +70,7 @@ export class ZkpService {
       name: 'FidesInnova',
       chainId: this.chainId,
     });
-
+    
     this.wallet = new ethers.Wallet(
       '812c3d58559a4d5e914d478599e26bd684e6f4e191ab989e26466a41945e99e7',
       this.provider,
