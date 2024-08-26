@@ -2,7 +2,7 @@ import { apiDeleteService } from '@/services/ServiceAPI'
 import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 
-type ApiResponse = {
+export type ApiResponse = {
     statusCode: number
     success: boolean
     date: string

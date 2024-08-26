@@ -8,14 +8,25 @@ import { Input } from '@/components/ui'
 import { HiCurrencyDollar } from 'react-icons/hi'
 import FormDesription from './FormDesription'
 import { useAppSelector } from '@/store'
+import {
+    apiGetWalletBalance,
+    apiRequestFaucet,
+} from '@/services/ContractServices'
+import { useQuery } from '@tanstack/react-query'
+import { ApiResponse } from '@/utils/hooks/useDeleteService'
+import { useWalletBalance } from '@/utils/hooks/useWaletAddress'
 
 const Verify = () => {
     const [apiData, setApiData] = useState<any>({})
     const [loading, setLoading] = useState(true)
     const [requestLoading, setRequestLoading] = useState(false)
     const [walletAddress, setWalletAddress] = useState('')
-
     const { _id: userId } = useAppSelector((state) => state.auth.user)
+    const {
+        data: walletData,
+        isError: walletError,
+        isLoading: walletLoading,
+    } = useWalletBalance()
 
     useEffect(() => {
         async function fetchData() {
@@ -33,9 +44,32 @@ const Verify = () => {
     }
 
     async function handleRequestFaucet() {
-        toast.push(<Notification title="Coming Soon" type="info" />, {
-            placement: 'top-center',
-        })
+        try {
+            setRequestLoading(true)
+            const response = await apiRequestFaucet()
+            setRequestLoading(false)
+            toast.push(
+                <Notification title="Success" type="success">
+                    Faucet has been successfully deposited into your wallet !
+                </Notification>,
+                {
+                    placement: 'top-center',
+                }
+            )
+        } catch (error: any) {
+            setRequestLoading(false)
+            toast.push(
+                <Notification
+                    title="Error while requesting faucet"
+                    type="danger"
+                >
+                    Your wallet address is invalid or you should wait 24 hour !
+                </Notification>,
+                {
+                    placement: 'top-center',
+                }
+            )
+        }
     }
 
     const handleSaveWalletAddress = async () => {
@@ -79,7 +113,7 @@ const Verify = () => {
 
     return (
         <>
-            {(loading == false && (
+            {(loading == false && walletLoading == false && (
                 <main>
                     <div className="flex flex-col gap-4">
                         <FormDesription
@@ -88,8 +122,13 @@ const Verify = () => {
                             desc="All of your wallet datas are protected"
                         />
                         <div className="flex items-center gap-8">
-                            <p className="text-[1rem]">Wallet value: 0 FDS</p>
+                            <p className="text-[1rem]">
+                                Wallet value:{' '}
+                                {(walletError && 'Invalid wallet address !') ||
+                                    `${walletData?.data} FDS`}
+                            </p>
                             <Button
+                                loading={requestLoading}
                                 onClick={handleRequestFaucet}
                                 variant="solid"
                                 color="green"
