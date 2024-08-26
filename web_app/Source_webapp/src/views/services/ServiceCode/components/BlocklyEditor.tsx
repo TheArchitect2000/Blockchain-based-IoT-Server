@@ -178,6 +178,18 @@ const toolbox = {
                 },
                 {
                     kind: 'block',
+                    type: 'customized_concrete_sensor_temperature_strength',
+                },
+                {
+                    kind: 'block',
+                    type: 'customized_gas_sensor',
+                },
+                {
+                    kind: 'block',
+                    type: 'customized_car_sensor',
+                },
+                {
+                    kind: 'block',
                     type: 'customized_thermometer_hygrometer',
                 },
                 {

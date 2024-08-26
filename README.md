@@ -13,13 +13,7 @@
 <a href="https://discord.com/invite/NQdM6JGwcs" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
 <a href="https://twitter.com/FidesInnova" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
 
-In the dynamic landscape of IoT, FidesInnova emerges as a trailblazer, ushering in a new era of trust, security, and automation. Our FidesInnova Platform redefines the standards for decentralized and reliable IoT systems. With a focus on zk-IoT devices, FidesInnova ensures seamless communication, laying the foundation for a network built on trust and transparency.
-
-At the heart of FidesInnova lies the revolutionary concept of Service Contracts. These customizable, JavaScript-based mini-programs empower users to effortlessly manage and monetize IoT data. The FidesInnova Node, equipped with ZKP-enabled JavaScript execution, acts as the powerhouse, ensuring the secure and authentic execution of these contracts. The Service Market further enhances the user experience by offering a diverse array of pre-written contracts, expanding the functionalities of IoT devices with ease.
-
-FidesInnova is not merely a platform; it’s a holistic ecosystem that empowers users through Fides Apps. The Fides Mobile App, available on major app stores, provides users with unprecedented control over their IoT devices. Complemented by the Fides Web App for service creation and data monetization, FidesInnova sets a new standard for complete and user-friendly IoT solutions. In a world where security and trust are paramount, FidesInnova stands as a beacon, illuminating the path toward a smarter, more connected future.
-
-### To install the back-end and front-end components of the FidesInnova platform, including both the web app and mobile app, you can follow the steps below. These instructions assume that you have a basic understanding of setting up development environments and are familiar with JavaScript, Node.js, and related technologies.
+To install the back-end and front-end components of the FidesInnova platform, including both the web app and mobile app, you can follow the steps below. These instructions assume that you have a basic understanding of setting up development environments and are familiar with JavaScript, Node.js, and related technologies.
 
 
 
@@ -157,6 +151,11 @@ http {
 
 
 	server {
+
+
+                ssl_certificate  ssl/fullchainadmin.pem;
+                ssl_certificate_key ssl/privkeyadmin.pem;
+
 		listen 443 ssl;
 		listen [::]:443 ssl;
 		server_name admin.YOUR_DOMAIN.io;
@@ -243,7 +242,7 @@ apt install git
 ```
 In the root directory clone the project
 ```
-cd /root
+cd /home
 git clone https://github.com/FidesInnova/iot_node_backend_web_app.git
 ```
 
@@ -264,9 +263,6 @@ HOST_PROTOCOL = 'https://'
 HOST_NAME_OR_IP = 'panel.YOUR_DOMAIN.COM'
 HOST_PORT = '3000'
 HOST_SUB_DIRECTORY = 'app'
-
-# Node Servers
-NODE_SERVERS=[{"Name":"EnergyWise","MQTT":"panel.fidesinnova.io","API":"panel.fidesinnova.io/app"},{"Name":"Cherry","MQTT":"panel.cherrynode.tech","API":"panel.cherrynode.tech/app"},{"Name":"Developer","MQTT":"developer.fidesinnova.io","API":"developer.fidesinnova.io/app"}]
 
 # StorX Config
 STORX_BUCKET_NAME = 'fidesinnova'
@@ -419,14 +415,25 @@ VITE_URL='https://panel.YOUR_DOMAIN.COM/app/'
 VITE_NODE_NAME = 'your.node.name'
 ```
 
--  From `/etc/nginx/ssl`, copy the files `fullchain.pem`, `privkey.pem` and rename them:
+### To obtain a new certificate for the admin domain:
+
+```
+sudo certbot certonly --standalone --preferred-challenges http
+```
+-  From `/etc/letsencrypt/live/admin.<Your Domain>`, copy the files `fullchain.pem`, `privkey.pem` and rename them:
 -  `fullchain.pem` into `webpublic.pem`
 -  `privkey.pem` into `webprivate.pem`
+-   `fullchain.pem` into `fullchainadmin.pem`
+-  `privkey.pem` into `privkeyadmin.pem`
 
 ### Put SSL certificate files in the following path:
 ```
 iot_node_backend_web_app/web_app/Runner_webapp/assets/certificates/webpublic.pem
 iot_node_backend_web_app/web_app/Runner_webapp/assets/certificates/webprivate.pem
+
+etc/nginx/ssl/fullchainadmin.pem
+etc/nginx/ssl/privkeyadmin.pem
+
 ```
 
 ## 3- Build

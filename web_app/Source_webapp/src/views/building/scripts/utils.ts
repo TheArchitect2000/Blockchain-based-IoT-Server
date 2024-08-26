@@ -26,6 +26,14 @@ interface CountResult {
     deviceCount: number
 }
 
+function sliceBuildingStrings(input: string) {
+    let formatted = input.replace('_', ' ')
+    const slices = formatted
+        .split(' ')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    return slices
+}
+
 function formatBuildingStrings(input: string) {
     let formatted = input.replace('_', ' ')
     formatted = formatted
@@ -61,4 +69,4 @@ function countBuildingDetails(building: Building): CountResult {
     return { floorCount, unitCount, deviceCount }
 }
 
-export default { formatBuildingStrings, countBuildingDetails }
+export default { formatBuildingStrings, countBuildingDetails, sliceBuildingStrings }

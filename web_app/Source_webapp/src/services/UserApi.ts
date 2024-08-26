@@ -96,6 +96,13 @@ export async function apiRequestVerifyEmail<T>(email: string) {
     })
 }
 
+export async function apiValidateRemixIDE<T>(user: string, pass: string) {
+    return ApiService.fetchData<T>({
+        url: import.meta.env.VITE_URL + `v1/user/validate-remix-ide?user=${user}&pass=${pass}`,
+        method: 'get',
+    })
+}
+
 export async function apiGetUserProfileByUserId<T>(userId: string) {
     return ApiService.fetchData<T>({
         url: import.meta.env.VITE_URL + `v1/user/get-profile-by-id/${userId}`,

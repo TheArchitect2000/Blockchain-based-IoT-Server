@@ -30,6 +30,7 @@ const Profile = lazy(() => import('./components/Profile'))
 const Address = lazy(() => import('./components/Address'))
 const Password = lazy(() => import('./components/Password'))
 const Verify = lazy(() => import('./components/Verify'))
+const Wallet = lazy(() => import('./components/Wallet'))
 
 const { TabNav, TabList } = Tabs
 
@@ -41,6 +42,7 @@ const settingsMenu: Record<
     }
 > = {
     profile: { label: 'Profile', path: 'profile' },
+    wallet: { label: 'Wallet', path: 'wallet' },
     address: { label: 'Address', path: 'address' },
     verify: { label: 'Verify', path: 'verify' },
     password: { label: 'Password', path: 'password' },
@@ -102,6 +104,7 @@ const Settings = () => {
                             <Verify />
                         )}
                         {currentTab === 'address' && <Address />}
+                        {currentTab === 'wallet' && <Wallet />}
                     </Suspense>
                 </div>
             </AdaptableCard>

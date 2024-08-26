@@ -19,7 +19,7 @@ import { useAppSelector } from '@/store'
 import { convertToTimeZone } from '@/views/account/Settings/components/TimezoneSelector'
 import Table2D from '@/views/account/Settings/components/Table2D'
 
-function convertToUserTimeZone(isoDateString: string) {
+export function convertToUserTimeZone(isoDateString: string) {
     // Create a Date object from the ISO 8601 string
     const date = new Date(isoDateString)
 
@@ -43,6 +43,22 @@ function convertToUserTimeZone(isoDateString: string) {
 
     return formattedDate
 }
+
+export function formatToCustomDateTime(convertedDateString: string) {
+    // Split the convertedDateString by commas to separate date and time
+    const [datePart, timePartWithTimeZone] = convertedDateString.split(', ')
+
+    // Extract the date (MM/DD/YYYY) part and time with timezone (HH:MM:SS.mmm TimeZone)
+    const [timePart] = timePartWithTimeZone.split(' ') // This will split off the timezone
+    const [timeWithoutMilliseconds] = timePart.split('.') // Split by '.' to remove milliseconds
+
+    // Construct the final string in the desired format
+    const formattedDateTime = `${datePart}, ${timeWithoutMilliseconds}`
+
+    return formattedDateTime
+}
+
+
 
 function DeviceDetails() {
     const [data, setData] = useState<DeviceData>()

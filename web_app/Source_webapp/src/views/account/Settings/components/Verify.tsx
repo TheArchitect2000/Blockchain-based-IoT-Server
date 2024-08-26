@@ -1,55 +1,12 @@
-import classNames from 'classnames'
-import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
-import Tag from '@/components/ui/Tag'
 import Notification from '@/components/ui/Notification'
 import toast from '@/components/ui/toast'
-import { FormContainer } from '@/components/ui/Form'
-import FormDesription from './FormDesription'
-import FormRow from './FormRow'
-import { Field, Form, Formik } from 'formik'
-import isLastChild from '@/utils/isLastChild'
-import {
-    HiCheck,
-    HiOutlineDesktopComputer,
-    HiOutlineDeviceMobile,
-    HiOutlineDeviceTablet,
-} from 'react-icons/hi'
-import dayjs from 'dayjs'
-import * as Yup from 'yup'
-import {
-    apiChangePasswordByEmail,
-    apiGetCurUserProfile,
-    apiRequestVerifyEmail,
-} from '@/services/UserApi'
-import { apiCheckPassword } from '@/services/AuthService'
+import { apiGetCurUserProfile, apiRequestVerifyEmail } from '@/services/UserApi'
 import { useEffect, useState } from 'react'
 import { Loading } from '@/components/shared'
+import FormDesription from './FormDesription'
 
-type LoginHistory = {
-    type: string
-    deviceName: string
-    time: number
-    location: string
-}
-
-type PasswordFormModel = {
-    password: string
-    newPassword: string
-    confirmNewPassword: string
-}
-
-const validationSchema = Yup.object().shape({
-    password: Yup.string().required('Password Required'),
-    newPassword: Yup.string()
-        .required('Enter your new password')
-        .matches(/^[A-Za-z0-9_-]*$/, 'Only Letters & Numbers Allowed'),
-    confirmNewPassword: Yup.string()
-        .required('Enter your confirm password')
-        .oneOf([Yup.ref('newPassword'), ''], 'Password not match'),
-})
-
-const Password = () => {
+const Verify = () => {
     const [apiData, setApiData] = useState<any>({})
     const [loading, setLoading] = useState(true)
     const [requestLoading, setRequestLoading] = useState(false)
@@ -96,13 +53,12 @@ const Password = () => {
         <>
             {(loading == false && (
                 <main>
-                    {(apiData?.verificationStatus == 'verified' && (
-                        <div className="flex flex-col gap-1">
-                            <h3>Verify your account</h3>
-                            <p>
-                                By clicking this button it will send you an
-                                verification link to your email
-                            </p>
+                    <div className="flex flex-col gap-1">
+                        <FormDesription
+                            title="Verify your account"
+                            desc="By clicking this button it will send you an verification link to your email"
+                        />
+                        {(apiData?.verificationStatus == 'verified' && (
                             <h3 className="flex flex-col justify-center items-center gap-2 mt-6">
                                 <img
                                     className="self-center w-[200px] lg:w-[300px]"
@@ -111,14 +67,7 @@ const Password = () => {
                                 />
                                 Your account is already verfied{' '}
                             </h3>
-                        </div>
-                    )) || (
-                        <div className="flex flex-col gap-1">
-                            <h3>Verify your account</h3>
-                            <p>
-                                By clicking this button it will send you an
-                                verification link to your email
-                            </p>
+                        )) || (
                             <Button
                                 onClick={requestVerifyAccount}
                                 className="mx-auto mt-10"
@@ -127,8 +76,8 @@ const Password = () => {
                             >
                                 Send verification link
                             </Button>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </main>
             )) || (
                 <div className="w-full h-[60dvh]">
@@ -139,4 +88,4 @@ const Password = () => {
     )
 }
 
-export default Password
+export default Verify
