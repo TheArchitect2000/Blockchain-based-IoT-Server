@@ -16,9 +16,11 @@ export class AppController {
     process.env.HOST_NAME_OR_IP +
     '/' +
     process.env.HOST_SUB_DIRECTORY +
-    '/uploads/devices/';
+    '/uploads/devices';
   private deviceList = [
-    { url: `${this.baseUrl}multi-sensor.png`, title: 'Multi Sensor' },
+    { url: `${this.baseUrl}/ecard.png`, title: 'E-Card' },
+    { url: `${this.baseUrl}/motionsensor.png`, title: 'Motion Sensor' },
+    { url: `${this.baseUrl}/MultiSensor.png`, title: 'Multi Sensor' },
   ];
 
   constructor(
