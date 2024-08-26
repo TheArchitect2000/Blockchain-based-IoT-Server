@@ -258,6 +258,13 @@ PORT = 5000
 NODE_NAME = "your.node.name"
 SWAGGER_LOCAL_SERVER = http://localhost:5000
 
+# Remix user & pass
+REMIX_USER = 'rmadmin'
+REMIX_PASS = 'rm123'
+
+# Faucet Wallet Private Key
+FAUCET_WALLET_PRIVATE_KEY = 'YOUR_ADMIN_WALLET_PRIVATE_KEY'
+
 # Server Configuration
 HOST_PROTOCOL = 'https://'
 HOST_NAME_OR_IP = 'panel.YOUR_DOMAIN.COM'
@@ -317,6 +324,8 @@ MULTER_MEDIA_SIZE = 10000000    # 10 MB
 Update these parameters:
 ```
 NODE_NAME = "your.node.name"
+
+FAUCET_WALLET_PRIVATE_KEY = "your-admin-wallet-private-key"
 
 HOST_NAME_OR_IP = 'panel.YOUR_DOMAIN.COM'
 
