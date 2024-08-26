@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { BuildingModel } from './building.model';
 import { BuildingSchema } from './building.schema';
 
@@ -27,7 +27,7 @@ export class BuildingRepository {
       .catch((error) => {
         const errorMessage = 'Some errors occurred while inserting building!';
         console.log(error.message);
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -48,7 +48,7 @@ export class BuildingRepository {
       return result;
     } catch (error) {
       const errorMessage = 'Some errors occurred while editing building!';
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         errorMessage,
       );
@@ -65,7 +65,7 @@ export class BuildingRepository {
       .catch((error) => {
         const errorMessage =
           'Some errors occurred while deleting user in user repository!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     return this.result;

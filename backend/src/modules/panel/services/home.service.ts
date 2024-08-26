@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
 import { Connection } from 'mongoose';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { HomeRepository } from '../repositories/home.repository';
 
 /**
@@ -65,7 +65,7 @@ export class HomeService {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while deleting customer home in home service!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );

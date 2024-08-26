@@ -1,14 +1,14 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
     console.log('process.env.ACCESS_TOKEN_SECRET_KEY:1111111111111111111');
     console.log(process.env.ACCESS_TOKEN_SECRET_KEY);
-    
+
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -40,7 +40,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     /* if(payload.exp < Math.floor(Date.now()/1000)){      // Math.floor(Date.now()/1000) Converts Date.now() from miliseconds to seconds.
             console.log("payload is expired!");
-            throw new GereralException(401, 'Entered access token is expired please get new token.');
+            throw new GeneralException(401, 'Entered access token is expired please get new token.');
         } */
 
     return { userId: payload.sub, email: payload.email };

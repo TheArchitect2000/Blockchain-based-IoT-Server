@@ -5,7 +5,7 @@ import { UserPermissionService } from './modules/user/services/user-permission/u
 import { UserRoleService } from './modules/user/services/user-role/user-role.service';
 import { UserService } from './modules/user/services/user/user.service';
 import { ErrorTypeEnum } from './modules/utility/enums/error-type.enum';
-import { GereralException } from './modules/utility/exceptions/general.exception';
+import { GeneralException } from './modules/utility/exceptions/general.exception';
 import { JwtAuthGuard } from './modules/authentication/guard/jwt-auth.guard';
 
 @Controller('app')
@@ -42,7 +42,7 @@ export class AppController {
         let errorMessage =
           'Some errors occurred while inserting default permissions!';
 
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -58,7 +58,7 @@ export class AppController {
           'Some errors occurred while inserting default roles!';
         console.log(error);
 
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );

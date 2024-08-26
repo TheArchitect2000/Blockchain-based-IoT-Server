@@ -20,7 +20,7 @@ import { SendTokenRequestBodyDto } from '../dto/send-token';
 import { SendNotificationRequestBodyDto } from '../dto/send-notif-dto';
 import { Types } from 'mongoose';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import {
   AddNotificationByEmailRequestBodyDto,
   AddNotificationRequestBodyDto,
@@ -80,7 +80,7 @@ export class NotificationController {
   async sendNotification(@Body() body: SendNotificationRequestBodyDto) {
     const { user } = body;
     if (!Types.ObjectId.isValid(String(user)))
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.INVALID_INPUT,
         'userId must be valid type',
       );
@@ -101,7 +101,7 @@ export class NotificationController {
     const isAdmin = await this.isAdmin(request.user.userId);
 
     if (isAdmin === false) {
-      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+      throw new GeneralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
     return this.service.addNotificationForUserById(body, request.user.userId);
   }
@@ -120,7 +120,7 @@ export class NotificationController {
     const isAdmin = await this.isAdmin(request.user.userId);
 
     if (isAdmin === false) {
-      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+      throw new GeneralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
     return this.service.addNotificationForUserByEmail(body);
   }
@@ -139,7 +139,7 @@ export class NotificationController {
     const isAdmin = await this.isAdmin(request.user.userId);
 
     if (isAdmin === false) {
-      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+      throw new GeneralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
     return this.service.addPublicNotification(body, request.user.userId);
   }
@@ -158,7 +158,7 @@ export class NotificationController {
     const isAdmin = await this.isAdmin(request.user.userId);
 
     if (isAdmin === false && request.user.userId !== userId) {
-      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+      throw new GeneralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
 
     return this.service.getUserNotificationsByUserId(userId);
@@ -178,7 +178,7 @@ export class NotificationController {
     const isAdmin = await this.isAdmin(request.user.userId);
 
     if (isAdmin === false && request.user.userId !== userId) {
-      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+      throw new GeneralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
     return this.service.getAllUserNotificationsByUserId(userId);
   }

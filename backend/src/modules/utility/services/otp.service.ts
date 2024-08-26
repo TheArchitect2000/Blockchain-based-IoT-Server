@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 // import { OTPException } from "../exceptions/otp.exception";
-import { GereralException } from '../exceptions/general.exception';
+import { GeneralException } from '../exceptions/general.exception';
 import { OTP } from '../interfaces/otp-interface';
 import { OTPModel } from '../models/otp.model';
 import { OTPRepository } from '../repositories/otp.repository';
@@ -30,9 +30,9 @@ export class OTPService {
     private readonly mailService?: MailService,
   ) {}
 
-  
   async insertOTPCode(type, email) {
-    const randomNumber = Math.floor(Math.floor(100000 + Math.random() * 900000)) + 1;
+    const randomNumber =
+      Math.floor(Math.floor(100000 + Math.random() * 900000)) + 1;
     const salt = bcrypt.genSaltSync(saltRounds);
     const hashRandomNumber = bcrypt.hashSync(String(randomNumber), salt);
 
@@ -50,11 +50,12 @@ export class OTPService {
 
     this.otp = await this.repository.insertOTP(newOTP);
 
-    return randomNumber.toString() as string
+    return randomNumber.toString() as string;
   }
 
   async insertEmailOTP(type, email): Promise<any> {
-    const randomNumber = Math.floor(Math.floor(100000 + Math.random() * 900000)) + 1;
+    const randomNumber =
+      Math.floor(Math.floor(100000 + Math.random() * 900000)) + 1;
     const salt = bcrypt.genSaltSync(saltRounds);
     const hashRandomNumber = bcrypt.hashSync(String(randomNumber), salt);
 
@@ -72,8 +73,7 @@ export class OTPService {
 
     this.otp = await this.repository.insertOTP(newOTP);
 
-    console.log("Type Issss:", type);
-    
+    console.log('Type Issss:', type);
 
     if (this.otp) {
       if (type === OTPTypeEnum.REGISTRATION) {
@@ -96,7 +96,7 @@ export class OTPService {
         );
       }
     } else {
-      throw new GereralException(
+      throw new GeneralException(
         410,
         'An error occurred while sending the otp code. Please try again later.',
       );
@@ -104,7 +104,8 @@ export class OTPService {
   }
 
   async insertOTP(type, mobile): Promise<any> {
-    let randomNumber = Math.floor(Math.floor(100000 + Math.random() * 900000)) + 1;
+    let randomNumber =
+      Math.floor(Math.floor(100000 + Math.random() * 900000)) + 1;
     const salt = bcrypt.genSaltSync(saltRounds);
     const hashRandomNumber = bcrypt.hashSync(String(randomNumber), salt);
 
@@ -125,7 +126,7 @@ export class OTPService {
     if (this.otp) {
       return this.smsService.sendSMS(mobile, randomNumber);
     } else {
-      throw new GereralException(
+      throw new GeneralException(
         410,
         'An error occurred while sending the otp code. Please try again later.',
       );
@@ -181,7 +182,7 @@ export class OTPService {
           try {
             await newThis.repository.deleteOTP(findOTP._id);
           } catch (error) {
-            console.log("Error Catched:", error);
+            console.log('Error Catched:', error);
           }
           return true;
           /* if (newThis.validateOTPExpiryDate(findOTP.expiryDate)) {

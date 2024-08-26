@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { PermissionActivationStatusEnum } from '../../enums/permission-activation-status.enum';
 import { UserPermission } from '../../interfaces/user-permission.interface';
 import { UserPermissionRepository } from '../../repositories/user-permission.repository';
@@ -46,7 +46,7 @@ export class UserPermissionService {
       } catch (error) {
         let errorMessage =
           'Some errors occurred while inserting main permissions!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -64,7 +64,7 @@ export class UserPermissionService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while finding a permission!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -99,7 +99,7 @@ export class UserPermissionService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while finding a permission!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     if (foundPermission) {
@@ -119,7 +119,7 @@ export class UserPermissionService {
         })
         .catch((error) => {
           let errorMessage = 'Some errors occurred while editing a permission!';
-          throw new GereralException(
+          throw new GeneralException(
             ErrorTypeEnum.UNPROCESSABLE_ENTITY,
             errorMessage,
           );
@@ -139,7 +139,7 @@ export class UserPermissionService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while finding a permission!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     return this.result;
@@ -155,7 +155,7 @@ export class UserPermissionService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while finding a permission!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     return this.result;
@@ -171,7 +171,7 @@ export class UserPermissionService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while finding a permission!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     return this.result;
@@ -186,7 +186,7 @@ export class UserPermissionService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while finding a permission!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     if (foundPermission) {
@@ -203,7 +203,7 @@ export class UserPermissionService {
         })
         .catch((error) => {
           let errorMessage = 'Some errors occurred while editing a permission!';
-          throw new GereralException(
+          throw new GeneralException(
             ErrorTypeEnum.UNPROCESSABLE_ENTITY,
             errorMessage,
           );
@@ -211,7 +211,7 @@ export class UserPermissionService {
     } else {
       let errorMessage =
         'Some errors occurred while editing a permission! Permission not found';
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         errorMessage,
       );
@@ -229,7 +229,7 @@ export class UserPermissionService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while finding a permission!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     if (foundPermission) {
@@ -245,7 +245,7 @@ export class UserPermissionService {
         })
         .catch((error) => {
           let errorMessage = 'Some errors occurred while editing a permission!';
-          throw new GereralException(
+          throw new GeneralException(
             ErrorTypeEnum.UNPROCESSABLE_ENTITY,
             errorMessage,
           );
@@ -253,7 +253,7 @@ export class UserPermissionService {
     } else {
       let errorMessage =
         'Some errors occurred while editing a permission! Permission not found';
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         errorMessage,
       );

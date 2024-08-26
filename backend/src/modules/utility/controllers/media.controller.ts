@@ -25,7 +25,7 @@ import {
 import { JwtAuthGuard } from 'src/modules/authentication/guard/jwt-auth.guard';
 import { uploadFileDto } from '../data-transfer-objects/upload-file.dto';
 import { ErrorTypeEnum } from '../enums/error-type.enum';
-import { GereralException } from '../exceptions/general.exception';
+import { GeneralException } from '../exceptions/general.exception';
 import { MediaService } from '../services/media.service';
 import { Types } from 'mongoose';
 import { ResourceTypeEnum } from '../enums/resource-type.enum';
@@ -96,7 +96,7 @@ export class MediaController {
   })
   async getMediaById(@Param('mediaId') mediaId: string) {
     if (!Types.ObjectId.isValid(mediaId)) {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         'Media Id is required and must be a valid ObjectId.',
       );

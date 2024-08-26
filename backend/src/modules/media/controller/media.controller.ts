@@ -31,7 +31,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ResourceTypeEnum } from 'src/modules/utility/enums/resource-type.enum';
 import { uploadFileDto } from '../dto/media-dto';
 import { Types } from 'mongoose';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { JwtAuthGuard } from 'src/modules/authentication/guard/jwt-auth.guard';
 
@@ -102,7 +102,7 @@ export class MediaController {
   })
   async getMediaById(@Param('mediaId') mediaId: string) {
     if (!Types.ObjectId.isValid(mediaId)) {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         'Media Id is required and must be a valid ObjectId.',
       );

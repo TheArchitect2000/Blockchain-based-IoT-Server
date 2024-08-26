@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { MongoClient, ObjectID } from 'mongodb';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { MediaModel } from '../models/media.model';
 
 @Injectable()

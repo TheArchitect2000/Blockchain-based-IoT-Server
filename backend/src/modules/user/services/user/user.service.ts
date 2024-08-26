@@ -2,7 +2,7 @@ import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { Types } from 'mongoose';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { OTPTypeEnum } from 'src/modules/utility/enums/otp-type.enum';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { OTPService } from 'src/modules/utility/services/otp.service';
 import { RolesEnum } from '../../enums/roles.enum';
 import { UserActivationStatusEnum } from '../../enums/user-activation-status.enum';
@@ -28,7 +28,6 @@ import { DeviceService } from 'src/modules/device/services/device.service';
 import { DeviceLogService } from 'src/modules/device/services/device-log.service';
 import { userSchema } from '../../schemas/user.schema';
 import { checkPasswordDto } from '../../data-transfer-objects/user/credential.dto';
-
 
 const saltRounds = 10;
 
@@ -133,7 +132,7 @@ export class UserService {
     ) {
       await this.otpService.insertEmailOTP(OTPTypeEnum.Verify, body.email);
     } else {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.CONFLICT,
         'Verification email is already sended !',
       );
@@ -153,7 +152,7 @@ export class UserService {
 
     // Check if user found
     if (!this.user) {
-      throw new GereralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
+      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
     }
   }
 
@@ -176,7 +175,7 @@ export class UserService {
       );
       return true;
     } else {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.CONFLICT,
         'Email already sended.',
       );
@@ -253,7 +252,7 @@ export class UserService {
                     await this.customerService.changeActivationStatusOfCustomer({_id: foundCustomer._id, isActive: true});
                 } else {
                     console.log("Customer not found!");
-                    throw new GereralException(ErrorTypeEnum.NOT_FOUND,'Customer does not exist.');
+                    throw new GeneralException(ErrorTypeEnum.NOT_FOUND,'Customer does not exist.');
                 } */
         // End of finding a customer in panel.
 
@@ -326,7 +325,7 @@ export class UserService {
     );
 
     if (!this.otp || verifyOTP == false) {
-      throw new GereralException(ErrorTypeEnum.NOT_FOUND, 'Otp is not valid');
+      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, 'Otp is not valid');
     }
 
     if (verifyOTP) {
@@ -386,7 +385,7 @@ export class UserService {
                     await this.customerService.changeActivationStatusOfCustomer({_id: foundCustomer._id, isActive: true});
                 } else {
                     console.log("Customer not found!");
-                    throw new GereralException(ErrorTypeEnum.NOT_FOUND,'Customer does not exist.');
+                    throw new GeneralException(ErrorTypeEnum.NOT_FOUND,'Customer does not exist.');
                 } */
         // End of finding a customer in panel.
 
@@ -416,7 +415,7 @@ export class UserService {
     );
 
     if (!this.otp || verifyOTP == false) {
-      throw new GereralException(ErrorTypeEnum.NOT_FOUND, 'Otp is not valid');
+      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, 'Otp is not valid');
     }
 
     const otp = await this.otpService.insertOTPCode(
@@ -484,7 +483,7 @@ export class UserService {
         //            await this.customerService.editCustomer(foundCustomer._id, foundCustomer);
         //        } else {
         //            console.log("Customer not found!");
-        //            throw new GereralException(ErrorTypeEnum.NOT_FOUND,'Customer does not exist.');
+        //            throw new GeneralException(ErrorTypeEnum.NOT_FOUND,'Customer does not exist.');
         //        }
         // End of finding a customer in panel.
 
@@ -539,7 +538,7 @@ export class UserService {
 
       console.log('User not found for password change.');
 
-      throw new GereralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
+      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
     }
   }
 
@@ -593,7 +592,7 @@ export class UserService {
     );
 
     if (!this.user) {
-      throw new GereralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
+      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
     }
 
     if (
@@ -640,7 +639,7 @@ export class UserService {
       return true;
     } else {
       console.log('User not found!');
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.NOT_FOUND,
         'User does not exist.',
       );
@@ -741,7 +740,7 @@ export class UserService {
         .catch((error) => {
           let errorMessage =
             'Some errors occurred while finding user permission!';
-          throw new GereralException(
+          throw new GeneralException(
             ErrorTypeEnum.UNPROCESSABLE_ENTITY,
             errorMessage,
           );
@@ -749,7 +748,7 @@ export class UserService {
       if (!adminRolePermissions) {
         let errorMessage =
           'Some errors occurred while finding user permission!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -760,7 +759,7 @@ export class UserService {
     let userRes = (await this.findAUserByUserName(userName)) as any;
 
     if (!userRes) {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.NOT_FOUND,
         'Account not found for making admin!',
       );
@@ -768,7 +767,9 @@ export class UserService {
 
     await this.userRepository.editUser(userRes._id, {
       roles: [
-        ...userRes.roles.filter((role: any) => !newRoles.includes(role._id.toString())),
+        ...userRes.roles.filter(
+          (role: any) => !newRoles.includes(role._id.toString()),
+        ),
         ...newRoles,
       ],
     });
@@ -784,7 +785,7 @@ export class UserService {
     const userRes = await this.findAUserByUserName(userName);
 
     if (!userRes) {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.NOT_FOUND,
         'Account not found for taking admin ranks!',
       );
@@ -825,44 +826,18 @@ export class UserService {
     );
 
     if (this.user) {
-      /* if (data.firstName != null || data.firstName != undefined) {
-        this.user.firstName = data.firstName;
+      for (const property in data) {
+        this.user[property] = data[property];
       }
-      if (data.lastName != null || data.lastName != undefined) {
-        this.user.lastName = data.lastName;
-      }
-      if (data.userName != null || data.userName != undefined) {
-        this.user.userName = data.userName;
-      }
-      if (data.mobile != null || data.mobile != undefined) {
-        this.user.mobile = data.mobile;
-      }
-      if (data.walletAddress != null || data.walletAddress != undefined) {
-        this.user.walletAddress = data.walletAddress;
-      }
-      if (data.title != null || data.title != undefined) {
-        this.user.title = data.title;
-      }
-      if (data.avatar != null || data.avatar != undefined) {
-        this.user.avatar = data.avatar;
-      }
-      if (data.lang != null || data.lang != undefined) {
-        this.user.lang = data.lang;
-      } */
 
-      this.user = data;
+      data.updatedBy = userId;
+      data.updateDate = new Date();
+      console.log('Edited Data:', data);
 
-      console.log('Edited Data:', this.user);
-
-      setTimeout(() => {}, 5000);
-
-      this.user.updatedBy = this.user._id;
-      this.user.updateDate = new Date();
-
-      await this.userRepository.editUser(this.user._id, this.user);
-      return await this.findAUserById(this.user._id);
+      await this.userRepository.editUser(userId, data);
+      return await this.findAUserById(userId);
     } else {
-      throw new GereralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
+      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
     }
   }
 
@@ -873,7 +848,7 @@ export class UserService {
 
     const checkUserName = await this.findAUserByUserName(data.userName);
     if (checkUserName != null || checkUserName != undefined) {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.NOT_FOUND,
         'This userName does not exists.',
       );
@@ -888,7 +863,7 @@ export class UserService {
         selectCondition,
       );
       if (!foundedProfileImage) {
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.NOT_FOUND,
           'profileImage not uploaded or does not exist.',
         );
@@ -904,7 +879,7 @@ export class UserService {
         selectCondition,
       );
       if (!foundedHeaderImage) {
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.NOT_FOUND,
           'headerImage not uploaded or does not exist.',
         );
@@ -980,7 +955,7 @@ export class UserService {
         return await this.findAUserById(this.user._id);
       }
     } else {
-      throw new GereralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
+      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
     }
   } */
 
@@ -1014,7 +989,7 @@ export class UserService {
         return await this.findAUserById(this.user._id);
       }
     } else {
-      throw new GereralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
+      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
     }
   }
 
@@ -1048,7 +1023,7 @@ export class UserService {
         return await this.findAUserById(user);
       }
     } else {
-      throw new GereralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
+      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
     }
   }
 
@@ -1082,7 +1057,7 @@ export class UserService {
         return await this.findAUserById(user);
       }
     } else {
-      throw new GereralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
+      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
     }
   }
 
@@ -1093,7 +1068,7 @@ export class UserService {
 
     const checkUserName = await this.findAUserByUserName(data.userName);
     if (checkUserName != null || checkUserName != undefined) {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.NOT_FOUND,
         'This userName is exist.',
       );
@@ -1107,7 +1082,7 @@ export class UserService {
     );
     if (data.profileImage) {
       if (!foundedProfileImage) {
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.NOT_FOUND,
           'profileImage not uploaded or does not exist.',
         );
@@ -1122,7 +1097,7 @@ export class UserService {
     );
     if (data.headerImage) {
       if (!foundedHeaderImage) {
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.NOT_FOUND,
           'headerImage not uploaded or does not exist.',
         );
@@ -1199,7 +1174,7 @@ export class UserService {
         return await this.findAUserById(this.user._id);
       }
     } else {
-      throw new GereralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
+      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
     }
   }
 
@@ -1210,7 +1185,7 @@ export class UserService {
 
     const checkUserName = await this.findAUserByUserName(data.userName);
     if (checkUserName != null || checkUserName != undefined) {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.NOT_FOUND,
         'This userName is exist.',
       );
@@ -1224,7 +1199,7 @@ export class UserService {
     );
     if (data.profileImage) {
       if (!foundedProfileImage) {
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.NOT_FOUND,
           'profileImage not uploaded or does not exist.',
         );
@@ -1239,7 +1214,7 @@ export class UserService {
     );
     if (data.headerImage) {
       if (!foundedHeaderImage) {
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.NOT_FOUND,
           'headerImage not uploaded or does not exist.',
         );
@@ -1351,7 +1326,7 @@ export class UserService {
       })
       .catch((error) => {
         const errorMessage = 'Some errors occurred while finding a user!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     foundUser.activationStatus = data.activationStatus;
@@ -1369,7 +1344,7 @@ export class UserService {
       })
       .catch((error) => {
         const errorMessage = 'Some errors occurred while editing a user!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -1386,7 +1361,7 @@ export class UserService {
       })
       .catch((error) => {
         const errorMessage = 'Some errors occurred while finding a user!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     foundUser.verificationStatus = data.verificationStatus;
@@ -1405,7 +1380,7 @@ export class UserService {
       })
       .catch((error) => {
         const errorMessage = 'Some errors occurred while editing a user!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -1435,7 +1410,7 @@ export class UserService {
       .catch((error) => {
         const errorMessage =
           'Some errors occurred while finfing a user by email!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -1452,7 +1427,7 @@ export class UserService {
     // })
     // .catch((error)=>{
     //     let errorMessage = 'Some errors occurred while finding a user!';
-    //     throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage)
+    //     throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage)
     // })
     // if(foundUser && foundUser !== undefined && foundUser.deletable){
     //     foundUser.isDeleted = data.isDeleted;
@@ -1466,7 +1441,7 @@ export class UserService {
     // })
     // .catch((error)=>{
     //     let errorMessage = 'Some errors occurred while editing a user!';
-    //     throw new GereralException(ErrorTypeEnum.UNPROCESSABLE_ENTITY, errorMessage)
+    //     throw new GeneralException(ErrorTypeEnum.UNPROCESSABLE_ENTITY, errorMessage)
     // })
     // return this.result;
   }
@@ -1706,7 +1681,7 @@ export class UserService {
       })
       .catch((error) => {
         const errorMessage = 'Some errors occurred while finding a user!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
     return this.result;
   }
@@ -1784,10 +1759,10 @@ export class UserService {
 
         return await response;
       } else {
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
       }
     } else {
-      throw new GereralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
+      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
     }
   }
 
@@ -1819,7 +1794,7 @@ export class UserService {
         !this.user.roles ||
         this.user.roles.some((role) => role.department === 'admins') == false
       ) {
-        throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied.');
+        throw new GeneralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied.');
       }
 
       const isValidPassword = await this.validateUserPassword(
@@ -1860,17 +1835,17 @@ export class UserService {
 
         return await response;
       } else {
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
       }
     } else {
-      throw new GereralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
+      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
     }
   }
 
   async getUserShortRolesByUserName(userName) {
     const userRes = await this.findAUserByUserName(userName);
     if (!userRes) {
-      throw new GereralException(ErrorTypeEnum.NOT_FOUND, 'Account not found!');
+      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, 'Account not found!');
     }
 
     const shortRoles = userRes.roles.flatMap((userRole: any) => {
@@ -1917,14 +1892,14 @@ export class UserService {
         );
 
         if (error) {
-          throw new GereralException(
+          throw new GeneralException(
             418,
             'Entered refresh token is invalid and we cant verify it. ' + error,
           );
         } else {
           if (decodedToken.exp < Math.floor(Date.now() / 1000)) {
             // Math.floor(Date.now()/1000) Converts Date.now() from miliseconds to seconds.
-            throw new GereralException(
+            throw new GeneralException(
               418,
               'Entered refresh token is expired please get new token.',
             );
@@ -1950,14 +1925,14 @@ export class UserService {
         );
 
         if (error) {
-          throw new GereralException(
+          throw new GeneralException(
             418,
             'Entered access token is invalid and we cant verify it. ' + error,
           );
         } else {
           if (decodedToken.exp < Math.floor(Date.now() / 1000)) {
             // Math.floor(Date.now()/1000) Converts Date.now() from miliseconds to seconds.
-            throw new GereralException(
+            throw new GeneralException(
               418,
               'Entered access token is expired please get new token.',
             );
@@ -2285,13 +2260,15 @@ export class UserService {
 
   async getAllUsers() {
     const whereCondition = { isDeleted: false };
-    const populateCondition = [{
-      path: 'roles',
-      populate: {
-        path: 'permissions',
-        select: 'name module label description routes',
+    const populateCondition = [
+      {
+        path: 'roles',
+        populate: {
+          path: 'permissions',
+          select: 'name module label description routes',
+        },
       },
-    }];
+    ];
     const selectCondition = this.getUserKeys();
 
     let foundUsers: any = null;
@@ -2324,7 +2301,7 @@ export class UserService {
       .catch((error) => {
         const errorMessage =
           'Some errors occurred while deleting user in user service!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -2343,7 +2320,7 @@ export class UserService {
           .catch((error) => {
             const errorMessage =
               'Some errors occurred while deleting devices in user service!';
-            throw new GereralException(
+            throw new GeneralException(
               ErrorTypeEnum.UNPROCESSABLE_ENTITY,
               errorMessage,
             );
@@ -2359,7 +2336,7 @@ export class UserService {
                 .catch((error) => {
                   const errorMessage =
                     'Some errors occurred while deleting all user device logs in user service!';
-                  throw new GereralException(
+                  throw new GeneralException(
                     ErrorTypeEnum.UNPROCESSABLE_ENTITY,
                     errorMessage,
                   );
@@ -2376,7 +2353,7 @@ export class UserService {
                   .catch((error) => {
                     const errorMessage =
                       'Some errors occurred while deleting user in user service!';
-                    throw new GereralException(
+                    throw new GeneralException(
                       ErrorTypeEnum.UNPROCESSABLE_ENTITY,
                       errorMessage,
                     );
@@ -2386,7 +2363,7 @@ export class UserService {
               .catch((error) => {
                 const errorMessage =
                   'Some errors occurred while deleting all user devices in user service!';
-                throw new GereralException(
+                throw new GeneralException(
                   ErrorTypeEnum.UNPROCESSABLE_ENTITY,
                   errorMessage,
                 );
@@ -2396,7 +2373,7 @@ export class UserService {
           .catch((error) => {
             const errorMessage =
               'Some errors occurred get user devices for deletion in user service!';
-            throw new GereralException(
+            throw new GeneralException(
               ErrorTypeEnum.UNPROCESSABLE_ENTITY,
               errorMessage,
             );
@@ -2405,7 +2382,7 @@ export class UserService {
       .catch((error) => {
         const errorMessage =
           'Some errors occurred while deleting activities in user service!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );

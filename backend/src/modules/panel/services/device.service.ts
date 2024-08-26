@@ -5,7 +5,7 @@ import mongoose from 'mongoose';
 import { MongoClient, ObjectID } from 'mongodb';
 import { DeviceRepository } from '../repositories/device.repository';
 import * as randompassword from 'secure-random-password';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 
 // Nodejs encryption with CTR
@@ -166,7 +166,7 @@ export class DeviceService {
         })
         .catch((error) => {
           let errorMessage = 'Some errors occurred while finding a device!';
-          throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+          throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
         });
     }
 
@@ -208,7 +208,7 @@ export class DeviceService {
       return true;
     } else {
       console.log('Device not found!');
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.NOT_FOUND,
         'Device does not exist.',
       );
@@ -225,7 +225,7 @@ export class DeviceService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while editing a device!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     return editedDevice;
@@ -253,7 +253,7 @@ export class DeviceService {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while finding a device for deletion!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     // if(foundDevice && foundDevice !== undefined && foundDevice.deletable){
@@ -271,7 +271,7 @@ export class DeviceService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while renaming a device!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -300,7 +300,7 @@ export class DeviceService {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while finding a device for deletion!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     // if(foundDevice && foundDevice !== undefined && foundDevice.deletable){
@@ -320,7 +320,7 @@ export class DeviceService {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while editing and deleting a device!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -338,7 +338,7 @@ export class DeviceService {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while deleting customer devices in device service!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );

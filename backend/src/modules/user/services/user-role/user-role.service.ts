@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { RoleDepartmentsEnum } from '../../enums/role-departments.enum';
 import { UserRoleRepository } from '../../repositories/user-role.repository';
 import { UserPermissionService } from '../user-permission/user-permission.service';
@@ -79,7 +79,7 @@ export class UserRoleService {
             .catch((error) => {
               let errorMessage =
                 'Some errors occurred while finding user permission!';
-              throw new GereralException(
+              throw new GeneralException(
                 ErrorTypeEnum.UNPROCESSABLE_ENTITY,
                 errorMessage,
               );
@@ -104,7 +104,7 @@ export class UserRoleService {
         }
       } catch (error) {
         let errorMessage = 'Some errors occurred while inserting a admin user!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -122,7 +122,7 @@ export class UserRoleService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while finding a user!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -158,7 +158,7 @@ export class UserRoleService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while finding a role!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     if (foundRole) {
@@ -178,7 +178,7 @@ export class UserRoleService {
         })
         .catch((error) => {
           let errorMessage = 'Some errors occurred while editing a user role!';
-          throw new GereralException(
+          throw new GeneralException(
             ErrorTypeEnum.UNPROCESSABLE_ENTITY,
             errorMessage,
           );
@@ -186,7 +186,7 @@ export class UserRoleService {
     } else {
       let errorMessage =
         'Some errors occurred while finding a role!. Role not found!';
-      throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
     }
 
     return this.result;
@@ -200,7 +200,7 @@ export class UserRoleService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while finding a role!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     return this.result;
@@ -220,7 +220,7 @@ export class UserRoleService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while finding a role!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     return this.result;
@@ -234,7 +234,7 @@ export class UserRoleService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while finding a role!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     return this.result;
@@ -248,7 +248,7 @@ export class UserRoleService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while finding a role!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     return this.result;
@@ -263,7 +263,7 @@ export class UserRoleService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while finding a role!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     if (foundRole) {
@@ -280,7 +280,7 @@ export class UserRoleService {
         })
         .catch((error) => {
           let errorMessage = 'Some errors occurred while editing a role!';
-          throw new GereralException(
+          throw new GeneralException(
             ErrorTypeEnum.UNPROCESSABLE_ENTITY,
             errorMessage,
           );
@@ -288,7 +288,7 @@ export class UserRoleService {
     } else {
       let errorMessage =
         'Some errors occurred while editing a role! Role not found';
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         errorMessage,
       );
@@ -306,7 +306,7 @@ export class UserRoleService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while finding a role!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     if (foundRole) {
@@ -322,7 +322,7 @@ export class UserRoleService {
         })
         .catch((error) => {
           let errorMessage = 'Some errors occurred while editing a role!';
-          throw new GereralException(
+          throw new GeneralException(
             ErrorTypeEnum.UNPROCESSABLE_ENTITY,
             errorMessage,
           );
@@ -330,7 +330,7 @@ export class UserRoleService {
     } else {
       let errorMessage =
         'Some errors occurred while editing a role! Role not found';
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         errorMessage,
       );

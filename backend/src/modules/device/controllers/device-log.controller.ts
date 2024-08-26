@@ -26,7 +26,7 @@ import {
 import { Types } from 'mongoose';
 import { JwtAuthGuard } from 'src/modules/authentication/guard/jwt-auth.guard';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { DeviceLogService } from '../services/device-log.service';
 import { DeviceService } from '../services/device.service';
 import storxController from './storx.controller';
@@ -178,7 +178,7 @@ export class DeviceLogController {
         let errorMessage =
           'Some errors occurred while fetching last device log!';
 
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -219,7 +219,7 @@ export class DeviceLogController {
       userId === '' ||
       Types.ObjectId.isValid(String(userId)) === false
     ) {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         'User id is required and must be entered and must be entered correctly.',
       );
@@ -228,7 +228,7 @@ export class DeviceLogController {
     const isAdmin = await this.isAdmin(request.user.userId);
 
     if (isAdmin === false && request.user.userId !== userId) {
-      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+      throw new GeneralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
 
     await this.deviceLogService
@@ -240,7 +240,7 @@ export class DeviceLogController {
         let errorMessage =
           'Some errors occurred while fetching last devices log!';
 
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -340,7 +340,7 @@ export class DeviceLogController {
       .catch((error) => {
         let errorMessage = 'Some errors occurred while fetching devices logs!';
 
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -403,7 +403,7 @@ export class DeviceLogController {
           let errorMessage =
             'Some errors occurred while fetching devices logs!';
 
-          throw new GereralException(
+          throw new GeneralException(
             ErrorTypeEnum.UNPROCESSABLE_ENTITY,
             errorMessage,
           );
@@ -422,7 +422,7 @@ export class DeviceLogController {
           let errorMessage =
             'Some errors occurred while fetching devices logs!';
 
-          throw new GereralException(
+          throw new GeneralException(
             ErrorTypeEnum.UNPROCESSABLE_ENTITY,
             errorMessage,
           );

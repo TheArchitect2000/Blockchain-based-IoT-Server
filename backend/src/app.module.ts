@@ -10,7 +10,7 @@ import { AuthenticationModule } from './modules/authentication/authentication.mo
 import { BlocklyModule } from './modules/blockly/blockly.module';
 import { BrokerModule } from './modules/broker/broker.module';
 import { DeviceModule } from './modules/device/device.module';
-import { ZkpModule } from './modules/zkp/zkp.module';
+import { ContractModule } from './modules/smartcontract/contract.module';
 import { NotificationModule } from './modules/notification/notification.module';
 import { PanelModule } from './modules/panel/panel.module';
 import { ServiceModule } from './modules/service/service.module';
@@ -25,62 +25,62 @@ import { BuildingModule } from './modules/building/building.module';
 //import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
-  imports: [
-    //ScheduleModule.forRoot(),
-    ConfigModule.forRoot({
-      envFilePath: '.env',
-      isGlobal: true,
-      load: [databaseConfig, multerConfig],
-    }),
-    MongooseModule.forRoot(
-      process.env.MONGO_CONNECTION,
-      // `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_CONNECTION}`
-      /* {
+    imports: [
+        //ScheduleModule.forRoot(),
+        ConfigModule.forRoot({
+            envFilePath: '.env',
+            isGlobal: true,
+            load: [databaseConfig, multerConfig],
+        }),
+        MongooseModule.forRoot(
+            process.env.MONGO_CONNECTION,
+            // `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_CONNECTION}`
+            /* {
         useNewUrlParser: true,
         useUnifiedTopology: true,
         useCreateIndex: true,
         useFindAndModify: false,
       } */
-      /* {
+            /* {
         connectionName: 'appDb',
       } */
-    ),
-    /* MongooseModule.forRoot(
+        ),
+        /* MongooseModule.forRoot(
       process.env.MONGO_CONNECTION_PANEL,
       // 'mongodb+srv://<username>:<passowrd>@cluster0-igk.mongodb.net/WildLife?retryWrites=true&w=majority'
       {
         connectionName: 'panelDb',
       },
     ), */
-    ServeStaticModule.forRoot({
-      rootPath: './uploads',
-      serveRoot: '/app/uploads',
-    }),
-    ServeStaticModule.forRoot({
-      rootPath: './uploads/*',
-      serveRoot: '/app/uploads/*',
-    }),
-    AuthenticationModule,
-    UserModule,
-    BrokerModule,
-    DeviceModule,
-    UtilityModule,
-    //PanelModule,
-    ServiceModule,
-    BlocklyModule,
-    NotificationModule,
-    BuildingModule,
-    ZkpModule,
-    MediaModule,
-    AdminModule,
-  ],
-  controllers: [AppController],
-  providers: [
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: ResponseTransformInterceptor,
-    },
-    AppService,
-  ],
+        ServeStaticModule.forRoot({
+            rootPath: './uploads',
+            serveRoot: '/app/uploads',
+        }),
+        ServeStaticModule.forRoot({
+            rootPath: './uploads/*',
+            serveRoot: '/app/uploads/*',
+        }),
+        AuthenticationModule,
+        UserModule,
+        BrokerModule,
+        DeviceModule,
+        UtilityModule,
+        //PanelModule,
+        ServiceModule,
+        BlocklyModule,
+        NotificationModule,
+        BuildingModule,
+        ContractModule,
+        MediaModule,
+        AdminModule,
+    ],
+    controllers: [AppController],
+    providers: [
+        {
+            provide: APP_INTERCEPTOR,
+            useClass: ResponseTransformInterceptor,
+        },
+        AppService,
+    ],
 })
 export class AppModule {}

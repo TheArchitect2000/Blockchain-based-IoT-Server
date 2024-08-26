@@ -8,7 +8,7 @@ import { UserActivationStatusEnum } from '../user/enums/user-activation-status.e
 import { UserVerificationStatusChangeReasonsEnum } from '../user/enums/user-verification-status-change-reasons.enum';
 import { UserVerificationStatusEnum } from '../user/enums/user-verification-status.enum';
 import { UserService } from '../user/services/user/user.service';
-import { GereralException } from '../utility/exceptions/general.exception';
+import { GeneralException } from '../utility/exceptions/general.exception';
 import { GoogleAuthUserResponseDto } from './data-transfer-objects/google-auth.dto';
 // import jwt from 'jsonwebtoken';
 var jwt = require('jsonwebtoken');
@@ -228,7 +228,7 @@ export class AuthenticationService {
           console.log('decoded refresh token', decoded);
           if (Number(decodedRefreshToken.exp) < Math.floor(Date.now() / 1000)) {
             // Math.floor(Date.now()/1000) Converts Date.now() from miliseconds to seconds.
-            throw new GereralException(
+            throw new GeneralException(
               418,
               'Entered refresh token is expired. please relogin to get new access and refresh token.',
             );

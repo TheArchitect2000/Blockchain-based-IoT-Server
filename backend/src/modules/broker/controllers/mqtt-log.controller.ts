@@ -25,7 +25,7 @@ import {
 import { MqttLogService } from '../services/mqtt-log.service';
 import { DeviceLogService } from 'src/modules/device/services/device-log.service';
 import { DeviceEventsEnum } from '../enums/device-events.enum';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { logDeviceEventDto } from '../data-transfer-object/log-device-event.dto';
 import { logDeviceDataDto } from '../data-transfer-object/log-device-data.dto';
@@ -49,7 +49,7 @@ export class MqttLogController {
         .catch((error)=>{
             console.error(error);
             let errorMessage = 'Some errors occurred while inserting device log in mqtt log service!';
-            throw new GereralException(ErrorTypeEnum.UNPROCESSABLE_ENTITY, errorMessage)
+            throw new GeneralException(ErrorTypeEnum.UNPROCESSABLE_ENTITY, errorMessage)
         })
         console.log("Device log inserted!")
     } */
@@ -71,7 +71,7 @@ export class MqttLogController {
         console.error(error);
         let errorMessage =
           'Some errors occurred while inserting device event log in mqtt log service!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -98,7 +98,7 @@ export class MqttLogController {
         console.error(error);
         let errorMessage =
           'Some errors occurred while inserting device data log in mqtt log service!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );

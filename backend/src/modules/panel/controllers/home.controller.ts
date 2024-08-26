@@ -25,7 +25,7 @@ import {
 import { Types } from 'mongoose';
 import { JwtAuthGuard } from 'src/modules/authentication/guard/jwt-auth.guard';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { insertHomeDto } from '../data-transfer-objects/home/insert-home.dto';
 import { HomeService } from '../services/home.service';
 
@@ -61,7 +61,7 @@ export class HomeController {
       customerId === '' ||
       Types.ObjectId.isValid(String(customerId)) === false
     ) {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         'Customer id is required and must be entered and must be entered correctly.',
       );
@@ -75,7 +75,7 @@ export class HomeController {
       .catch((error) => {
         let errorMessage = 'Some errors occurred while fetching home profile!';
 
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );

@@ -2,17 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { CustomerModel } from '../models/customer.model';
 
 @Injectable()
 export class CustomerRepository {
   private result;
 
-  constructor(
-    /* @InjectModel('iacustomer', 'panelDb') // panelDb is defined in app.module.ts
+  constructor() /* @InjectModel('iacustomer', 'panelDb') // panelDb is defined in app.module.ts
     private readonly customerModel?: CustomerModel, */
-  ) {}
+  {}
 
   /* async insertCustomer(data) {
     await this.customerModel
@@ -24,7 +23,7 @@ export class CustomerRepository {
         let errorMessage =
           'Some errors occurred while customer insertion in panel!';
         console.error('Error is: ', error);
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -71,7 +70,7 @@ export class CustomerRepository {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while customer update!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -92,7 +91,7 @@ export class CustomerRepository {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while deleting customer in customer repository!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     return this.result;

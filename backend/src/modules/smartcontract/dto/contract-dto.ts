@@ -7,3 +7,10 @@ export class verifyProofDto {
   @ApiProperty({ required: true })
   proof: string;
 }
+
+export class walletBalanceDto {
+  @IsNotEmpty({ message: 'walletAddress is required and must be entered.' })
+  @IsString({ message: 'walletAddress must be string.' })
+  @ApiProperty({ required: true })
+  walletAddress: string;
+}

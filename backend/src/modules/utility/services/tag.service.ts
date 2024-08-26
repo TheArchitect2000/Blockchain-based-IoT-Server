@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { ObjectID } from 'mongodb';
 // import { Types } from 'mongoose';
 import { TagRepository } from '../repositories/tag.repository';
@@ -27,7 +27,7 @@ export class TagService {
     );
 
     if (this.tag) {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.CONFLICT,
         'This tag already exists!',
       );
@@ -88,7 +88,7 @@ export class TagService {
 
       return await this.tagPanelResponse(foundedNewTag);
     } else {
-      throw new GereralException(ErrorTypeEnum.NOT_FOUND, 'tag not find.');
+      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, 'tag not find.');
     }
   }
 
@@ -105,7 +105,7 @@ export class TagService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while finding a Tag!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     if (foundTag) {
@@ -122,7 +122,7 @@ export class TagService {
         })
         .catch((error) => {
           let errorMessage = 'Some errors occurred while editing a Tag!';
-          throw new GereralException(
+          throw new GeneralException(
             ErrorTypeEnum.UNPROCESSABLE_ENTITY,
             errorMessage,
           );
@@ -145,7 +145,7 @@ export class TagService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while finding a Tag!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     if (foundTag) {
@@ -162,7 +162,7 @@ export class TagService {
         })
         .catch((error) => {
           let errorMessage = 'Some errors occurred while editing a tag!';
-          throw new GereralException(
+          throw new GeneralException(
             ErrorTypeEnum.UNPROCESSABLE_ENTITY,
             errorMessage,
           );
@@ -216,7 +216,7 @@ export class TagService {
         return await this.tagPanelResponse(this.tag);
       }
     } else {
-      throw new GereralException(ErrorTypeEnum.NOT_FOUND, 'tag not find.');
+      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, 'tag not find.');
     }
   }
 
@@ -264,7 +264,7 @@ export class TagService {
         return await this.tagPanelResponse(this.tag);
       }
     } else {
-      throw new GereralException(ErrorTypeEnum.NOT_FOUND, 'tag not find.');
+      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, 'tag not find.');
     }
   }
 
@@ -283,7 +283,7 @@ export class TagService {
     if (this.tag) {
       return await this.tagUserResponse(this.tag);
     } else {
-      throw new GereralException(ErrorTypeEnum.NOT_FOUND, 'tag not find.');
+      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, 'tag not find.');
     }
   }
 
@@ -302,7 +302,7 @@ export class TagService {
     if (this.tag) {
       return await this.tagUserResponse(this.tag);
     } else {
-      throw new GereralException(ErrorTypeEnum.NOT_FOUND, 'tag not find.');
+      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, 'tag not find.');
     }
   }
 
@@ -319,7 +319,7 @@ export class TagService {
         })
         .catch((error) => {
           let errorMessage = 'Some errors occurred while finding a Tag!';
-          throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+          throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
         });
     }
 
@@ -338,7 +338,7 @@ export class TagService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while finding a Tag!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     return this.result;
@@ -445,7 +445,7 @@ export class TagService {
         console.log(error);
 
         let errorMessage = 'Some errors occurred while search in tags!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -487,7 +487,7 @@ export class TagService {
 
       return await this.tagPanelResponse(foundedNewTag);
     } else {
-      throw new GereralException(ErrorTypeEnum.NOT_FOUND, 'tag not find.');
+      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, 'tag not find.');
     }
   }
 

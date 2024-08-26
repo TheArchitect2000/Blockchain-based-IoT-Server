@@ -36,7 +36,7 @@ import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { OTPTypeEnum } from 'src/modules/utility/enums/otp-type.enum';
 import { SortModeEnum } from 'src/modules/utility/enums/sort-mode.enum';
 import { VerificationStatusEnum } from 'src/modules/utility/enums/verification-status.enum';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { PermissionsGuard } from 'src/modules/utility/guards/permissions.guard';
 import { editUserProfileByPanelDto } from '../data-transfer-objects/user/edit-user-profile-by-panel.dto';
 // import { InsertUserByPanelDto } from '../data-transfer-objects/user/insert-user-by-panel.dto';
@@ -254,7 +254,7 @@ export class UserController {
         );
 
         // let errorMessage = 'Some errors occurred while user verification by email!';
-        // throw new GereralException(ErrorTypeEnum.UNPROCESSABLE_ENTITY, errorMessage)
+        // throw new GeneralException(ErrorTypeEnum.UNPROCESSABLE_ENTITY, errorMessage)
       });
 
     // return await this.userService.verifyOtpCodeSentByEmailForSignup(body);
@@ -336,7 +336,7 @@ export class UserController {
         );
 
         // let errorMessage = 'Some errors occurred while user verification by email!';
-        // throw new GereralException(ErrorTypeEnum.UNPROCESSABLE_ENTITY, errorMessage)
+        // throw new GeneralException(ErrorTypeEnum.UNPROCESSABLE_ENTITY, errorMessage)
       });
 
     // return await this.userService.verifyOtpCodeSentByEmailForResetPassword(body);
@@ -438,7 +438,7 @@ export class UserController {
         );
 
         // let errorMessage = 'Some errors occurred while user verification by email!';
-        // throw new GereralException(ErrorTypeEnum.UNPROCESSABLE_ENTITY, errorMessage)
+        // throw new GeneralException(ErrorTypeEnum.UNPROCESSABLE_ENTITY, errorMessage)
       });
 
     // return await this.userService.verifyOtpCodeSentByEmailForResetPassword(body);
@@ -580,9 +580,9 @@ export class UserController {
     @Request() request,
   ) {
     if (process.env.REMIX_USER === user && process.env.REMIX_PASS === pass) {
-      return true
+      return true;
     } else {
-      return false
+      return false;
     }
   }
 
@@ -601,7 +601,7 @@ export class UserController {
       String(request.user.userId) === '' ||
       Types.ObjectId.isValid(String(request.user.userId)) === false
     ) {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         'User id is required and must be entered and must be entered correctly with objectId type.',
       );
@@ -623,7 +623,7 @@ export class UserController {
     @Request() request,
   ) {
     if (userEmail === null || userEmail === undefined || userEmail === '') {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         'User email is required and must be entered and must be entered correctly.',
       );
@@ -632,7 +632,7 @@ export class UserController {
     const isAdmin = await this.isAdmin(request.user.userId);
 
     if (isAdmin === false && request.user.email !== userEmail) {
-      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+      throw new GeneralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
 
     await this.userService
@@ -642,7 +642,7 @@ export class UserController {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while fetching user!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -668,7 +668,7 @@ export class UserController {
     const isAdmin = await this.isAdmin(request.user.userId);
 
     if (isAdmin === false && request.user.userId !== userId) {
-      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+      throw new GeneralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
 
     return await this.userService.editUserByUser(userId, body);
@@ -694,7 +694,7 @@ export class UserController {
         body.profileImage === '' ||
         Types.ObjectId.isValid(String(body.profileImage)) === false
       ) {
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           'profileImage is required and must be entered and must be entered correctly with objectId type.',
         );
@@ -708,7 +708,7 @@ export class UserController {
         body.headerImage === '' ||
         Types.ObjectId.isValid(String(body.headerImage)) === false
       ) {
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           'headerImage is required and must be entered and must be entered correctly with objectId type.',
         );
@@ -737,7 +737,7 @@ export class UserController {
       String(request.user.userId) === '' ||
       Types.ObjectId.isValid(String(request.user.userId)) === false
     ) {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         'User id is required and must be entered and must be entered correctly with objectId type.',
       );
@@ -796,7 +796,7 @@ export class UserController {
       userId === '' ||
       Types.ObjectId.isValid(String(userId)) === false
     ) {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         'User id is required and must be entered and must be entered correctly with objectId type.',
       );
@@ -805,7 +805,7 @@ export class UserController {
     const isAdmin = await this.isAdmin(request.user.userId);
 
     if (isAdmin === false && request.user.userId !== userId) {
-      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+      throw new GeneralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
 
     return await this.userService.getUserProfileByIdFromUser(userId);
@@ -825,7 +825,7 @@ export class UserController {
     @Request() request,
   ) {
     if (userName === null || userName === undefined || userName === '') {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         'userName is required and must be entered.',
       );
@@ -834,7 +834,7 @@ export class UserController {
     const isAdmin = await this.isAdmin(request.user.userId);
 
     if (isAdmin === false && request.user.email !== userName) {
-      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+      throw new GeneralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
 
     return await this.userService.getUserProfileByUserNameFromUser(userName);
@@ -851,7 +851,7 @@ export class UserController {
   })
   async checkUserNameIsExist(@Param('userName') userName: string) {
     if (userName === null || userName === undefined || userName === '') {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         'userName is required and must be entered.',
       );
@@ -869,7 +869,7 @@ export class UserController {
   })
   async checkUserEmailIsExist(@Param('userEmail') userEmail: string) {
     if (userEmail === null || userEmail === undefined || userEmail === '') {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         'email is required and must be entered.',
       );
@@ -897,7 +897,7 @@ export class UserController {
         body.profileImage === '' ||
         Types.ObjectId.isValid(String(body.profileImage)) === false
       ) {
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           'profileImage is required and must be entered and must be entered correctly with objectId type.',
         );
@@ -911,7 +911,7 @@ export class UserController {
         body.headerImage === '' ||
         Types.ObjectId.isValid(String(body.headerImage)) === false
       ) {
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           'headerImage is required and must be entered and must be entered correctly with objectId type.',
         );
@@ -936,7 +936,7 @@ export class UserController {
         body.userName === undefined ||
         body.userName === ''
       ) {
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           'userName is required and must be entered and must be entered correctly.',
         );
@@ -946,7 +946,7 @@ export class UserController {
     const emails = process.env.SUPER_ADMIN_EMAILS;
 
     if (!emails.includes(request.user.email.toString())) {
-      throw new GereralException(ErrorTypeEnum.UNAUTHORIZED, 'Access Denied !');
+      throw new GeneralException(ErrorTypeEnum.UNAUTHORIZED, 'Access Denied !');
     }
 
     return await this.userService.makeUserAdmin(body.userName, body.roleNames);
@@ -966,7 +966,7 @@ export class UserController {
   ) {
     if (userName) {
       if (userName === null || userName === undefined || userName === '') {
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           'userName is required and must be entered and must be entered correctly.',
         );
@@ -976,7 +976,7 @@ export class UserController {
     const isAdmin = await this.isAdmin(request.user.userId);
 
     if (isAdmin === false && request.user.email !== userName) {
-      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+      throw new GeneralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
 
     return this.userService.getUserShortRolesByUserName(userName);
@@ -997,7 +997,7 @@ export class UserController {
         body.userName === undefined ||
         body.userName === ''
       ) {
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           'userName is required and must be entered and must be entered correctly.',
         );
@@ -1007,7 +1007,7 @@ export class UserController {
     const emails = process.env.SUPER_ADMIN_EMAILS;
 
     if (!emails.includes(request.user.email.toString())) {
-      throw new GereralException(ErrorTypeEnum.UNAUTHORIZED, 'Access Denied !');
+      throw new GeneralException(ErrorTypeEnum.UNAUTHORIZED, 'Access Denied !');
     }
 
     return await this.userService.takeUserAdminRanks(
@@ -1036,7 +1036,7 @@ export class UserController {
       userId === '' ||
       Types.ObjectId.isValid(String(userId)) === false
     ) {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         'userId is required and must be entered and must be entered correctly with objectId type.',
       );
@@ -1049,7 +1049,7 @@ export class UserController {
         body.profileImage === '' ||
         Types.ObjectId.isValid(String(body.profileImage)) === false
       ) {
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           'profileImage is required and must be entered and must be entered correctly with objectId type.',
         );
@@ -1063,7 +1063,7 @@ export class UserController {
         body.headerImage === '' ||
         Types.ObjectId.isValid(String(body.headerImage)) === false
       ) {
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           'headerImage is required and must be entered and must be entered correctly with objectId type.',
         );
@@ -1096,7 +1096,7 @@ export class UserController {
       String(userId) === '' ||
       Types.ObjectId.isValid(String(userId)) === false
     ) {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         'User id is required and must be entered and must be entered correctly with objectId type.',
       );
@@ -1105,7 +1105,7 @@ export class UserController {
     const isAdmin = await this.isAdmin(request.user.userId);
 
     if (isAdmin === false && request.user.userId !== userId) {
-      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+      throw new GeneralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
 
     return await this.userService.changeUserProfileActivationByPanel(
@@ -1133,7 +1133,7 @@ export class UserController {
       String(userId) === '' ||
       Types.ObjectId.isValid(String(userId)) === false
     ) {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         'User id is required and must be entered and must be entered correctly with objectId type.',
       );
@@ -1142,7 +1142,7 @@ export class UserController {
     const isAdmin = await this.isAdmin(request.user.userId);
 
     if (isAdmin === false && request.user.userId !== userId) {
-      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+      throw new GeneralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
 
     return await this.userService.changeUserProfileVerificationByPanel(
@@ -1163,7 +1163,7 @@ export class UserController {
     const isAdmin = await this.isAdmin(request.user.userId);
 
     if (isAdmin === false) {
-      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+      throw new GeneralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
 
     await this.userService
@@ -1174,7 +1174,7 @@ export class UserController {
       .catch((error) => {
         let errorMessage = 'Some errors occurred while fetching users!';
 
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -1279,7 +1279,7 @@ export class UserController {
     toDate = toDate ? new Date(toDate).toISOString() : new Date().toISOString();
 
     if (fromDate > toDate) {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         'Start date cant be grater than end date .',
       );
@@ -1324,7 +1324,7 @@ export class UserController {
       Types.ObjectId.isValid(String(userId)) === false
     ) {
       let errorMessage = 'User id is not valid!';
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         errorMessage,
       );
@@ -1333,7 +1333,7 @@ export class UserController {
     const isAdmin = await this.isAdmin(request.user.userId);
 
     if (isAdmin === false && request.user.userId !== userId) {
-      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+      throw new GeneralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
 
     await this.VirtualMachineService.deleteAllUserVirtualMachines(userId);
@@ -1346,7 +1346,7 @@ export class UserController {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while deleting all user data in user controller!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );

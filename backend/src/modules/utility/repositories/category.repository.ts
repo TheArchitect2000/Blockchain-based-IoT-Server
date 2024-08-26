@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { MongoClient, ObjectID } from 'mongodb';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { CategoryModel } from '../models/category.model';
 
 @Injectable()
@@ -24,7 +24,7 @@ export class CategoryRepository {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while Category insertion!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -49,7 +49,7 @@ export class CategoryRepository {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while category update!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -70,7 +70,7 @@ export class CategoryRepository {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while finding a category in category repository!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     return this.result;
@@ -85,7 +85,7 @@ export class CategoryRepository {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while finding a category!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     return this.result;
@@ -99,7 +99,7 @@ export class CategoryRepository {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while finding a category!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     return this.result;

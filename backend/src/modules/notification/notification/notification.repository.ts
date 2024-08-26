@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { MongoClient, ObjectID } from 'mongodb';
 import { Types } from 'mongoose';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { NotificationModel } from './notification.model';
 import { NotificationSchema } from './notification.schema';
 
@@ -30,7 +30,7 @@ export class NotificationRepository {
         const errorMessage =
           'Some errors occurred while inserting notification!';
         console.log(error.message);
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -93,7 +93,7 @@ export class NotificationRepository {
     } catch (error) {
       const errorMessage =
         'Some errors occurred while setting notification as read!';
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         errorMessage,
       );
@@ -109,7 +109,7 @@ export class NotificationRepository {
       .catch((error) => {
         const errorMessage = 'Some errors occurred while user insertion!';
         console.log(error.message);
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -128,7 +128,7 @@ export class NotificationRepository {
       })
       .catch((error) => {
         const errorMessage = 'Some errors occurred while user update!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -162,7 +162,7 @@ export class NotificationRepository {
       .catch((error) => {
         const errorMessage =
           'Some errors occurred while find user by email in user repository!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     return this.result;
@@ -185,7 +185,7 @@ export class NotificationRepository {
       .catch((error) => {
         const errorMessage =
           'Some errors occurred while find user by mobile in user repository!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     return this.result;
@@ -216,7 +216,7 @@ export class NotificationRepository {
       .catch((error) => {
         const errorMessage =
           'Some errors occurred while deleting user in user repository!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     return this.result;
@@ -231,7 +231,7 @@ export class NotificationRepository {
       })
       .catch((error) => {
         const errorMessage = 'Some errors occurred while finding a user!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     return this.result;
@@ -243,7 +243,7 @@ export class NotificationRepository {
       options,
       (error, data) => {
         if (error) {
-          throw new GereralException(
+          throw new GeneralException(
             ErrorTypeEnum.UNPROCESSABLE_ENTITY,
             'An error occurred while paginate users.',
           );

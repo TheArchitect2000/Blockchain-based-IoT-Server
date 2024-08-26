@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { ActivityModel } from '../models/activity.model';
 import { HomeModel } from '../models/home.model';
 
@@ -10,10 +10,9 @@ import { HomeModel } from '../models/home.model';
 export class ActivityRepository {
   private result;
 
-  constructor(
-    /* @InjectModel('iaactivity', 'panelDb') // panelDb is defined in app.module.ts
+  constructor() /* @InjectModel('iaactivity', 'panelDb') // panelDb is defined in app.module.ts
     private readonly activityModel?: ActivityModel, */
-  ) {}
+  {}
 
   /* async getDeviceActivityByEncryptedDeviceIdAndFieldName(query) {
     return await this.activityModel
@@ -38,7 +37,7 @@ export class ActivityRepository {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while deleting activities in activity repository!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     return this.result;

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import mongoose from 'mongoose';
 import { ServiceRepository } from '../repositories/service.repository';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 
 export type Service = any;
 
@@ -38,7 +38,7 @@ export class ServiceService {
     return insertedService;
   }
 
-  async editService(body, userId, isAdmin=false): Promise<any> {
+  async editService(body, userId, isAdmin = false): Promise<any> {
     let whereCondition = { _id: body.serviceId };
     let populateCondition = [];
     let selectCondition =
@@ -62,7 +62,7 @@ export class ServiceService {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while finding a service for edit!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     // if(foundService && foundService !== undefined && foundService.deletable){
@@ -133,7 +133,7 @@ export class ServiceService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while renaming a service!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -166,7 +166,7 @@ export class ServiceService {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while finding a service for publish!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     // if(foundService && foundService !== undefined && foundService.deletable){
@@ -188,7 +188,7 @@ export class ServiceService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while publishing a service!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -221,7 +221,7 @@ export class ServiceService {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while finding a service for canceling!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     // if(foundService && foundService !== undefined && foundService.deletable){
@@ -244,7 +244,7 @@ export class ServiceService {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while canceling a service request !';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -277,7 +277,7 @@ export class ServiceService {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while finding a service for reject!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     // if(foundService && foundService !== undefined && foundService.deletable){
@@ -299,7 +299,7 @@ export class ServiceService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while publishing a service!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -332,7 +332,7 @@ export class ServiceService {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while finding a service for publishing request!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     // if(foundService && foundService !== undefined && foundService.deletable){
@@ -371,7 +371,7 @@ export class ServiceService {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while requesting publish a service!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -380,7 +380,7 @@ export class ServiceService {
     return this.result;
   }
 
-  async getServiceById(serviceId, userId, isAdmin=false) {
+  async getServiceById(serviceId, userId, isAdmin = false) {
     let whereCondition = { isDeleted: false };
     let populateCondition = [];
     let selectCondition =
@@ -401,7 +401,7 @@ export class ServiceService {
         })
         .catch((error) => {
           let errorMessage = 'Some errors occurred while finding a service!';
-          throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+          throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
         });
     }
 
@@ -579,7 +579,11 @@ export class ServiceService {
     return response;
   }
 
-  async deleteServiceByServiceId(serviceId, userId, isAdmin=false): Promise<any> {
+  async deleteServiceByServiceId(
+    serviceId,
+    userId,
+    isAdmin = false,
+  ): Promise<any> {
     let whereCondition = { isDeleted: false };
     let populateCondition = [];
     let selectCondition =
@@ -599,7 +603,7 @@ export class ServiceService {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while finding a service for deletion!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     // if(foundService && foundService !== undefined && foundService.deletable){
@@ -647,7 +651,7 @@ export class ServiceService {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while editing and deleting a service!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -665,7 +669,7 @@ export class ServiceService {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while deleting all user services in service service!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );

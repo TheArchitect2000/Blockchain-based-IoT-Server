@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { MongoClient, ObjectID } from 'mongodb';
 import { Types } from 'mongoose';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { DeviceTypeModel } from '../models/device-type.model';
 
 @Injectable()
@@ -23,7 +23,7 @@ export class DeviceTypeRepository {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while device type insertion!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -42,7 +42,7 @@ export class DeviceTypeRepository {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while device type update!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -80,7 +80,7 @@ export class DeviceTypeRepository {
       options,
       (error, data) => {
         if (error) {
-          throw new GereralException(
+          throw new GeneralException(
             ErrorTypeEnum.UNPROCESSABLE_ENTITY,
             'An error occurred while paginate device types.',
           );

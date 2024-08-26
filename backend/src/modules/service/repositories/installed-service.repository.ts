@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { InstalledServiceModel } from '../models/installed-service.model';
 
 @Injectable()
@@ -24,7 +24,7 @@ export class InstalledServiceRepository {
         let errorMessage =
           'Some errors occurred while installed service insertion!';
         console.error('Error is: ', error);
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -44,7 +44,7 @@ export class InstalledServiceRepository {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while installed service update!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -129,7 +129,7 @@ export class InstalledServiceRepository {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while deleting all user installed services in service repository!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     return this.result;

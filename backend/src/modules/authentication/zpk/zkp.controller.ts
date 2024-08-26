@@ -23,7 +23,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { verifyProofDto } from 'src/modules/service/data-transfer-objects/verify-proof.dto';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { JwtAuthGuard } from '../guard/jwt-auth.guard';
 
@@ -43,7 +43,7 @@ export class zpkController {
 
     if (body.proof === null || body.proof === undefined || body.proof === '') {
       let errorMessage = 'proof is not valid!';
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         errorMessage,
       );

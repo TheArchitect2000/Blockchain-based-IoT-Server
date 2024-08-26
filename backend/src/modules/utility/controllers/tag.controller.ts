@@ -25,7 +25,7 @@ import {
 import { JwtAuthGuard } from 'src/modules/authentication/guard/jwt-auth.guard';
 // import { DeleteGeneralDto } from 'src/modules/utility/data-transfer-objects/delete-general.dto';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { Types } from 'mongoose';
 import { insertTagByPanelDto } from '../data-transfer-objects/tag/insert-tag-by-panel.dto';
 import { updateTagByPanelDto } from '../data-transfer-objects/tag/update-tag-by-panel.dto';
@@ -84,7 +84,7 @@ export class TagController {
       tagId === '' ||
       Types.ObjectId.isValid(String(tagId)) === false
     ) {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         'tagId is required and must be entered and must be entered correctly with objectId type.',
       );
@@ -109,7 +109,7 @@ export class TagController {
       tagId === '' ||
       Types.ObjectId.isValid(String(tagId)) === false
     ) {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         'tagId is required and must be entered and must be entered correctly with objectId type.',
       );
@@ -138,7 +138,7 @@ export class TagController {
       tagId === '' ||
       Types.ObjectId.isValid(String(tagId)) === false
     ) {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         'tagId is required and must be entered and must be entered correctly with objectId type.',
       );
@@ -166,7 +166,7 @@ export class TagController {
       tagId === '' ||
       Types.ObjectId.isValid(String(tagId)) === false
     ) {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         'tagId id is required and must be entered and must be entered correctly with objectId type.',
       );
@@ -188,7 +188,7 @@ export class TagController {
     @Request() request,
   ) {
     if (tagName === null || tagName === undefined || tagName === '') {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         'tagName is required and must be entered and must be entered correctly with objectId type.',
       );
@@ -213,7 +213,7 @@ export class TagController {
       tagId === '' ||
       Types.ObjectId.isValid(String(tagId)) === false
     ) {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         'tagId id is required and must be entered and must be entered correctly with objectId type.',
       );
@@ -362,7 +362,7 @@ export class TagController {
     toDate = toDate ? new Date(toDate).toISOString() : new Date().toISOString();
 
     if (fromDate > toDate) {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         'Start date cant be grater than end date .',
       );

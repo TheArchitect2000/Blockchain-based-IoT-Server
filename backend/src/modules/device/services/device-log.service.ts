@@ -1,5 +1,5 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { log } from 'console';
 import { DeviceLogRepository } from '../repositories/device-log.repository';
@@ -38,7 +38,7 @@ export class DeviceLogService {
         .catch((error)=>{
             console.error(error);
             let errorMessage = 'Some errors occurred while inserting device log in device log service!';
-            throw new GereralException(ErrorTypeEnum.UNPROCESSABLE_ENTITY, errorMessage)
+            throw new GeneralException(ErrorTypeEnum.UNPROCESSABLE_ENTITY, errorMessage)
         })
         return insertedDeviceLog;
     } */
@@ -61,7 +61,7 @@ export class DeviceLogService {
         console.error(error);
         let errorMessage =
           'Some errors occurred while inserting device log in device log service!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -89,7 +89,7 @@ export class DeviceLogService {
         console.error(error);
         let errorMessage =
           'Some errors occurred while inserting device log in device log service!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -149,7 +149,7 @@ export class DeviceLogService {
         let errorMessage =
           'Some errors occurred while fetching installed devices profiles!';
 
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -172,7 +172,7 @@ export class DeviceLogService {
         .catch((error) => {
           let errorMessage =
             'Some errors occurred while finding logs for installed active devices!';
-          throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+          throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
         });
     }
     return foundActivities;
@@ -316,7 +316,7 @@ export class DeviceLogService {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while deleting device logs in device log service!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );

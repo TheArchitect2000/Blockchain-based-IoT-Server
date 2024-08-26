@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { MongoClient, ObjectID } from 'mongodb';
 import { Types } from 'mongoose';
 import { CategoryRepository } from '../repositories/category.repository';
@@ -22,7 +22,7 @@ export class CategoryService {
     );
 
     if (foundCategory) {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.CONFLICT,
         'This category already exists!',
       );
@@ -39,7 +39,7 @@ export class CategoryService {
       );
       if (data.parent) {
         if (!foundedParent) {
-          throw new GereralException(
+          throw new GeneralException(
             ErrorTypeEnum.NOT_FOUND,
             'parent does not exist.',
           );
@@ -54,7 +54,7 @@ export class CategoryService {
       );
       if (data.image) {
         if (!foundedImage) {
-          throw new GereralException(
+          throw new GeneralException(
             ErrorTypeEnum.NOT_FOUND,
             'image not uploaded or does not exist.',
           );
@@ -63,7 +63,7 @@ export class CategoryService {
 
       if (data.type == categoryTypeEnum.SUBCATEGORY) {
         if (!data.parent) {
-          throw new GereralException(
+          throw new GeneralException(
             ErrorTypeEnum.UNPROCESSABLE_ENTITY,
             'subCategort must have a parent.',
           );
@@ -147,7 +147,7 @@ export class CategoryService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while finding a category!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     if (foundCategory) {
@@ -176,7 +176,7 @@ export class CategoryService {
         })
         .catch((error) => {
           let errorMessage = 'Some errors occurred while editing a category!';
-          throw new GereralException(
+          throw new GeneralException(
             ErrorTypeEnum.UNPROCESSABLE_ENTITY,
             errorMessage,
           );
@@ -195,7 +195,7 @@ export class CategoryService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while finding a category!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     foundCategory.activationStatus = data.activationStatus;
@@ -213,7 +213,7 @@ export class CategoryService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while editing a category!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -231,7 +231,7 @@ export class CategoryService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while finding a category!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     foundCategory.verificationStatus = data.verificationStatus;
@@ -249,7 +249,7 @@ export class CategoryService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while editing a category!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -267,7 +267,7 @@ export class CategoryService {
         })
         .catch((error) => {
           let errorMessage = 'Some errors occurred while finding a category!';
-          throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+          throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
         });
     }
 
@@ -283,7 +283,7 @@ export class CategoryService {
         })
         .catch((error) => {
           let errorMessage = 'Some errors occurred while finding a category!';
-          throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+          throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
         });
     }
 
@@ -298,7 +298,7 @@ export class CategoryService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while finding a category!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     return this.result;
@@ -432,7 +432,7 @@ export class CategoryService {
         console.log(error);
 
         let errorMessage = 'Some errors occurred while search in categories!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -450,7 +450,7 @@ export class CategoryService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while finding a category!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     if (
@@ -471,7 +471,7 @@ export class CategoryService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while editing a category!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );

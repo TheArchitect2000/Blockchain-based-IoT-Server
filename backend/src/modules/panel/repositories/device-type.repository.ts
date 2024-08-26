@@ -1,17 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { DeviceTypeModel } from '../models/device-type.model';
 
 @Injectable()
 export class DeviceTypeRepository {
   private result;
 
-  constructor(
-    /* @InjectModel('iadevicetype', 'panelDb') // panelDb is defined in app.module.ts
+  constructor() /* @InjectModel('iadevicetype', 'panelDb') // panelDb is defined in app.module.ts
     private readonly deviceTypeModel?: DeviceTypeModel, */
-  ) {}
+  {}
 
   /* async insertDeviceType(data) {
     await this.deviceTypeModel
@@ -23,7 +22,7 @@ export class DeviceTypeRepository {
         let errorMessage =
           'Some errors occurred while device type insertion in panel!';
         console.error('Error is: ', error);
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );

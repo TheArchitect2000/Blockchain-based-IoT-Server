@@ -25,7 +25,7 @@ import {
 import { Types } from 'mongoose';
 import { JwtAuthGuard } from 'src/modules/authentication/guard/jwt-auth.guard';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { insertDeviceDto } from '../data-transfer-objects/device/insert-device.dto';
 import { DeviceTypeService } from '../services/device-type.service';
 
@@ -53,7 +53,7 @@ export class DeviceTypeController {
       .catch((error) => {
         let errorMessage = 'Some errors occurred while fetching device types!';
 
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );

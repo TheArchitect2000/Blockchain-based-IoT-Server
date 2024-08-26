@@ -1,7 +1,7 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import mongoose from 'mongoose';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { InstalledServiceRepository } from '../repositories/installed-service.repository';
 import { VirtualMachineHandlerService } from 'src/modules/virtual-machine/services/service-handler.service';
 import { NotificationService } from 'src/modules/notification/notification/notification.service';
@@ -68,7 +68,7 @@ export class InstalledServiceService {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while finding a installed service for edit!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     // if(foundInstalledService && foundInstalledService !== undefined && foundInstalledService.deletable){
@@ -131,7 +131,7 @@ export class InstalledServiceService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while renaming a device!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -161,7 +161,7 @@ export class InstalledServiceService {
         })
         .catch((error) => {
           let errorMessage = 'Some errors occurred while finding a service!';
-          throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+          throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
         });
     }
 
@@ -213,7 +213,7 @@ export class InstalledServiceService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while finding a service!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     if (
@@ -300,7 +300,7 @@ export class InstalledServiceService {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while finding a installed service for deletion!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     // if(foundInstalledService && foundInstalledService !== undefined && foundInstalledService.deletable){
@@ -354,7 +354,7 @@ export class InstalledServiceService {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while editing and deleting a installed service!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -408,7 +408,7 @@ export class InstalledServiceService {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while deleting all user installed services in installed service service!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );

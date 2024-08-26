@@ -348,7 +348,7 @@ export class MqttService implements OnModuleInit {
         .catch((error)=>{
             console.error(error);
             let errorMessage = 'Some errors occurred while inserting device log in mqtt log service!';
-            throw new GereralException(ErrorTypeEnum.UNPROCESSABLE_ENTITY, errorMessage)
+            throw new GeneralException(ErrorTypeEnum.UNPROCESSABLE_ENTITY, errorMessage)
         })
         console.log("Device log inserted!") */
   }

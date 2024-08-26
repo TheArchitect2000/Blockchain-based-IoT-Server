@@ -25,7 +25,7 @@ import {
 import { Types } from 'mongoose';
 import { JwtAuthGuard } from 'src/modules/authentication/guard/jwt-auth.guard';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { DeleteUserInfoDto } from '../data-transfer-objects/user-info/delete-user-info.dto';
 import { EditUserInfoProfileByPanelDto } from '../data-transfer-objects/user-info/edit-user-info-profile-by-panel.dto';
 import { EditUserInfoProfileByUserDto } from '../data-transfer-objects/user-info/edit-user-info-profile-by-user.dto';
@@ -60,7 +60,7 @@ export class UserInfoController {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while user info insertion!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -89,7 +89,7 @@ export class UserInfoController {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while user info insertion!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -118,7 +118,7 @@ export class UserInfoController {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while user info insertion!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -147,7 +147,7 @@ export class UserInfoController {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while user info insertion!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -169,7 +169,7 @@ export class UserInfoController {
       Types.ObjectId.isValid(String(body._id)) === false
     ) {
       let errorMessage = 'User info id is not valid!';
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         errorMessage,
       );
@@ -182,7 +182,7 @@ export class UserInfoController {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while deleting the user info!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );

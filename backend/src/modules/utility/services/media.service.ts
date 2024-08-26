@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { ErrorTypeEnum } from '../enums/error-type.enum';
-import { GereralException } from '../exceptions/general.exception';
+import { GeneralException } from '../exceptions/general.exception';
 import { MediaModel } from '../models/media.model';
 import { MediaRepository } from '../repositories/media.repository';
 import { uploadFileDto } from '../data-transfer-objects/upload-file.dto';
@@ -58,13 +58,13 @@ export class MediaService {
           encoding: uploadedFile.encoding,
         };
       } else {
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           'An error occurred while uploading the file.',
         );
       }
     } catch (error) {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.INTERNAL_SERVER_ERROR,
         'An error occurred while saving the file to the database.',
       );

@@ -25,7 +25,7 @@ import {
 import { Types } from 'mongoose';
 import { JwtAuthGuard } from 'src/modules/authentication/guard/jwt-auth.guard';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { insertDeviceDto } from '../data-transfer-objects/insert-device.dto';
 import { renameDeviceDto } from '../data-transfer-objects/rename-device.dto';
 import { DeviceService } from '../services/device.service';
@@ -69,7 +69,7 @@ export class DeviceController {
   })
   async checkDeviceIsExist(@Param('deviceMac') deviceMac: string) {
     if (deviceMac === null || deviceMac === undefined || deviceMac === '') {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         'mac address is required and must be entered.',
       );
@@ -114,7 +114,7 @@ export class DeviceController {
       Types.ObjectId.isValid(String(body.deviceId)) === false
     ) {
       let errorMessage = 'Device id is not valid!';
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         errorMessage,
       );
@@ -129,7 +129,7 @@ export class DeviceController {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while editing the device!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -156,7 +156,7 @@ export class DeviceController {
       userId === '' ||
       Types.ObjectId.isValid(String(userId)) === false
     ) {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         'User id is required and must be entered and must be entered correctly.',
       );
@@ -165,7 +165,7 @@ export class DeviceController {
     const isAdmin = await this.isAdmin(request.user.userId);
 
     if (isAdmin === false && request.user.userId !== userId) {
-      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+      throw new GeneralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
 
     await this.deviceService
@@ -177,7 +177,7 @@ export class DeviceController {
         let errorMessage =
           'Some errors occurred while fetching devices profiles!';
 
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -204,7 +204,7 @@ export class DeviceController {
       userId === '' ||
       Types.ObjectId.isValid(String(userId)) === false
     ) {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         'User id is required and must be entered and must be entered correctly.',
       );
@@ -213,7 +213,7 @@ export class DeviceController {
     const isAdmin = await this.isAdmin(request.user.userId);
 
     if (isAdmin === false && request.user.userId !== userId) {
-      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+      throw new GeneralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
 
     await this.deviceService
@@ -225,7 +225,7 @@ export class DeviceController {
         let errorMessage =
           'Some errors occurred while fetching devices profiles!';
 
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -252,7 +252,7 @@ export class DeviceController {
       Types.ObjectId.isValid(String(body.deviceId)) === false
     ) {
       let errorMessage = 'Device id is not valid!';
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         errorMessage,
       );
@@ -267,7 +267,7 @@ export class DeviceController {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while renaming the device!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -312,7 +312,7 @@ export class DeviceController {
     const isAdmin = await this.isAdmin(request.user.userId);
 
     if (isAdmin === false) {
-      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+      throw new GeneralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
 
     await this.deviceService
@@ -328,7 +328,7 @@ export class DeviceController {
         let errorMessage =
           'Some errors occurred while fetching installed devices!' + error;
 
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -382,7 +382,7 @@ export class DeviceController {
         let errorMessage =
           'Some errors occurred while fetching installed devices!' + error;
 
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -409,7 +409,7 @@ export class DeviceController {
         let errorMessage =
           'Some errors occurred while fetching shared devices!';
 
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -430,7 +430,7 @@ export class DeviceController {
     const isAdmin = await this.isAdmin(request.user.userId);
 
     if (isAdmin === false) {
-      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+      throw new GeneralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
     await this.deviceService
       .getAllDevices()
@@ -440,7 +440,7 @@ export class DeviceController {
       .catch((error) => {
         let errorMessage = 'Some errors occurred while fetching devices!';
 
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -471,7 +471,7 @@ export class DeviceController {
       .catch((error) => {
         let errorMessage = 'Some errors occurred while fetching devices!';
 
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -496,7 +496,7 @@ export class DeviceController {
       Types.ObjectId.isValid(String(deviceId)) === false
     ) {
       let errorMessage = 'Device id is not valid!';
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         errorMessage,
       );
@@ -511,7 +511,7 @@ export class DeviceController {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while deleting the device!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );

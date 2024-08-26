@@ -2,17 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { HomeModel } from '../models/home.model';
 
 @Injectable()
 export class HomeRepository {
   private result;
 
-  constructor(
-    /* @InjectModel('iahome', 'panelDb') // panelDb is defined in app.module.ts
+  constructor() /* @InjectModel('iahome', 'panelDb') // panelDb is defined in app.module.ts
     private readonly homeModel?: HomeModel, */
-  ) {}
+  {}
 
   /* async insertHome(data) {
     await this.homeModel
@@ -24,7 +23,7 @@ export class HomeRepository {
         let errorMessage =
           'Some errors occurred while home insertion in panel!';
         console.error('Error is: ', error);
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -62,7 +61,7 @@ export class HomeRepository {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while deleting home in home repository!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     return this.result;

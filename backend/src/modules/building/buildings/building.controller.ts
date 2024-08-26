@@ -19,7 +19,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import {
   CreateBuildingRequestBodyDto,
   EditBuildingRequestBodyDto,
@@ -96,7 +96,7 @@ export class BuildingController {
     const isAdmin = await this.isAdmin(request.user.userId);
 
     if (isAdmin === false) {
-      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+      throw new GeneralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
     return this.service.getAllBuildings();
   }
@@ -115,7 +115,7 @@ export class BuildingController {
     const isAdmin = await this.isAdmin(request.user.userId);
 
     if (isAdmin === false && request.user.userId !== userId) {
-      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+      throw new GeneralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
 
     return this.service.getAllBuildingsByUserId(userId);

@@ -3,7 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthenticationService } from '../authentication.service';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { CustomValidatorService } from 'src/modules/utility/services/custom-validator.service';
 
 @Injectable()
@@ -30,16 +30,16 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       } else {
         if (validateResult.error === 'passwordIncorrect') {
           let errorMessage = 'User name or password is incorrect!'; // User password is incorrect!
-          throw new GereralException(ErrorTypeEnum.FORBIDDEN, errorMessage);
+          throw new GeneralException(ErrorTypeEnum.FORBIDDEN, errorMessage);
           // throw new UnauthorizedException();
         } else if (validateResult.error === 'userNotFound') {
           let errorMessage = 'User not found!';
-          throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+          throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
         }
       }
     } else {
       let errorMessage = 'Mobile number is not valid!'; // User mobile is incorrect!
-      throw new GereralException(ErrorTypeEnum.INVALID_INPUT, errorMessage);
+      throw new GeneralException(ErrorTypeEnum.INVALID_INPUT, errorMessage);
     }
 
     /* const user = await this.authenticationService.validateUser(mobile, password);

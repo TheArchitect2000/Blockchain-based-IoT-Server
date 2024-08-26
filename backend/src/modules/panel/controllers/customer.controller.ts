@@ -25,7 +25,7 @@ import {
 import { Types } from 'mongoose';
 import { JwtAuthGuard } from 'src/modules/authentication/guard/jwt-auth.guard';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { insertCustomerDto } from '../data-transfer-objects/customer/insert-customer.dto';
 import { CustomerService } from '../services/customer.service';
 
@@ -53,7 +53,7 @@ export class CustomerController {
       customerEmail === undefined ||
       customerEmail === ''
     ) {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         'email is required and must be entered.',
       );
@@ -87,7 +87,7 @@ export class CustomerController {
       customerEmail === undefined ||
       customerEmail === ''
     ) {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         'Customer email is required and must be entered and must be entered correctly.',
       );
@@ -102,7 +102,7 @@ export class CustomerController {
         let errorMessage =
           'Some errors occurred while fetching customer profile!';
 
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -142,7 +142,7 @@ export class CustomerController {
       Types.ObjectId.isValid(String(customerId)) === false
     ) {
       let errorMessage = 'Customer id is not valid!';
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         errorMessage,
       );
@@ -155,7 +155,7 @@ export class CustomerController {
       Types.ObjectId.isValid(String(customerHomeId)) === false
     ) {
       let errorMessage = 'Customer home id is not valid!';
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         errorMessage,
       );
@@ -169,7 +169,7 @@ export class CustomerController {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while deleting all customer data in customer controller!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );

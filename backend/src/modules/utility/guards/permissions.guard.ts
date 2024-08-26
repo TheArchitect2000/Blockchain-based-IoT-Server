@@ -4,7 +4,7 @@ import { Types } from 'mongoose';
 import { Observable } from 'rxjs';
 import { UserService } from 'src/modules/user/services/user/user.service';
 import { ErrorTypeEnum } from '../enums/error-type.enum';
-import { GereralException } from '../exceptions/general.exception';
+import { GeneralException } from '../exceptions/general.exception';
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {
@@ -72,7 +72,7 @@ export class PermissionsGuard implements CanActivate {
         })
         .catch((error) => {
           let errorMessage = 'Some errors occurred while finding a user!';
-          throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+          throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
         });
     }
 

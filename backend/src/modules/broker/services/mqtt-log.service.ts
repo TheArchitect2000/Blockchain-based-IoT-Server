@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { log } from 'console';
 import { DeviceLogService } from 'src/modules/device/services/device-log.service';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 
 /**
  * MQTT broker log service.
@@ -27,7 +27,7 @@ export class MqttLogService {
         console.error(error);
         let errorMessage =
           'Some errors occurred while inserting device log in mqtt log service!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -48,7 +48,7 @@ export class MqttLogService {
         console.error(error);
         let errorMessage =
           'Some errors occurred while inserting device log in mqtt log service!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );

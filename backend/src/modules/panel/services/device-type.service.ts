@@ -3,7 +3,7 @@ import { InjectConnection } from '@nestjs/mongoose';
 import { Connection } from 'mongoose';
 import { DeviceTypeRepository } from '../repositories/device-type.repository';
 import * as randompassword from 'secure-random-password';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 
 // Nodejs encryption with CTR

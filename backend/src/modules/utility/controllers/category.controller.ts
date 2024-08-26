@@ -24,7 +24,7 @@ import {
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/authentication/guard/jwt-auth.guard';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { Types } from 'mongoose';
 import { DeleteGeneralDto } from 'src/modules/utility/data-transfer-objects/delete-general.dto';
 import { CategoryService } from '../services/category.service';
@@ -64,7 +64,7 @@ export class CategoryController {
         body.parent === '' ||
         Types.ObjectId.isValid(String(body.parent)) === false
       ) {
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           'parent is required and must be entered and must be entered correctly with objectId type.',
         );
@@ -78,7 +78,7 @@ export class CategoryController {
         body.image === '' ||
         Types.ObjectId.isValid(String(body.image)) === false
       ) {
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           'image is required and must be entered and must be entered correctly with objectId type.',
         );
@@ -111,7 +111,7 @@ export class CategoryController {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while content insertion!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -136,7 +136,7 @@ export class CategoryController {
       Types.ObjectId.isValid(String(body._id)) === false
     ) {
       let errorMessage = 'Category id is not valid!';
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         errorMessage,
       );
@@ -150,7 +150,7 @@ export class CategoryController {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while changing activation status of the category!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -177,7 +177,7 @@ export class CategoryController {
       Types.ObjectId.isValid(String(body._id)) === false
     ) {
       let errorMessage = 'Category id is not valid!';
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         errorMessage,
       );
@@ -191,7 +191,7 @@ export class CategoryController {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while changing verification status of the category!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -219,7 +219,7 @@ export class CategoryController {
     ) {
       let errorMessage =
         'Category id is required and must be entered and must be entered correctly with objectId type.';
-      throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
     }
 
     await this.categoryService
@@ -229,7 +229,7 @@ export class CategoryController {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while finding a category!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     return this.result;
@@ -250,7 +250,7 @@ export class CategoryController {
   ) {
     if (name === null || name === undefined || name === '') {
       let errorMessage = 'Content title required and must be entered.';
-      throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
     }
 
     await this.categoryService
@@ -260,7 +260,7 @@ export class CategoryController {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while finding a category!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     return this.result;
@@ -363,7 +363,7 @@ export class CategoryController {
 
     if (fromDate > toDate) {
       let errorMessage = 'fromDate must be lower than toDate!';
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         errorMessage,
       );
@@ -387,7 +387,7 @@ export class CategoryController {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while search in categories!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -409,7 +409,7 @@ export class CategoryController {
       Types.ObjectId.isValid(String(body._id)) === false
     ) {
       let errorMessage = 'Content id is not valid!';
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         errorMessage,
       );
@@ -423,7 +423,7 @@ export class CategoryController {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while deleting the content category!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );

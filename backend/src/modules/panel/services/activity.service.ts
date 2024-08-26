@@ -3,7 +3,7 @@ import { InjectConnection } from '@nestjs/mongoose';
 import { Connection } from 'mongoose';
 import { ActivityRepository } from '../repositories/activity.repository';
 import * as randompassword from 'secure-random-password';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 
 /**
@@ -85,7 +85,7 @@ export class ActivityService {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while deleting customer activities in activity service!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );

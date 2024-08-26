@@ -2,7 +2,7 @@ import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import mongoose from 'mongoose';
 import { DeviceRepository } from '../repositories/device.repository';
 import * as randompassword from 'secure-random-password';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { UserService } from 'src/modules/user/services/user/user.service';
 import { DeviceLogService } from './device-log.service';
@@ -177,7 +177,7 @@ export class DeviceService {
         })
         .catch((error) => {
           let errorMessage = 'Some errors occurred while finding a device!';
-          throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+          throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
         });
     }
 
@@ -261,14 +261,14 @@ export class DeviceService {
             .catch((error) => {
               let errorMessage =
                 'Some errors occurred while finding user for installed devices!';
-              throw new GereralException(ErrorTypeEnum.NOT_FOUND, error);
+              throw new GeneralException(ErrorTypeEnum.NOT_FOUND, error);
             });
         }
       })
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while finding installed devices!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     console.log('formatedFoundDevices are: ', formatedFoundDevices);
@@ -328,14 +328,14 @@ export class DeviceService {
             .catch((error) => {
               let errorMessage =
                 'Some errors occurred while finding user for installed active devices!';
-              throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+              throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
             });
         }
       })
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while finding installed active devices!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     console.log('formatedFoundDevices are: ', formatedFoundDevices);
@@ -360,7 +360,7 @@ export class DeviceService {
         .catch((error) => {
           let errorMessage =
             'Some errors occurred while finding logs for installed active devices!';
-          throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+          throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
         });
     }
 
@@ -388,7 +388,7 @@ export class DeviceService {
       return true;
     } else {
       console.log('Device not found!');
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.NOT_FOUND,
         'Device does not exist.',
       );
@@ -418,7 +418,7 @@ export class DeviceService {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while finding a device for rename!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     // if(foundDevice && foundDevice !== undefined && foundDevice.deletable){
@@ -450,7 +450,7 @@ export class DeviceService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while editing a device!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     return this.result;
@@ -478,7 +478,7 @@ export class DeviceService {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while finding a device for rename!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     // if(foundDevice && foundDevice !== undefined && foundDevice.deletable){
@@ -512,7 +512,7 @@ export class DeviceService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while renaming a device!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -702,7 +702,7 @@ export class DeviceService {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while finding a device for deletion!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     // if(foundDevice && foundDevice !== undefined && foundDevice.deletable){
@@ -738,7 +738,9 @@ export class DeviceService {
     installedServices.map((insService) => {
       this.installedService.deleteInstalledServiceByInstalledServiceId(
         insService._id,
-        userId, false, `Installed service with name "${insService.installedServiceName}" has been delete beacuse device is't avalable anymore`
+        userId,
+        false,
+        `Installed service with name "${insService.installedServiceName}" has been delete beacuse device is't avalable anymore`,
       );
     });
 
@@ -750,7 +752,7 @@ export class DeviceService {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while editing and deleting a device!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -768,7 +770,7 @@ export class DeviceService {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while deleting customer devices in device service!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );

@@ -25,7 +25,7 @@ import {
 import { Types } from 'mongoose';
 import { JwtAuthGuard } from 'src/modules/authentication/guard/jwt-auth.guard';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { ServiceService } from '../services/service.service';
 import { insertServiceDto } from '../data-transfer-objects/insert-service.dto';
 import { editServiceDto } from '../data-transfer-objects/edit-service.dto';
@@ -107,7 +107,7 @@ export class ServiceController {
     const isAdmin = await this.isAdmin(request.user.userId);
 
     if (isAdmin === false) {
-      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+      throw new GeneralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
     return await this.serviceService.publishService(body, request.user.userId);
   }
@@ -125,7 +125,7 @@ export class ServiceController {
     const isAdmin = await this.isAdmin(request.user.userId);
 
     if (isAdmin === false) {
-      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+      throw new GeneralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
     return await this.serviceService.rejectService(body, request.user.userId);
   }
@@ -143,7 +143,7 @@ export class ServiceController {
     const isAdmin = await this.isAdmin(request.user.userId);
 
     if (isAdmin === false) {
-      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+      throw new GeneralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
     return await this.serviceService.cancelServiceRequest(
       body,
@@ -169,7 +169,7 @@ export class ServiceController {
       Types.ObjectId.isValid(String(body.serviceId)) === false
     ) {
       let errorMessage = 'Service id is not valid!';
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         errorMessage,
       );
@@ -184,7 +184,7 @@ export class ServiceController {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while editing the service!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -211,7 +211,7 @@ export class ServiceController {
       userId === '' ||
       Types.ObjectId.isValid(String(userId)) === false
     ) {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         'Home id is required and must be entered and must be entered correctly.',
       );
@@ -220,7 +220,7 @@ export class ServiceController {
     const isAdmin = await this.isAdmin(request.user.userId);
 
     if (isAdmin === false && request.user.userId !== userId) {
-      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+      throw new GeneralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
 
     await this.serviceService
@@ -232,7 +232,7 @@ export class ServiceController {
         let errorMessage =
           'Some errors occurred while fetching services profiles!';
 
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -260,7 +260,7 @@ export class ServiceController {
       serviceId === '' ||
       Types.ObjectId.isValid(String(serviceId)) === false
     ) {
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         'Service id is required and must be entered and must be entered correctly.',
       );
@@ -277,7 +277,7 @@ export class ServiceController {
         let errorMessage =
           'Some errors occurred while fetching services profiles!';
 
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -303,7 +303,7 @@ export class ServiceController {
       .catch((error) => {
         let errorMessage = 'Some errors occurred while fetching services!';
 
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -324,7 +324,7 @@ export class ServiceController {
     const isAdmin = await this.isAdmin(request.user.userId);
 
     if (isAdmin === false) {
-      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+      throw new GeneralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
     await this.serviceService
       .getAllPublishRequestedServices()
@@ -334,7 +334,7 @@ export class ServiceController {
       .catch((error) => {
         let errorMessage = 'Some errors occurred while fetching services!';
 
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -355,7 +355,7 @@ export class ServiceController {
     const isAdmin = await this.isAdmin(request.user.userId);
 
     if (isAdmin === false) {
-      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
+      throw new GeneralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
     await this.serviceService
       .getAllServices()
@@ -365,7 +365,7 @@ export class ServiceController {
       .catch((error) => {
         let errorMessage = 'Some errors occurred while fetching services!';
 
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -390,7 +390,7 @@ export class ServiceController {
       Types.ObjectId.isValid(String(serviceId)) === false
     ) {
       let errorMessage = 'Device id is not valid!';
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         errorMessage,
       );
@@ -405,7 +405,7 @@ export class ServiceController {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while deleting the service!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );

@@ -4,7 +4,7 @@ import { Connection } from 'mongoose';
 import { CustomerRepository } from '../repositories/customer.repository';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { HomeService } from './home.service';
 import { ActivityService } from './activity.service';
@@ -86,7 +86,7 @@ export class CustomerService {
       return true;
     } else {
       console.log('Customer not found!');
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.NOT_FOUND,
         'Customer does not exist.',
       );
@@ -156,7 +156,7 @@ export class CustomerService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while finding a customer!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     foundCustomer.IsActive = data.isActive;
@@ -170,7 +170,7 @@ export class CustomerService {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while editing a customer in customer service!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -204,7 +204,7 @@ export class CustomerService {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while deleting customer in customer service!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -230,7 +230,7 @@ export class CustomerService {
                   .catch((error) => {
                     let errorMessage =
                       'Some errors occurred while deleting customer in customer service!';
-                    throw new GereralException(
+                    throw new GeneralException(
                       ErrorTypeEnum.UNPROCESSABLE_ENTITY,
                       errorMessage,
                     );
@@ -240,7 +240,7 @@ export class CustomerService {
               .catch((error) => {
                 let errorMessage =
                   'Some errors occurred while deleting home in customer service!';
-                throw new GereralException(
+                throw new GeneralException(
                   ErrorTypeEnum.UNPROCESSABLE_ENTITY,
                   errorMessage,
                 );
@@ -249,7 +249,7 @@ export class CustomerService {
           .catch((error) => {
             let errorMessage =
               'Some errors occurred while deleting devices in customer service!';
-            throw new GereralException(
+            throw new GeneralException(
               ErrorTypeEnum.UNPROCESSABLE_ENTITY,
               errorMessage,
             );
@@ -258,7 +258,7 @@ export class CustomerService {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while deleting activities in customer service!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );

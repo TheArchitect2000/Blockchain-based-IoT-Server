@@ -6,7 +6,7 @@ import {
   MulterOptionsFactory,
   MulterModuleOptions,
 } from '@nestjs/platform-express';
-import { GereralException } from '../exceptions/general.exception';
+import { GeneralException } from '../exceptions/general.exception';
 import { ErrorTypeEnum } from '../enums/error-type.enum';
 import * as fs from 'fs';
 
@@ -35,7 +35,7 @@ export class MulterConfigService implements MulterOptionsFactory {
           if (!file.originalname) {
             let errorMessage = 'Media is not valid!';
             return callback(
-              new GereralException(
+              new GeneralException(
                 ErrorTypeEnum.UNPROCESSABLE_ENTITY,
                 errorMessage,
               ),
@@ -58,7 +58,7 @@ export class MulterConfigService implements MulterOptionsFactory {
         if (!MediaType.includes(extname(file.originalname))) {
           let errorMessage = 'Media is not valid!';
           return callback(
-            new GereralException(
+            new GeneralException(
               ErrorTypeEnum.UNPROCESSABLE_ENTITY,
               errorMessage,
             ),

@@ -1,7 +1,7 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { User } from './user.entity';
-import { GereralException } from '../exceptions/general.exception';
+import { GeneralException } from '../exceptions/general.exception';
 import { ErrorTypeEnum } from '../enums/error-type.enum';
 import { join } from 'path';
 import * as fs from 'fs';
@@ -38,7 +38,7 @@ export class MailService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while sending email';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -67,7 +67,7 @@ export class MailService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while sending email';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -125,7 +125,7 @@ export class MailService {
         console.log(error);
 
         let errorMessage = 'Some errors occurred while sending email';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -174,7 +174,7 @@ export class MailService {
       console.log(error);
 
       let errorMessage = 'Some errors occurred while sending email';
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         errorMessage,
       );
@@ -233,7 +233,7 @@ export class MailService {
         console.log(error);
 
         let errorMessage = 'Some errors occurred while sending email';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -242,13 +242,13 @@ export class MailService {
 
   async getCurrentTimeFormatted() {
     const now = new Date();
-  
+
     const month = (now.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-indexed
     const day = now.getDate().toString().padStart(2, '0');
     const year = now.getFullYear();
     const hours = now.getHours().toString().padStart(2, '0');
     const minutes = now.getMinutes().toString().padStart(2, '0');
-  
+
     return `${month}/${day}/${year}, ${hours}:${minutes}`;
   }
 
@@ -308,7 +308,7 @@ export class MailService {
           console.log(error);
 
           let errorMessage = 'Some errors occurred while sending email' + error;
-          throw new GereralException(
+          throw new GeneralException(
             ErrorTypeEnum.UNPROCESSABLE_ENTITY,
             errorMessage,
           );

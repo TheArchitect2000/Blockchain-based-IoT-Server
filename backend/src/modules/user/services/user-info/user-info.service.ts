@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Types } from 'mongoose';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { UserInfoRepository } from '../../repositories/user-info.repository';
 import { UserRepository } from '../../repositories/user.repository';
 
@@ -64,7 +64,7 @@ export class UserInfoService {
       .findUserById(userId, whereCondition, populateCondition, selectCondition)
       .catch((error) => {
         let errorMessage = 'Some errors occurred while inserting a user!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -77,7 +77,7 @@ export class UserInfoService {
         .findAUserInfoByUserId(userId)
         .catch((error) => {
           let errorMessage = 'Some errors occurred while inserting a user!';
-          throw new GereralException(
+          throw new GeneralException(
             ErrorTypeEnum.UNPROCESSABLE_ENTITY,
             errorMessage,
           );
@@ -88,7 +88,7 @@ export class UserInfoService {
       console.log('user info exists!');
       let errorMessage =
         'Some errors occurred while inserting a user info, User info already exists!';
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         errorMessage,
       );
@@ -100,7 +100,7 @@ export class UserInfoService {
         })
         .catch((error) => {
           let errorMessage = 'Some errors occurred while inserting a user!';
-          throw new GereralException(
+          throw new GeneralException(
             ErrorTypeEnum.UNPROCESSABLE_ENTITY,
             errorMessage,
           );
@@ -157,7 +157,7 @@ export class UserInfoService {
       .findUserById(userId, whereCondition, populateCondition, selectCondition)
       .catch((error) => {
         let errorMessage = 'Some errors occurred while inserting a user!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -170,7 +170,7 @@ export class UserInfoService {
         .findAUserInfoByUserId(data.userId)
         .catch((error) => {
           let errorMessage = 'Some errors occurred while inserting a user!';
-          throw new GereralException(
+          throw new GeneralException(
             ErrorTypeEnum.UNPROCESSABLE_ENTITY,
             errorMessage,
           );
@@ -181,7 +181,7 @@ export class UserInfoService {
       console.log('user info exists!');
       let errorMessage =
         'Some errors occurred while inserting a user info, User info already exists!';
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         errorMessage,
       );
@@ -193,7 +193,7 @@ export class UserInfoService {
         })
         .catch((error) => {
           let errorMessage = 'Some errors occurred while inserting a user!';
-          throw new GereralException(
+          throw new GeneralException(
             ErrorTypeEnum.UNPROCESSABLE_ENTITY,
             errorMessage,
           );
@@ -212,7 +212,7 @@ export class UserInfoService {
         })
         .catch((error) => {
           let errorMessage = 'Some errors occurred while finding a user info!';
-          throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+          throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
         });
     }
 
@@ -228,7 +228,7 @@ export class UserInfoService {
         })
         .catch((error) => {
           let errorMessage = 'Some errors occurred while finding a user info!';
-          throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+          throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
         });
     }
 
@@ -244,7 +244,7 @@ export class UserInfoService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while finding a user!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     if (foundUserInfo) {
@@ -265,7 +265,7 @@ export class UserInfoService {
         })
         .catch((error) => {
           let errorMessage = 'Some errors occurred while editing a user info!';
-          throw new GereralException(
+          throw new GeneralException(
             ErrorTypeEnum.UNPROCESSABLE_ENTITY,
             errorMessage,
           );
@@ -286,7 +286,7 @@ export class UserInfoService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while finding a user!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     if (foundUserInfo) {
@@ -310,7 +310,7 @@ export class UserInfoService {
         })
         .catch((error) => {
           let errorMessage = 'Some errors occurred while editing a user info!';
-          throw new GereralException(
+          throw new GeneralException(
             ErrorTypeEnum.UNPROCESSABLE_ENTITY,
             errorMessage,
           );
@@ -329,7 +329,7 @@ export class UserInfoService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while finding a user!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     foundUserInfo.isDeleted = data.isDeleted;
@@ -344,7 +344,7 @@ export class UserInfoService {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while editing a user!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );

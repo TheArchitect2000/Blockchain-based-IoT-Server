@@ -26,7 +26,7 @@ import { Types } from 'mongoose';
 import { JwtAuthGuard } from 'src/modules/authentication/guard/jwt-auth.guard';
 import { ChangeActivationStatusGeneralDto } from 'src/modules/utility/data-transfer-objects/change-activation-status-general.dto';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { DeletePermissionDto } from '../data-transfer-objects/user-permission/delete-permission.dto';
 import { EditPermissionByPanelDto } from '../data-transfer-objects/user-permission/edit-permission-by-panel.dto';
 import { InsertPermissionByPanelDto } from '../data-transfer-objects/user-permission/insert-permission-by-panel.dto';
@@ -60,7 +60,7 @@ export class UserPermissionController {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while user permission insertion!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -89,7 +89,7 @@ export class UserPermissionController {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while permission update!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -118,7 +118,7 @@ export class UserPermissionController {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while finding a role!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     return this.result;
@@ -141,7 +141,7 @@ export class UserPermissionController {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while finding a role!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     return this.result;
@@ -167,7 +167,7 @@ export class UserPermissionController {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while finding a role!';
-        throw new GereralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
     return this.result;
@@ -191,7 +191,7 @@ export class UserPermissionController {
       Types.ObjectId.isValid(String(body._id)) === false
     ) {
       let errorMessage = 'User id is not valid!';
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         errorMessage,
       );
@@ -205,7 +205,7 @@ export class UserPermissionController {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while changing activation status of the permission!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );
@@ -230,7 +230,7 @@ export class UserPermissionController {
       Types.ObjectId.isValid(String(body._id)) === false
     ) {
       let errorMessage = 'User info id is not valid!';
-      throw new GereralException(
+      throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         errorMessage,
       );
@@ -244,7 +244,7 @@ export class UserPermissionController {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while deleting the permission!';
-        throw new GereralException(
+        throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
         );

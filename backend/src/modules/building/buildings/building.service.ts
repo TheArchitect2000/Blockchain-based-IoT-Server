@@ -3,7 +3,7 @@ import { UserService } from 'src/modules/user/services/user/user.service';
 import { BuildingRepository } from './building.repository';
 import { CreateBuildingRequestBodyDto } from '../dto/building.dto';
 import { BuildingSchema } from './building.schema';
-import { GereralException } from 'src/modules/utility/exceptions/general.exception';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 
 @Injectable()
@@ -45,7 +45,7 @@ export class BuildingService {
   async deleteBuildingByBuildId(buildId, isAdmin, userId) {
     const buildOwner = await this.getBuildingOwnerByBuildId(buildId);
     if (isAdmin == false && buildOwner !== userId.toString()) {
-      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied.');
+      throw new GeneralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied.');
     }
     return this.buildingRepository.deleteBuildingByBuildId(buildId);
   }
@@ -53,7 +53,7 @@ export class BuildingService {
   async getBuildingByBuildId(buildId, isAdmin, userId) {
     const buildOwner = await this.getBuildingOwnerByBuildId(buildId);
     if (isAdmin == false && buildOwner !== userId.toString()) {
-      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied.');
+      throw new GeneralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied.');
     }
     return this.buildingRepository.getBuildingByBuildId(buildId);
   }
@@ -61,7 +61,7 @@ export class BuildingService {
   async editBuildingByBuildId(buildId, data, isAdmin, userId) {
     const buildOwner = await this.getBuildingOwnerByBuildId(buildId);
     if (isAdmin == false && buildOwner !== userId.toString()) {
-      throw new GereralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied.');
+      throw new GeneralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied.');
     }
     return this.buildingRepository.editBuildingById(buildId, data);
   }
