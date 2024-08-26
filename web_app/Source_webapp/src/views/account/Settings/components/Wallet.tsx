@@ -8,16 +8,11 @@ import { Input } from '@/components/ui'
 import { HiCurrencyDollar } from 'react-icons/hi'
 import FormDesription from './FormDesription'
 import { useAppSelector } from '@/store'
-import {
-    apiGetWalletBalance,
-    apiRequestFaucet,
-} from '@/services/ContractServices'
-import { useQuery } from '@tanstack/react-query'
-import { ApiResponse } from '@/utils/hooks/useDeleteService'
+import { apiRequestFaucet } from '@/services/ContractServices'
+import { useQueryClient } from '@tanstack/react-query'
 import { useWalletBalance } from '@/utils/hooks/useWaletAddress'
 
 const Verify = () => {
-    const [apiData, setApiData] = useState<any>({})
     const [loading, setLoading] = useState(true)
     const [requestLoading, setRequestLoading] = useState(false)
     const [walletAddress, setWalletAddress] = useState('')
@@ -28,10 +23,11 @@ const Verify = () => {
         isLoading: walletLoading,
     } = useWalletBalance()
 
+    const queryClient = useQueryClient()
+
     useEffect(() => {
         async function fetchData() {
             const resData = (await apiGetCurUserProfile()) as any
-            setApiData(resData.data.data)
             setWalletAddress(resData.data.data.walletAddress || '') // Initialize from API data if available
             setLoading(false)
         }
@@ -48,6 +44,9 @@ const Verify = () => {
             setRequestLoading(true)
             const response = await apiRequestFaucet()
             setRequestLoading(false)
+            setTimeout(() => {
+                queryClient.invalidateQueries(['walletBalance'])
+            }, 1000)
             toast.push(
                 <Notification title="Success" type="success">
                     Faucet has been successfully deposited into your wallet !
@@ -79,6 +78,9 @@ const Verify = () => {
                 await apiEditUserProfile(userId || '', {
                     walletAddress: walletAddress,
                 })
+                setTimeout(() => {
+                    queryClient.invalidateQueries(['walletBalance'])
+                }, 1000)
                 toast.push(
                     <Notification title="Success" type="success">
                         Wallet address saved successfully!
@@ -118,8 +120,8 @@ const Verify = () => {
                     <div className="flex flex-col gap-4">
                         <FormDesription
                             className="mb-4"
-                            title="Your wallet datas"
-                            desc="All of your wallet datas are protected"
+                            title="Your Wallet Details"
+                            desc="All of your wallet details are protected."
                         />
                         <div className="flex items-center gap-8">
                             <p className="text-[1rem]">
@@ -137,6 +139,7 @@ const Verify = () => {
                             </Button>
                         </div>
                         <div className="flex justify-between gap-4">
+                            <p className="text-[1rem]">Wallet Address:</p>
                             <Input
                                 value={walletAddress}
                                 onChange={(e) =>
