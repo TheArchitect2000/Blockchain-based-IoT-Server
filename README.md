@@ -254,6 +254,7 @@ sudo nano .env
 ```
 Inside the `.env` file, past the parameters.
 ```
+NODE_ID = "your.node.name" # It should be set once and never changed
 PORT = 5000
 NODE_NAME = "your.node.name"
 SWAGGER_LOCAL_SERVER = http://localhost:5000
