@@ -64,6 +64,20 @@ export class ServiceRepository {
       .select(selectCondition);
   }
 
+  async getServiceByNodeIdAndNodeServiceId(
+    nodeID,
+    nodeServiceId,
+    whereCondition,
+    populateCondition,
+    selectCondition,
+  ) {
+    return await this.serviceModel
+      .findOne({ nodeId: nodeID, nodeServiceId: nodeServiceId })
+      .where(whereCondition)
+      .populate(populateCondition)
+      .select(selectCondition);
+  }
+
   async getServicesByUserId(
     userId,
     whereCondition,
@@ -87,6 +101,22 @@ export class ServiceRepository {
       .where(whereCondition)
       .populate(populateCondition)
       .select(selectCondition);
+  }
+
+  async deleteServiceByNodeIdAndNodeServiceID(nodeId, serviceNodeId) {
+    await this.serviceModel
+      .deleteMany()
+      .where({ nodeServiceId: serviceNodeId, nodeId: nodeId })
+      .then((data) => {
+        this.result = data;
+      })
+      .catch((error) => {
+        let errorMessage =
+          'Some errors occurred while deleting service in service repository!';
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+      });
+
+    return this.result;
   }
 
   async deleteAllUserServicesPermanently(userId) {

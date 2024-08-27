@@ -2,6 +2,8 @@ import { Document } from 'mongoose';
 
 export interface Service extends Document {
   userId: string;
+  nodeId: string;
+  nodeServiceId: string;
   serviceName: string;
   description: string;
   serviceType: string;

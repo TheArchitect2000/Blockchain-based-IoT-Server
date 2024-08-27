@@ -1,5 +1,6 @@
 export const serviceDeviceContractAddress =
   '0x2b746D228379F0E0a307723dF99486Dc17fdf9B1';
+  
 export const zkpContractAddress = '0xf1AdF8eD7569e0BceC73B371f4876Db69515CD20';
 
 export const zkpContractABI = [

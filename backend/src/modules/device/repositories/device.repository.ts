@@ -36,20 +36,28 @@ export class DeviceRepository {
   }
 
   async editDevice(id, editedData) {
-    await this.deviceModel
-      .updateOne({ _id: id }, editedData)
-      .then((data) => {
-        this.result = data;
-      })
-      .catch((error) => {
-        let errorMessage = 'Some errors occurred while device update!';
-        throw new GeneralException(
-          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-          errorMessage,
-        );
-      });
+    try {
+      const result = (await this.deviceModel.updateOne(
+        { _id: id },
+        { $set: editedData },
+      )) as any;
 
-    return this.result;
+      if (result.nModified === 0) {
+        throw new GeneralException(
+          ErrorTypeEnum.NOT_FOUND,
+          'Device not found or no changes were made.',
+        );
+      }
+
+      return result;
+    } catch (error) {
+      // Provide a more specific error message
+      let errorMessage = 'Some errors occurred while updating the device!';
+      throw new GeneralException(
+        ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+        errorMessage,
+      );
+    }
   }
 
   async getDeviceById(_id, whereCondition, populateCondition, selectCondition) {
@@ -90,12 +98,44 @@ export class DeviceRepository {
       .select(selectCondition);
   }
 
+  async findDeviceByNodeIdAndNodeDeviceId(
+    nodeId,
+    nodeDeviceId,
+    whereCondition,
+    populateCondition,
+    selectCondition,
+  ) {
+    console.log('we are in findDeviceByNodeIdAndNodeDeviceId repository!');
+
+    return await this.deviceModel
+      .findOne({ nodeId: nodeId, nodeDeviceId: nodeDeviceId })
+      .where(whereCondition)
+      .populate(populateCondition)
+      .select(selectCondition);
+  }
+
   async getInstalledDevicesByDate(query) {
     return await this.deviceModel.find(query);
   }
 
   async getAllActiveDevices(query) {
     return await this.deviceModel.find(query);
+  }
+
+  async deleteDeviceByNodeIdAndDeviceId(nodeId, deviceId) {
+    await this.deviceModel
+      .deleteMany()
+      .where({ nodeId: nodeId, nodeDeviceId: deviceId })
+      .then((data) => {
+        this.result = data;
+      })
+      .catch((error) => {
+        let errorMessage =
+          'Some errors occurred while deleting device in device repository!';
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+      });
+
+    return this.result;
   }
 
   async deleteAllUserDevicesPermanently(userId) {

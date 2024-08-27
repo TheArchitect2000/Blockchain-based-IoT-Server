@@ -35,7 +35,11 @@ export class contractController {
   constructor(
     private readonly contractService?: ContractService,
     private readonly userService?: UserService,
-  ) {}
+  ) {
+    /* setTimeout(() => {
+      this.contractService.removeService('nodeId', 'serviceId');
+    }, 4000); */
+  }
 
   @Post('/verify-zkp')
   @HttpCode(201)
@@ -120,26 +124,23 @@ export class contractController {
     return this.contractService.requestFaucet(walletAddress);
   }
 
-  /* @Post('/fetch-service')
+  @Get('/fetch-service')
   @HttpCode(201)
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   @ApiOperation({
     summary: '',
     description: '',
   })
-  async fetchService(@Request() request) {
-    return this.contractService.fetchService();
+  async fetchService() {
+    return this.contractService.fetchAllServices();
   }
-  @Post('/create-service')
+
+  @Get('/fetch-device')
   @HttpCode(201)
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   @ApiOperation({
     summary: '',
     description: '',
   })
-  async craeteService(@Request() request) {
-    return this.contractService.serviceCreate();
-  } */
+  async fetchDevice() {
+    return this.contractService.fetchAllDevices();
+  }
 }

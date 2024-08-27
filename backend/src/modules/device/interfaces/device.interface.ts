@@ -2,6 +2,8 @@ import { Document } from 'mongoose';
 
 export interface Device extends Document {
   userId: string;
+  nodeId: string;
+  nodeDeviceId: string;
   deviceName: string;
   deviceType: string;
   password: string;

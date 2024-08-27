@@ -18,6 +18,7 @@ export class VirtualMachineHandlerService {
     @Inject(forwardRef(() => InstalledServiceService))
     private readonly installedServiceService?: InstalledServiceService,
     private readonly mailService?: MailService,
+    @Inject(forwardRef(() => DeviceService))
     private readonly deviceService?: DeviceService,
   ) {
     if (VirtualMachineHandlerService.instance) {

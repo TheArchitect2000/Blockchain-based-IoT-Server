@@ -7,6 +7,16 @@ const schema = new Schema({
     required: true,
     default: null,
   },
+  nodeId: {
+    type: String,
+    required: false,
+    default: null,
+  },
+  serviceId: {
+    type: String,
+    required: false,
+    default: null,
+  },
   serviceName: {
     type: String,
     minlength: 1,

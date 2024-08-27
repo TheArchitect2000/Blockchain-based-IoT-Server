@@ -9,6 +9,7 @@ import { DeviceLogService } from './device-log.service';
 import { EditDeviceDto } from '../data-transfer-objects/edit-device.dto';
 import { NotificationService } from 'src/modules/notification/notification/notification.service';
 import { InstalledServiceService } from 'src/modules/service/services/installed-service.service';
+import { ContractService } from 'src/modules/smartcontract/services/contract.service';
 
 // Nodejs encryption with CTR
 let crypto = require('crypto');
@@ -32,6 +33,8 @@ export class DeviceService {
     private readonly notificationService?: NotificationService,
     @Inject(forwardRef(() => InstalledServiceService))
     private readonly installedService?: InstalledServiceService,
+    @Inject(forwardRef(() => ContractService))
+    private readonly contractService?: ContractService,
   ) {}
 
   async generatePassword(len) {
@@ -69,27 +72,54 @@ export class DeviceService {
   }
 
   async insertDevice(body) {
-    let deviceEncryptedId = Buffer.from(body.mac, 'utf8').toString('base64');
+    let deviceEncryptedId = null;
+
+    if (body.mac) {
+      deviceEncryptedId = Buffer.from(body.mac, 'utf8').toString('base64');
+    } else {
+      deviceEncryptedId = body?.deviceEncryptedId || null;
+    }
 
     let newDevice = {
+      nodeId: body?.nodeId || null,
+      nodeDeviceId: body?.nodeDeviceId || null,
       userId: body.userId,
       deviceName: body.deviceName,
+      isShared: body?.isShared || null,
       password: await this.generatePassword(20),
       deviceType: body.deviceType,
-      mac: body.mac,
+      mac: body?.mac || null,
       deviceEncryptedId: deviceEncryptedId,
       parameters: body.parameters,
       location: body.location,
-      geometry: body.geometry,
-      insertedBy: body.userId,
+      geometry: body?.geometry || null,
+      insertedBy: body?.userId,
       insertDate: new Date(),
       updatedBy: body.userId,
       updateDate: new Date(),
     };
 
-    let insertedDevice = await this.deviceRepository.insertDevice(newDevice);
-    console.log('User device inserted!');
-    return insertedDevice;
+    let whereCondition = { isDeleted: false };
+    let populateCondition = [];
+    let selectCondition =
+      'isDeleted userId deviceName deviceType mac deviceEncryptedId hardwareVersion firmwareVersion parameters isShared costOfUse location geometry insertedBy insertDate updatedBy updateDate';
+
+    const exist = await this.deviceRepository.findDeviceByNodeIdAndNodeDeviceId(
+      newDevice.nodeId,
+      newDevice.nodeDeviceId,
+      whereCondition,
+      populateCondition,
+      selectCondition,
+    );
+
+    if (exist == null || exist == undefined) {
+      console.log('Device exist!');
+      return exist;
+    } else {
+      let insertedDevice = await this.deviceRepository.insertDevice(newDevice);
+      console.log('Device inserted!');
+      return insertedDevice;
+    }
   }
 
   async getDevicesByUserId(userId) {
@@ -400,7 +430,7 @@ export class DeviceService {
     let whereCondition = { _id: body.deviceId };
     let populateCondition = [];
     let selectCondition =
-      '_id isDeleted userId deviceName deviceEncryptedId deviceType mac hardwareVersion firmwareVersion isShared costOfUse location geometry insertedBy insertDate updatedBy updateDate';
+      '_id isDeleted userId deviceName deviceEncryptedId parameters deviceType mac hardwareVersion firmwareVersion isShared costOfUse location geometry insertedBy insertDate updatedBy updateDate';
     let foundDevice: any = null;
 
     console.log('we are in editDevice service!');
@@ -442,11 +472,37 @@ export class DeviceService {
       foundDevice.updateDate = new Date();
     }
 
+    const newData = { ...foundDevice._doc, ...body };
+
     console.log('Updated found device for edit is: ', foundDevice);
     await this.deviceRepository
       .editDevice(foundDevice._id, body)
       .then((data) => {
         this.result = data;
+        if (body.isShared == true) {
+          this.contractService.shareDevice(
+            process.env.NODE_ID,
+            String(newData._id),
+            String(newData.userId),
+            String(newData.deviceName),
+            String(newData.deviceType),
+            String(newData.deviceEncryptedId),
+            String(newData.hardwareVersion),
+            String(newData.firmwareVersion),
+            newData.parameters,
+            String(newData.costOfUse),
+            newData.location.coordinates.map((coordinate) =>
+              String(coordinate),
+            ),
+            String(newData.insertDate),
+          );
+        }
+        if (body.isShared == false && foundDevice.isShared == true) {
+          this.contractService.removeSharedDevice(
+            process.env.NODE_ID,
+            String(newData._id),
+          );
+        }
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while editing a device!';
@@ -676,6 +732,42 @@ export class DeviceService {
     console.log('response are: ', response);
 
     return response;
+  }
+
+  async deleteOtherNodeDeviceByNodeIdAndDeviceId(
+    nodeId,
+    deviceId,
+    deviceEncryptedId,
+  ): Promise<any> {
+    const installedServices =
+      await this.installedService.getInstalledServicesByDeviceEncryptedId(
+        deviceEncryptedId,
+      );
+
+    installedServices.map((insService) => {
+      this.installedService.deleteInstalledServiceByInstalledServiceId(
+        insService._id,
+        '',
+        true,
+        `Installed service with name "${insService.installedServiceName}" has been delete beacuse device is't avalable anymore`,
+      );
+    });
+
+    await this.deviceRepository
+      .deleteDeviceByNodeIdAndDeviceId(nodeId, deviceId)
+      .then((data) => {
+        this.result = data;
+      })
+      .catch((error) => {
+        let errorMessage =
+          'Some errors occurred while editing and deleting a device!';
+        throw new GeneralException(
+          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+          errorMessage,
+        );
+      });
+
+    return this.result;
   }
 
   async deleteDeviceByDeviceId(
