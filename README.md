@@ -328,6 +328,7 @@ MULTER_MEDIA_SIZE = 10000000    # 10 MB
 Update these parameters:
 ```
 NODE_NAME = "your.node.name"
+NODE_ID = "your.node.name" # It should be set once and never changed
 
 FAUCET_WALLET_PRIVATE_KEY = "your-faucet-wallet-private-key"
 ADMIN_WALLET_PRIVATE_KEY = 'your-admin-wallet-private-key'
