@@ -114,10 +114,10 @@ export class DeviceService {
 
     if (exist == null || exist == undefined) {
       let insertedDevice = await this.deviceRepository.insertDevice(newDevice);
-      console.log('Device inserted!');
+      console.log('Device inserted!', exist);
       return insertedDevice;
     } else {
-      console.log('Device exist!');
+      console.log('Device exist!', exist);
       return exist;
     }
   }
