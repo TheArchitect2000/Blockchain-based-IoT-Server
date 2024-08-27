@@ -63,21 +63,6 @@ export class ContractService {
       this.adminWallet,
     );
 
-    /* [
-      "FidesInnova",
-      "66a89b9cbbb2334f5889ad0a",
-      "test",
-      "123",
-      "automation",
-      "[]",
-      "0",
-      "0",
-      "https://developer.fidesinnova.io/app/uploads/file-1723095399823-255454274.png",
-      "null",
-      "Tue Jul 30 2024 07:51:56 GMT+0000 (Coordinated Universal Time)",
-      "Tue Aug 27 2024 08:37:54 GMT+0000 (Coordinated Universal Time)"
-    ] */
-
     this.contracts.serviceDevice.on('ServiceCreated', async (id, service) => {
       let newService = {
         nodeId: service[0],
@@ -109,15 +94,7 @@ export class ContractService {
 
     this.contracts.serviceDevice.on('ServiceRemoved', async (id, service) => {
       console.log(`${service[0]} , ${service[1]}`);
-      /* FidesInnova , 66a89b9cbbb2334f5889ad0a
-       we are in publishService service!
-       body:  new ObjectId("66cdbd1cd5a22bd33e26f7f5")
-       userId:  new ObjectId("66a89b9cbbb2334f5889ad0a")
-       Updated found service for cancel request is:  null
-       TypeError: Cannot read properties of null (reading '_id')
-           at ServiceService.cancelServiceRequest (/root/fidesinnova_node_iot/backend/src/modules/service/services/service.service.ts:266:33)
-           at processTicksAndRejections (node:internal/process/task_queues:95:5)
-           at Proxy.<anonymous> (/root/fidesinnova_node_iot/backend/src/modules/smartcontract/services/contract.service.ts:120:11) */
+
       const res = await this.serviceService.getServiceByNodeIdAndNodeServiceId(
         service[0],
         service[1],
