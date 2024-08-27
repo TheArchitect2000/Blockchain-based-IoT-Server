@@ -124,7 +124,7 @@ export class contractController {
     return this.contractService.requestFaucet(walletAddress);
   }
 
-  @Get('/fetch-service')
+  /* @Get('/fetch-service')
   @HttpCode(201)
   @ApiOperation({
     summary: '',
@@ -142,5 +142,5 @@ export class contractController {
   })
   async fetchDevice() {
     return this.contractService.fetchAllDevices();
-  }
+  } */
 }
