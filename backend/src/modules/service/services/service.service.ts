@@ -21,8 +21,8 @@ export class ServiceService {
     console.log('Body: ', body);
 
     let newService = {
-      nodeId: body?.nodeId || null,
-      nodeServiceId: body?.nodeServiceId || null,
+      nodeId: String(body?.nodeId),
+      nodeServiceId: String(body?.nodeServiceId),
       userId: body.userId,
       serviceName: body.serviceName,
       description: body.description,
@@ -42,8 +42,8 @@ export class ServiceService {
     };
 
     const exist = await this.getServiceByNodeIdAndNodeServiceId(
-      body?.nodeId || null,
-      body?.nodeServiceId || null,
+      body?.nodeId,
+      body?.nodeServiceId,
     );
 
     if (exist == null || exist == undefined || exist == '') {
@@ -584,6 +584,8 @@ export class ServiceService {
         _id: element._id,
         serviceName: element.serviceName,
         description: element.description,
+        nodeId: element.nodeId,
+        nodeServiceId: element.nodeServiceId,
         serviceType: element.serviceType,
         status: element.status,
         serviceCreator: element.serviceCreator,

@@ -12,7 +12,7 @@ const schema = new Schema({
     required: false,
     default: null,
   },
-  serviceId: {
+  nodeServiceId: {
     type: String,
     required: false,
     default: null,

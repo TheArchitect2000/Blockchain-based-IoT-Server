@@ -81,8 +81,8 @@ export class DeviceService {
     }
 
     let newDevice = {
-      nodeId: body?.nodeId || null,
-      nodeDeviceId: body?.nodeDeviceId || null,
+      nodeId: String(body?.nodeId),
+      nodeDeviceId: String(body?.nodeDeviceId),
       userId: body.userId,
       deviceName: body.deviceName,
       isShared: body?.isShared || null,
