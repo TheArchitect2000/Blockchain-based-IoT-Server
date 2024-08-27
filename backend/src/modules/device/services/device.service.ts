@@ -105,20 +105,20 @@ export class DeviceService {
       'isDeleted userId deviceName deviceType mac deviceEncryptedId hardwareVersion firmwareVersion parameters isShared costOfUse location geometry insertedBy insertDate updatedBy updateDate';
 
     const exist = await this.deviceRepository.findDeviceByNodeIdAndNodeDeviceId(
-      newDevice.nodeId,
-      newDevice.nodeDeviceId,
+      newDevice?.nodeId,
+      newDevice?.nodeDeviceId,
       whereCondition,
       populateCondition,
       selectCondition,
     );
 
     if (exist == null || exist == undefined) {
-      console.log('Device exist!');
-      return exist;
-    } else {
       let insertedDevice = await this.deviceRepository.insertDevice(newDevice);
       console.log('Device inserted!');
       return insertedDevice;
+    } else {
+      console.log('Device exist!');
+      return exist;
     }
   }
 

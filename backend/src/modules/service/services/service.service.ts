@@ -27,9 +27,9 @@ export class ServiceService {
       serviceName: body.serviceName,
       description: body.description,
       serviceImage: body.serviceImage,
-      installationPrice: body?.installationPrice || null,
+      installationPrice: body?.installationPrice || 0,
       published: body?.published || false,
-      runningPrice: body?.runningPrice || null,
+      runningPrice: body?.runningPrice || 0,
       serviceType: body.serviceType,
       status: body.status,
       blocklyJson: body.blocklyJson,
@@ -46,15 +46,17 @@ export class ServiceService {
       body?.nodeServiceId,
     );
 
-    if (exist == null || exist == undefined || exist == '') {
-      console.log('service exist!');
-      return exist;
-    } else {
+    if (
+      (exist == null || exist == undefined || exist == '')
+    ) {
       let insertedService = await this.serviceRepository.insertService(
         newService,
       );
       console.log('service inserted!');
       return insertedService;
+    } else {
+      console.log('service exist!');
+      return exist;
     }
   }
 
@@ -511,7 +513,7 @@ export class ServiceService {
       selectCondition,
     );
 
-    console.log('Found services are: ', foundServices);
+    //console.log('Found services are: ', foundServices);
 
     return foundServices;
   }
@@ -532,7 +534,7 @@ export class ServiceService {
       selectCondition,
     );
 
-    console.log('Found services are: ', foundServices);
+    //console.log('Found services are: ', foundServices);
 
     foundServices.forEach((element) => {
       response.push({
@@ -577,7 +579,7 @@ export class ServiceService {
       selectCondition,
     );
 
-    console.log('Found services are: ', foundServices);
+    //console.log('Found services are: ', foundServices);
 
     foundServices.forEach((element) => {
       response.push({
@@ -624,7 +626,7 @@ export class ServiceService {
       selectCondition,
     );
 
-    console.log('Found services are: ', foundServices);
+    //console.log('Found services are: ', foundServices);
 
     foundServices.forEach((element) => {
       response.push({

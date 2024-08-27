@@ -71,6 +71,7 @@ export class ServiceController {
     const data = {
       ...body,
       userId: request.user.userId,
+      nodeId: process.env.NODE_ID
     };
     return await this.serviceService.insertService(data);
   }
