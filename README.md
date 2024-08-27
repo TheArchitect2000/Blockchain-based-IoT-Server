@@ -263,7 +263,10 @@ REMIX_USER = 'rmadmin'
 REMIX_PASS = 'rm123'
 
 # Faucet Wallet Private Key
-FAUCET_WALLET_PRIVATE_KEY = 'YOUR_ADMIN_WALLET_PRIVATE_KEY'
+FAUCET_WALLET_PRIVATE_KEY = 'YOUR_FAUCET_WALLET_PRIVATE_KEY'
+
+# Admin Wallet Private Key
+ADMIN_WALLET_PRIVATE_KEY = 'YOUR_ADMIN_WALLET_PRIVATE_KEY'
 
 # Server Configuration
 HOST_PROTOCOL = 'https://'
@@ -325,7 +328,8 @@ Update these parameters:
 ```
 NODE_NAME = "your.node.name"
 
-FAUCET_WALLET_PRIVATE_KEY = "your-admin-wallet-private-key"
+FAUCET_WALLET_PRIVATE_KEY = "your-faucet-wallet-private-key"
+ADMIN_WALLET_PRIVATE_KEY = 'your-admin-wallet-private-key'
 
 HOST_NAME_OR_IP = 'panel.YOUR_DOMAIN.COM'
 
