@@ -9,6 +9,8 @@ type ApiResponse = {
 
 export type ServiceData = {
     _id: string
+    nodeId?: string
+    nodeServiceId?: string
     serviceName: string
     description: string
     serviceType: string

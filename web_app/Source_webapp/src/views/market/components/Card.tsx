@@ -24,8 +24,10 @@ const ServiceCard = ({
     description,
     serviceImage,
     serviceData,
+    node,
 }: {
     serviceImage: string
+    node: string
     className: string
     name: string
     installationPrice: number
@@ -232,6 +234,9 @@ const ServiceCard = ({
                         <strong>Name:</strong> {name}
                     </p>
                     <p>
+                        <strong>Node:</strong> {node}
+                    </p>
+                    <p>
                         <strong>Type:</strong> {type}
                     </p>
                     <p>
@@ -391,6 +396,9 @@ const ServiceCard = ({
             >
                 <span className="text-emerald-600 font-semibold">{type}</span>
                 <h4 className="font-bold my-3">{name}</h4>
+                <p className="mb-2 text-[1rem]">
+                    Node: <strong className="text-white">{node}</strong>
+                </p>
                 <div
                     className="h-16 line-clamp-4"
                     style={{ textOverflow: 'ellipsis' }}
