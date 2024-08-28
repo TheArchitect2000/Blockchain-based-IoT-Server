@@ -56,9 +56,12 @@ const RequestTable: React.FC<UsersTableProps> = ({ setCount }) => {
             const data = response.data as any
             data.data = data.data.filter(
                 (item: RequestData) =>
-                    item.publishRejected == true ||
-                    item.publishRequested == true ||
-                    item.published == true
+                    (item.publishRejected == true ||
+                        item.publishRequested == true ||
+                        item.published == true) &&
+                    (!item.nodeServiceId ||
+                        item.nodeServiceId == null ||
+                        item.nodeServiceId == undefined)
             )
             setData(data.data)
             setFilteredData(data.data)
@@ -413,7 +416,9 @@ const RequestTable: React.FC<UsersTableProps> = ({ setCount }) => {
                     onChange={handleSearch}
                     className="border rounded-xl w-4/12 p-2"
                 />
-                <Button disabled={loading} onClick={refreshPage}>Refresh</Button>
+                <Button disabled={loading} onClick={refreshPage}>
+                    Refresh
+                </Button>
             </div>
             {(loading === false && (
                 <Table rowsPerPage={10}>
