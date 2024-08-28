@@ -595,7 +595,7 @@ export class DeviceService {
     let whereCondition = { isDeleted: false, isShared: true };
     let populateCondition = [];
     let selectCondition =
-      'deviceName deviceType mac deviceEncryptedId hardwareVersion firmwareVersion parameters location geometry insertedBy insertDate isDeletable isDeleted deletedBy deleteDate deletionReason updatedBy updateDate';
+      'deviceName deviceType mac nodeId nodeDeviceId deviceEncryptedId hardwareVersion firmwareVersion parameters location geometry insertedBy insertDate isDeletable isDeleted deletedBy deleteDate deletionReason updatedBy updateDate';
     let foundDevices: any = null;
     let response = [];
 
@@ -637,6 +637,8 @@ export class DeviceService {
       response.push({
         _id: element._id,
         deviceName: element.deviceName,
+        nodeId: element.nodeId,
+        nodeDeviceId: element.nodeDeviceId,
         deviceType: element.deviceType,
         mac: element.mac,
         lastLog: element.lastLog,
