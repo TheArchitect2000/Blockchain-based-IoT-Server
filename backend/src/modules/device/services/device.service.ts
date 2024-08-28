@@ -489,7 +489,7 @@ export class DeviceService {
       .editDevice(foundDevice._id, body)
       .then((data) => {
         this.result = data;
-        if (body.isShared == true) {
+        if (body.isShared == true && foundDevice.isShared == false) {
           this.contractService.shareDevice(
             String(process.env.NODE_ID),
             String(newData._id),
@@ -499,7 +499,7 @@ export class DeviceService {
             String(newData.deviceEncryptedId),
             String(newData.hardwareVersion),
             String(newData.firmwareVersion),
-            newData.parameters,
+            newData.parameters.map(param => JSON.stringify(param)),
             String(newData.costOfUse),
             newData.location.coordinates.map((coordinate) =>
               String(coordinate),

@@ -116,7 +116,7 @@ export class ContractService {
         deviceEncryptedId: device[5],
         hardwareVersion: device[6],
         firmwareVersion: device[7],
-        parameters: device[8],
+        parameters: device[8].map(str => JSON.parse(str)),
         costOfUse: device[9],
         location: { coordinates: device[10] },
         insertDate: device[11],
