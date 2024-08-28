@@ -254,7 +254,7 @@ sudo nano .env
 ```
 Inside the `.env` file, past the parameters.
 ```
-NODE_ID = "your.node.name" # It should be set once and never changed
+NODE_ID = "your.node.url" # Set this to your node URL
 PORT = 5000
 NODE_NAME = "your.node.name"
 SWAGGER_LOCAL_SERVER = http://localhost:5000
@@ -262,6 +262,10 @@ SWAGGER_LOCAL_SERVER = http://localhost:5000
 # Remix user & pass
 REMIX_USER = 'rmadmin'
 REMIX_PASS = 'rm123'
+
+# Zkp user & pass
+ZKP_USER = 'zkpadmin'
+ZKP_PASS = 'zkp123'
 
 # Faucet Wallet Private Key
 FAUCET_WALLET_PRIVATE_KEY = 'YOUR_FAUCET_WALLET_PRIVATE_KEY'
@@ -328,7 +332,7 @@ MULTER_MEDIA_SIZE = 10000000    # 10 MB
 Update these parameters:
 ```
 NODE_NAME = "your.node.name"
-NODE_ID = "your.node.name" # It should be set once and never changed
+NODE_ID = "your.node.url" # Set this to your node URL
 
 FAUCET_WALLET_PRIVATE_KEY = "your-faucet-wallet-private-key"
 ADMIN_WALLET_PRIVATE_KEY = 'your-admin-wallet-private-key'
