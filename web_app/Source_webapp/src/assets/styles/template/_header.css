@@ -1,5 +1,5 @@
 .header {
-  @apply bg-white flex sticky top-0 w-full z-[9999];
+  @apply bg-white flex sticky top-0 w-full z-[8500];
 }
 
 .header-wrapper {

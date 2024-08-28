@@ -2,11 +2,22 @@ import classNames from 'classnames'
 import { HEADER_HEIGHT_CLASS } from '@/constants/theme.constant'
 import { useState, type ReactNode } from 'react'
 import type { CommonProps } from '@/@types/common'
-import { Button, Dialog, Input, Notification, toast } from '@/components/ui'
+import {
+    Button,
+    Dialog,
+    Dropdown,
+    Input,
+    Notification,
+    toast,
+} from '@/components/ui'
 import { useNavigate } from 'react-router-dom'
 import { useConfig } from '../ui/ConfigProvider'
-import { apiValidateRemixIDE } from '@/services/UserApi'
+import {
+    apiValidateRemixIDE,
+    apiValidateZkpCommitment,
+} from '@/services/UserApi'
 import { PasswordInput } from '../shared'
+import './style.css'
 
 interface HeaderProps extends CommonProps {
     headerStart?: ReactNode
@@ -18,7 +29,8 @@ interface HeaderProps extends CommonProps {
 const Header = (props: HeaderProps) => {
     const { headerStart, headerEnd, headerMiddle, className, container } = props
     const navigate = useNavigate()
-    const [remixDialog, setRemixDialog] = useState(false)
+    const [consoleDialog, setConsoleDialog] = useState(false)
+    const [dialogState, setDialogState] = useState('')
     const [loading, setLoading] = useState(false)
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
@@ -51,30 +63,44 @@ const Header = (props: HeaderProps) => {
         return valid
     }
 
+    async function validateSmartContractData(user: string, pass: string) {
+        setLoading(true)
+        let res = null
+        if (dialogState == 'Smart Contract') {
+            res = (await apiValidateRemixIDE(user, pass)) as any
+        } else {
+            res = (await apiValidateZkpCommitment(user, pass)) as any
+        }
+
+        setLoading(false)
+        if (res.data.data == true) {
+            setConsoleDialog(false)
+            if (dialogState == 'Smart Contract') {
+                navigate(`/remix?user=${username}&pass=${password}`)
+            } else {
+                navigate(`/`)
+            }
+        } else {
+            toast.push(
+                <Notification type="danger">
+                    {'Username or password is not valid'}
+                </Notification>,
+                {
+                    placement: 'top-center',
+                }
+            )
+        }
+    }
+
     const onValidate = () => {
         if (validateForm()) {
-            // Handle successful validation
-            async function validateData(user: string, pass: string) {
-                setLoading(true)
-                const res = (await apiValidateRemixIDE(user, pass)) as any
-                setLoading(false)
-                if (res.data.data == true) {
-                    setRemixDialog(false)
-                    navigate(`/remix?user=${username}&pass=${password}`)
-                } else {
-                    toast.push(
-                        <Notification type="danger">
-                            {'Username or password is not valid'}
-                        </Notification>,
-                        {
-                            placement: 'top-center',
-                        }
-                    )
-                }
-            }
-            validateData(username, password)
-            console.log('Form is valid')
+            validateSmartContractData(username, password)
         }
+    }
+
+    function dropDownSelectHandler(eventKey: string) {
+        setDialogState(eventKey)
+        setConsoleDialog(true)
     }
 
     return (
@@ -85,8 +111,11 @@ const Header = (props: HeaderProps) => {
                 className
             )}
         >
-            <Dialog isOpen={remixDialog} onClose={() => setRemixDialog(false)}>
-                <h3>Advanced Console Authentication</h3>
+            <Dialog
+                isOpen={consoleDialog}
+                onClose={() => setConsoleDialog(false)}
+            >
+                <h3>{dialogState} Authentication</h3>
                 <div className="flex p-6 justify-around gap-6">
                     <div className="w-full">
                         <Input
@@ -145,14 +174,38 @@ const Header = (props: HeaderProps) => {
                         {headerMiddle}
                     </div>
                 )}
+
                 <div className="flex flex-row">
                     <div className="flex gap-4 mt-1 justify-end">
-                        <Button
-                            onClick={() => setRemixDialog(true)}
-                            variant="default"
+                        <Dropdown
+                            onSelect={dropDownSelectHandler}
+                            renderTitle={
+                                <Button variant="solid">
+                                    Advanced console
+                                </Button>
+                            }
+                            placement="bottom-center"
+                            menuClass="w-full flex flex-col gap-2 mt-1"
                         >
-                            Advanced console
-                        </Button>{' '}
+                            <Dropdown.Item
+                                className="flex justify-center advanced-drop-down-items"
+                                eventKey={'Smart Contract'}
+                            >
+                                Smart Contract Console
+                            </Dropdown.Item>
+                            <Dropdown.Item
+                                className="flex justify-center advanced-drop-down-items"
+                                eventKey={'zkp Commitment'}
+                            >
+                                zkp Commitment Generator
+                            </Dropdown.Item>
+                            <Dropdown.Item
+                                className="flex justify-center advanced-drop-down-items"
+                                eventKey={'zkp Commitment'}
+                            >
+                                zkp Commitment Publisher
+                            </Dropdown.Item>
+                        </Dropdown>{' '}
                         <Button onClick={onCreateNewService} variant="solid">
                             Create New Service
                         </Button>{' '}

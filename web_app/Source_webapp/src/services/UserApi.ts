@@ -98,7 +98,14 @@ export async function apiRequestVerifyEmail<T>(email: string) {
 
 export async function apiValidateRemixIDE<T>(user: string, pass: string) {
     return ApiService.fetchData<T>({
-        url: import.meta.env.VITE_URL + `v1/user/validate-remix-ide?user=${user}&pass=${pass}`,
+        url: import.meta.env.VITE_URL + `v1/user/validate-smart-contract-console?user=${user}&pass=${pass}`,
+        method: 'get',
+    })
+}
+
+export async function apiValidateZkpCommitment<T>(user: string, pass: string) {
+    return ApiService.fetchData<T>({
+        url: import.meta.env.VITE_URL + `v1/user/validate-zkp-commitment-console?user=${user}&pass=${pass}`,
         method: 'get',
     })
 }
