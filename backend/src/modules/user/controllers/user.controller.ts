@@ -566,7 +566,7 @@ export class UserController {
     return await this.userService.refreshTokens(body);
   }
 
-  @Get('v1/user/validate-remix-ide')
+  @Get('v1/user/validate-smart-contract-console')
   @HttpCode(200)
   @ApiOperation({
     summary: 'Validates remix IDE user and pass.',
@@ -574,12 +574,32 @@ export class UserController {
   })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  async validateRemixIDE(
+  async validateSmartContractConsole(
     @Query('user') user: string,
     @Query('pass') pass: string,
     @Request() request,
   ) {
     if (process.env.REMIX_USER === user && process.env.REMIX_PASS === pass) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  @Get('v1/user/validate-zkp-commitment-console')
+  @HttpCode(200)
+  @ApiOperation({
+    summary: 'Validates remix IDE user and pass.',
+    description: 'This API validates the remix IDE user and pass.',
+  })
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  async validateZkpConsole(
+    @Query('user') user: string,
+    @Query('pass') pass: string,
+    @Request() request,
+  ) {
+    if (process.env.ZKP_USER === user && process.env.ZKP_PASS === pass) {
       return true;
     } else {
       return false;

@@ -196,6 +196,8 @@ export class ServiceService {
       foundService.published = true;
       foundService.publishRejected = false;
       foundService.publishRequested = false;
+      
+      foundService.nodeId = String(process.env.NODE_ID),
 
       foundService.updatedBy = userId;
       foundService.updatedAt = new Date();

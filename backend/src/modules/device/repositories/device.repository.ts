@@ -60,6 +60,23 @@ export class DeviceRepository {
     }
   }
 
+  async updateAllNodeIds(
+    nodeId: string,
+  ) {
+    return await this.deviceModel
+      .updateMany(
+        {
+          $or: [
+            { nodeDeviceId: { $exists: false } }, // checks if the nodeDeviceId field is missing
+            { nodeDeviceId: '' }, // checks if the nodeDeviceId field is empty
+          ],
+        },
+        {
+          $set: { nodeId: nodeId }, // updates the nodeId field with the provided nodeId value
+        },
+      )
+  }
+
   async getDeviceById(_id, whereCondition, populateCondition, selectCondition) {
     return await this.deviceModel
       .findOne({ _id })

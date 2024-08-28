@@ -40,7 +40,12 @@ export class DeviceController {
   constructor(
     private readonly deviceService: DeviceService,
     private readonly userService?: UserService,
-  ) {}
+  ) {
+    setTimeout(async () => {
+      await this.deviceService.updateAllDevices();
+      console.log('All Devices Updated');
+    }, 7500);
+  }
 
   async isAdmin(userId: string) {
     const profile = (await this.userService.getUserProfileByIdFromUser(

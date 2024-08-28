@@ -467,7 +467,7 @@ export class DeviceService {
         };
         return this.result;
       }
-
+      foundDevice.nodeId = String(process.env.NODE_ID);
       foundDevice.updatedBy = userId;
       foundDevice.updateDate = new Date();
     }
@@ -481,7 +481,7 @@ export class DeviceService {
         this.result = data;
         if (body.isShared == true) {
           this.contractService.shareDevice(
-            process.env.NODE_ID,
+            String(process.env.NODE_ID),
             String(newData._id),
             String(newData.userId),
             String(newData.deviceName),
@@ -510,6 +510,10 @@ export class DeviceService {
       });
 
     return this.result;
+  }
+
+  async updateAllDevices() {
+    await this.deviceRepository.updateAllNodeIds(process.env.NODE_ID);
   }
 
   async renameDevice(body, userId, isAdmin = false): Promise<any> {
