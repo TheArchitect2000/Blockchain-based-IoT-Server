@@ -25,6 +25,8 @@ export type UserData = {
 }
 
 export type RequestData = {
+    nodeId: string
+    nodeServiceId: string
     blocklyJson: string
     code: string
     description: string
