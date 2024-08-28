@@ -44,7 +44,7 @@ export class ServiceService {
     const exist = await this.getServiceByNodeIdAndNodeServiceId(
       body?.nodeId,
       body?.nodeServiceId,
-    );
+    )
 
     if (
       (exist == null || exist == undefined || exist == '')
@@ -52,10 +52,10 @@ export class ServiceService {
       let insertedService = await this.serviceRepository.insertService(
         newService,
       );
-      console.log('service inserted!');
+      console.log('service inserted!', exist);
       return insertedService;
     } else {
-      console.log('service exist!');
+      console.log('service exist!', exist);
       return exist;
     }
   }
@@ -481,7 +481,7 @@ export class ServiceService {
     let foundService: any = null;
 
     await this.serviceRepository
-      .getServiceByNodeIdAndNodeServiceId(
+      .getServiceByNodeIdAnd_id(
         nodeId,
         nodeServiceId,
         whereCondition,
@@ -543,6 +543,8 @@ export class ServiceService {
         _id: element._id,
         serviceName: element.serviceName,
         description: element.description,
+        nodeId: element.nodeId,
+        nodeServiceId: element.nodeServiceId,
         serviceType: element.serviceType,
         status: element.status,
         serviceCreator: element.serviceCreator,
@@ -636,6 +638,8 @@ export class ServiceService {
         serviceName: element.serviceName,
         description: element.description,
         serviceType: element.serviceType,
+        nodeId: element.nodeId,
+        nodeServiceId: element.nodeServiceId,
         status: element.status,
         serviceCreator: element.serviceCreator,
         devices: element.devices,
@@ -742,29 +746,6 @@ export class ServiceService {
     nodeId,
     nodeServiceId,
   ): Promise<any> {
-    let whereCondition = { isDeleted: false };
-    let populateCondition = [];
-    let selectCondition =
-      '_id isDeleted userId published nodeId nodeServiceId publishRequested publishRejected serviceName description serviceType status devices numberOfInstallations installationPrice runningPrice rate insertedBy insertDate isDeletable isDeleted deletedBy deleteDate deletionReason updatedBy updateDate';
-    let foundService: any = null;
-
-    await this.serviceRepository
-      .getServiceByNodeIdAndNodeServiceId(
-        nodeId,
-        nodeServiceId,
-        whereCondition,
-        populateCondition,
-        selectCondition,
-      )
-      .then((data) => {
-        foundService = data;
-      })
-      .catch((error) => {
-        let errorMessage =
-          'Some errors occurred while finding a service for deletion!';
-        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
-      });
-
     await this.serviceRepository
       .deleteServiceByNodeIdAndNodeServiceID(nodeId, nodeServiceId)
       .then((data) => {

@@ -64,7 +64,7 @@ export class ServiceRepository {
       .select(selectCondition);
   }
 
-  async getServiceByNodeIdAndNodeServiceId(
+  async getServiceByNodeIdAnd_id(
     nodeID,
     nodeServiceId,
     whereCondition,
@@ -72,7 +72,7 @@ export class ServiceRepository {
     selectCondition,
   ) {
     return await this.serviceModel
-      .findOne({ nodeId: nodeID, nodeServiceId: nodeServiceId })
+      .findOne({ nodeId: nodeID, _id: nodeServiceId })
       .where(whereCondition)
       .populate(populateCondition)
       .select(selectCondition);

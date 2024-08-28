@@ -104,7 +104,7 @@ export class DeviceService {
     let selectCondition =
       'isDeleted userId deviceName deviceType mac deviceEncryptedId hardwareVersion firmwareVersion parameters isShared costOfUse location geometry insertedBy insertDate updatedBy updateDate';
 
-    const exist = await this.deviceRepository.findDeviceByNodeIdAndNodeDeviceId(
+    const exist = await this.deviceRepository.findDeviceByNodeIdAnd_id(
       newDevice?.nodeId,
       newDevice?.nodeDeviceId,
       whereCondition,

@@ -115,7 +115,7 @@ export class DeviceRepository {
       .select(selectCondition);
   }
 
-  async findDeviceByNodeIdAndNodeDeviceId(
+  async findDeviceByNodeIdAnd_id(
     nodeId,
     nodeDeviceId,
     whereCondition,
@@ -125,7 +125,7 @@ export class DeviceRepository {
     console.log('we are in findDeviceByNodeIdAndNodeDeviceId repository!');
 
     return await this.deviceModel
-      .findOne({ nodeId: nodeId, nodeDeviceId: nodeDeviceId })
+      .findOne({ nodeId: nodeId, _id: nodeDeviceId })
       .where(whereCondition)
       .populate(populateCondition)
       .select(selectCondition);

@@ -95,23 +95,11 @@ export class ContractService {
     this.contracts.serviceDevice.on('ServiceRemoved', async (id, service) => {
       console.log(`${service[0]} , ${service[1]}`);
 
-      const res = await this.serviceService.getServiceByNodeIdAndNodeServiceId(
-        service[0],
-        service[1],
-      );
-
       try {
-        if (res) {
-          await this.serviceService.cancelServiceRequest(
-            {serviceId: res._id},
-            res.userId,
-            true,
-          );
-          await this.serviceService.deleteServiceByNodeServiceIdAndNodeId(
-            service[0],
-            service[1],
-          );
-        }
+        await this.serviceService.deleteServiceByNodeServiceIdAndNodeId(
+          service[0],
+          service[1],
+        );
       } catch (error) {
         console.log(error);
       }
