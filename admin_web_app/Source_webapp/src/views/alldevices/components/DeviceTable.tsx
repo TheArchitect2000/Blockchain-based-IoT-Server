@@ -135,10 +135,16 @@ const DevicesTable: React.FC<UsersTableProps> = ({ setCount }) => {
         setLoading(true)
         async function fetchUsers() {
             const response = await apiGetAllDevices()
-            const data = response.data as any
-            setData(data.data)
-            setFilteredData(data.data)
-            setCount(data.data.length)
+            let data = response.data as any
+            data = data.data.filter(
+                (item: any) =>
+                    item.nodeDeviceId == null ||
+                    item.nodeDeviceId == undefined ||
+                    item.nodeDeviceId == 'undefined'
+            )
+            setData(data)
+            setFilteredData(data)
+            setCount(data.length)
             setLoading(false)
             if (searchQuery.toString().length > 0) {
                 handleSearch({
@@ -238,8 +244,7 @@ const DevicesTable: React.FC<UsersTableProps> = ({ setCount }) => {
                 const row = props.row.original
                 return (
                     <span>
-                        {(row.isShared.toString() && row.isShared.toString()) ||
-                            '_'}
+                        {(row?.isShared && row.isShared.toString()) || '_'}
                     </span>
                 )
             },
