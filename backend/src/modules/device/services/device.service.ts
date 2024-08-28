@@ -85,7 +85,7 @@ export class DeviceService {
       nodeDeviceId: String(body?.nodeDeviceId),
       userId: body.userId,
       deviceName: body.deviceName,
-      isShared: body?.isShared || null,
+      isShared: body?.isShared || false,
       password: await this.generatePassword(20),
       deviceType: body.deviceType,
       mac: body?.mac || null,
