@@ -3,7 +3,7 @@ import { useMap } from 'react-leaflet'
 import L from 'leaflet'
 
 interface CirclesLayerProps {
-    data: [number, number, number, number][]
+    data: [number, number, number, number, string][]
     type: 'temperature' | 'humidity'
 }
 

@@ -4,7 +4,7 @@ import 'leaflet/dist/leaflet.css'
 import { useMap } from 'react-leaflet'
 
 interface MarkerClusterProps {
-    positions: [number, number, number, number][]
+    positions: [number, number, number, number, string][]
 }
 
 const MarkerCluster: React.FC<MarkerClusterProps> = ({ positions }) => {
@@ -26,7 +26,7 @@ const MarkerCluster: React.FC<MarkerClusterProps> = ({ positions }) => {
         })
 
         // Create an array to hold the markers
-        const markers = positions.map(([lat, lng, temp, humidity]) => {
+        const markers = positions.map(([lat, lng, temp, humidity, nodeId]) => {
             const marker = L.marker([lat, lng], { icon: customIcon })/*.bindTooltip(
                 `Temperature: ${temp}°C | Humidity: ${humidity}%`,
                 {

@@ -1,20 +1,29 @@
 import React, { useState } from 'react'
 import { MapContainer, TileLayer } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
-
 import MarkerCluster from './MarkerCluster'
-import { Card } from '../ui'
+import { Button, Card } from '../ui'
 import CirclesLayer from './CirclesLayer'
-import { HiLocationMarker } from 'react-icons/hi'
 
 interface MapComponentProps {
-    positions: [number, number, number, number][]
+    positions: [number, number, number, number, string][]
 }
 
 const MapComponent: React.FC<MapComponentProps> = ({ positions }) => {
     const [selectedView, setSelectedView] = useState<
         'markers' | 'temperatures' | 'humidity'
     >('markers')
+    const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null) // Store only one selected nodeId
+
+    const nodeIds = Array.from(new Set(positions.map((pos) => pos[4]))) // Extract unique nodeIds
+
+    const handleNodeIdSelect = (nodeId: string) => {
+        setSelectedNodeId(nodeId === selectedNodeId ? null : nodeId) // Toggle selection or clear it
+    }
+
+    const filteredPositions = selectedNodeId
+        ? positions.filter((pos) => pos[4] === selectedNodeId)
+        : positions
 
     return (
         <Card className="p-4">
@@ -53,6 +62,25 @@ const MapComponent: React.FC<MapComponentProps> = ({ positions }) => {
                     Humidity
                 </label>
             </div>
+            <div className="mb-4 gap-4 flex flex-wrap">
+                <Button
+                    variant={selectedNodeId === null ? 'solid' : 'default'}
+                    onClick={() => setSelectedNodeId(null)}
+                >
+                    All
+                </Button>
+                {nodeIds.map((nodeId) => (
+                    <Button
+                        key={nodeId}
+                        variant={
+                            selectedNodeId === nodeId ? 'solid' : 'default'
+                        }
+                        onClick={() => handleNodeIdSelect(nodeId)}
+                    >
+                        {nodeId}
+                    </Button>
+                ))}
+            </div>
             <MapContainer
                 center={[51.505, -0.09]}
                 zoom={3}
@@ -66,11 +94,11 @@ const MapComponent: React.FC<MapComponentProps> = ({ positions }) => {
             >
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                 {selectedView === 'markers' ? (
-                    <MarkerCluster positions={positions} />
+                    <MarkerCluster positions={filteredPositions} />
                 ) : selectedView === 'temperatures' ? (
-                    <CirclesLayer data={positions} type="temperature" />
+                    <CirclesLayer data={filteredPositions} type="temperature" />
                 ) : (
-                    <CirclesLayer data={positions} type="humidity" />
+                    <CirclesLayer data={filteredPositions} type="humidity" />
                 )}
             </MapContainer>
         </Card>

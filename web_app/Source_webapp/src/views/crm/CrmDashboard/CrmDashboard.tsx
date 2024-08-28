@@ -40,12 +40,12 @@ const CrmDashboard = () => {
     const { devices } = useGetSharedDevices()
 
     const [positions, setPositions] = useState<
-        [number, number, number, number][]
+        [number, number, number, number, string][]
     >([])
 
     useEffect(() => {
         if (devices?.data.data) {
-            const newPositions: [number, number, number, number][] =
+            const newPositions: [number, number, number, number, string][] =
                 devices.data.data
                     .filter((item) => item.location.coordinates)
                     .map(
@@ -58,7 +58,8 @@ const CrmDashboard = () => {
                                 (item.lastLog &&
                                     item.lastLog?.data?.Humidity) ||
                                     null,
-                            ] as [number, number, number, number]
+                                String(item.nodeId),
+                            ] as [number, number, number, number, string]
                     )
             setPositions(newPositions)
         }

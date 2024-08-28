@@ -99,7 +99,7 @@ const ServiceCard = ({
                 onClick={() => {
                     setSelectedDevice({
                         name: data.deviceName,
-                        mac: data.mac,
+                        mac: data.mac && data.mac || data.nodeId,
                         encryptedId: data.deviceEncryptedId,
                     })
                     setDeviceModal(false)
@@ -107,7 +107,7 @@ const ServiceCard = ({
                 className="w-full text-center cursor-pointer py-1 hover:bg-[#374151] rounded-lg"
             >
                 <p>
-                    {data.deviceName} ( {data.mac} )
+                    {data.deviceName} ( {data.mac && data.mac || data.nodeId} )
                 </p>
             </div>
         )
