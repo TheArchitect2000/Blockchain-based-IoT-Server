@@ -14,3 +14,29 @@ export class walletBalanceDto {
   @ApiProperty({ required: true })
   walletAddress: string;
 }
+
+
+export class removeServiceDto {
+  @IsNotEmpty({ message: 'proof is required and must be entered.' })
+  @IsString({ message: 'proof must be string.' })
+  @ApiProperty({ required: true })
+  nodeId: string;
+
+  @IsNotEmpty({ message: 'proof is required and must be entered.' })
+  @IsString({ message: 'proof must be string.' })
+  @ApiProperty({ required: true })
+  serviceId: string;
+}
+
+
+export class removeDeviceDto {
+  @IsNotEmpty({ message: 'proof is required and must be entered.' })
+  @IsString({ message: 'proof must be string.' })
+  @ApiProperty({ required: true })
+  nodeId: string;
+
+  @IsNotEmpty({ message: 'proof is required and must be entered.' })
+  @IsString({ message: 'proof must be string.' })
+  @ApiProperty({ required: true })
+  deviceId: string;
+}

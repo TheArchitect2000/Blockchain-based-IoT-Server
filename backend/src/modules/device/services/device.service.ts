@@ -104,13 +104,23 @@ export class DeviceService {
     let selectCondition =
       'isDeleted userId deviceName deviceType mac deviceEncryptedId hardwareVersion firmwareVersion parameters isShared costOfUse location geometry insertedBy insertDate updatedBy updateDate';
 
-    const exist = await this.deviceRepository.findDeviceByNodeIdAnd_id(
-      newDevice?.nodeId,
-      newDevice?.nodeDeviceId,
-      whereCondition,
-      populateCondition,
-      selectCondition,
-    );
+    let exist = null;
+
+    if (
+      newDevice?.nodeDeviceId != 'undefined' ||
+      newDevice?.nodeDeviceId == null ||
+      newDevice?.nodeDeviceId == undefined
+    ) {
+      exist = await this.deviceRepository.findDeviceByNodeIdAnd_id(
+        newDevice?.nodeId,
+        newDevice?.nodeDeviceId,
+        whereCondition,
+        populateCondition,
+        selectCondition,
+      );
+    } else {
+      exist = null;
+    }
 
     if (exist == null || exist == undefined) {
       let insertedDevice = await this.deviceRepository.insertDevice(newDevice);

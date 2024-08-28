@@ -25,7 +25,7 @@ import {
 import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { JwtAuthGuard } from 'src/modules/authentication/guard/jwt-auth.guard';
-import { verifyProofDto } from '../dto/contract-dto';
+import { removeDeviceDto, removeServiceDto, verifyProofDto } from '../dto/contract-dto';
 import { ContractService } from '../services/contract.service';
 import { UserService } from 'src/modules/user/services/user/user.service';
 
@@ -134,6 +134,16 @@ export class contractController {
     return this.contractService.fetchAllServices();
   }
 
+  @Post('/remove-service')
+  @HttpCode(201)
+  @ApiOperation({
+    summary: '',
+    description: '',
+  })
+  async removeService(@Body() body: removeServiceDto) {
+    return this.contractService.removeService(body.nodeId, body.serviceId)
+  }
+
   @Get('/fetch-device')
   @HttpCode(201)
   @ApiOperation({
@@ -142,5 +152,16 @@ export class contractController {
   })
   async fetchDevice() {
     return this.contractService.fetchAllDevices();
+  }
+
+  @Post('/remove-device')
+  @HttpCode(201)
+  @ApiOperation({
+    summary: '',
+    description: '',
+  })
+  async removeDevice(@Body() body: removeDeviceDto) {
+    return this.contractService.removeSharedDevice(body.nodeId, body.deviceId)
   } */
+
 }
