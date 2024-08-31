@@ -46,7 +46,7 @@ function Market() {
                             selectedNodeId === nodeId ? 'solid' : 'default'
                         }
                     >
-                        {nodeId}
+                        {nodeId.split(".")[0]}
                     </Button>
                 ))}
                 <Button

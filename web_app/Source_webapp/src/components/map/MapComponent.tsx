@@ -1,29 +1,50 @@
-import React, { useState } from 'react'
-import { MapContainer, TileLayer } from 'react-leaflet'
+import React, { useState, useEffect } from 'react'
+import { MapContainer, TileLayer, useMap } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import MarkerCluster from './MarkerCluster'
 import { Button, Card } from '../ui'
 import CirclesLayer from './CirclesLayer'
+import { Loading } from '../shared'
 
 interface MapComponentProps {
     positions: [number, number, number, number, string][]
+    loading: boolean
 }
 
-const MapComponent: React.FC<MapComponentProps> = ({ positions }) => {
+const MapComponent: React.FC<MapComponentProps> = ({ positions, loading }) => {
     const [selectedView, setSelectedView] = useState<
         'markers' | 'temperatures' | 'humidity'
     >('markers')
-    const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null) // Store only one selected nodeId
+    const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
 
-    const nodeIds = Array.from(new Set(positions.map((pos) => pos[4]))) // Extract unique nodeIds
+    const nodeIds = Array.from(new Set(positions.map((pos) => pos[4])))
 
     const handleNodeIdSelect = (nodeId: string) => {
-        setSelectedNodeId(nodeId === selectedNodeId ? null : nodeId) // Toggle selection or clear it
+        setSelectedNodeId(nodeId === selectedNodeId ? null : nodeId)
     }
 
-    const filteredPositions = selectedNodeId
-        ? positions.filter((pos) => pos[4] === selectedNodeId)
-        : positions
+    // Filter positions based on selectedNodeId
+    const filteredPositions =
+        selectedNodeId === 'Sample'
+            ? positions.filter((pos) => pos[4] === 'Sample')
+            : positions.filter((pos) =>
+                  selectedNodeId
+                      ? pos[4] === selectedNodeId
+                      : pos[4] !== 'Sample'
+              )
+
+    // Custom component to zoom the map to Paris
+    const ZoomToParis: React.FC = () => {
+        const map = useMap()
+
+        useEffect(() => {
+            if (selectedNodeId === 'Sample') {
+                map.setView([45.8566, 3], 8) // Coordinates of Paris with a zoom level of 12
+            }
+        }, [selectedNodeId, map])
+
+        return null
+    }
 
     return (
         <Card className="p-4">
@@ -81,26 +102,35 @@ const MapComponent: React.FC<MapComponentProps> = ({ positions }) => {
                     </Button>
                 ))}
             </div>
-            <MapContainer
-                center={[51.505, -0.09]}
-                zoom={3}
-                minZoom={3}
-                maxZoom={18}
-                style={{ height: '75vh', width: '100%' }}
-                maxBounds={[
-                    [-90, -180],
-                    [90, 180],
-                ]}
-            >
-                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                {selectedView === 'markers' ? (
-                    <MarkerCluster positions={filteredPositions} />
-                ) : selectedView === 'temperatures' ? (
-                    <CirclesLayer data={filteredPositions} type="temperature" />
-                ) : (
-                    <CirclesLayer data={filteredPositions} type="humidity" />
-                )}
-            </MapContainer>
+            {(loading == false && (
+                <MapContainer
+                    center={[51.505, -0.09]} // Initial center
+                    zoom={3} // Initial zoom level
+                    minZoom={3}
+                    maxZoom={18}
+                    style={{ height: '75vh', width: '100%' }}
+                    maxBounds={[
+                        [-90, -180],
+                        [90, 180],
+                    ]}
+                >
+                    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                    {selectedView === 'markers' ? (
+                        <MarkerCluster positions={filteredPositions} />
+                    ) : selectedView === 'temperatures' ? (
+                        <CirclesLayer
+                            data={filteredPositions}
+                            type="temperature"
+                        />
+                    ) : (
+                        <CirclesLayer
+                            data={filteredPositions}
+                            type="humidity"
+                        />
+                    )}
+                    <ZoomToParis />
+                </MapContainer>
+            )) || <Loading loading={true} />}
         </Card>
     )
 }

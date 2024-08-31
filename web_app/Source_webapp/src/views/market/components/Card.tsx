@@ -397,7 +397,7 @@ const ServiceCard = ({
                 <span className="text-emerald-600 font-semibold">{type}</span>
                 <h4 className="font-bold my-3">{name}</h4>
                 <p className="mb-2 text-[1rem]">
-                    Node: <strong className="text-white">{node}</strong>
+                    Node: <strong className="text-white">{node.split('.')[0]}</strong>
                 </p>
                 <div
                     className="h-16 line-clamp-4"

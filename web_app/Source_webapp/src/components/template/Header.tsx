@@ -77,6 +77,7 @@ const Header = (props: HeaderProps) => {
             setConsoleDialog(false)
             if (dialogState == 'Smart Contract') {
                 navigate(`/remix?user=${username}&pass=${password}`)
+                
             } else {
                 navigate(`/`)
             }
@@ -181,7 +182,7 @@ const Header = (props: HeaderProps) => {
                             onSelect={dropDownSelectHandler}
                             renderTitle={
                                 <Button variant="solid">
-                                    Advanced console
+                                    Advanced Console
                                 </Button>
                             }
                             placement="bottom-center"

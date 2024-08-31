@@ -14,6 +14,7 @@ import Leads from './components/Leads'
 import ServiceTable from './components/ServiceTable'
 import MapComponent from '@/components/map/MapComponent'
 import { useGetSharedDevices } from '@/utils/hooks/useGetDevices'
+import { generateParisData } from '@/components/map/ParisDeviceGen'
 
 injectReducer('crmDashboard', reducer)
 
@@ -38,7 +39,7 @@ const CrmDashboard = () => {
     }
 
     const { devices } = useGetSharedDevices()
-
+    const [mapLoading, setMapLoading] = useState(true)
     const [positions, setPositions] = useState<
         [number, number, number, number, string][]
     >([])
@@ -61,7 +62,9 @@ const CrmDashboard = () => {
                                 String(item.nodeId),
                             ] as [number, number, number, number, string]
                     )
-            setPositions(newPositions)
+
+            setPositions([...newPositions, ...generateParisData(500, 500)])
+            setMapLoading(false)
         }
     }, [devices])
 
@@ -76,7 +79,7 @@ const CrmDashboard = () => {
                     <ServiceTable />
                 </div>
 
-                <MapComponent positions={positions} />
+                <MapComponent positions={positions} loading={mapLoading} />
 
                 {/* <Leads data={recentLeadsData} /> */}
             </Loading>

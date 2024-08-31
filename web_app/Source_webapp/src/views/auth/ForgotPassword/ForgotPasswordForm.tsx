@@ -55,7 +55,7 @@ const ForgotPasswordForm = (props: ForgotPasswordFormProps) => {
             }
             setSubmitting(false)
         } catch (error) {
-            setMessage('Email already sended')
+            setMessage('Email already sent')
             setSubmitting(false)
         }
     }
