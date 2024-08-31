@@ -34,7 +34,11 @@
 
 #map {
     height: 100vh; /* Full viewport height */
-    width: 100%;   /* Full width of parent element */
+    width: 100%; /* Full width of parent element */
     overflow: hidden; /* Prevent scrollbars */
-  }
-  
+}
+
+
+.no-wrap {
+    text-wrap: nowrap;
+}

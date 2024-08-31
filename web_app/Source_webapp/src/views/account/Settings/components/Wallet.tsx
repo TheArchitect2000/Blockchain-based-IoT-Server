@@ -8,7 +8,10 @@ import { Input } from '@/components/ui'
 import { HiCurrencyDollar } from 'react-icons/hi'
 import FormDesription from './FormDesription'
 import { useAppSelector } from '@/store'
-import { apiRequestFaucet } from '@/services/ContractServices'
+import {
+    apiGetFaucetWalletAddress,
+    apiRequestFaucet,
+} from '@/services/ContractServices'
 import { useQueryClient } from '@tanstack/react-query'
 import { useWalletBalance } from '@/utils/hooks/useWaletAddress'
 
@@ -16,6 +19,7 @@ const Verify = () => {
     const [loading, setLoading] = useState(true)
     const [requestLoading, setRequestLoading] = useState(false)
     const [walletAddress, setWalletAddress] = useState('')
+    const [faucetAddress, setFaucetAddress] = useState('')
     const { _id: userId } = useAppSelector((state) => state.auth.user)
     const {
         data: walletData,
@@ -27,6 +31,8 @@ const Verify = () => {
 
     useEffect(() => {
         async function fetchData() {
+            const resfaucetAddress = (await apiGetFaucetWalletAddress()) as any
+            setFaucetAddress(resfaucetAddress.data.data)
             const resData = (await apiGetCurUserProfile()) as any
             setWalletAddress(resData.data.data.walletAddress || '') // Initialize from API data if available
             setLoading(false)
@@ -49,7 +55,8 @@ const Verify = () => {
             }, 1000)
             toast.push(
                 <Notification title="Success" type="success">
-                    Faucet has been successfully deposited into your wallet !
+                    Tokens from the faucet have been successfully deposited into
+                    your wallet!
                 </Notification>,
                 {
                     placement: 'top-center',
@@ -61,8 +68,10 @@ const Verify = () => {
                 <Notification
                     title="Error while requesting faucet"
                     type="danger"
+                    duration={10000}
                 >
-                    Your wallet address is invalid or you should wait 24 hour !
+                    Your wallet address is invalid, you may need to wait 24
+                    hours, or your balance might already be 5 or more tokens !
                 </Notification>,
                 {
                     placement: 'top-center',
@@ -117,29 +126,23 @@ const Verify = () => {
         <>
             {(loading == false && walletLoading == false && (
                 <main>
-                    <div className="flex flex-col gap-4">
-                        <FormDesription
-                            className="mb-4"
-                            title="Your Wallet Details"
-                            desc="All of your wallet details are protected."
-                        />
-                        <div className="flex items-center gap-8">
-                            <p className="text-[1rem]">
-                                Wallet value:{' '}
-                                {(walletError && 'Invalid wallet address !') ||
-                                    `${walletData?.data} FDS`}
-                            </p>
-                            <Button
-                                loading={requestLoading}
-                                onClick={handleRequestFaucet}
-                                variant="solid"
-                                color="green"
+                    <div className="flex text-[1rem] flex-col gap-4">
+                        <p>
+                            Note: Create a wallet on the FidesInnova blockchain.
+                            For instructions on how to create a new wallet,{' '}
+                            <a
+                                href="https://fidesinnova-1.gitbook.io/fidesinnova-docs/using-the-network/adding-the-network-to-metamask"
+                                target="_blank"
+                                className="underline cursor-pointer"
                             >
-                                Request Faucet
-                            </Button>
-                        </div>
-                        <div className="flex justify-between gap-4">
-                            <p className="text-[1rem]">Wallet Address:</p>
+                                click here
+                            </a>
+                            .
+                        </p>
+                        <div className="flex items-center justify-between gap-4">
+                            <p className=" font-bold no-wrap">
+                                Enter your wallet address:
+                            </p>
                             <Input
                                 value={walletAddress}
                                 onChange={(e) =>
@@ -149,9 +152,6 @@ const Verify = () => {
                                 autoComplete="off"
                                 name="walletAddress"
                                 placeholder="wallet address"
-                                prefix={
-                                    <HiCurrencyDollar className="text-xl" />
-                                }
                             />
                             <Button
                                 loading={requestLoading}
@@ -159,6 +159,40 @@ const Verify = () => {
                                 onClick={handleSaveWalletAddress}
                             >
                                 Save
+                            </Button>
+                        </div>
+                        <div className="flex items-center gap-8">
+                            <p className="font-bold">
+                                {(walletError && 'Wallet address not found!') ||
+                                    `Your wallet balance: `}
+                                <span className="text-white font-normal">
+                                    {walletData?.data} FDS
+                                </span>
+                            </p>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <p className="font-bold">
+                                {'Network faucet addres: '}
+                                <span className="text-white font-normal">
+                                    {faucetAddress}
+                                </span>
+                            </p>
+                        </div>
+                        <div className="flex items-center">
+                            <p>
+                                Note: You can receive 5 tokens daily. To obtain
+                                more tokens, contact your node administrator.
+                            </p>
+                        </div>
+                        <div className="flex items-center">
+                            <Button
+                                loading={requestLoading}
+                                onClick={handleRequestFaucet}
+                                variant="solid"
+                                color="green"
+                                size="md"
+                            >
+                                Request Tokens From the Faucet
                             </Button>
                         </div>
                     </div>

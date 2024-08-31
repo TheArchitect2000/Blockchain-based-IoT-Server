@@ -65,7 +65,7 @@ const Verify = () => {
                                     loading="lazy"
                                     src="/img/others/success.png"
                                 />
-                                Your account is already verfied{' '}
+                                Your account has already been verified{' '}
                             </h3>
                         )) || (
                             <Button

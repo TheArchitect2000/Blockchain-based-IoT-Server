@@ -14,3 +14,16 @@ export async function apiRequestFaucet() {
     })
 }
 
+export async function apiGetAdminWalletAddress() {
+    return ApiService.fetchData({
+        url: import.meta.env.VITE_URL + 'v1/contract/admin-wallet-address',
+        method: 'get',
+    })
+}
+
+export async function apiGetFaucetWalletAddress() {
+    return ApiService.fetchData({
+        url: import.meta.env.VITE_URL + 'v1/contract/faucet-wallet-address',
+        method: 'get',
+    })
+}
