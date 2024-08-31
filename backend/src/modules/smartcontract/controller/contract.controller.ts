@@ -25,7 +25,11 @@ import {
 import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { JwtAuthGuard } from 'src/modules/authentication/guard/jwt-auth.guard';
-import { removeDeviceDto, removeServiceDto, verifyProofDto } from '../dto/contract-dto';
+import {
+  removeDeviceDto,
+  removeServiceDto,
+  verifyProofDto,
+} from '../dto/contract-dto';
 import { ContractService } from '../services/contract.service';
 import { UserService } from 'src/modules/user/services/user/user.service';
 
@@ -91,6 +95,30 @@ export class contractController {
     }
 
     return this.contractService.getWalletBalance(walletAddress);
+  }
+
+  @Get('/admin-wallet-address')
+  @HttpCode(201)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Admin wallet address.',
+    description: 'This api returns wallet address of admin.',
+  })
+  async adminWalletAddress() {
+    return this.contractService.adminWalletAddress();
+  }
+
+  @Get('/faucet-wallet-address')
+  @HttpCode(201)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Faucet wallet address.',
+    description: 'This api returns wallet address of faucet account.',
+  })
+  async faucetWalletAddress() {
+    return this.contractService.faucetWalletAddress();
   }
 
   @Post('/request-faucet')
@@ -163,5 +191,4 @@ export class contractController {
   async removeDevice(@Body() body: removeDeviceDto) {
     return this.contractService.removeSharedDevice(body.nodeId, body.deviceId)
   } */
-
 }

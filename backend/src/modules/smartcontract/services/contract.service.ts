@@ -116,7 +116,7 @@ export class ContractService {
         deviceEncryptedId: device[5],
         hardwareVersion: device[6],
         firmwareVersion: device[7],
-        parameters: device[8].map(str => JSON.parse(str)),
+        parameters: device[8].map((str) => JSON.parse(str)),
         costOfUse: device[9],
         location: { coordinates: device[10] },
         insertDate: device[11],
@@ -133,6 +133,14 @@ export class ContractService {
         device[5],
       );
     });
+  }
+
+  async adminWalletAddress() {
+    return this.adminWallet.address;
+  }
+
+  async faucetWalletAddress() {
+    return this.faucetWallet.address;
   }
 
   formatBigInt(bigIntValue: bigint): number {
@@ -200,7 +208,10 @@ export class ContractService {
       return `Success: Topped up ${amountToSend} FDS to ${walletAddress}.`;
     }
 
-    return `No action needed: ${walletAddress} already has a balance of ${this.faucetAmount} FDS or more.`;
+    throw new GeneralException(
+      ErrorTypeEnum.INTERNAL_SERVER_ERROR,
+      `already has a balance of ${this.faucetAmount} FDS or more.`,
+    );
   }
 
   async shareDevice(
