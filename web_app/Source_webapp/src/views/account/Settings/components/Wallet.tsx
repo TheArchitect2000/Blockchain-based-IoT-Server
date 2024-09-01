@@ -165,9 +165,9 @@ const Verify = () => {
                             <p className="font-bold">
                                 {(walletError && 'Wallet address not found!') ||
                                     `Your wallet balance: `}
-                                <span className="text-white font-normal">
+                                {!walletError && <span className="text-white font-normal">
                                     {walletData?.data} FDS
-                                </span>
+                                </span>}
                             </p>
                         </div>
                         <div className="flex items-center gap-4">
