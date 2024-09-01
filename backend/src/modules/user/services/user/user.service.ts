@@ -28,6 +28,7 @@ import { DeviceService } from 'src/modules/device/services/device.service';
 import { DeviceLogService } from 'src/modules/device/services/device-log.service';
 import { userSchema } from '../../schemas/user.schema';
 import { checkPasswordDto } from '../../data-transfer-objects/user/credential.dto';
+import { BuildingService } from 'src/modules/building/buildings/building.service';
 
 const saltRounds = 10;
 
@@ -56,6 +57,7 @@ export class UserService {
     private readonly deviceLogService?: DeviceLogService,
     private readonly serviceService?: ServiceService,
     private readonly installedServiceService?: InstalledServiceService,
+    private readonly buildingService?: BuildingService,
   ) {}
 
   getUserKeys(): string {
@@ -82,6 +84,8 @@ export class UserService {
       this.otpService.insertEmailOTP(OTPTypeEnum.REGISTRATION, body.email);
       const newUser = await this.insertAUserByEmail({ ...body, StorX: {} });
       const payload = { mobile: newUser.mobile, sub: newUser._id };
+
+      this.buildingService.createDefaultBuilding(newUser._id)
 
       const accessSignOptions: any = {};
       accessSignOptions.expiresIn = process.env.ACCESS_TOKEN_EXPIRATION_TIME;

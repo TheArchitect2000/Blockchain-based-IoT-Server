@@ -126,6 +126,8 @@ export class UserController {
     @Body() body: signupByEmailDto,
     @Request() request,
   ) {
+
+    
     return await this.userService.sendOTPCodeForSignupByEmail({
       ...body,
       email: body.email.toString().toLocaleLowerCase(),

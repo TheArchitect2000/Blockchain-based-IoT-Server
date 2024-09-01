@@ -22,6 +22,7 @@ import { PanelModule } from '../panel/panel.module';
 import { DeviceModule } from '../device/device.module';
 import { ServiceModule } from '../service/service.module';
 import { VirtualMachineModule } from '../virtual-machine/virtual-machine.module';
+import { BuildingModule } from '../building/building.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { VirtualMachineModule } from '../virtual-machine/virtual-machine.module'
     forwardRef(() => VirtualMachineModule),
     forwardRef(() => ServiceModule),
     forwardRef(() => DeviceModule),
+    forwardRef(() => BuildingModule),
     UtilityModule,
     PanelModule,
     MulterModule.registerAsync({

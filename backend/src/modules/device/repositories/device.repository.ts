@@ -155,6 +155,22 @@ export class DeviceRepository {
     return this.result;
   }
 
+  async deleteDeviceByDeviceId(deviceId) {
+    await this.deviceModel
+      .deleteOne()
+      .where({ _id: deviceId })
+      .then((data) => {
+        this.result = data;
+      })
+      .catch((error) => {
+        let errorMessage =
+          'Some errors occurred while deleting device in device repository!';
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+      });
+
+    return this.result;
+  }
+
   async deleteAllUserDevicesPermanently(userId) {
     const deviceUserId = new Types.ObjectId(userId);
 
