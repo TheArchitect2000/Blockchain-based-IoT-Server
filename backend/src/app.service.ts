@@ -14,7 +14,7 @@ export class AppService {
     {
       fileName: 'devices.json',
       content:
-        '[{ "url": "ecard.png", "title": "E-Card", "type": "E-CARD" }, { "url": "motionsensor.png", "title": "Motion Sensor", "type": "MULTI_SENSOR" }]',
+        '[{ "fileName": "ecard.png", "title": "E-Card", "type": "E-CARD" }, { "fileName": "motionsensor.png", "title": "Motion Sensor", "type": "MULTI_SENSOR" }]',
       filePath: path.join(__dirname, '..', 'src/data', 'devices.json'),
     },
     {
@@ -31,7 +31,7 @@ export class AppService {
       const fileContent = await fs.promises.readFile(filePath, 'utf-8');
       this.deviceList = JSON.parse(fileContent).map((device) => ({
         ...device,
-        url: `${process.env.HOST_PROTOCOL}${process.env.HOST_NAME_OR_IP}/${process.env.HOST_SUB_DIRECTORY}/uploads/devices/${device.url}`,
+        url: `${process.env.HOST_PROTOCOL}${process.env.HOST_NAME_OR_IP}/${process.env.HOST_SUB_DIRECTORY}/uploads/devices/${device.fileName}`,
       }));
     } catch (error) {
       console.error('Error reading devices.json:');
@@ -82,7 +82,7 @@ export class AppService {
 
       const device = devices.find((d) => d.type === deviceType);
       if (device) {
-        return `${process.env.HOST_PROTOCOL}${process.env.HOST_NAME_OR_IP}/${process.env.HOST_SUB_DIRECTORY}/uploads/devices/${device.url}`;
+        return `${process.env.HOST_PROTOCOL}${process.env.HOST_NAME_OR_IP}/${process.env.HOST_SUB_DIRECTORY}/uploads/devices/${device.fileName}`;
       } else {
         console.log(`Device type "${deviceType}" not found.`);
         return null;
