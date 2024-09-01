@@ -17,6 +17,7 @@ import { NotificationModule } from '../notification/notification.module';
 import { ServiceModule } from '../service/service.module';
 import { VirtualMachineModule } from '../virtual-machine/virtual-machine.module';
 import { ContractModule } from '../smartcontract/contract.module';
+import { AppModule } from 'src/app.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { ContractModule } from '../smartcontract/contract.module';
     forwardRef(() => ServiceModule),
     forwardRef(() => VirtualMachineModule),
     forwardRef(() => ContractModule),
+    forwardRef(() => AppModule),
   ],
   providers: [
     DeviceService,

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -25,62 +25,63 @@ import { BuildingModule } from './modules/building/building.module';
 //import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
-    imports: [
-        //ScheduleModule.forRoot(),
-        ConfigModule.forRoot({
-            envFilePath: '.env',
-            isGlobal: true,
-            load: [databaseConfig, multerConfig],
-        }),
-        MongooseModule.forRoot(
-            process.env.MONGO_CONNECTION,
-            // `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_CONNECTION}`
-            /* {
+  imports: [
+    //ScheduleModule.forRoot(),
+    ConfigModule.forRoot({
+      envFilePath: '.env',
+      isGlobal: true,
+      load: [databaseConfig, multerConfig],
+    }),
+    MongooseModule.forRoot(
+      process.env.MONGO_CONNECTION,
+      // `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_CONNECTION}`
+      /* {
         useNewUrlParser: true,
         useUnifiedTopology: true,
         useCreateIndex: true,
         useFindAndModify: false,
       } */
-            /* {
+      /* {
         connectionName: 'appDb',
       } */
-        ),
-        /* MongooseModule.forRoot(
+    ),
+    /* MongooseModule.forRoot(
       process.env.MONGO_CONNECTION_PANEL,
       // 'mongodb+srv://<username>:<passowrd>@cluster0-igk.mongodb.net/WildLife?retryWrites=true&w=majority'
       {
         connectionName: 'panelDb',
       },
     ), */
-        ServeStaticModule.forRoot({
-            rootPath: './uploads',
-            serveRoot: '/app/uploads',
-        }),
-        ServeStaticModule.forRoot({
-            rootPath: './uploads/*',
-            serveRoot: '/app/uploads/*',
-        }),
-        AuthenticationModule,
-        UserModule,
-        BrokerModule,
-        DeviceModule,
-        UtilityModule,
-        //PanelModule,
-        ServiceModule,
-        BlocklyModule,
-        NotificationModule,
-        BuildingModule,
-        ContractModule,
-        MediaModule,
-        AdminModule,
-    ],
-    controllers: [AppController],
-    providers: [
-        {
-            provide: APP_INTERCEPTOR,
-            useClass: ResponseTransformInterceptor,
-        },
-        AppService,
-    ],
+    ServeStaticModule.forRoot({
+      rootPath: './uploads',
+      serveRoot: '/app/uploads',
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: './uploads/*',
+      serveRoot: '/app/uploads/*',
+    }),
+    AuthenticationModule,
+    UserModule,
+    BrokerModule,
+    forwardRef(() => DeviceModule),
+    UtilityModule,
+    //PanelModule,
+    ServiceModule,
+    BlocklyModule,
+    NotificationModule,
+    BuildingModule,
+    ContractModule,
+    MediaModule,
+    AdminModule,
+  ],
+  controllers: [AppController],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ResponseTransformInterceptor,
+    },
+    AppService,
+  ],
+  exports: [AppService],
 })
 export class AppModule {}

@@ -10,6 +10,7 @@ import { EditDeviceDto } from '../data-transfer-objects/edit-device.dto';
 import { NotificationService } from 'src/modules/notification/notification/notification.service';
 import { InstalledServiceService } from 'src/modules/service/services/installed-service.service';
 import { ContractService } from 'src/modules/smartcontract/services/contract.service';
+import { AppService } from 'src/app.service';
 
 // Nodejs encryption with CTR
 let crypto = require('crypto');
@@ -31,6 +32,8 @@ export class DeviceService {
     private readonly deviceLogService?: DeviceLogService,
     private readonly deviceRepository?: DeviceRepository,
     private readonly notificationService?: NotificationService,
+    @Inject(forwardRef(() => AppService))
+    private readonly appService?: AppService,
     @Inject(forwardRef(() => InstalledServiceService))
     private readonly installedService?: InstalledServiceService,
     @Inject(forwardRef(() => ContractService))
@@ -150,7 +153,19 @@ export class DeviceService {
 
     //console.log('Found devices are: ', foundDevices);
 
-    return foundDevices;
+    const updatedDevices = await Promise.all(
+      foundDevices.map(async (item: any) => {
+        const imageUrl = await this.appService.getDeviceUrlByType(
+          item.deviceType.toString(),
+        );
+        return {
+          ...item._doc,
+          image: imageUrl.toString() as string,
+        };
+      }),
+    );
+
+    return updatedDevices;
   }
 
   async getDevicesWithEncryptedDeviceIdByUserId(userId) {
@@ -499,7 +514,7 @@ export class DeviceService {
             String(newData.deviceEncryptedId),
             String(newData.hardwareVersion),
             String(newData.firmwareVersion),
-            newData.parameters.map(param => JSON.stringify(param)),
+            newData.parameters.map((param) => JSON.stringify(param)),
             String(newData.costOfUse),
             newData.location.coordinates.map((coordinate) =>
               String(coordinate),
