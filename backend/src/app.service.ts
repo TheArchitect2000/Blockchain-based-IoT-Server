@@ -14,7 +14,7 @@ export class AppService {
     {
       fileName: 'devices.json',
       content:
-        '[{ "fileName": "ecard.png", "title": "E-Card", "type": "E-CARD" }, { "fileName": "motionsensor.png", "title": "Motion Sensor", "type": "MULTI_SENSOR" }]',
+        '[{ "fileName": "ecard.png", "title": "E-Card", "type": "E-CARD" }, { "fileName": "multisensor.png", "title": "Multi Sensor", "type": "MULTI_SENSOR" }, { "fileName": "motionsensor.png", "title": "Motion Sensor", "type": "MOTION_SENSOR" }]',
       filePath: path.join(__dirname, '..', 'src/data', 'devices.json'),
     },
     {
