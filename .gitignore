@@ -1,6 +1,7 @@
 
+/backend/src/data/*
+
 /backend/uploads/*
-!/backend/uploads/devices/
 !/backend/uploads/avatars/
 !/backend/uploads/sprites.png
 
