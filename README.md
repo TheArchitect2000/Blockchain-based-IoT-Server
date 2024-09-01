@@ -381,7 +381,7 @@ During the installation process in the mobile app, the following devices will be
   }
 ]
 ```
-* `fileName:` Refers to the image file that should be placed in the /fidesinnova_node_iot/backend/uploads/devices directory. This image will be displayed in the mobile app.
+* `fileName:` Refers to the image file that should be placed in the `/fidesinnova_node_iot/backend/uploads/device` directory. This image will be displayed in the mobile app.
 * `title:` The name of the device as it will appear in the mobile app's device installation list.
 * `type:` The device type, which is used by the node supervisor to categorize the devices.
 
