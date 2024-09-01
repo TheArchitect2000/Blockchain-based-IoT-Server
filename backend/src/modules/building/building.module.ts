@@ -1,16 +1,16 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { BuildingController } from './buildings/building.controller';
 import { BuildingService } from './buildings/building.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { buildingFeature } from './buildings/building.feature';
-import { UserModule } from '../user/user.module';
 import { UtilityModule } from '../utility/utility.module';
 import { BuildingRepository } from './buildings/building.repository';
+import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature(buildingFeature),
-    UserModule,
+    forwardRef(() => UserModule),
     UtilityModule,
   ],
   controllers: [BuildingController],

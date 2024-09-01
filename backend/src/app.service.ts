@@ -5,6 +5,24 @@ import * as path from 'path';
 @Injectable()
 export class AppService {
   deviceList: any[] = [];
+  private dataFiles = [
+    {
+      fileName: '',
+      content: null,
+      filePath: path.join(__dirname, '..', 'src/data'),
+    },
+    {
+      fileName: 'devices.json',
+      content:
+        '[{ "url": "ecard.png", "title": "E-Card", "type": "E-CARD" }, { "url": "motionsensor.png", "title": "Motion Sensor", "type": "MULTI_SENSOR" }]',
+      filePath: path.join(__dirname, '..', 'src/data', 'devices.json'),
+    },
+    {
+      fileName: '',
+      content: null,
+      filePath: path.join(__dirname, '..', 'uploads/devices'),
+    },
+  ];
 
   async loadDeviceList() {
     const filePath = path.join(__dirname, '..', 'src/data', 'devices.json');
@@ -21,21 +39,7 @@ export class AppService {
   }
 
   async createDataFiles() {
-    const dataFiles = [
-      {
-        fileName: 'devices.json',
-        content:
-          '[{ "url": "ecard.png", "title": "E-Card", "type": "E-CARD" }, { "url": "motionsensor.png", "title": "Motion Sensor", "type": "MULTI_SENSOR" }]',
-        filePath: path.join(__dirname, '..', 'src/data', 'devices.json'),
-      },
-      {
-        fileName: '',
-        content: null,
-        filePath: path.join(__dirname, '..', 'uploads/devices'),
-      },
-    ];
-
-    for (const dataFile of dataFiles) {
+    for (const dataFile of this.dataFiles) {
       const { filePath, content } = dataFile;
       const directoryPath =
         content === null ? filePath : path.dirname(filePath); // Determine directory path

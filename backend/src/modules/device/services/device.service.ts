@@ -870,7 +870,7 @@ export class DeviceService {
     });
 
     await this.deviceRepository
-      .editDevice(foundDevice._id, foundDevice)
+      .deleteDeviceByDeviceId(foundDevice._id)
       .then((data) => {
         this.result = data;
       })

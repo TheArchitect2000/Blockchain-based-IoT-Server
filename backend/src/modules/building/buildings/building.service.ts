@@ -1,5 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { UserService } from 'src/modules/user/services/user/user.service';
+import { Injectable } from '@nestjs/common';
 import { BuildingRepository } from './building.repository';
 import { CreateBuildingRequestBodyDto } from '../dto/building.dto';
 import { BuildingSchema } from './building.schema';
@@ -8,11 +7,7 @@ import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 
 @Injectable()
 export class BuildingService {
-  constructor(
-    @Inject(UserService)
-    private userService?: UserService,
-    private buildingRepository?: BuildingRepository,
-  ) {}
+  constructor(private buildingRepository?: BuildingRepository) {}
 
   getBuildingKeys(): string[] {
     return Object.keys(BuildingSchema.paths);
@@ -27,6 +22,94 @@ export class BuildingService {
     };
 
     return this.buildingRepository.insertBuilding(insertData);
+  }
+
+  async createDefaultBuilding(userId: string) {
+    const defBuild = {
+      name: 'Tower 1',
+      details: {
+        floor_6: {
+          name: '',
+          units: {
+            unit_1: {
+              name: '',
+              device: '',
+            },
+            unit_2: {
+              name: '',
+              device: '',
+            },
+          },
+        },
+        floor_5: {
+          name: '',
+          units: {
+            unit_1: {
+              name: '',
+              device: '',
+            },
+            unit_2: {
+              name: '',
+              device: '',
+            },
+          },
+        },
+        floor_4: {
+          name: '',
+          units: {
+            unit_1: {
+              name: '',
+              device: '',
+            },
+            unit_2: {
+              name: '',
+              device: '',
+            },
+          },
+        },
+        floor_3: {
+          name: '',
+          units: {
+            unit_1: {
+              name: '',
+              device: '',
+            },
+            unit_2: {
+              name: '',
+              device: '',
+            },
+          },
+        },
+        floor_2: {
+          name: '',
+          units: {
+            unit_1: {
+              name: '',
+              device: '',
+            },
+            unit_2: {
+              name: '',
+              device: '',
+            },
+          },
+        },
+        floor_1: {
+          name: '',
+          units: {
+            unit_1: {
+              name: '',
+              device: '',
+            },
+            unit_2: {
+              name: '',
+              device: '',
+            },
+          },
+        },
+      },
+    };
+
+    this.addNewBuilding(defBuild, userId);
   }
 
   async getAllBuildings() {
