@@ -358,7 +358,34 @@ iot_node_backend_web_app/backend/assets/certificates/webprivate.pem
 iot_node_backend_web_app/backend/assets/certificates/webpublic.pem
 ```
 
-## 8- Installation of packages
+## 8- Device Installation Data
+
+During the installation process in the mobile app, the following devices will be displayed based on the data provided in the `fidesinnova_node_iot/backend/src/data/devices.json` file. Each device is represented by an image and a title:
+
+```json
+[
+  { 
+    "fileName": "ecard.png", 
+    "title": "E-Card", 
+    "type": "E-CARD" 
+  },
+  {
+    "fileName": "multisensor.png",
+    "title": "Multi Sensor",
+    "type": "MULTI_SENSOR"
+  },
+  {
+    "fileName": "motionsensor.png",
+    "title": "Motion Sensor",
+    "type": "MOTION_SENSOR"
+  }
+]
+```
+* `fileName:` Refers to the image file that should be placed in the /fidesinnova_node_iot/backend/uploads/devices directory. This image will be displayed in the mobile app.
+* `title:` The name of the device as it will appear in the mobile app's device installation list.
+* `type:` The device type, which is used by the node supervisor to categorize the devices.
+
+## 9- Installation of packages
 In the project root directory run the following commands to install npm packages and then, build the project:
 ```
 cd ~/iot_node_backend_web_app/backend
@@ -366,7 +393,7 @@ npm install
 npm run build
 ```
 
-## 9- Run the project with pm2
+## 10- Run the project with pm2
 ### install pm2
 ```
 sudo npm i -g pm2
@@ -379,7 +406,7 @@ pm2 save
 pm2 startup
 ```
 
-## 10- Running the project in developer mode
+## 11- Running the project in developer mode
 ### development
 ```
 npm run start
