@@ -40,9 +40,9 @@ export class contractController {
     private readonly contractService?: ContractService,
     private readonly userService?: UserService,
   ) {
-    /* setTimeout(() => {
-      this.contractService.removeService('nodeId', 'serviceId');
-    }, 4000); */
+    setTimeout(() => {
+      this.contractService.syncAllServices();
+    }, 4000);
   }
 
   @Post('/verify-zkp')

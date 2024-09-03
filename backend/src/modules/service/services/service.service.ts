@@ -18,7 +18,7 @@ export class ServiceService {
   ) {}
 
   async insertService(body) {
-    console.log('Body: ', body);
+    //console.log('Body: ', body);
 
     let newService = {
       nodeId: String(body?.nodeId),
@@ -41,7 +41,7 @@ export class ServiceService {
       updateDate: body?.updateDate ? body?.updateDate : new Date(),
     };
 
-    const exist = await this.getServiceByNodeIdAndNodeServiceId(
+    const exist = await this.getServiceByNodeIdAnd_id(
       body?.nodeId,
       body?.nodeServiceId,
     )
@@ -473,7 +473,7 @@ export class ServiceService {
     return foundService;
   }
 
-  async getServiceByNodeIdAndNodeServiceId(nodeId, nodeServiceId) {
+  async getServiceByNodeIdAnd_id(nodeId, nodeServiceId) {
     let whereCondition = { isDeleted: false };
     let populateCondition = [];
     let selectCondition =

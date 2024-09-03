@@ -52,18 +52,18 @@ export class AppService {
           try {
             // Check if the file already exists
             await fs.promises.access(filePath, fs.constants.F_OK);
-            console.log(`File ${filePath} already exists. Skipping creation.`);
+            //console.log(`File ${filePath} already exists. Skipping creation.`);
           } catch (error) {
             if (error.code === 'ENOENT') {
               // File does not exist, so create it
               await fs.promises.writeFile(filePath, content);
-              console.log(`File ${filePath} created successfully.`);
+              //console.log(`File ${filePath} created successfully.`);
             } else {
               throw error; // Re-throw unexpected errors
             }
           }
         } else {
-          console.log(`Folder ${directoryPath} created successfully.`);
+          //console.log(`Folder ${directoryPath} created successfully.`);
         }
       } catch (error) {
         console.error(`Error processing ${filePath}:`);

@@ -144,9 +144,12 @@ export class ContractService {
   }
 
   formatBigInt(bigIntValue: bigint): number {
-    let strValue = bigIntValue.toString().replace(/0+$/, '');
-    let formattedValue = strValue.slice(0, 1) + '.' + strValue.slice(1, 8);
-    return parseFloat(formattedValue);
+    if (bigIntValue === 0n) {
+      return 0;
+    }
+    const divisor = 1000000000000000000n;
+    const result = Number(bigIntValue) / Number(divisor);
+    return Number(result.toFixed(5));
   }
 
   async getWalletBalance(walletAddress: string) {
@@ -177,9 +180,7 @@ export class ContractService {
 
     this.lastRequestTime[walletAddress] = currentTime;
 
-    const balance = this.formatBigInt(
-      await this.provider.getBalance(walletAddress),
-    );
+    const balance = await this.getWalletBalance(walletAddress);
 
     if (balance < this.faucetAmount) {
       const amountToSend = this.faucetAmount - balance;
@@ -288,6 +289,71 @@ export class ContractService {
 
   async fetchAllServices() {
     return this.contracts.serviceDevice.fetchAllServices();
+  }
+
+  async syncAllServices() {
+    const allServices = await this.fetchAllServices();
+    const allNodeServices = await this.serviceService.getAllPublishedServices();
+
+    allNodeServices.map((nodeServices: any) => {
+      let exist = false;
+      allServices.map((contractServices: any) => {
+        if (
+          String(nodeServices.nodeId) == String(contractServices[0]) &&
+          String(nodeServices.nodeServiceId) == String(contractServices[1])
+        ) {
+          exist = true;
+        }
+      });
+      if (exist == false) {
+        try {
+          this.serviceService.deleteServiceByNodeServiceIdAndNodeId(
+            nodeServices.nodeId,
+            nodeServices.nodeServiceId,
+          );
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    });
+
+    allServices.map((contractServices: any) => {
+      let exist = false;
+      allNodeServices.map((nodeServices: any) => {
+        if (
+          String(nodeServices.nodeId) == String(contractServices[0]) &&
+          String(nodeServices.nodeServiceId) == String(contractServices[1])
+        ) {
+          exist = true;
+        }
+      });
+      if (exist == false) {
+        let newService = {
+          nodeId: contractServices[0],
+          nodeServiceId: contractServices[1],
+          userId: contractServices[1],
+          serviceName: contractServices[2],
+          description: contractServices[3],
+          serviceImage: contractServices[8],
+          serviceType: contractServices[4],
+          installationPrice: contractServices[6],
+          runningPrice: contractServices[7],
+          status: 'tested',
+          blocklyJson: '',
+          code: contractServices[9],
+          devices: contractServices[5],
+          insertDate: contractServices[10],
+          updateDate: contractServices[11],
+          published: true,
+        };
+
+        try {
+          this.serviceService.insertService(newService);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    });
   }
 
   async zpkProof(proofString: string): Promise<boolean> {

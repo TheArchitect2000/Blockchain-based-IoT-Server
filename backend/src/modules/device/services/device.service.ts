@@ -637,7 +637,7 @@ export class DeviceService {
 
         device.lastLog = res;
 
-        console.log('Result is:', res);
+        //console.log('Result is:', res);
       } catch (error) {
         console.error(
           `Error fetching log for device ${device.deviceEncryptedId}:`,
@@ -667,7 +667,7 @@ export class DeviceService {
         insertDate: element.insertDate,
       });
     });
-    console.log('response are: ', response);
+    //console.log('response are: ', response);
 
     return response;
   }
@@ -708,7 +708,7 @@ export class DeviceService {
         geometry: element.geometry,
       });
     });
-    console.log('response are: ', response);
+    //console.log('response are: ', response);
 
     return response;
   }
@@ -730,7 +730,7 @@ export class DeviceService {
       selectCondition,
     );
 
-    console.log('foundeddddddd deviceeeeeeeeee: ', foundDevices);
+    //console.log('foundeddddddd deviceeeeeeeeee: ', foundDevices);
 
     if (
       userId.length > 0 &&
@@ -762,7 +762,7 @@ export class DeviceService {
       geometry: foundDevices.geometry,
     };
 
-    console.log('response are: ', response);
+    //console.log('response are: ', response);
 
     return response;
   }

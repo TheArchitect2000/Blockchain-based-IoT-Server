@@ -20,7 +20,7 @@ export class InstalledServiceService {
   ) {}
 
   async insertInstalledService(body) {
-    console.log('Body: ', body);
+    //console.log('Body: ', body);
 
     let newInstalledService = {
       userId: body.userId,
