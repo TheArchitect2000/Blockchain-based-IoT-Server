@@ -501,7 +501,7 @@ export class DeviceService {
 
     console.log('Updated found device for edit is: ', foundDevice);
     await this.deviceRepository
-      .editDevice(foundDevice._id, body)
+      .editDevice(foundDevice._id, newData)
       .then((data) => {
         this.result = data;
         if (body.isShared == true && foundDevice.isShared == false) {

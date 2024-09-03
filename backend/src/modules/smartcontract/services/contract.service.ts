@@ -356,16 +356,16 @@ export class ContractService {
     });
   }
 
-  /* async syncAllDevices() {
+  async syncAllDevices() {
     const allContractDevices = await this.fetchAllDevices();
     const allNodeDevices = await this.deviceService.getAllSharedDevices();
 
     allNodeDevices.map((nodeDevices: any) => {
       let exist = false;
-      allContractDevices.map((contractServices: any) => {
+      allContractDevices.map((contractDevices: any) => {
         if (
-          String(nodeDevices.nodeId) == String(contractServices[0]) &&
-          String(nodeDevices.nodeDeviceId) == String(contractServices[1])
+          String(nodeDevices.nodeId) == String(contractDevices[0]) &&
+          (String(nodeDevices.nodeDeviceId) == String(contractDevices[1]) || String(nodeDevices._id) == String(contractDevices[1]))
         ) {
           exist = true;
         }
@@ -383,21 +383,38 @@ export class ContractService {
       }
     });
 
-    allContractDevices.map((contractServices: any) => {
+    allContractDevices.map((contractDevices: any) => {
       let exist = false;
       allNodeDevices.map((nodeDevices: any) => {
         if (
-          String(nodeDevices.nodeId) == String(contractServices[0]) &&
-          String(nodeDevices.nodeDeviceId) == String(contractServices[1])
+          String(nodeDevices.nodeId) == String(contractDevices[0]) &&
+          (String(nodeDevices.nodeDeviceId) == String(contractDevices[1]) || String(nodeDevices._id) == String(contractDevices[1]))
         ) {
           exist = true;
         }
       });
       if (exist == false) {
-       
+        let newDevice = {
+          nodeId: contractDevices[0],
+          nodeDeviceId: contractDevices[1],
+          userId: contractDevices[2],
+          isShared: true,
+          deviceName: contractDevices[3],
+          deviceType: contractDevices[4],
+          deviceEncryptedId: contractDevices[5],
+          hardwareVersion: contractDevices[6],
+          firmwareVersion: contractDevices[7],
+          parameters: contractDevices[8].map((str) => JSON.parse(str)),
+          costOfUse: contractDevices[9],
+          location: { coordinates: contractDevices[10] },
+          insertDate: contractDevices[11],
+          updateDate: contractDevices[11],
+        };
+  
+        this.deviceService.insertDevice(newDevice);
       }
     });
-  } */
+  }
 
   async zpkProof(proofString: string): Promise<boolean> {
     try {
