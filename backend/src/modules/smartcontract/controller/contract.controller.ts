@@ -42,6 +42,7 @@ export class contractController {
   ) {
     setTimeout(() => {
       this.contractService.syncAllServices();
+      //this.contractService.syncAllDevices();
     }, 4000);
   }
 

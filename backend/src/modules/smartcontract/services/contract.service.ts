@@ -292,15 +292,15 @@ export class ContractService {
   }
 
   async syncAllServices() {
-    const allServices = await this.fetchAllServices();
+    const allContractServices = await this.fetchAllServices();
     const allNodeServices = await this.serviceService.getAllPublishedServices();
 
     allNodeServices.map((nodeServices: any) => {
       let exist = false;
-      allServices.map((contractServices: any) => {
+      allContractServices.map((contractServices: any) => {
         if (
           String(nodeServices.nodeId) == String(contractServices[0]) &&
-          String(nodeServices.nodeServiceId) == String(contractServices[1])
+          (String(nodeServices.nodeServiceId) == String(contractServices[1]) || String(nodeServices._id) == String(contractServices[1]))
         ) {
           exist = true;
         }
@@ -317,12 +317,12 @@ export class ContractService {
       }
     });
 
-    allServices.map((contractServices: any) => {
+    allContractServices.map((contractServices: any) => {
       let exist = false;
       allNodeServices.map((nodeServices: any) => {
         if (
           String(nodeServices.nodeId) == String(contractServices[0]) &&
-          String(nodeServices.nodeServiceId) == String(contractServices[1])
+          (String(nodeServices.nodeServiceId) == String(contractServices[1]) || String(nodeServices._id) == String(contractServices[1]))
         ) {
           exist = true;
         }
@@ -355,6 +355,49 @@ export class ContractService {
       }
     });
   }
+
+  /* async syncAllDevices() {
+    const allContractDevices = await this.fetchAllDevices();
+    const allNodeDevices = await this.deviceService.getAllSharedDevices();
+
+    allNodeDevices.map((nodeDevices: any) => {
+      let exist = false;
+      allContractDevices.map((contractServices: any) => {
+        if (
+          String(nodeDevices.nodeId) == String(contractServices[0]) &&
+          String(nodeDevices.nodeDeviceId) == String(contractServices[1])
+        ) {
+          exist = true;
+        }
+      });
+      if (exist == false) {
+        try {
+          this.deviceService.deleteOtherNodeDeviceByNodeIdAndDeviceId(
+            nodeDevices.nodeId,
+            nodeDevices.nodeDeviceId,
+            nodeDevices.deviceEncryptedId
+          );
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    });
+
+    allContractDevices.map((contractServices: any) => {
+      let exist = false;
+      allNodeDevices.map((nodeDevices: any) => {
+        if (
+          String(nodeDevices.nodeId) == String(contractServices[0]) &&
+          String(nodeDevices.nodeDeviceId) == String(contractServices[1])
+        ) {
+          exist = true;
+        }
+      });
+      if (exist == false) {
+       
+      }
+    });
+  } */
 
   async zpkProof(proofString: string): Promise<boolean> {
     try {
