@@ -16,7 +16,8 @@ import {
     HiShieldCheck,
     HiChip,
     HiAdjustments,
-    HiUsers
+    HiUsers,
+    HiCurrencyDollar
 } from 'react-icons/hi'
 
 export type NavigationIcons = Record<string, JSX.Element>
@@ -24,6 +25,7 @@ export type NavigationIcons = Record<string, JSX.Element>
 const navigationIcon: NavigationIcons = {
     home: <HiOutlineHome />,
     download:<HiCloudDownload/>, 
+    account:<HiCurrencyDollar/>, 
     myService:<HiOutlineIdentification/>, 
     admins:<HiUsers />, 
     notification:<HiInformationCircle />, 

@@ -9,11 +9,22 @@ import {
     NAV_ITEM_TYPE_COLLAPSE,
     NAV_ITEM_TYPE_ITEM,
 } from '@/constants/navigation.constant'
+import {
+    SIDE_NAV_WIDTH,
+    SIDE_NAV_COLLAPSED_WIDTH,
+    NAV_MODE_DARK,
+    NAV_MODE_THEMED,
+    NAV_MODE_TRANSPARENT,
+    SIDE_NAV_CONTENT_GUTTER,
+    LOGO_X_GUTTER,
+} from '@/constants/theme.constant'
 import useMenuActive from '@/utils/hooks/useMenuActive'
 import { useTranslation } from 'react-i18next'
 import { Direction, NavMode } from '@/@types/theme'
 import type { NavigationTree } from '@/@types/navigation'
 import { apiGetNodeTheme } from '@/services/UserApi'
+import Logo from '../Logo'
+import { useAppSelector } from '@/store'
 
 export interface VerticalMenuContentProps {
     navMode: NavMode
@@ -121,17 +132,23 @@ const VerticalMenuContent = (props: VerticalMenuContentProps) => {
         }
     }
 
-    const [nodeLogo, setNodeLogo] = useState('')
+    const mode = useAppSelector((state) => state.theme.mode)
 
-    useEffect(() => {
-        async function fetchData() {
-            const res = (await apiGetNodeTheme()) as any
-            setNodeLogo(res?.data?.data.logo)
+    const sideNavCollapse = useAppSelector(
+        (state) => state.theme.layout.sideNavCollapse
+    )
+
+    const logoMode = () => {
+        if (navMode === NAV_MODE_THEMED) {
+            return NAV_MODE_DARK
         }
-        fetchData()
-    }, [])
 
-    
+        if (navMode === NAV_MODE_TRANSPARENT) {
+            return mode
+        }
+
+        return navMode
+    }
 
     return (
         <Menu
@@ -142,12 +159,14 @@ const VerticalMenuContent = (props: VerticalMenuContentProps) => {
             defaultExpandedKeys={defaulExpandKey}
         >
             {navigationTree.map((nav) => getNavItem(nav))}
-            {nodeLogo && (
-                <img
-                    src={nodeLogo}
-                    className="aspect-auto mt-auto mx-auto w-1/2"
-                    alt="logo"
-                />
+            <Logo
+                mode={logoMode()}
+                type={sideNavCollapse ? 'streamline' : 'full'}
+                logoWidth={sideNavCollapse ? '100%' : '50%'}
+                className={`mx-auto mt-auto`}
+            />
+            {!sideNavCollapse && (
+                <p className="text-center">Powered by FidesInnova</p>
             )}
         </Menu>
     )

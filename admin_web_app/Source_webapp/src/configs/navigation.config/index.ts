@@ -20,6 +20,17 @@ const navigationConfig: NavigationTree[] = [
         subMenu: [],
     },
     {
+        key: 'accounts',
+        path: '/accounts',
+        role: 'super',
+        title: 'Wallet Accounts',
+        translateKey: 'Accounts',
+        icon: 'account',
+        type: NAV_ITEM_TYPE_ITEM,
+        authority: [],
+        subMenu: [],
+    },
+    {
         key: 'allUsers',
         path: '/allusers',
         title: 'All Users',
@@ -41,6 +52,7 @@ const navigationConfig: NavigationTree[] = [
         authority: [],
         subMenu: [],
     },
+
     {
         key: 'allInstalledServices',
         path: '/allinstalledservices',

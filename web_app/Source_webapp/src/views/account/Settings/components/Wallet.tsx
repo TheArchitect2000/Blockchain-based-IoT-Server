@@ -9,7 +9,7 @@ import { HiCurrencyDollar } from 'react-icons/hi'
 import FormDesription from './FormDesription'
 import { useAppSelector } from '@/store'
 import {
-    apiGetFaucetWalletAddress,
+    apiGetFaucetWalletData,
     apiRequestFaucet,
 } from '@/services/ContractServices'
 import { useQueryClient } from '@tanstack/react-query'
@@ -19,7 +19,10 @@ const Verify = () => {
     const [loading, setLoading] = useState(true)
     const [requestLoading, setRequestLoading] = useState(false)
     const [walletAddress, setWalletAddress] = useState('')
-    const [faucetAddress, setFaucetAddress] = useState('')
+    const [faucetData, setFaucetData] = useState<any>({
+        address: '',
+        balance: 0,
+    })
     const { _id: userId } = useAppSelector((state) => state.auth.user)
     const {
         data: walletData,
@@ -31,8 +34,8 @@ const Verify = () => {
 
     useEffect(() => {
         async function fetchData() {
-            const resfaucetAddress = (await apiGetFaucetWalletAddress()) as any
-            setFaucetAddress(resfaucetAddress.data.data)
+            const resfaucetAddress = (await apiGetFaucetWalletData()) as any
+            setFaucetData(resfaucetAddress.data.data)
             const resData = (await apiGetCurUserProfile()) as any
             setWalletAddress(resData.data.data.walletAddress || '') // Initialize from API data if available
             setLoading(false)
@@ -165,16 +168,18 @@ const Verify = () => {
                             <p className="font-bold">
                                 {(walletError && 'Wallet address not found!') ||
                                     `Your wallet balance: `}
-                                {!walletError && <span className="text-white font-normal">
-                                    {walletData?.data} FDS
-                                </span>}
+                                {!walletError && (
+                                    <span className="text-white font-normal">
+                                        {walletData?.data} FDS
+                                    </span>
+                                )}
                             </p>
                         </div>
                         <div className="flex items-center gap-4">
                             <p className="font-bold">
-                                {'Network faucet addres: '}
+                                {'Network faucet address: '}
                                 <span className="text-white font-normal">
-                                    {faucetAddress}
+                                    {faucetData.address}
                                 </span>
                             </p>
                         </div>

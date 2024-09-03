@@ -14,6 +14,9 @@ import navigationConfig from '@/configs/navigation.config'
 import VerticalMenuContent from '@/components/template/VerticalMenuContent'
 import useResponsive from '@/utils/hooks/useResponsive'
 import { useAppSelector } from '@/store'
+import { useEffect, useState } from 'react'
+import { apiGetNodeTheme } from '@/services/UserApi'
+import ImageWithFallBack from '@/utils/components/ImageWithFallBack'
 
 const sideNavStyle = {
     width: SIDE_NAV_WIDTH,
@@ -23,9 +26,9 @@ const sideNavStyle = {
 const sideNavCollapseStyle = {
     width: SIDE_NAV_COLLAPSED_WIDTH,
     minWidth: SIDE_NAV_COLLAPSED_WIDTH,
-    height: "100vh",
-    position: "sticky",
-    top: "0px",
+    height: '100vh',
+    position: 'sticky',
+    top: '0px',
 }
 
 const SideNav = () => {
@@ -34,7 +37,7 @@ const SideNav = () => {
         (state) => state.theme.primaryColorLevel
     )
     const navMode = useAppSelector((state) => state.theme.navMode)
-    const mode = useAppSelector((state) => state.theme.mode)
+
     const direction = useAppSelector((state) => state.theme.direction)
     const currentRouteKey = useAppSelector(
         (state) => state.base.common.currentRouteKey
@@ -46,23 +49,21 @@ const SideNav = () => {
 
     const { larger } = useResponsive()
 
+    const [nodeLogo, setNodeLogo] = useState('')
+
+    useEffect(() => {
+        async function fetchData() {
+            const res = (await apiGetNodeTheme()) as any
+            setNodeLogo(res?.data?.data.logo)
+        }
+        fetchData()
+    }, [])
+
     const sideNavColor = () => {
         if (navMode === NAV_MODE_THEMED) {
             return `bg-${themeColor}-${primaryColorLevel} side-nav-${navMode}`
         }
         return `side-nav-${navMode}`
-    }
-
-    const logoMode = () => {
-        if (navMode === NAV_MODE_THEMED) {
-            return NAV_MODE_DARK
-        }
-
-        if (navMode === NAV_MODE_TRANSPARENT) {
-            return mode
-        }
-
-        return navMode
     }
 
     const menuContent = (
@@ -90,23 +91,18 @@ const SideNav = () => {
                     )}
                 >
                     <div className="side-nav-header">
-                        {
-                            <Logo
-                                mode={logoMode()}
-                                type={sideNavCollapse ? 'streamline' : 'full'}
-                                className={`${
-                                    sideNavCollapse
-                                        ? SIDE_NAV_CONTENT_GUTTER
-                                        : LOGO_X_GUTTER
-                                } mb-4`}
+                        {nodeLogo && (
+                            <img
+                                src={nodeLogo}
+                                className="node-logo aspect-auto p-1 mb-4 mx-auto w-full"
+                                alt="logo"
                             />
-                        }
+                        )}
                     </div>
                     <div className="side-nav-content">
                         <ScrollBar autoHide direction={direction}>
                             {menuContent}
                         </ScrollBar>
-
                     </div>
                 </div>
             )}

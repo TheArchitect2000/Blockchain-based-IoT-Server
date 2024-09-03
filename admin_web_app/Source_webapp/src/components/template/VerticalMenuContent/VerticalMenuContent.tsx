@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next'
 import { Direction, NavMode } from '@/@types/theme'
 import type { NavigationTree } from '@/@types/navigation'
 import { apiGetNodeTheme } from '@/services/UserApi'
+import { Loading } from '@/components/shared'
 
 export interface VerticalMenuContentProps {
     navMode: NavMode
@@ -131,8 +132,6 @@ const VerticalMenuContent = (props: VerticalMenuContentProps) => {
         fetchData()
     }, [])
 
-    
-
     return (
         <Menu
             className="px-4 pb-4 flex flex-col h-full"
@@ -141,11 +140,16 @@ const VerticalMenuContent = (props: VerticalMenuContentProps) => {
             defaultActiveKeys={activedRoute?.key ? [activedRoute.key] : []}
             defaultExpandedKeys={defaulExpandKey}
         >
-            {navigationTree.map((nav) => getNavItem(nav))}
+            {(navigationTree.length > 0 &&
+                navigationTree.map((nav) => getNavItem(nav))) || (
+                <div className="h-[45vh] flex items-center justify-center">
+                    <Loading loading={true} />{' '}
+                </div>
+            )}
             {nodeLogo && (
                 <img
                     src={nodeLogo}
-                    className="aspect-auto mt-auto mx-auto w-1/2"
+                    className="node-logo aspect-auto mt-auto mx-auto w-full"
                     alt="logo"
                 />
             )}
