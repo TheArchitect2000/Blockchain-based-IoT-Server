@@ -135,12 +135,18 @@ export class ContractService {
     });
   }
 
-  async adminWalletAddress() {
-    return this.adminWallet.address;
+  async adminWalletData() {
+    return {
+      address: this.adminWallet.address,
+      balance: await this.getWalletBalance(this.adminWallet.address),
+    };
   }
 
-  async faucetWalletAddress() {
-    return this.faucetWallet.address;
+  async faucetWalletData() {
+    return {
+      address: this.faucetWallet.address,
+      balance: await this.getWalletBalance(this.faucetWallet.address),
+    };
   }
 
   formatBigInt(bigIntValue: bigint): number {
@@ -157,10 +163,7 @@ export class ContractService {
       const res = await this.provider.getBalance(walletAddress);
       return this.formatBigInt(res);
     } catch (error) {
-      throw new GeneralException(
-        ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-        `Wallet address is not valid !`,
-      );
+      return null;
     }
   }
 
@@ -300,7 +303,8 @@ export class ContractService {
       allContractServices.map((contractServices: any) => {
         if (
           String(nodeServices.nodeId) == String(contractServices[0]) &&
-          (String(nodeServices.nodeServiceId) == String(contractServices[1]) || String(nodeServices._id) == String(contractServices[1]))
+          (String(nodeServices.nodeServiceId) == String(contractServices[1]) ||
+            String(nodeServices._id) == String(contractServices[1]))
         ) {
           exist = true;
         }
@@ -322,7 +326,8 @@ export class ContractService {
       allNodeServices.map((nodeServices: any) => {
         if (
           String(nodeServices.nodeId) == String(contractServices[0]) &&
-          (String(nodeServices.nodeServiceId) == String(contractServices[1]) || String(nodeServices._id) == String(contractServices[1]))
+          (String(nodeServices.nodeServiceId) == String(contractServices[1]) ||
+            String(nodeServices._id) == String(contractServices[1]))
         ) {
           exist = true;
         }
@@ -365,7 +370,8 @@ export class ContractService {
       allContractDevices.map((contractDevices: any) => {
         if (
           String(nodeDevices.nodeId) == String(contractDevices[0]) &&
-          (String(nodeDevices.nodeDeviceId) == String(contractDevices[1]) || String(nodeDevices._id) == String(contractDevices[1]))
+          (String(nodeDevices.nodeDeviceId) == String(contractDevices[1]) ||
+            String(nodeDevices._id) == String(contractDevices[1]))
         ) {
           exist = true;
         }
@@ -375,7 +381,7 @@ export class ContractService {
           this.deviceService.deleteOtherNodeDeviceByNodeIdAndDeviceId(
             nodeDevices.nodeId,
             nodeDevices.nodeDeviceId,
-            nodeDevices.deviceEncryptedId
+            nodeDevices.deviceEncryptedId,
           );
         } catch (error) {
           console.log(error);
@@ -388,7 +394,8 @@ export class ContractService {
       allNodeDevices.map((nodeDevices: any) => {
         if (
           String(nodeDevices.nodeId) == String(contractDevices[0]) &&
-          (String(nodeDevices.nodeDeviceId) == String(contractDevices[1]) || String(nodeDevices._id) == String(contractDevices[1]))
+          (String(nodeDevices.nodeDeviceId) == String(contractDevices[1]) ||
+            String(nodeDevices._id) == String(contractDevices[1]))
         ) {
           exist = true;
         }
@@ -410,7 +417,7 @@ export class ContractService {
           insertDate: contractDevices[11],
           updateDate: contractDevices[11],
         };
-  
+
         this.deviceService.insertDevice(newDevice);
       }
     });

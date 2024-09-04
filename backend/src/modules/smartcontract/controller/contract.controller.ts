@@ -98,7 +98,7 @@ export class contractController {
     return this.contractService.getWalletBalance(walletAddress);
   }
 
-  @Get('/admin-wallet-address')
+  @Get('/admin-wallet')
   @HttpCode(201)
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -107,10 +107,10 @@ export class contractController {
     description: 'This api returns wallet address of admin.',
   })
   async adminWalletAddress() {
-    return this.contractService.adminWalletAddress();
+    return this.contractService.adminWalletData();
   }
 
-  @Get('/faucet-wallet-address')
+  @Get('/faucet-wallet')
   @HttpCode(201)
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -119,7 +119,7 @@ export class contractController {
     description: 'This api returns wallet address of faucet account.',
   })
   async faucetWalletAddress() {
-    return this.contractService.faucetWalletAddress();
+    return this.contractService.faucetWalletData();
   }
 
   @Post('/request-faucet')
