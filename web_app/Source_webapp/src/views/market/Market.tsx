@@ -37,7 +37,8 @@ function Market() {
             <h3 className="pb-4">Service Market</h3>
             <Statistic />
 
-            <div className="flex border-b  mt-6 items-center justify-start gap-6 p-4">
+            <h4 className='mt-8'>Current IoT Servers on the FidesInnova Network</h4>
+            <div className="flex border-b items-center justify-start gap-6 p-4">
                 {nodeIds.map((nodeId) => (
                     <Button
                         key={nodeId}
@@ -46,7 +47,7 @@ function Market() {
                             selectedNodeId === nodeId ? 'solid' : 'default'
                         }
                     >
-                        {nodeId.split(".")[0]}
+                        {nodeId.split('.')[0]}
                     </Button>
                 ))}
                 <Button

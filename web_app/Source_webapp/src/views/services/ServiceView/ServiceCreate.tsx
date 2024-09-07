@@ -348,7 +348,7 @@ const createService = ({
                                                 }: FieldProps) => (
                                                     <Select<ServiceTypeOption>
                                                         field={field}
-                                                        placeholder="Select Service Type"
+                                                        placeholder="select service type..."
                                                         form={form}
                                                         options={serviceOptions}
                                                         components={{
@@ -453,14 +453,17 @@ const createService = ({
                                                     </strong>
                                                     <br />
                                                     <strong>
-                                                        Format:
+                                                        &nbsp;&nbsp;- Format:
                                                     </strong>{' '}
-                                                    PNG, JPEG, JPG <br />
-                                                    <strong>Size:</strong>{' '}
-                                                    300x175 pixels Maximum
+                                                    PNG, JPEG, JPG
                                                     <br />
                                                     <strong>
-                                                        File size:
+                                                        &nbsp;&nbsp;- Size:
+                                                    </strong>{' '}
+                                                    300x175 Pixels Maximum
+                                                    <br />
+                                                    <strong>
+                                                        &nbsp;&nbsp;- File size:
                                                     </strong>{' '}
                                                     500 KB
                                                 </p>

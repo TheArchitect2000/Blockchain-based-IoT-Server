@@ -108,14 +108,14 @@ export default function BuildingPage() {
                 <h3>Manage Buildings</h3>
             </div>
             {(buildings?.length == 0 && (
-                <section className="w-full h-[75dvh] flex flex-col gap-4 items-center justify-center">
+                <section className="w-full h-[75dvh] flex flex-col gap-3 items-center justify-center">
                     <DoubleSidedImage
-                        className="w-2/12"
+                        className="w-2/12 max-w-[250px]"
                         src="/img/others/img-2.png"
                         darkModeSrc="/img/others/img-2-dark.png"
                         alt="No product found!"
                     />
-                    <h3>No building found !</h3>
+                    <h3>No building found!</h3>
                     <Button
                         onClick={() => {
                             navigateTo('/buildings/new')
@@ -148,7 +148,7 @@ export default function BuildingPage() {
                                     Units: <strong>{data.unitCount}</strong>
                                 </p>
                                 <p>
-                                    Devices: <strong>{data.deviceCount}</strong>
+                                    Sensors: <strong>{data.deviceCount}</strong>
                                 </p>
                                 <div className="w-full mt-4 flex gap-2 justify-between">
                                     <Button

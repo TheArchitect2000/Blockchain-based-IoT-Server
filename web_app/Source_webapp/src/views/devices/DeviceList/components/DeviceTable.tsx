@@ -23,7 +23,7 @@ import useThemeClass from '@/utils/hooks/useThemeClass'
 import { useNavigate } from 'react-router-dom'
 import ProductDeleteConfirmation from './ProductDeleteConfirmation'
 import { apiGetDevices } from '@/services/DeviceApi'
-import { Loading } from '@/components/shared'
+import { DoubleSidedImage, Loading } from '@/components/shared'
 
 const ActionColumn = ({ row }: { row: DeviceData }) => {
     const dispatch = useAppDispatch()
@@ -240,9 +240,45 @@ const DeviceTable = () => {
             )}
 
             {loading === false && data.length === 0 && (
-                <div className="w-full h-full flex justify-center items-center">
-                    <h1>Data not found !</h1>
-                </div>
+                <section className="w-full h-[75dvh] flex flex-col gap-2 items-center justify-center">
+                    <DoubleSidedImage
+                        className="w-2/12 max-w-[250px]"
+                        src="/img/others/img-2.png"
+                        darkModeSrc="/img/others/img-2-dark.png"
+                        alt="No product found!"
+                    />
+                    <h3>Device not found!</h3>
+                    <p>
+                        To add your device to this account, please use the
+                        FidesInnova mobile app.
+                    </p>
+                    <a
+                        href="https://play.google.com/store/apps/details?id=io.fidesinnova.front"
+                        target="_blank"
+                    >
+                        <img
+                            loading="lazy"
+                            decoding="async"
+                            width="150"
+                            src="https://fidesinnova.io/wp-content/uploads/2024/06/gplay-button.png"
+                            className="attachment-large size-large wp-image-18033"
+                            alt="FidesInnova google play pic"
+                        />
+                    </a>
+                    <a
+                        href="https://apps.apple.com/ca/app/fidesinnova/id6477492757"
+                        target="_blank"
+                    >
+                        <img
+                            loading="lazy"
+                            decoding="async"
+                            width="150"
+                            src="https://fidesinnova.io/wp-content/uploads/2024/06/appstore-button.png"
+                            className="attachment-large size-large wp-image-18034"
+                            alt="FidesInnova appstore pic"
+                        />{' '}
+                    </a>
+                </section>
             )}
 
             <ProductDeleteConfirmation />

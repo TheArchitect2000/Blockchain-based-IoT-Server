@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react'
 import { apiGetInstalledServices } from '@/services/ServiceAPI'
 import { useAppSelector } from '@/store'
-import { Loading } from '@/components/shared'
+import { DoubleSidedImage, Loading } from '@/components/shared'
 import ServiceCard from '@/views/demo/component'
 import { apiGetDevices } from '@/services/DeviceApi'
+import { Button } from '@/components/ui'
+import { useNavigate } from 'react-router-dom'
 
 const CollapseMenuItemView1: React.FC = () => {
     const [installedServices, setInstalledServices] = useState<any[]>([]) // State to hold the fetched services
     const { _id: userId } = useAppSelector((state) => state.auth.user)
     const [loading, setLoading] = useState(true)
     const [refresh, setRefresh] = useState(0)
+
+    const navigateTo = useNavigate()
 
     function refreshPage() {
         setRefresh(refresh + 1)
@@ -77,9 +81,24 @@ const CollapseMenuItemView1: React.FC = () => {
             )}
 
             {loading === false && installedServices.length === 0 && (
-                <div className="w-full h-[80vh] flex justify-center items-center">
-                    <h1>Data not found !</h1>
-                </div>
+                <section className="w-full h-[75dvh] flex flex-col gap-3 items-center justify-center">
+                <DoubleSidedImage
+                    className="w-2/12 max-w-[250px]"
+                    src="/img/others/img-2.png"
+                    darkModeSrc="/img/others/img-2-dark.png"
+                    alt="No product found!"
+                />
+                <h3>No services installed!</h3>
+                <Button
+                    onClick={() => {
+                        navigateTo('/market')
+                    }}
+                    variant="solid"
+                    color="green-600"
+                >
+                    Explore Service Market
+                </Button>
+            </section>
             )}
         </div>
     )

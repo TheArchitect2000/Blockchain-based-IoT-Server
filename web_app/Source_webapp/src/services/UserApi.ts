@@ -126,7 +126,7 @@ export async function apiGetNodeTheme<T>() {
 
 export async function apiGetMainNodeTheme<T>() {
     return ApiService.fetchData<T>({
-        url: `https://panel.fidesinnova.io/app/v1/theme`,
+        url: `https://panel.zkiot.tech/app/v1/theme`,
         method: 'get',
     })
 }

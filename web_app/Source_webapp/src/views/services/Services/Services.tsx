@@ -5,13 +5,16 @@ import { useGetService } from '@/utils/hooks/useGetService'
 import Statistic from '@/views/crm/CrmDashboard/components/Statistic'
 import { apiGetService } from '@/services/ServiceAPI'
 import { useEffect, useState } from 'react'
-import { Loading } from '@/components/shared'
+import { DoubleSidedImage, Loading } from '@/components/shared'
+import { useNavigate } from 'react-router-dom'
 
 function Services() {
     const { _id: userId } = useAppSelector((state) => state.auth.user)
     const [data, setData] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
     const [refresh, setRefresh] = useState(0)
+
+    const navigateTo = useNavigate()
 
     function refreshContent() {
         setRefresh(refresh + 1)
@@ -24,7 +27,7 @@ function Services() {
             setLoading(false)
         }
         getServiceDatas()
-    }, [refresh, ])
+    }, [refresh])
 
     return (
         <div>
@@ -55,9 +58,24 @@ function Services() {
             )}
 
             {loading === false && data.length === 0 && (
-                <div className="w-full h-[65vh] flex justify-center items-center">
-                    <h1>Data not found !</h1>
-                </div>
+                <section className="w-full h-[75dvh] flex flex-col gap-3 items-center justify-center">
+                    <DoubleSidedImage
+                        className="w-2/12 max-w-[250px]"
+                        src="/img/others/img-2.png"
+                        darkModeSrc="/img/others/img-2-dark.png"
+                        alt="No product found!"
+                    />
+                    <h3>No services created!</h3>
+                    <Button
+                        onClick={() => {
+                            navigateTo('/services/new')
+                        }}
+                        variant="solid"
+                        color="green-600"
+                    >
+                        Create New Service
+                    </Button>
+                </section>
             )}
         </div>
     )

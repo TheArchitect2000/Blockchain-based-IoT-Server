@@ -116,7 +116,7 @@ const Header = (props: HeaderProps) => {
                 isOpen={consoleDialog}
                 onClose={() => setConsoleDialog(false)}
             >
-                <h3>{dialogState} Authentication</h3>
+                <h3>{dialogState}</h3>
                 <div className="flex p-6 justify-around gap-6">
                     <div className="w-full">
                         <Input
@@ -155,7 +155,7 @@ const Header = (props: HeaderProps) => {
                         variant="solid"
                         onClick={onValidate}
                     >
-                        Validate
+                        Login
                     </Button>
                 </div>
             </Dialog>
@@ -190,19 +190,19 @@ const Header = (props: HeaderProps) => {
                         >
                             <Dropdown.Item
                                 className="flex justify-center advanced-drop-down-items"
-                                eventKey={'Smart Contract'}
+                                eventKey={'Smart Contract Console'}
                             >
                                 Smart Contract Console
                             </Dropdown.Item>
                             <Dropdown.Item
                                 className="flex justify-center advanced-drop-down-items"
-                                eventKey={'zkp Commitment'}
+                                eventKey={'zkp Commitment Generator'}
                             >
                                 zkp Commitment Generator
                             </Dropdown.Item>
                             <Dropdown.Item
                                 className="flex justify-center advanced-drop-down-items"
-                                eventKey={'zkp Commitment'}
+                                eventKey={'zkp Commitment Publisher'}
                             >
                                 zkp Commitment Publisher
                             </Dropdown.Item>

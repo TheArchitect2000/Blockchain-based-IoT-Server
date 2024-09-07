@@ -99,7 +99,11 @@ const StatisticCard = ({
     data: Partial<Statistic>
 }) => {
     return (
-        <Card className={className && className} onClick={onClick && onClick} bodyClass="h-full">
+        <Card
+            className={className && className}
+            onClick={onClick && onClick}
+            bodyClass="h-full"
+        >
             <div className="flex h-full items-center gap-4">
                 <StatisticIcon type={data.key} />
                 <div className="flex flex-col justify-center">
@@ -185,7 +189,7 @@ const Statistic = ({ data = [] }: { data?: Partial<Statistic>[] }) => {
             {loading === false &&
                 userData.verificationStatus !== 'verified' && (
                     <StatisticCard
-                    className='cursor-pointer'
+                        className="cursor-pointer"
                         onClick={() => {
                             navigateTo('/account/settings/verify')
                         }}
@@ -199,10 +203,24 @@ const Statistic = ({ data = [] }: { data?: Partial<Statistic>[] }) => {
                 )}
 
             <StatisticCard
+                key="installed"
+                data={{
+                    key: 'installed',
+                    label: 'My Installed Services',
+                    value: loading ? (
+                        <Loading size={25} loading={true} />
+                    ) : (
+                        installedServices.length
+                    ),
+                    growShrink: -1,
+                }}
+            />
+
+            <StatisticCard
                 key={'myServices'}
                 data={{
                     key: 'myServices',
-                    label: 'My Services',
+                    label: 'My Developed Services',
                     value: loading ? (
                         <Loading size={25} loading={true} />
                     ) : (
@@ -211,31 +229,18 @@ const Statistic = ({ data = [] }: { data?: Partial<Statistic>[] }) => {
                     growShrink: 1,
                 }}
             />
+
             <StatisticCard
                 key="market"
                 data={{
                     key: 'market',
-                    label: 'Service Market',
+                    label: 'Total Services',
                     value: loading ? (
                         <Loading size={25} loading={true} />
                     ) : (
                         allServices.length
                     ),
                     growShrink: 2,
-                }}
-            />
-
-            <StatisticCard
-                key="installed"
-                data={{
-                    key: 'installed',
-                    label: 'Installed Service',
-                    value: loading ? (
-                        <Loading size={25} loading={true} />
-                    ) : (
-                        installedServices.length
-                    ),
-                    growShrink: -1,
                 }}
             />
         </div>

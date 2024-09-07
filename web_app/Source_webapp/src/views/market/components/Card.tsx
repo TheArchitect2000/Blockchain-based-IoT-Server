@@ -99,7 +99,7 @@ const ServiceCard = ({
                 onClick={() => {
                     setSelectedDevice({
                         name: data.deviceName,
-                        mac: data.mac && data.mac || data.nodeId,
+                        mac: (data.mac && data.mac) || data.nodeId,
                         encryptedId: data.deviceEncryptedId,
                     })
                     setDeviceModal(false)
@@ -107,7 +107,8 @@ const ServiceCard = ({
                 className="w-full text-center cursor-pointer py-1 hover:bg-[#374151] rounded-lg"
             >
                 <p>
-                    {data.deviceName} ( {data.mac && data.mac || data.nodeId} )
+                    {data.deviceName} ( {(data.mac && data.mac) || data.nodeId}{' '}
+                    )
                 </p>
             </div>
         )
@@ -234,7 +235,7 @@ const ServiceCard = ({
                         <strong>Name:</strong> {name}
                     </p>
                     <p>
-                        <strong>Node:</strong> {node}
+                        <strong>IoT Server:</strong> {node.split('.')[0]}
                     </p>
                     <p>
                         <strong>Type:</strong> {type}
@@ -397,7 +398,8 @@ const ServiceCard = ({
                 <span className="text-emerald-600 font-semibold">{type}</span>
                 <h4 className="font-bold my-3">{name}</h4>
                 <p className="mb-2 text-[1rem]">
-                    Node: <strong className="text-white">{node.split('.')[0]}</strong>
+                    IoT Server:{' '}
+                    <strong className="text-white">{node.split('.')[0]}</strong>
                 </p>
                 <div
                     className="h-16 line-clamp-4"
