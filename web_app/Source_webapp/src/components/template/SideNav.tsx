@@ -94,7 +94,7 @@ const SideNav = () => {
                         {nodeLogo && (
                             <img
                                 src={nodeLogo}
-                                className="node-logo aspect-auto p-1 mb-4 mx-auto w-full"
+                                className="node-logo h-full w-full"
                                 alt="logo"
                             />
                         )}

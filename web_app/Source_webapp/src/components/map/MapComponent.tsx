@@ -98,7 +98,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ positions, loading }) => {
                         }
                         onClick={() => handleNodeIdSelect(nodeId)}
                     >
-                        {nodeId}
+                        {nodeId.split('.')[0]}
                     </Button>
                 ))}
             </div>

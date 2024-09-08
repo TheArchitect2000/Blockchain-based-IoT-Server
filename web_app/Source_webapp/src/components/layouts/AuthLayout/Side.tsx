@@ -3,7 +3,7 @@ import Avatar from '@/components/ui/Avatar'
 import Logo from '@/components/template/Logo'
 import { APP_NAME } from '@/constants/app.constant'
 import type { CommonProps } from '@/@types/common'
-import { apiGetMainNodeTheme, apiGetNodeTheme } from '@/services/UserApi'
+import { apiGetNodeTheme } from '@/services/UserApi'
 import { nodeThemeApi } from '@/configs/theme.config'
 
 interface SideProps extends CommonProps {
@@ -13,14 +13,11 @@ interface SideProps extends CommonProps {
 //TODO:
 const Side = ({ children, content, ...rest }: SideProps) => {
     const [nodeData, setNodeData] = useState<nodeThemeApi>()
-    const [mainNodeData, setMainNodeData] = useState<nodeThemeApi>()
-
+    
     useEffect(() => {
         async function fetchData() {
             const res = (await apiGetNodeTheme()) as any
             setNodeData(res?.data?.data as nodeThemeApi)
-            const mainRes = (await apiGetMainNodeTheme()) as any
-            setMainNodeData(mainRes?.data?.data as nodeThemeApi)
         }
         fetchData()
     }, [])
@@ -28,23 +25,28 @@ const Side = ({ children, content, ...rest }: SideProps) => {
     return (
         <div className="grid lg:grid-cols-3 h-full">
             <div
-                className="bg-no-repeat bg-cover py-6 px-16 flex-col justify-center items-center hidden lg:flex"
+                className="bg-no-repeat relative bg-cover py-6 px-16 flex-col justify-center items-center hidden lg:flex"
                 style={{
-                    background: `linear-gradient(to bottom, #${mainNodeData?.button}, #${nodeData?.button})`,
+                    background: `linear-gradient(to bottom, #${nodeData?.button}, #${nodeData?.background})`,
                 }}
             >
-                <img
-                    src="/img/logo/logo-captcha.png"
-                    className="aspect-auto w-5/12 max-w-[225px]"
-                    alt="logo"
-                />
                 {nodeData && (
                     <img
                         src={nodeData.logo}
-                        className="aspect-auto w-5/12 max-w-[225px]"
+                        className="aspect-auto w-1/2"
                         alt="logo"
                     />
                 )}
+
+                <div className="flex flex-col items-center text-center gap-2 absolute bottom-2">
+                    <img
+                        src="/img/logo/logo-captcha.png"
+                        className="aspect-auto w-5/12 max-w-[100px]"
+                        alt="logo"
+                    />
+                    <p>{import.meta.env.VITE_NODE_NAME} Powered by FidesInnova technology</p>
+                </div>
+
                 {/* <Logo mode="dark" /> */}
                 {/* <div>
                     <div className="mb-6 flex items-center gap-4">

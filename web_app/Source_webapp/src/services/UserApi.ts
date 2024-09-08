@@ -123,10 +123,3 @@ export async function apiGetNodeTheme<T>() {
         method: 'get',
     })
 }
-
-export async function apiGetMainNodeTheme<T>() {
-    return ApiService.fetchData<T>({
-        url: `https://panel.zkiot.tech/app/v1/theme`,
-        method: 'get',
-    })
-}
