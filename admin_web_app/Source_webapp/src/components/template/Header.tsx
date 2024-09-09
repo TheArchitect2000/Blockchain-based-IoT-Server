@@ -43,9 +43,9 @@ const Header = (props: HeaderProps) => {
                 <div className="flex flex-row">
                     <div className="flex mt-1 justify-end">
                         {' '}
-                        <Button onClick={onCreateNewService} variant="solid">
+                        {/* <Button onClick={onCreateNewService} variant="solid">
                             Create New Service
-                        </Button>{' '}
+                        </Button> */}
                     </div>
                     <div className="header-action header-action-end">
                         {headerEnd}

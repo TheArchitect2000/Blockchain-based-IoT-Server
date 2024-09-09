@@ -49,16 +49,19 @@ const DevicesTable: React.FC<UsersTableProps> = ({ setCount }) => {
     const [loading, setLoading] = useState(true)
     const [refresh, setRefresh] = useState(0)
     const [deleteDialog, setDeleteDialog] = useState(false)
+    const [deleteData, setDeleteData] = useState<DeviceData | null>(null)
 
     const ActionColumn = ({ row }: { row: DeviceData }) => {
         const navigate = useNavigate()
 
         const onView = () => {
-            navigate(`/devices/${row._id}`)
+            navigate(`/devices/${row?._id}`)
         }
 
         async function handleDeleteDevice() {
-            const res = (await apiDeleteDeviceById(row._id)) as any
+            const res = (await apiDeleteDeviceById(
+                deleteData?._id || ''
+            )) as any
             setDeleteDialog(false)
             refreshPage()
             if (res?.data?.success) {
@@ -92,11 +95,14 @@ const DevicesTable: React.FC<UsersTableProps> = ({ setCount }) => {
                 >
                     <h3 className="mb-8">Delete Device</h3>
                     <p className="text-center text-[1.1rem] mb-6">
-                        Are you sure about deleting '{row.deviceName}' device ?
+                        Are you sure about deleting '{deleteData?.deviceName}'
+                        device ?
                     </p>
                     <div className="flex w-2/3 mx-auto justify-between">
                         <Button
-                            onClick={handleDeleteDevice}
+                            onClick={() => {
+                                handleDeleteDevice()
+                            }}
                             variant="solid"
                             color="red"
                         >
@@ -119,7 +125,10 @@ const DevicesTable: React.FC<UsersTableProps> = ({ setCount }) => {
                 </span>
                 <span
                     className="cursor-pointer p-2 hover:${textTheme}"
-                    onClick={() => setDeleteDialog(true)}
+                    onClick={() => {
+                        setDeleteData(row)
+                        setDeleteDialog(true)
+                    }}
                 >
                     <HiTrash />
                 </span>

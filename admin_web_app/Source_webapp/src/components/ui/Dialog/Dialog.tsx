@@ -81,7 +81,7 @@ const Dialog = (props: DialogProps) => {
                 beforeClose: 'dialog-before-close',
             }}
             overlayClassName={{
-                base: classNames('dialog-overlay z-[5000]', overlayClassName as string),
+                base: classNames('dialog-overlay z-[6000]', overlayClassName as string),
                 afterOpen: 'dialog-overlay-after-open',
                 beforeClose: 'dialog-overlay-before-close',
             }}
