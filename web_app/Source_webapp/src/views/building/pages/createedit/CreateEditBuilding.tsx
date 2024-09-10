@@ -1,5 +1,5 @@
 import { Button, Dropdown, Input, Notification, toast } from '@/components/ui'
-import { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import './style.css'
 import {
@@ -18,7 +18,6 @@ import {
     apiEditBuildingByBuildId,
     apiGetBuildingByBuildId,
 } from '@/services/UserApi'
-import utils from '../../scripts/utils'
 
 interface DeviceDatas {
     deviceEncryptedId: string
@@ -29,7 +28,7 @@ interface DeviceDatas {
 }
 
 export function CreateEditBuilding() {
-    const maxFloor = 10
+    const maxFloor = 15
     const [buildData, setBuildData] = useState<any>({
         name: 'Tower 1',
         details: {
@@ -47,13 +46,20 @@ export function CreateEditBuilding() {
     const [apiLoading, setApiLoading] = useState(false)
     const [mainLoading, setMainLoading] = useState(true)
     const [editing, setEditing] = useState(false)
-    const [selectedFloor, setSelectedFloor] = useState<number | null>(1)
+    const [scroll, setScroll] = useState<number>(0)
+    const [selectedFloor, setSelectedFloor] = useState<number>(1)
+    const [unitRefs, setUnitRefs] = useState<React.RefObject<any>[]>(
+        [1, 2, 3, 4].map(() => React.createRef())
+    )
+
     const [buildingView, setBuildingView] = useState<string>('tower')
     const { type } = useParams<{ type: string }>()
     const { status, devices } = useGetDevices()
-    const scrollToRef = useRef<HTMLDivElement | null>(null)
+    const scrollToPilotRef = useRef<HTMLImageElement | null>(null)
+    const scrollToUnitsRef = useRef<HTMLImageElement | null>(null)
     const deviceLoading = status === 'pending'
     const deviceDatas = devices?.data.data as Array<DeviceDatas>
+
     const navigateTo = useNavigate()
     const dispatch = useAppDispatch()
 
@@ -139,7 +145,15 @@ export function CreateEditBuilding() {
                 delete units[unitKey]
             }
             delete updatedDetails[floorKey]
-
+            toast.push(
+                <Notification type="info">
+                    Floor <span className="text-red-400">deleted</span>{' '}
+                    successfully
+                </Notification>,
+                {
+                    placement: 'top-center',
+                }
+            )
             if (Object.entries(buildData.details).length == selectedFloor) {
                 setSelectedFloor(Object.entries(buildData.details).length - 1)
             }
@@ -149,15 +163,6 @@ export function CreateEditBuilding() {
                 details: updatedDetails,
             }
         })
-
-        toast.push(
-            <Notification type="info">
-                Floor <span className="text-red-400">deleted</span> successfully
-            </Notification>,
-            {
-                placement: 'top-center',
-            }
-        )
     }
 
     const createNewUnit = (floorKey: string, unitKey: string) => {
@@ -284,14 +289,30 @@ export function CreateEditBuilding() {
         })
     }
 
+    const getSelectedDeviceName = (
+        selectedFloor: number,
+        unitNumber: number
+    ) => {
+        const unitKey = `unit_${unitNumber}`
+
+        // Get the device ID assigned to the specified unit
+        const deviceId =
+            buildData.details[`floor_${selectedFloor}`]?.units[unitKey]?.device
+
+        // If a device is assigned, find and return its data
+        if (deviceId) {
+            const selectedDevice = deviceDatas.find(
+                (device) => device.deviceEncryptedId === deviceId
+            )
+
+            return selectedDevice?.deviceName || 'Device data not found'
+        }
+
+        return 'Select Device'
+    }
+
     useEffect(() => {
         dispatch(setSideNavCollapse(true))
-        setTimeout(() => {
-            if (scrollToRef.current) {
-                scrollToRef.current.scrollIntoView({ behavior: 'smooth' })
-            }
-        }, 100)
-
         async function fetchData() {
             if (type === 'new') {
                 setMainLoading(false)
@@ -320,6 +341,14 @@ export function CreateEditBuilding() {
                             details: updatedDetails,
                             _id: resData._id,
                         })
+
+                        setTimeout(() => {
+                            if (scrollToPilotRef.current) {
+                                scrollToPilotRef.current.scrollIntoView({
+                                    behavior: 'smooth',
+                                })
+                            }
+                        }, 100)
                     } else {
                         navigateTo('/buildings')
                     }
@@ -331,6 +360,25 @@ export function CreateEditBuilding() {
         }
         fetchData()
     }, [type, navigateTo])
+
+    function scrollToView() {
+        setScroll((perv) => perv + 1)
+    }
+
+    useEffect(() => {
+        setTimeout(() => {
+            if (scrollToPilotRef.current) {
+                scrollToPilotRef.current.scrollIntoView({
+                    behavior: 'smooth',
+                })
+            }
+            if (scrollToUnitsRef.current) {
+                scrollToUnitsRef.current.scrollIntoView({
+                    behavior: 'smooth',
+                })
+            }
+        }, 100)
+    }, [scroll])
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setBuildData({ ...buildData, name: e.target.value })
@@ -356,13 +404,17 @@ export function CreateEditBuilding() {
 
     const getAvailableDevices = (selectedDeviceId: string) => {
         const selectedDeviceIds = new Set<string>()
-        for (const floor of Object.values(buildData.details)) {
-            for (const unit of Object.values((floor as any).units) as any) {
+
+        // Loop through all units across all floors to find selected devices
+        Object.values(buildData.details).forEach((floor: any) => {
+            Object.values(floor.units).forEach((unit: any) => {
                 if (unit.device && unit.device !== selectedDeviceId) {
                     selectedDeviceIds.add(unit.device)
                 }
-            }
-        }
+            })
+        })
+
+        // Filter devices that are not already selected
         return deviceDatas.filter(
             (device) => !selectedDeviceIds.has(device.deviceEncryptedId)
         )
@@ -405,6 +457,24 @@ export function CreateEditBuilding() {
         setApiLoading(false)
     }
 
+    /* function getFloorDistance() {
+        const floors = Object.entries(buildData.details).length
+        if (floors <= 4) {
+            return [6.8, 12.5]
+        } else if ( floors <= 6 ){
+            return [5.9, 15]
+        } else if ( floors <= 8 ){
+            return [5.2, 16]
+        } else {
+            return [4.5, 16.5]
+        }
+    } */
+
+    function getFloorDistance() {
+        const floors = Object.entries(buildData.details).length
+        return [1.91, 5.6]
+    }
+
     const floorEntries = Object.entries(buildData.details).sort(([a], [b]) => {
         // Extract the numeric part from the floor name strings
         const floorNumberA = parseInt(a.replace('floor_', ''), 10)
@@ -445,6 +515,39 @@ export function CreateEditBuilding() {
         }
     }
 
+    function getTotalUnits(floor: number): number {
+        return Number(
+            Object.keys(buildData.details[`floor_${floor}`]?.units || {}).length
+        )
+    }
+
+    const getTotalDevicesForFloor = (floorNumber: number): number => {
+        const floorKey = `floor_${floorNumber}`
+        const floorUnits = buildData.details[floorKey]?.units || {}
+
+        return Number(
+            Object.values(floorUnits).reduce(
+                (acc: any, unit: any) => acc + (unit.device ? 1 : 0),
+                0
+            )
+        )
+    }
+
+    const getTotalDevicesForAllFloors = (): number => {
+        return Number(
+            Object.values(buildData.details).reduce(
+                (acc: any, floor: any) =>
+                    acc +
+                    Object.values(floor.units || {}).reduce(
+                        (unitAcc: any, unit: any) =>
+                            unitAcc + (unit.device ? 1 : 0),
+                        0
+                    ),
+                0
+            )
+        )
+    }
+
     return (
         <section className="flex flex-col gap-6 w-full building-section">
             <h3 className="text-xl font-semibold">
@@ -467,12 +570,22 @@ export function CreateEditBuilding() {
                 >
                     {(editing && 'Edit Building') || 'Create Building'}
                 </Button>
+                {/* <Button
+                    onClick={() => console.log(buildData)}
+                    variant="default"
+                >
+                    log
+                </Button> */}
             </div>
 
             {buildingView == 'tower' && (
                 <section
-                    ref={scrollToRef}
-                    className={`w-full min-h-[100dvh] relative`}
+                    style={{
+                        height: `${
+                            Object.entries(buildData.details).length * 2 + 21
+                        }vw`,
+                    }}
+                    className={`w-full relative`}
                 >
                     <img
                         src="/img/building/roof.png"
@@ -480,9 +593,9 @@ export function CreateEditBuilding() {
                         style={{
                             bottom: `${
                                 (Object.entries(buildData.details).length - 1) *
-                                    5 +
-                                15.5
-                            }%`,
+                                    getFloorDistance()[0] +
+                                getFloorDistance()[1]
+                            }vw`,
                         }}
                         className="roof"
                     />
@@ -497,7 +610,12 @@ export function CreateEditBuilding() {
                                         index % 2 == 0 ? 2 : 1
                                     }.png`} // Adjust path for different floors
                                     alt={`Floor ${index + 1}`}
-                                    style={{ bottom: `${index * 5 + 15}%` }}
+                                    style={{
+                                        bottom: `${
+                                            index * getFloorDistance()[0] +
+                                            getFloorDistance()[1]
+                                        }vw`,
+                                    }}
                                     className={`floor ${
                                         `floor_${selectedFloor}` == floorKey &&
                                         'selected'
@@ -506,6 +624,7 @@ export function CreateEditBuilding() {
                             )
                         })}
                     <img
+                        ref={scrollToPilotRef}
                         src="/img/building/pilot.png"
                         alt="pilot pic"
                         className="pilot"
@@ -516,177 +635,260 @@ export function CreateEditBuilding() {
             {buildingView == 'floor' && (
                 <section className="relative w-full">
                     <img
+                        ref={scrollToUnitsRef}
                         className="w-full"
                         src="/img/building/floor-background.png"
                         alt=""
                     />
+                    {[1, 2, 3, 4].map((unitNumber) => {
+                        const unitKey = `unit_${unitNumber}`
+                        const unitExists =
+                            buildData.details[`floor_${selectedFloor}`]?.units[
+                                unitKey
+                            ]
+                        const prevUnitKey = `unit_${unitNumber - 1}`
+                        const prevUnitExists =
+                            buildData.details[`floor_${selectedFloor}`]?.units[
+                                prevUnitKey
+                            ]
 
-                    <>
-                        <img
-                            className="door door-1"
-                            src={`/img/building/floor-door-${
-                                buildData.details[`floor_${selectedFloor}`]
-                                    ?.units['unit_1']
-                                    ? 'opacity'
-                                    : 'low-opacity'
-                            }.png`}
-                            alt=""
-                        />
-                        <h3 className="door-num door-num-1">
-                            {selectedFloor}01
-                        </h3>
-                    </>
-
-                    <>
-                        <img
-                            className="door door-2"
-                            src={`/img/building/floor-door-${
-                                buildData.details[`floor_${selectedFloor}`]
-                                    ?.units['unit_2']
-                                    ? 'opacity'
-                                    : 'low-opacity'
-                            }.png`}
-                            alt=""
-                            onClick={() =>
-                                createNewUnit(
-                                    `floor_${selectedFloor}`,
-                                    'unit_2'
-                                )
+                        const handleUnitNameChange = (
+                            e: React.ChangeEvent<HTMLInputElement>
+                        ) => {
+                            const updatedUnits = {
+                                ...buildData.details[`floor_${selectedFloor}`]
+                                    .units,
+                                [unitKey]: {
+                                    ...buildData.details[
+                                        `floor_${selectedFloor}`
+                                    ].units[unitKey],
+                                    name: e.target.value,
+                                },
                             }
-                        />
-                        {/* Show plus button if unit_1 exists and unit_2 does not */}
-                        {buildData.details[`floor_${selectedFloor}`]?.units[
-                            'unit_1'
-                        ] &&
-                            !buildData.details[`floor_${selectedFloor}`]?.units[
-                                'unit_2'
-                            ] && (
+                            setBuildData({
+                                ...buildData,
+                                details: {
+                                    ...buildData.details,
+                                    [`floor_${selectedFloor}`]: {
+                                        ...buildData.details[
+                                            `floor_${selectedFloor}`
+                                        ],
+                                        units: updatedUnits,
+                                    },
+                                },
+                            })
+                        }
+
+                        const handleDeviceSelect = (eventKey: string) => {
+                            const updatedUnits = {
+                                ...buildData.details[`floor_${selectedFloor}`]
+                                    .units,
+                                [unitKey]: {
+                                    ...buildData.details[
+                                        `floor_${selectedFloor}`
+                                    ].units[unitKey],
+                                    device: eventKey,
+                                },
+                            }
+                            setBuildData({
+                                ...buildData,
+                                details: {
+                                    ...buildData.details,
+                                    [`floor_${selectedFloor}`]: {
+                                        ...buildData.details[
+                                            `floor_${selectedFloor}`
+                                        ],
+                                        units: updatedUnits,
+                                    },
+                                },
+                            })
+                        }
+
+                        return (
+                            <React.Fragment key={unitNumber}>
                                 <img
-                                    className="door-button button-1"
-                                    src="/img/building/floor-plus-icon.png"
-                                    alt=""
+                                    className={`door ${
+                                        !unitExists && 'cursor-pointer'
+                                    } door-${unitNumber}`}
+                                    src={`/img/building/floor-door-${
+                                        unitExists ? 'opacity' : 'low-opacity'
+                                    }.png`}
+                                    alt={`Unit ${unitNumber}`}
                                     onClick={() =>
+                                        unitExists ||
                                         createNewUnit(
                                             `floor_${selectedFloor}`,
-                                            'unit_2'
+                                            unitKey
                                         )
                                     }
                                 />
-                            )}
-                        <h3 className="door-num door-num-2">
-                            {selectedFloor}02
-                        </h3>
-                    </>
-
-                    <>
-                        <img
-                            className="door door-3"
-                            src={`/img/building/floor-door-${
-                                buildData.details[`floor_${selectedFloor}`]
-                                    ?.units['unit_3']
-                                    ? 'opacity'
-                                    : 'low-opacity'
-                            }.png`}
-                            alt=""
-                            onClick={() =>
-                                createNewUnit(
-                                    `floor_${selectedFloor}`,
-                                    'unit_3'
-                                )
-                            }
-                        />
-                        {/* Show plus button if unit_2 exists and unit_3 does not */}
-                        {buildData.details[`floor_${selectedFloor}`]?.units[
-                            'unit_2'
-                        ] &&
-                            !buildData.details[`floor_${selectedFloor}`]?.units[
-                                'unit_3'
-                            ] && (
-                                <img
-                                    className="door-button button-2"
-                                    src="/img/building/floor-plus-icon.png"
-                                    alt=""
+                                <h3
                                     onClick={() =>
+                                        unitExists ||
                                         createNewUnit(
                                             `floor_${selectedFloor}`,
-                                            'unit_3'
+                                            unitKey
                                         )
                                     }
-                                />
-                            )}
-                        <h3 className="door-num door-num-3">
-                            {selectedFloor}03
-                        </h3>
-                    </>
+                                    className={`door-num ${
+                                        !unitExists && 'cursor-pointer'
+                                    } door-num-${unitNumber}`}
+                                >
+                                    {`${selectedFloor}0${unitNumber}`}
+                                </h3>
 
-                    <>
-                        <img
-                            className="door door-4"
-                            src={`/img/building/floor-door-${
-                                buildData.details[`floor_${selectedFloor}`]
-                                    ?.units['unit_4']
-                                    ? 'opacity'
-                                    : 'low-opacity'
-                            }.png`}
-                            alt=""
-                            onClick={() =>
-                                createNewUnit(
-                                    `floor_${selectedFloor}`,
-                                    'unit_4'
-                                )
-                            }
-                        />
-                        {/* Show plus button if unit_3 exists and unit_4 does not */}
-                        {buildData.details[`floor_${selectedFloor}`]?.units[
-                            'unit_3'
-                        ] &&
-                            !buildData.details[`floor_${selectedFloor}`]?.units[
-                                'unit_4'
-                            ] && (
-                                <img
-                                    className="door-button button-3"
-                                    src="/img/building/floor-plus-icon.png"
-                                    alt=""
-                                    onClick={() =>
-                                        createNewUnit(
-                                            `floor_${selectedFloor}`,
-                                            'unit_4'
-                                        )
-                                    }
-                                />
-                            )}
-                        <h3 className="door-num door-num-4">
-                            {selectedFloor}04
-                        </h3>
-                    </>
+                                {!unitExists &&
+                                    (unitNumber === 1 || prevUnitExists) && (
+                                        <img
+                                            className={`door-button ${
+                                                !unitExists && 'cursor-pointer'
+                                            } button-${unitNumber}`}
+                                            src="/img/building/floor-plus-icon.png"
+                                            alt={`Add Unit ${unitNumber}`}
+                                            onClick={() =>
+                                                createNewUnit(
+                                                    `floor_${selectedFloor}`,
+                                                    unitKey
+                                                )
+                                            }
+                                        />
+                                    )}
+
+                                {unitExists && (
+                                    <>
+                                        {/* Input for Unit Name */}
+                                        <Input
+                                            type="text"
+                                            value={
+                                                buildData.details[
+                                                    `floor_${selectedFloor}`
+                                                ]?.units[unitKey].name || ''
+                                            }
+                                            onChange={handleUnitNameChange}
+                                            placeholder={`Unit Name`}
+                                            style={{ background: '#656565' }}
+                                            className={`unit-name unit-name-${unitNumber}`}
+                                        />
+
+                                        {/* Dropdown for Device Selection */}
+                                        <Button
+                                            variant="default"
+                                            style={{
+                                                fontSize: '0.5vw',
+                                                fontWeight: "500",
+                                                background: '#656565',
+                                            }}
+                                            className={`flex items-center justify-center unit-dropdown unit-dropdown-${unitNumber}`}
+                                            onClick={() => {
+                                                unitRefs[
+                                                    unitNumber - 1
+                                                ].current?.children[0]?.click()
+                                            }}
+                                        >
+                                            {getSelectedDeviceName(
+                                                selectedFloor,
+                                                unitNumber
+                                            )}
+                                            <Dropdown
+                                                ref={unitRefs[unitNumber - 1]}
+                                                trigger="click"
+                                                onSelect={handleDeviceSelect}
+                                                placement="middle-start-top"
+                                                activeKey={
+                                                    buildData.details[
+                                                        `floor_${selectedFloor}`
+                                                    ]?.units[unitKey]?.device ||
+                                                    ''
+                                                }
+                                            >
+                                                {/* Unselect Option */}
+                                                <Dropdown.Item eventKey="">
+                                                    Unselect Device
+                                                </Dropdown.Item>
+
+                                                {/* Available Devices */}
+                                                {getAvailableDevices(
+                                                    buildData.details[
+                                                        `floor_${selectedFloor}`
+                                                    ]?.units[unitKey]?.device
+                                                ).map((device) => (
+                                                    <Dropdown.Item
+                                                        eventKey={
+                                                            device.deviceEncryptedId
+                                                        }
+                                                        key={
+                                                            device.deviceEncryptedId
+                                                        }
+                                                    >
+                                                        {device.deviceName}
+                                                    </Dropdown.Item>
+                                                ))}
+                                            </Dropdown>
+                                        </Button>
+                                    </>
+                                )}
+
+                                {unitExists &&
+                                    !buildData.details[`floor_${selectedFloor}`]
+                                        ?.units[`unit_${unitNumber + 1}`] && (
+                                        <img
+                                            src="/img/building/trash.png"
+                                            onClick={() =>
+                                                deleteUnit(
+                                                    `floor_${selectedFloor}`,
+                                                    unitKey
+                                                )
+                                            }
+                                            className={`door-delete door-delete-${unitNumber}`}
+                                            alt="trash image"
+                                        />
+                                    )}
+                            </React.Fragment>
+                        )
+                    })}
                 </section>
             )}
 
             {/* Building control section */}
-            <div className="build-setup flex flex-col gap-3">
+            <div className="build-setup flex flex-col">
                 {buildingView == 'tower' && (
                     <>
-                        <div className="grid grid-cols-2 text-center">
-                            <p className="col-span-1 text-[1.1rem]">
+                        <div className="grid grid-cols-1 text-center">
+                            <p className="col-span-1 text-white text-[1.35rem]">
+                                Total floors:{' '}
+                                <span className="font-bold">
+                                    {Object.entries(buildData.details).length}
+                                </span>
+                            </p>
+                            <p className="col-span-1 text-white text-[1.35rem]">
                                 Selected floor:{' '}
-                                <span className="text-white font-bold">
+                                <span className="font-bold">
                                     {selectedFloor}
                                 </span>
                             </p>
-                            <p className="col-span-1 text-[1.1rem]">
-                                Total floors:{' '}
+                            <p className="col-span-1 text-[1.2rem]">
+                                Devices on this floor:{' '}
                                 <span className="text-white font-bold">
-                                    {Object.entries(buildData.details).length}
+                                    {getTotalDevicesForFloor(selectedFloor)}
+                                </span>
+                            </p>
+                            <p className="col-span-1 text-[1.2rem]">
+                                Units on this floor:{' '}
+                                <span className="text-white font-bold">
+                                    {getTotalUnits(selectedFloor)}
                                 </span>
                             </p>
                         </div>
                         <Button
                             icon={<HiEye />}
-                            size="md"
+                            size="sm"
                             className="w-full"
                             variant="solid"
                             color="yellow"
-                            onClick={() => setBuildingView('floor')}
+                            onClick={() => {
+                                setBuildingView('floor')
+                                scrollToView()
+                            }}
                         >
                             Enter Floor
                         </Button>
@@ -695,7 +897,7 @@ export function CreateEditBuilding() {
                             <Button
                                 onClick={createNewFloor}
                                 icon={<HiPlus />}
-                                size="md"
+                                size="sm"
                                 color="green"
                                 variant="solid"
                                 className="col-span-1 w-full"
@@ -709,10 +911,11 @@ export function CreateEditBuilding() {
                                     }
                                 }}
                                 icon={<HiMinus />}
-                                size="md"
+                                size="sm"
                                 color="red"
                                 variant="solid"
                                 className="col-span-1 w-full"
+                                disabled={floorEntries.length == 1}
                             >
                                 Delete Floor
                             </Button>
@@ -721,7 +924,7 @@ export function CreateEditBuilding() {
                             <Button
                                 onClick={() => handleFloorNavigation('up')}
                                 icon={<HiChevronUp />}
-                                size="md"
+                                size="sm"
                                 className="col-span-1 w-full"
                                 variant="solid"
                                 disabled={
@@ -737,7 +940,7 @@ export function CreateEditBuilding() {
                             <Button
                                 onClick={() => handleFloorNavigation('down')}
                                 icon={<HiChevronDown />}
-                                size="md"
+                                size="sm"
                                 className="col-span-1 w-full"
                                 variant="solid"
                                 disabled={
@@ -763,19 +966,22 @@ export function CreateEditBuilding() {
                             <p className="col-span-1 text-[1.1rem]">
                                 Total devices:{' '}
                                 <span className="text-white font-bold">
-                                    ???
+                                    {getTotalDevicesForFloor(selectedFloor)}
                                 </span>
                             </p>
                             <p className="col-span-1 text-[1.1rem]">
                                 Total units:{' '}
                                 <span className="text-white font-bold">
-                                    ???
+                                    {getTotalUnits(selectedFloor)}
                                 </span>
                             </p>
                         </div>
                         <Button
-                            onClick={() => setBuildingView('tower')}
-                            size="md"
+                            onClick={() => {
+                                setBuildingView('tower')
+                                scrollToView()
+                            }}
+                            size="sm"
                             color="red"
                             variant="solid"
                             className="w-full"
