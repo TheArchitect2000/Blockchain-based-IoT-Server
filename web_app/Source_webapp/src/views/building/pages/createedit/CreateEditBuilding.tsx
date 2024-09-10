@@ -2,10 +2,17 @@ import { Button, Dropdown, Input, Notification, toast } from '@/components/ui'
 import { useEffect, useRef, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import './style.css'
-import { HiPlus, HiTrash } from 'react-icons/hi'
+import {
+    HiChevronDown,
+    HiChevronUp,
+    HiEye,
+    HiMinus,
+    HiPlus,
+    HiTrash,
+} from 'react-icons/hi'
 import { useGetDevices } from '@/utils/hooks/useGetDevices'
 import { Loading } from '@/components/shared'
-import { useAppSelector } from '@/store'
+import { setSideNavCollapse, useAppDispatch, useAppSelector } from '@/store'
 import {
     apiCreateNewBuilding,
     apiEditBuildingByBuildId,
@@ -22,6 +29,7 @@ interface DeviceDatas {
 }
 
 export function CreateEditBuilding() {
+    const maxFloor = 10
     const [buildData, setBuildData] = useState<any>({
         name: 'Tower 1',
         details: {
@@ -39,11 +47,15 @@ export function CreateEditBuilding() {
     const [apiLoading, setApiLoading] = useState(false)
     const [mainLoading, setMainLoading] = useState(true)
     const [editing, setEditing] = useState(false)
+    const [selectedFloor, setSelectedFloor] = useState<number | null>(1)
+    const [buildingView, setBuildingView] = useState<string>('tower')
     const { type } = useParams<{ type: string }>()
     const { status, devices } = useGetDevices()
+    const scrollToRef = useRef<HTMLDivElement | null>(null)
     const deviceLoading = status === 'pending'
     const deviceDatas = devices?.data.data as Array<DeviceDatas>
     const navigateTo = useNavigate()
+    const dispatch = useAppDispatch()
 
     const themeColor = useAppSelector((state) => state.theme.themeColor)
     const primaryColorLevel = useAppSelector(
@@ -58,8 +70,22 @@ export function CreateEditBuilding() {
     }
 
     const createNewFloor = () => {
-        const floorCount = Object.keys(buildData.details).length + 1
-        const newFloorKey = `floor_${floorCount}`
+        const floorCount = Object.keys(buildData.details).length
+
+        if (floorCount >= maxFloor) {
+            toast.push(
+                <Notification type="warning">
+                    Maximum of {maxFloor} floors allowed
+                </Notification>,
+                {
+                    placement: 'top-center',
+                }
+            )
+            return
+        }
+
+        const newFloorCount = floorCount + 1
+        const newFloorKey = `floor_${newFloorCount}`
         const newFloor = {
             name: ``,
             units: {
@@ -82,8 +108,9 @@ export function CreateEditBuilding() {
         })
 
         toast.push(
-            <Notification type="success">
-                Floor created successfully
+            <Notification type="info">
+                Floor <span className="text-green-400">created</span>{' '}
+                successfully
             </Notification>,
             {
                 placement: 'top-center',
@@ -93,25 +120,65 @@ export function CreateEditBuilding() {
 
     const deleteFloor = (floorKey: string) => {
         setBuildData((prevData: any) => {
+            // Ensure there's at least one floor left
+            if (Object.keys(prevData.details).length <= 1) {
+                toast.push(
+                    <Notification type="warning">
+                        At least one floor must be present
+                    </Notification>,
+                    {
+                        placement: 'top-center',
+                    }
+                )
+                return prevData
+            }
+
             const updatedDetails = { ...prevData.details }
             const units = updatedDetails[floorKey].units
             for (const unitKey in units) {
                 delete units[unitKey]
             }
             delete updatedDetails[floorKey]
+
+            if (Object.entries(buildData.details).length == selectedFloor) {
+                setSelectedFloor(Object.entries(buildData.details).length - 1)
+            }
+
             return {
                 ...prevData,
                 details: updatedDetails,
             }
         })
+
+        toast.push(
+            <Notification type="info">
+                Floor <span className="text-red-400">deleted</span> successfully
+            </Notification>,
+            {
+                placement: 'top-center',
+            }
+        )
     }
 
-    const createNewUnit = (floorKey: string) => {
+    const createNewUnit = (floorKey: string, unitKey: string) => {
         setBuildData((prevData: any) => {
             const floor = prevData.details[floorKey]
             if (!floor) return prevData
 
             const unitCount = Object.keys(floor.units).length
+
+            // Check if the unit to be created follows the sequence
+            if (unitKey !== `unit_${unitCount + 1}`) {
+                toast.push(
+                    <Notification type="warning">
+                        You can only create the next unit in sequence.
+                    </Notification>,
+                    {
+                        placement: 'top-center',
+                    }
+                )
+                return prevData
+            }
 
             if (unitCount >= 6) {
                 toast.push(
@@ -145,6 +212,15 @@ export function CreateEditBuilding() {
                 },
             }
         })
+    }
+
+    const handleCreateUnit = (unitKey: string) => {
+        const units = buildData.details[`floor_${selectedFloor}`]?.units || {}
+        const unitExists = Object.keys(units).some((key) => key === unitKey)
+
+        if (!unitExists) {
+            createNewUnit(`floor_${selectedFloor}`, unitKey)
+        }
     }
 
     const deleteUnit = (floorKey: string, unitKey: string) => {
@@ -209,6 +285,13 @@ export function CreateEditBuilding() {
     }
 
     useEffect(() => {
+        dispatch(setSideNavCollapse(true))
+        setTimeout(() => {
+            if (scrollToRef.current) {
+                scrollToRef.current.scrollIntoView({ behavior: 'smooth' })
+            }
+        }, 100)
+
         async function fetchData() {
             if (type === 'new') {
                 setMainLoading(false)
@@ -341,8 +424,29 @@ export function CreateEditBuilding() {
         )
     }
 
+    const handleFloorNavigation = (direction: 'up' | 'down') => {
+        if (!selectedFloor) return
+
+        const currentIndex = floorEntries.findIndex(
+            ([key]) => key === `floor_${selectedFloor}`
+        )
+
+        if (direction === 'up' && currentIndex > 0) {
+            setSelectedFloor(
+                Number(floorEntries[currentIndex - 1][0].split('_')[1])
+            )
+        } else if (
+            direction === 'down' &&
+            currentIndex < floorEntries.length - 1
+        ) {
+            setSelectedFloor(
+                Number(floorEntries[currentIndex + 1][0].split('_')[1])
+            )
+        }
+    }
+
     return (
-        <section className="flex flex-col gap-6 w-full">
+        <section className="flex flex-col gap-6 w-full building-section">
             <h3 className="text-xl font-semibold">
                 Complete your building data
             </h3>
@@ -363,163 +467,323 @@ export function CreateEditBuilding() {
                 >
                     {(editing && 'Edit Building') || 'Create Building'}
                 </Button>
-                {/* <Button
-                    size="md"
-                    onClick={createNewFloor}
-                    loading={apiLoading}
-                >
-                    Add New Floor
-                </Button> */}
             </div>
 
-            <div className="w-full grid grid-cols-1 gap-8">
-                <div className="building-grid">
-                    <div
-                        onClick={createNewFloor}
-                        className={`flex min-h-[150px] cursor-pointer justify-center items-center gap-4 p-4 rounded-xl border border-white`}
-                    >
-                        <HiPlus className="text-4xl" />
-                    </div>
-                </div>
+            {buildingView == 'tower' && (
+                <section
+                    ref={scrollToRef}
+                    className={`w-full min-h-[100dvh] relative`}
+                >
+                    <img
+                        src="/img/building/roof.png"
+                        alt="roof pic"
+                        style={{
+                            bottom: `${
+                                (Object.entries(buildData.details).length - 1) *
+                                    5 +
+                                15.5
+                            }%`,
+                        }}
+                        className="roof"
+                    />
 
-                {floorEntries?.map(([floorKey, floor]: any) => {
-                    const unitKeys = Object.keys(floor.units)
+                    {Object.entries(buildData.details)
+                        .reverse()
+                        .map(([floorKey, floor], index) => {
+                            return (
+                                <img
+                                    key={floorKey}
+                                    src={`/img/building/middle${
+                                        index % 2 == 0 ? 2 : 1
+                                    }.png`} // Adjust path for different floors
+                                    alt={`Floor ${index + 1}`}
+                                    style={{ bottom: `${index * 5 + 15}%` }}
+                                    className={`floor ${
+                                        `floor_${selectedFloor}` == floorKey &&
+                                        'selected'
+                                    }`}
+                                />
+                            )
+                        })}
+                    <img
+                        src="/img/building/pilot.png"
+                        alt="pilot pic"
+                        className="pilot"
+                    />
+                </section>
+            )}
 
-                    return (
-                        <div key={floorKey} className="building-grid">
-                            <div
-                                className={`flex h-full relative flex-col rounded-xl items-center gap-4 p-4 border border-black`}
-                            >
-                                <h3>
-                                    <strong>
-                                        {utils.formatBuildingStrings(floorKey)}
-                                    </strong>
-                                </h3>
-                                <Input
-                                    placeholder="Name"
-                                    type="text"
-                                    value={floor.name}
-                                    disabled={apiLoading}
-                                    onChange={(e) =>
-                                        handleFloorNameChange(
-                                            floorKey,
-                                            e.target.value
+            {buildingView == 'floor' && (
+                <section className="relative w-full">
+                    <img
+                        className="w-full"
+                        src="/img/building/floor-background.png"
+                        alt=""
+                    />
+
+                    <>
+                        <img
+                            className="door door-1"
+                            src={`/img/building/floor-door-${
+                                buildData.details[`floor_${selectedFloor}`]
+                                    ?.units['unit_1']
+                                    ? 'opacity'
+                                    : 'low-opacity'
+                            }.png`}
+                            alt=""
+                        />
+                        <h3 className="door-num door-num-1">
+                            {selectedFloor}01
+                        </h3>
+                    </>
+
+                    <>
+                        <img
+                            className="door door-2"
+                            src={`/img/building/floor-door-${
+                                buildData.details[`floor_${selectedFloor}`]
+                                    ?.units['unit_2']
+                                    ? 'opacity'
+                                    : 'low-opacity'
+                            }.png`}
+                            alt=""
+                            onClick={() =>
+                                createNewUnit(
+                                    `floor_${selectedFloor}`,
+                                    'unit_2'
+                                )
+                            }
+                        />
+                        {/* Show plus button if unit_1 exists and unit_2 does not */}
+                        {buildData.details[`floor_${selectedFloor}`]?.units[
+                            'unit_1'
+                        ] &&
+                            !buildData.details[`floor_${selectedFloor}`]?.units[
+                                'unit_2'
+                            ] && (
+                                <img
+                                    className="door-button button-1"
+                                    src="/img/building/floor-plus-icon.png"
+                                    alt=""
+                                    onClick={() =>
+                                        createNewUnit(
+                                            `floor_${selectedFloor}`,
+                                            'unit_2'
                                         )
                                     }
                                 />
-                                {floorKey === lastFloorKey && (
-                                    <HiTrash
-                                        onClick={() => deleteFloor(floorKey)}
-                                        className="absolute cursor-pointer text-xl left-3 top-3 text-red-500 hover:text-red-700"
-                                    />
-                                )}
-                            </div>
-                            {unitKeys?.map((unitKey, index) => {
-                                const unit = floor.units[unitKey]
-                                const lastUnitKey =
-                                    Object.keys(floor.units).length - 1
-
-                                const availableDevices = getAvailableDevices(
-                                    unit.device
-                                )
-                                return (
-                                    <div
-                                        key={unitKey}
-                                        className={`flex relative flex-col rounded-xl gap-3 items-center p-4 border border-black`}
-                                    >
-                                        <h3>{`${
-                                            utils.sliceBuildingStrings(
-                                                unitKey
-                                            )[0]
-                                        } ${
-                                            Number(
-                                                utils.sliceBuildingStrings(
-                                                    floorKey
-                                                )[1]
-                                            ) *
-                                                100 +
-                                            Number(
-                                                utils.sliceBuildingStrings(
-                                                    unitKey
-                                                )[1]
-                                            )
-                                        }`}</h3>
-                                        <Input
-                                            disabled={apiLoading}
-                                            type="text"
-                                            value={unit.name}
-                                            onChange={(e) =>
-                                                handleUnitChange(
-                                                    floorKey,
-                                                    unitKey,
-                                                    'name',
-                                                    e.target.value
-                                                )
-                                            }
-                                            placeholder="Name"
-                                        />
-                                        <Dropdown
-                                            trigger="click"
-                                            toggleClassName={`rounded-lg px-6 py-2 text-white bg-${themeColor}-${primaryColorLevel}`}
-                                            placement="middle-start-top"
-                                            disabled={apiLoading}
-                                            title={
-                                                (unit.device &&
-                                                    `${getDeviceNameById(
-                                                        unit.device
-                                                    )}`) ||
-                                                `Select Device`
-                                            }
-                                            activeKey={unit.device}
-                                            onSelect={(eventKey) =>
-                                                handleDeviceSelect(
-                                                    floorKey,
-                                                    unitKey,
-                                                    eventKey as string
-                                                )
-                                            }
-                                        >
-                                            <Dropdown.Item eventKey="">
-                                                Unselect Device
-                                            </Dropdown.Item>
-                                            {availableDevices?.map((item) => (
-                                                <Dropdown.Item
-                                                    key={item.deviceEncryptedId}
-                                                    eventKey={
-                                                        item.deviceEncryptedId
-                                                    }
-                                                >
-                                                    {item.deviceName} (
-                                                    {item.mac})
-                                                </Dropdown.Item>
-                                            ))}
-                                        </Dropdown>
-                                        {index === lastUnitKey && (
-                                            <HiTrash
-                                                onClick={() =>
-                                                    deleteUnit(
-                                                        floorKey,
-                                                        unitKey
-                                                    )
-                                                }
-                                                className="absolute cursor-pointer text-xl left-3 top-3 text-red-500 hover:text-red-700"
-                                            />
-                                        )}
-                                    </div>
-                                )
-                            })}
-
-                            {Object.keys(floor.units).length < 6 && (
-                                <div
-                                    onClick={() => createNewUnit(floorKey)}
-                                    className="flex cursor-pointer h-full rounded-xl items-center justify-center border border-white"
-                                >
-                                    <HiPlus className="text-4xl" />
-                                </div>
                             )}
+                        <h3 className="door-num door-num-2">
+                            {selectedFloor}02
+                        </h3>
+                    </>
+
+                    <>
+                        <img
+                            className="door door-3"
+                            src={`/img/building/floor-door-${
+                                buildData.details[`floor_${selectedFloor}`]
+                                    ?.units['unit_3']
+                                    ? 'opacity'
+                                    : 'low-opacity'
+                            }.png`}
+                            alt=""
+                            onClick={() =>
+                                createNewUnit(
+                                    `floor_${selectedFloor}`,
+                                    'unit_3'
+                                )
+                            }
+                        />
+                        {/* Show plus button if unit_2 exists and unit_3 does not */}
+                        {buildData.details[`floor_${selectedFloor}`]?.units[
+                            'unit_2'
+                        ] &&
+                            !buildData.details[`floor_${selectedFloor}`]?.units[
+                                'unit_3'
+                            ] && (
+                                <img
+                                    className="door-button button-2"
+                                    src="/img/building/floor-plus-icon.png"
+                                    alt=""
+                                    onClick={() =>
+                                        createNewUnit(
+                                            `floor_${selectedFloor}`,
+                                            'unit_3'
+                                        )
+                                    }
+                                />
+                            )}
+                        <h3 className="door-num door-num-3">
+                            {selectedFloor}03
+                        </h3>
+                    </>
+
+                    <>
+                        <img
+                            className="door door-4"
+                            src={`/img/building/floor-door-${
+                                buildData.details[`floor_${selectedFloor}`]
+                                    ?.units['unit_4']
+                                    ? 'opacity'
+                                    : 'low-opacity'
+                            }.png`}
+                            alt=""
+                            onClick={() =>
+                                createNewUnit(
+                                    `floor_${selectedFloor}`,
+                                    'unit_4'
+                                )
+                            }
+                        />
+                        {/* Show plus button if unit_3 exists and unit_4 does not */}
+                        {buildData.details[`floor_${selectedFloor}`]?.units[
+                            'unit_3'
+                        ] &&
+                            !buildData.details[`floor_${selectedFloor}`]?.units[
+                                'unit_4'
+                            ] && (
+                                <img
+                                    className="door-button button-3"
+                                    src="/img/building/floor-plus-icon.png"
+                                    alt=""
+                                    onClick={() =>
+                                        createNewUnit(
+                                            `floor_${selectedFloor}`,
+                                            'unit_4'
+                                        )
+                                    }
+                                />
+                            )}
+                        <h3 className="door-num door-num-4">
+                            {selectedFloor}04
+                        </h3>
+                    </>
+                </section>
+            )}
+
+            {/* Building control section */}
+            <div className="build-setup flex flex-col gap-3">
+                {buildingView == 'tower' && (
+                    <>
+                        <div className="grid grid-cols-2 text-center">
+                            <p className="col-span-1 text-[1.1rem]">
+                                Selected floor:{' '}
+                                <span className="text-white font-bold">
+                                    {selectedFloor}
+                                </span>
+                            </p>
+                            <p className="col-span-1 text-[1.1rem]">
+                                Total floors:{' '}
+                                <span className="text-white font-bold">
+                                    {Object.entries(buildData.details).length}
+                                </span>
+                            </p>
                         </div>
-                    )
-                })}
+                        <Button
+                            icon={<HiEye />}
+                            size="md"
+                            className="w-full"
+                            variant="solid"
+                            color="yellow"
+                            onClick={() => setBuildingView('floor')}
+                        >
+                            Enter Floor
+                        </Button>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <Button
+                                onClick={createNewFloor}
+                                icon={<HiPlus />}
+                                size="md"
+                                color="green"
+                                variant="solid"
+                                className="col-span-1 w-full"
+                            >
+                                Add Floor
+                            </Button>
+                            <Button
+                                onClick={() => {
+                                    if (lastFloorKey) {
+                                        deleteFloor(lastFloorKey)
+                                    }
+                                }}
+                                icon={<HiMinus />}
+                                size="md"
+                                color="red"
+                                variant="solid"
+                                className="col-span-1 w-full"
+                            >
+                                Delete Floor
+                            </Button>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <Button
+                                onClick={() => handleFloorNavigation('up')}
+                                icon={<HiChevronUp />}
+                                size="md"
+                                className="col-span-1 w-full"
+                                variant="solid"
+                                disabled={
+                                    !selectedFloor ||
+                                    floorEntries.findIndex(
+                                        ([key]) =>
+                                            key === `floor_${selectedFloor}`
+                                    ) === 0
+                                }
+                            >
+                                Go Up
+                            </Button>
+                            <Button
+                                onClick={() => handleFloorNavigation('down')}
+                                icon={<HiChevronDown />}
+                                size="md"
+                                className="col-span-1 w-full"
+                                variant="solid"
+                                disabled={
+                                    !selectedFloor ||
+                                    floorEntries.findIndex(
+                                        ([key]) =>
+                                            key === `floor_${selectedFloor}`
+                                    ) ===
+                                        floorEntries.length - 1
+                                }
+                            >
+                                Go Down
+                            </Button>
+                        </div>
+                    </>
+                )}
+                {buildingView == 'floor' && (
+                    <>
+                        <h4 className="text-center font-bold">
+                            Floor {selectedFloor}
+                        </h4>
+                        <div className="grid grid-cols-2 text-center">
+                            <p className="col-span-1 text-[1.1rem]">
+                                Total devices:{' '}
+                                <span className="text-white font-bold">
+                                    ???
+                                </span>
+                            </p>
+                            <p className="col-span-1 text-[1.1rem]">
+                                Total units:{' '}
+                                <span className="text-white font-bold">
+                                    ???
+                                </span>
+                            </p>
+                        </div>
+                        <Button
+                            onClick={() => setBuildingView('tower')}
+                            size="md"
+                            color="red"
+                            variant="solid"
+                            className="w-full"
+                        >
+                            Back
+                        </Button>
+                    </>
+                )}
             </div>
         </section>
     )

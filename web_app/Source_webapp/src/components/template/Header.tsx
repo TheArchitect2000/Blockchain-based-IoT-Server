@@ -66,7 +66,7 @@ const Header = (props: HeaderProps) => {
     async function validateSmartContractData(user: string, pass: string) {
         setLoading(true)
         let res = null
-        if (dialogState == 'Smart Contract') {
+        if (dialogState == 'Smart Contract Console') {
             res = (await apiValidateRemixIDE(user, pass)) as any
         } else {
             res = (await apiValidateZkpCommitment(user, pass)) as any
@@ -75,7 +75,7 @@ const Header = (props: HeaderProps) => {
         setLoading(false)
         if (res.data.data == true) {
             setConsoleDialog(false)
-            if (dialogState == 'Smart Contract') {
+            if (dialogState == 'Smart Contract Console') {
                 navigate(`/remix?user=${username}&pass=${password}`)
                 
             } else {

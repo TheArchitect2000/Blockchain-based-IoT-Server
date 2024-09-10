@@ -413,7 +413,7 @@ Blockly.Blocks['customized_concrete_sensor_temperature_strength'] = {
     init: function () {
         this.jsonInit({
             type: 'customized_concrete_sensor_temperature_strength',
-            message0: '%1 Concrete Sensor (Smart Rock) %2 last %3 %4',
+            message0: '%1 Concrete Sensor %2 last %3 %4',
             args0: [
                 {
                     type: 'field_image',

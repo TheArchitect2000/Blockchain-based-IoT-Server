@@ -33,15 +33,15 @@ const Side = ({ children, content, ...rest }: SideProps) => {
                 {nodeData && (
                     <img
                         src={nodeData.logo}
-                        className="aspect-auto w-1/2"
+                        className="aspect-auto w-[70%] max-w-[200px]"
                         alt="logo"
                     />
                 )}
 
-                <div className="flex flex-col items-center text-center gap-2 absolute bottom-2">
+                <div className="w-full flex flex-col items-center text-center gap-2 absolute bottom-2">
                     <img
                         src="/img/logo/logo-captcha.png"
-                        className="aspect-auto w-5/12 max-w-[100px]"
+                        className="aspect-auto w-[15%] max-w-[70px]"
                         alt="logo"
                     />
                     <p>{import.meta.env.VITE_NODE_NAME} Powered by FidesInnova technology</p>
