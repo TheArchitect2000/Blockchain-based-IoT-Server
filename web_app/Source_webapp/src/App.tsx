@@ -9,7 +9,6 @@ import appConfig from '@/configs/app.config'
 import './locales'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-
 const environment = process.env.NODE_ENV
 
 /**

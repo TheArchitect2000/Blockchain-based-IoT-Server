@@ -1,4 +1,4 @@
-import { Suspense } from 'react'
+import { Suspense, useEffect } from 'react'
 import classNames from 'classnames'
 import Container from '@/components/shared/Container'
 import {
@@ -35,9 +35,16 @@ const PageContainer = (props: PageContainerProps) => {
         footer = true,
     } = props
 
+    /* useEffect(() => {
+        const elm = document.querySelector('#my-scrollbar')
+        Scrollbar.init(elm, {
+            damping: 0.03,
+        })
+    }, []) */
+
     return (
         <div className="h-full flex flex-auto flex-col justify-between">
-            <main className="h-full">
+            <main  className="h-full">
                 <div
                     className={classNames(
                         'page-container relative h-full flex flex-auto flex-col',

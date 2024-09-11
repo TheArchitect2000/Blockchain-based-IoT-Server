@@ -10,6 +10,11 @@
     width: 20%;
 }
 
+.no-select {
+    pointer-events: none !important;
+    user-select: none !important;
+}
+
 @keyframes flash {
     0% {
         filter: brightness(1);
@@ -20,6 +25,7 @@
 }
 
 .floor {
+    pointer-events: none !important;
     position: absolute;
     left: 49%;
     transform: translate(-50%, -50%);
@@ -75,14 +81,6 @@
     z-index: 10;
 }
 
-.door-button {
-    width: 4%;
-    position: absolute;
-    top: 59%;
-    transform: translate(-50%, -50%);
-    z-index: 15;
-}
-
 .door-num {
     position: absolute;
     font-size: 1.1vw;
@@ -91,18 +89,9 @@
     z-index: 15;
 }
 
-.door-delete {
-    position: absolute;
-    width: 3.5vw;
-    top: 77%;
-    transform: translate(-50%, -50%);
-    z-index: 15;
-    cursor: pointer;
-}
-
 .unit-name {
     position: absolute;
-    font-size: 0.75vw;
+    font-size: 0.6vw;
     width: 6%;
     height: 6%;
     top: 55%;
@@ -110,112 +99,48 @@
     z-index: 20;
 }
 
+.unit-name::placeholder {
+    color: white;
+}
+
 .unit-dropdown {
+    font-weight: 500;
+    background: #1F1B21;
+    border-radius: 0.375rem;
+    padding: 7.5px;
     position: absolute;
-    font-size: 0.75vw;
+    font-size: 0.55vw;
     width: 6%;
     height: 6%;
     top: 62.25%;
     transform: translate(-50%, -50%);
-    z-index: 20;
 }
 
-.unit-dropdown-1 {
+.unit-dropdown:hover {
+    cursor: pointer;
+}
+
+.unit-dropdown p {
+    color: white;
+    width: 90%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: center;
+}
+
+.left-pos-1 {
     left: 23.5%;
 }
 
-.unit-dropdown-2 {
+.left-pos-2 {
     left: 42.2%;
 }
 
-.unit-dropdown-3 {
+.left-pos-3 {
     left: 56.9%;
 }
 
-.unit-dropdown-4 {
-    left: 75.5%;
-}
-
-.unit-name-1 {
-    left: 23.5%;
-}
-
-.unit-name-2 {
-    left: 42.2%;
-}
-
-.unit-name-3 {
-    left: 56.9%;
-}
-
-.unit-name-4 {
-    left: 75.5%;
-}
-
-.door-delete:hover {
-    filter: hue-rotate(100deg) brightness(0.75) saturate(5);
-}
-
-.door-delete-1 {
-    left: 19.3%;
-}
-
-.door-delete-2 {
-    left: 38%;
-}
-
-.door-delete-3 {
-    left: 52.5%;
-}
-
-.door-delete-4 {
-    left: 71%;
-}
-
-.door-num-1 {
-    left: 23.5%;
-}
-
-.door-num-2 {
-    left: 42.2%;
-}
-
-.door-num-3 {
-    left: 56.9%;
-}
-
-.door-num-4 {
-    left: 75.5%;
-}
-
-.button-1 {
-    left: 23.5%;
-}
-
-.button-2 {
-    left: 42.2%;
-}
-
-.button-3 {
-    left: 57%;
-}
-
-.button-4 {
-    left: 75.5%;
-}
-
-.door-1 {
-    left: 23.5%;
-}
-
-.door-2 {
-    left: 42.2%;
-}
-
-.door-3 {
-    left: 56.9%;
-}
-
-.door-4 {
+.left-pos-4 {
     left: 75.5%;
 }

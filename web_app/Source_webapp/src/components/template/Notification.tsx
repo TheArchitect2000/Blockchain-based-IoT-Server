@@ -183,7 +183,7 @@ const _Notification = ({ className }: { className?: string }) => {
     }, [unreadNotifs])
 
     useEffect(() => {
-        if ( readedNotifs === undefined ) {
+        if (readedNotifs === undefined) {
             dispatch(setReadedNotifs([]))
         }
         let oldData = notificationList
