@@ -164,11 +164,13 @@ const Verify = () => {
                                 Save
                             </Button>
                         </div>
+
                         <div className="flex items-center gap-8">
                             <p className="font-bold">
-                                {(!walletData?.data && 'Wallet address not found!') ||
+                                {(walletData?.data == null &&
+                                    'Wallet address not found!') ||
                                     `Your wallet balance: `}
-                                {walletData?.data && (
+                                {walletData?.data != null && (
                                     <span className="text-white font-normal">
                                         {walletData?.data} FDS
                                     </span>
