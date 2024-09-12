@@ -37,7 +37,7 @@ const ModernLayout = () => {
             <div className="flex flex-auto min-w-0">
                 <SideNav />
                 <div
-                    className={`flex flex-col flex-auto h-screen overflow-scroll min-w-0 relative w-full bg-white dark:bg-${themeBackground} border-l border-gray-200 dark:border-gray-700`}
+                    className={`flex flex-col flex-auto min-w-0 relative w-full bg-white dark:bg-${themeBackground} border-l border-gray-200 dark:border-gray-700`}
                 >
                     <Header
                         className={`border-b border-gray-200 dark:border-gray-700`}
