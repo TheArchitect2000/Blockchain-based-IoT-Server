@@ -11,7 +11,7 @@
 }
 
 .side-nav-expand {
-    @apply top-0 h-screen;
+    @apply sticky top-0 h-screen;
 }
 
 .side-nav-expand .side-nav-header {
