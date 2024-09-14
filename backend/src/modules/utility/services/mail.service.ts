@@ -104,6 +104,7 @@ export class MailService {
           // filling curly brackets with content
           name: email,
           NodeName: process.env.NODE_NAME,
+          NodeImageSrc: process.env.THEME_LOGO,
           url: url,
         },
         /*attachments: [
@@ -163,6 +164,7 @@ export class MailService {
           context: {
             name: email,
             NodeName: process.env.NODE_NAME,
+            NodeImageSrc: process.env.THEME_LOGO,
             url: url,
           },
         })
@@ -212,6 +214,7 @@ export class MailService {
           // filling curly brackets with content
           name: email,
           NodeName: process.env.NODE_NAME,
+          NodeImageSrc: process.env.THEME_LOGO,
           url: url,
         },
         /*attachments: [
@@ -285,6 +288,7 @@ export class MailService {
             // filling curly brackets with content
             name: email,
             NodeName: process.env.NODE_NAME,
+            NodeImageSrc: process.env.THEME_LOGO,
             notificationMessage: String(notificationMessage),
             subject: subject,
             date: this.getCurrentTimeFormatted(),
