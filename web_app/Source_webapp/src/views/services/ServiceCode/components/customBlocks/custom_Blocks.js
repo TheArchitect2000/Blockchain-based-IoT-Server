@@ -427,7 +427,7 @@ Blockly.Blocks['customized_concrete_sensor_temperature_strength'] = {
                     type: 'field_dropdown',
                     name: 'device',
                     options: [
-                        ['concrete 1', 'MULTI_SENSOR_1'],
+                        ['concrete sensor 1', 'MULTI_SENSOR_1'],
                         // Add more options as needed
                     ],
                 },
@@ -438,6 +438,92 @@ Blockly.Blocks['customized_concrete_sensor_temperature_strength'] = {
                         ['temperature', 'TEMPERATURE'],
                         ['strength', 'STRENGTH'],
                         // Add more options as needed
+                    ],
+                },
+                {
+                    type: 'input_value',
+                    name: 'inputs',
+                },
+            ],
+            inputsInline: false,
+            output: null,
+            colour: 300,
+            tooltip: "Checks Concrete Sensor's Temperature or Humidity.",
+            helpUrl: 'https://example.com', // Replace with your help URL
+        })
+    },
+}
+
+Blockly.Blocks['customized_air_quality_sensor'] = {
+    init: function () {
+        this.jsonInit({
+            type: 'customized_air_quality_sensor',
+            message0: '%1 Air Quality Sensor %2 last %3 %4',
+            args0: [
+                {
+                    type: 'field_image',
+                    src: '/img/blockly/devices.jpg',
+                    width: 15,
+                    height: 15,
+                    alt: '*',
+                    flipRtl: false,
+                },
+                {
+                    type: 'field_dropdown',
+                    name: 'device',
+                    options: [
+                        ['air quality sensor 1', 'MULTI_SENSOR_1'],
+                        // Add more options as needed
+                    ],
+                },
+                {
+                    type: 'field_dropdown',
+                    name: 'sensor',
+                    options: [
+                        ['aqi', 'AQI'],
+                    ],
+                },
+                {
+                    type: 'input_value',
+                    name: 'inputs',
+                },
+            ],
+            inputsInline: false,
+            output: null,
+            colour: 300,
+            tooltip: "Checks Concrete Sensor's Temperature or Humidity.",
+            helpUrl: 'https://example.com', // Replace with your help URL
+        })
+    },
+}
+
+Blockly.Blocks['customized_noise_sensor'] = {
+    init: function () {
+        this.jsonInit({
+            type: 'customized_noise_sensor',
+            message0: '%1 Noise Sensor %2 last %3 %4',
+            args0: [
+                {
+                    type: 'field_image',
+                    src: '/img/blockly/devices.jpg',
+                    width: 15,
+                    height: 15,
+                    alt: '*',
+                    flipRtl: false,
+                },
+                {
+                    type: 'field_dropdown',
+                    name: 'device',
+                    options: [
+                        ['Noise Sensor 1', 'MULTI_SENSOR_1'],
+                        // Add more options as needed
+                    ],
+                },
+                {
+                    type: 'field_dropdown',
+                    name: 'sensor',
+                    options: [
+                        ['noise meter', 'NOISE_METER'],
                     ],
                 },
                 {
@@ -472,7 +558,7 @@ Blockly.Blocks['customized_gas_sensor'] = {
                     type: 'field_dropdown',
                     name: 'device',
                     options: [
-                        ['gas 1', 'MULTI_SENSOR_1'],
+                        ['gas sensor 1', 'MULTI_SENSOR_1'],
                         // Add more options as needed
                     ],
                 },
@@ -516,7 +602,7 @@ Blockly.Blocks['customized_car_sensor'] = {
                     type: 'field_dropdown',
                     name: 'device',
                     options: [
-                        ['car 1', 'MULTI_SENSOR_1'],
+                        ['car sensor 1', 'MULTI_SENSOR_1'],
                         // Add more options as needed
                     ],
                 },
@@ -814,6 +900,8 @@ const deviceBlocks = [
     'customized_device_info',
     'customized_multi_sensor_temperature_humidity',
     'customized_concrete_sensor_temperature_strength',
+    'customized_air_quality_sensor',
+    'customized_noise_sensor',
     'customized_gas_sensor',
     'customized_car_sensor',
 ]

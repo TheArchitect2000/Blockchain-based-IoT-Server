@@ -157,11 +157,11 @@ export default function BuildingPage() {
                                         variant="solid"
                                         onClick={() => {
                                             navigateTo(
-                                                `/buildings/details/${build._id}`
+                                                `/buildings/${build._id}?view=${true}`
                                             )
                                         }}
                                     >
-                                        See
+                                        View
                                     </Button>
                                     <Button
                                         size="sm"

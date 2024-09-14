@@ -2,15 +2,30 @@
     @apply flex flex-col flex-auto flex-shrink-0 z-20 transition-all ease-in-out duration-200;
 }
 
+.node-logo {
+    object-fit: contain;
+}
+
 .side-nav-expand .node-logo {
-    width: 50%;
+    width: 75%;
 }
 
 .side-nav-expand {
     @apply sticky top-0 h-screen;
 }
+
+.side-nav-expand .side-nav-header {
+    height: 25%;
+    overflow: hidden;
+}
+
 .side-nav-header {
+    display: flex;
+    justify-content: center;
+    justify-items: center;
     height: auto;
+    padding-block: 10px;
+    padding-inline: 5px;
 }
 .side-nav-content {
     height: 93dvh;

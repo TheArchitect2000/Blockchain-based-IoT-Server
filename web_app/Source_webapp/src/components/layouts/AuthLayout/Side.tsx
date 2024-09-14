@@ -33,7 +33,7 @@ const Side = ({ children, content, ...rest }: SideProps) => {
                 {nodeData && (
                     <img
                         src={nodeData.logo}
-                        className="aspect-auto w-[70%] max-w-[200px]"
+                        className="aspect-auto w-[100%] max-w-[350px]"
                         alt="logo"
                     />
                 )}

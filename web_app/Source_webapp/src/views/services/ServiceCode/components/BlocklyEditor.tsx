@@ -178,6 +178,14 @@ const toolbox = {
                 },
                 {
                     kind: 'block',
+                    type: 'customized_air_quality_sensor',
+                },
+                {
+                    kind: 'block',
+                    type: 'customized_noise_sensor',
+                },
+                {
+                    kind: 'block',
                     type: 'customized_concrete_sensor_temperature_strength',
                 },
                 {

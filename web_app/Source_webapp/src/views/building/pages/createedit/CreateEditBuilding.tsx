@@ -1,6 +1,6 @@
 import { Button, Dropdown, Input, Notification, toast } from '@/components/ui'
 import React, { useEffect, useRef, useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import './style.css'
 import {
     HiChevronDown,
@@ -45,7 +45,8 @@ export function CreateEditBuilding() {
             },
         },
     })
-
+    const query = new URLSearchParams(useLocation().search)
+    const viewMode = query.get('view')
     const [apiLoading, setApiLoading] = useState(false)
     const [deviceListIsOpen, setDeviceListIsOpen] = useState<number>(0)
     const [mainLoading, setMainLoading] = useState(true)
@@ -780,8 +781,14 @@ export function CreateEditBuilding() {
                                             onChange={(e) =>
                                                 handleUnitNameChange(unitKey, e)
                                             }
+                                            disabled={viewMode == 'true'}
                                             placeholder={`Unit Name`}
-                                            style={{ background: '#1F1B21' }}
+                                            style={{
+                                                background: '#1F1B21',
+                                                cursor: viewMode
+                                                    ? 'not-allowed'
+                                                    : '',
+                                            }}
                                             className={`unit-name left-pos-${unitNumber}`}
                                         />
 
@@ -791,8 +798,11 @@ export function CreateEditBuilding() {
                                                 zIndex:
                                                     deviceListIsOpen ==
                                                     unitNumber
-                                                        ? 50
+                                                        ? 150
                                                         : 25,
+                                                cursor: viewMode
+                                                    ? 'not-allowed'
+                                                    : '',
                                             }}
                                             className={`flex items-center justify-end unit-dropdown left-pos-${unitNumber}`}
                                             onClick={() => {
@@ -801,7 +811,13 @@ export function CreateEditBuilding() {
                                                 ].current?.children[0]?.click()
                                             }}
                                         >
-                                            <p>
+                                            <p
+                                                style={{
+                                                    color: viewMode
+                                                        ? '#B4B3B5'
+                                                        : '',
+                                                }}
+                                            >
                                                 {getSelectedDeviceName(
                                                     selectedFloor,
                                                     unitNumber
@@ -810,6 +826,7 @@ export function CreateEditBuilding() {
                                             <Dropdown
                                                 ref={unitRefs[unitNumber - 1]}
                                                 trigger="click"
+                                                disabled={viewMode == 'true'}
                                                 onSelect={(device) =>
                                                     handleDeviceSelect(
                                                         `floor_${selectedFloor}`,
@@ -900,34 +917,36 @@ export function CreateEditBuilding() {
                             </p>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
-                            <Button
-                                onClick={createNewFloor}
-                                icon={<HiPlus />}
-                                size="sm"
-                                color="green"
-                                variant="solid"
-                                disabled={getTotalFloors() == maxFloor}
-                                className="col-span-1 w-full"
-                            >
-                                Add Floor
-                            </Button>
-                            <Button
-                                onClick={() => {
-                                    if (lastFloorKey) {
-                                        deleteFloor(lastFloorKey)
-                                    }
-                                }}
-                                icon={<HiMinus />}
-                                size="sm"
-                                color="red"
-                                variant="solid"
-                                className="col-span-1 w-full"
-                                disabled={floorEntries.length == 1}
-                            >
-                                Delete Last Floor
-                            </Button>
-                        </div>
+                        {!viewMode && (
+                            <div className="grid grid-cols-2 gap-4">
+                                <Button
+                                    onClick={createNewFloor}
+                                    icon={<HiPlus />}
+                                    size="sm"
+                                    color="green"
+                                    variant="solid"
+                                    disabled={getTotalFloors() == maxFloor}
+                                    className="col-span-1 w-full"
+                                >
+                                    Add Floor
+                                </Button>
+                                <Button
+                                    onClick={() => {
+                                        if (lastFloorKey) {
+                                            deleteFloor(lastFloorKey)
+                                        }
+                                    }}
+                                    icon={<HiMinus />}
+                                    size="sm"
+                                    color="red"
+                                    variant="solid"
+                                    className="col-span-1 w-full"
+                                    disabled={floorEntries.length == 1}
+                                >
+                                    Delete Last Floor
+                                </Button>
+                            </div>
+                        )}
                         <div className="grid grid-cols-2 gap-4">
                             <Button
                                 onClick={() => handleFloorNavigation('up')}
@@ -978,15 +997,30 @@ export function CreateEditBuilding() {
                             Enter Floor
                         </Button>
 
-                        <Button
-                            onClick={handleSubmit}
-                            loading={apiLoading}
-                            className="w-full"
-                            size="sm"
-                            variant="solid"
-                        >
-                            {editing ? 'Submit Changes' : 'Submit New Entry'}
-                        </Button>
+                        {(viewMode && (
+                            <Button
+                                onClick={() => navigateTo('/buildings')}
+                                loading={apiLoading}
+                                className="w-full"
+                                size="sm"
+                                variant="solid"
+                                color="red"
+                            >
+                                Exit
+                            </Button>
+                        )) || (
+                            <Button
+                                onClick={handleSubmit}
+                                loading={apiLoading}
+                                className="w-full"
+                                size="sm"
+                                variant="solid"
+                            >
+                                {editing
+                                    ? 'Submit Changes'
+                                    : 'Submit New Entry'}
+                            </Button>
+                        )}
                     </>
                 )}
                 {buildingView == 'floor' && (
@@ -1009,65 +1043,69 @@ export function CreateEditBuilding() {
                             </p>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
-                            <Button
-                                icon={<HiPlus />}
-                                size="sm"
-                                color="green"
-                                variant="solid"
-                                className="col-span-1 w-full"
-                                onClick={() =>
-                                    createNewUnit(
-                                        `floor_${selectedFloor}`,
-                                        `unit_${
-                                            getLastUnitKeyByFloor(
-                                                `floor_${selectedFloor}`
-                                            ) + 1
-                                        }`
-                                    )
-                                }
-                                disabled={
-                                    getTotalUnitsByFloor(
-                                        `floor_${selectedFloor}`
-                                    ) == 4
-                                }
-                            >
-                                Add Unit
-                            </Button>
-
-                            <Button
-                                icon={<HiMinus />}
-                                size="sm"
-                                color="red"
-                                variant="solid"
-                                className="col-span-1 w-full"
-                                onClick={() =>
-                                    deleteUnit(
-                                        `floor_${selectedFloor}`,
-                                        `unit_${getLastUnitKeyByFloor(
+                        {!viewMode && (
+                            <div className="grid grid-cols-2 gap-4">
+                                <Button
+                                    icon={<HiPlus />}
+                                    size="sm"
+                                    color="green"
+                                    variant="solid"
+                                    className="col-span-1 w-full"
+                                    onClick={() =>
+                                        createNewUnit(
+                                            `floor_${selectedFloor}`,
+                                            `unit_${
+                                                getLastUnitKeyByFloor(
+                                                    `floor_${selectedFloor}`
+                                                ) + 1
+                                            }`
+                                        )
+                                    }
+                                    disabled={
+                                        getTotalUnitsByFloor(
                                             `floor_${selectedFloor}`
-                                        )}`
-                                    )
-                                }
-                                disabled={
-                                    getTotalUnitsByFloor(
-                                        `floor_${selectedFloor}`
-                                    ) == 0
-                                }
-                            >
-                                Delete Last Unit
-                            </Button>
-                        </div>
+                                        ) == 4
+                                    }
+                                >
+                                    Add Unit
+                                </Button>
 
-                        <Button
-                            onClick={handleSave}
-                            size="sm"
-                            variant="solid"
-                            className="w-full"
-                            disabled={!unsavedChanges}
-                        >
-                            Save
-                        </Button>
+                                <Button
+                                    icon={<HiMinus />}
+                                    size="sm"
+                                    color="red"
+                                    variant="solid"
+                                    className="col-span-1 w-full"
+                                    onClick={() =>
+                                        deleteUnit(
+                                            `floor_${selectedFloor}`,
+                                            `unit_${getLastUnitKeyByFloor(
+                                                `floor_${selectedFloor}`
+                                            )}`
+                                        )
+                                    }
+                                    disabled={
+                                        getTotalUnitsByFloor(
+                                            `floor_${selectedFloor}`
+                                        ) == 0
+                                    }
+                                >
+                                    Delete Last Unit
+                                </Button>
+                            </div>
+                        )}
+
+                        {!viewMode && (
+                            <Button
+                                onClick={handleSave}
+                                size="sm"
+                                variant="solid"
+                                className="w-full"
+                                disabled={!unsavedChanges}
+                            >
+                                Save
+                            </Button>
+                        )}
 
                         <Button
                             onClick={handleBack}
