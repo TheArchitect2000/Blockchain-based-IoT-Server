@@ -74,6 +74,22 @@ export class EventsGateway
     });
   }
 
+  @SubscribeMessage('requestCollectionCounts')
+  async handleRequestCollectionCounts(client: Socket) {
+    try {
+      const zkpCount = await this.zkpCollection.countDocuments();
+      const serviceDeviceCount =
+        await this.serviceDeviceCollection.countDocuments();
+
+      client.emit('collectionCounts', {
+        zkpCount,
+        serviceDeviceCount,
+      });
+    } catch (error) {
+      console.error('Error fetching collection counts:', error);
+    }
+  }
+
   @SubscribeMessage('requestLastObjects')
   async handleRequestLastObjects(
     client: Socket,

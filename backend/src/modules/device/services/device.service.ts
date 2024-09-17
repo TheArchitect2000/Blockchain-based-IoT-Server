@@ -18,6 +18,15 @@ let algorithm = 'aes-256-ctr';
 let defaultEncryptionPassword = 'SDfsae4d6F3Efeq';
 const initializationVector = '5183666c72eec9e4';
 
+function decodeDeviceEncryptedIds(array) {
+  array.forEach(item => {
+    if (item.deviceEncryptedId) {
+      // Decode deviceEncryptedId and set it as mac
+      item.mac = Buffer.from(item.deviceEncryptedId, 'base64').toString('utf8');
+    }
+  });
+}
+
 /**
  * Device manipulation service.
  */
@@ -150,6 +159,8 @@ export class DeviceService {
       populateCondition,
       selectCondition,
     );
+    
+    decodeDeviceEncryptedIds(foundDevices);
 
     //console.log('Found devices are: ', foundDevices);
 
@@ -621,6 +632,8 @@ export class DeviceService {
       populateCondition,
       selectCondition,
     );
+
+    decodeDeviceEncryptedIds(foundDevices);
 
     const logPromises = foundDevices.map(async (device) => {
       try {
