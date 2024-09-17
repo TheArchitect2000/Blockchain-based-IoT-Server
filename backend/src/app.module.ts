@@ -82,7 +82,7 @@ import { EventsGateway } from './getaways/events.gateway';
       useClass: ResponseTransformInterceptor,
     },
     AppService,
-    EventsGateway,
+    ...(process.env.GETAWAY ? [EventsGateway] : []),
   ],
   exports: [AppService],
 })
