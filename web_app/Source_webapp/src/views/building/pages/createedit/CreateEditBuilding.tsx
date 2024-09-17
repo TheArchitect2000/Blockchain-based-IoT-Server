@@ -954,6 +954,7 @@ export function CreateEditBuilding() {
                                 size="sm"
                                 className="col-span-1 w-full"
                                 variant="solid"
+                                color="blue"
                                 disabled={
                                     !selectedFloor ||
                                     floorEntries.findIndex(
@@ -970,6 +971,7 @@ export function CreateEditBuilding() {
                                 size="sm"
                                 className="col-span-1 w-full"
                                 variant="solid"
+                                color="blue"
                                 disabled={
                                     !selectedFloor ||
                                     floorEntries.findIndex(
@@ -1015,6 +1017,7 @@ export function CreateEditBuilding() {
                                 className="w-full"
                                 size="sm"
                                 variant="solid"
+                                color="blue"
                             >
                                 {editing
                                     ? 'Submit Changes'
@@ -1101,6 +1104,7 @@ export function CreateEditBuilding() {
                                 size="sm"
                                 variant="solid"
                                 className="w-full"
+                                color="blue"
                                 disabled={!unsavedChanges}
                             >
                                 Save
@@ -1110,7 +1114,7 @@ export function CreateEditBuilding() {
                         <Button
                             onClick={handleBack}
                             size="sm"
-                            color={unsavedChanges ? 'yellow' : themeColor}
+                            color={unsavedChanges ? 'yellow' : 'blue'}
                             variant="solid"
                             className="w-full"
                         >

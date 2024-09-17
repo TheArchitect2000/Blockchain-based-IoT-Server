@@ -5,16 +5,27 @@ import { useEffect, useState } from 'react'
 import { apiGetAllPublishedServices } from '@/services/ServiceAPI'
 import { Loading } from '@/components/shared'
 import { Button } from '@/components/ui'
+import { DeviceData } from '@/utils/hooks/useGetDevices'
+import { apiGetAllSharedDevices, apiGetDevices } from '@/services/DeviceApi'
+import { useAppSelector } from '@/store'
 
 function Market() {
     const [loading, setLoading] = useState(true)
     const [data, setData] = useState<ServiceData[]>([])
     const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
+    const [myDevices, setMyDevices] = useState<DeviceData[]>([])
+    const [sharedDevices, setSharedDevices] = useState<DeviceData[]>([])
+
+    const { _id: userId } = useAppSelector((state) => state.auth.user)
 
     useEffect(() => {
         async function getDatas() {
             const res = (await apiGetAllPublishedServices()) as any
             setData(res?.data?.data)
+            const myRes = (await apiGetDevices(userId || '')) as any
+            setMyDevices(myRes?.data.data!)
+            const sharedRes = (await apiGetAllSharedDevices()) as any
+            setSharedDevices(sharedRes?.data.data!)
             setLoading(false)
         }
         getDatas()
@@ -37,7 +48,9 @@ function Market() {
             <h3 className="pb-4">Service Market</h3>
             <Statistic />
 
-            <h4 className='mt-8'>Current IoT Servers on the FidesInnova Network</h4>
+            <h4 className="mt-8">
+                Current IoT Servers on the FidesInnova Network
+            </h4>
             <div className="flex border-b items-center justify-start gap-6 p-4">
                 {nodeIds.map((nodeId) => (
                     <Button
@@ -63,6 +76,8 @@ function Market() {
                 <div className="grid xl:grid-cols-3 gap-4">
                     {sortedData.map((service: ServiceData) => (
                         <ServiceCard
+                            sharedDevices={sharedDevices}
+                            myDevices={myDevices}
                             key={service._id}
                             className="mt-8 mx-auto"
                             node={service.nodeId || ''}

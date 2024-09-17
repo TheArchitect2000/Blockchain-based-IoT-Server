@@ -17,6 +17,8 @@ import { ServiceData } from '@/utils/hooks/useGetServices'
 import { useNavigate } from 'react-router-dom'
 
 const ServiceCard = ({
+    sharedDevices,
+    myDevices,
     className,
     name,
     installationPrice,
@@ -26,6 +28,8 @@ const ServiceCard = ({
     serviceData,
     node,
 }: {
+    sharedDevices: Array<DeviceData>
+    myDevices: Array<DeviceData>
     serviceImage: string
     node: string
     className: string
@@ -47,19 +51,7 @@ const ServiceCard = ({
     })
     const devicesRef = useRef<any>()
     const { _id: userId } = useAppSelector((state) => state.auth.user)
-    const [myDevices, setMyDevices] = useState<DeviceData[]>([])
-    const [sharedDevices, setSharedDevices] = useState<DeviceData[]>([])
     const navigateTo = useNavigate()
-
-    useEffect(() => {
-        async function getDevices() {
-            const res = (await apiGetDevices(userId || '')) as any
-            setMyDevices(res?.data.data!)
-            const sharedRes = (await apiGetAllSharedDevices()) as any
-            setSharedDevices(sharedRes?.data.data!)
-        }
-        getDevices()
-    }, [])
 
     const cardFooter = (
         <section className="flex flex-col w-full gap-3">
