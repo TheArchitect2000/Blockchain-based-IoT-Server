@@ -28,6 +28,7 @@ export class ContractService {
   private contracts = {
     zkp: null,
     serviceDevice: null,
+    storeZkp: null,
   };
 
   constructor(
@@ -60,6 +61,14 @@ export class ContractService {
     this.contracts.serviceDevice = new ethers.Contract(
       contractData.serviceDeviceContractAddress,
       contractData.serviceDeviceContractABI,
+      this.adminWallet,
+    );
+    
+
+    
+    this.contracts.storeZkp = new ethers.Contract(
+      contractData.storeZkpContractAddress,
+      contractData.storeZkpContractABI,
       this.adminWallet,
     );
 
