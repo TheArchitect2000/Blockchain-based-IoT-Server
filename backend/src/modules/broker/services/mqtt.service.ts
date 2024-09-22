@@ -3,6 +3,7 @@ const aedes = require('aedes')();
 import * as fs from 'fs';
 import axios from 'axios';
 import { DeviceEventsEnum } from '../enums/device-events.enum';
+import { ContractService } from 'src/modules/smartcontract/services/contract.service';
 
 /**
 1883 : MQTT, unencrypted, unauthenticated
@@ -22,7 +23,7 @@ import { DeviceEventsEnum } from '../enums/device-events.enum';
 
 @Injectable()
 export class MqttService implements OnModuleInit {
-  constructor() {}
+  constructor(private readonly contractService?: ContractService) {}
 
   async onModuleInit() {
     console.log('Initialization of MqttService...');
@@ -36,6 +37,7 @@ export class MqttService implements OnModuleInit {
       ws: 8080,
       wss: 8081,
     };
+    
 
     //   this.mqttLogService = new MqttLogService();
     // await this.callLogService();
@@ -85,6 +87,7 @@ export class MqttService implements OnModuleInit {
     });
 
     aedes.on('subscribe', async function (subscriptions, client) {
+      
       console.log(
         'MQTT client \x1b[32m' +
           (client ? client.id : client) +
@@ -218,7 +221,9 @@ export class MqttService implements OnModuleInit {
         });
     });
 
-    aedes.on('publish', async function (packet, client) {
+    
+
+    aedes.on('publish', async (packet, client) => {
       console.log('Published packet: ', packet);
 
       console.log('Published packet payload: ', packet.payload.toString());
@@ -240,7 +245,18 @@ export class MqttService implements OnModuleInit {
             return {};
           }
 
-          // let parsedPayload = JSON.parse(payload);
+          if (parsedPayload.data?.proof) {
+            const { proof, ...dataWithoutProof } = parsedPayload.data;
+            await this.contractService.storeZKP(
+              String(process.env.NODE_ID),
+              String(client.id),
+              dataWithoutProof.Door ? 'MULTI_SENSOR' : 'E_CARD',
+              String(dataWithoutProof.HV),
+              String(dataWithoutProof.FV),
+              JSON.stringify(dataWithoutProof),
+              JSON.stringify(proof),
+            );
+          }
 
           axios
             .post(host + '/app/v1/broker-mqtt-log/log-device-data', {

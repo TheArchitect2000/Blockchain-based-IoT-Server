@@ -10,11 +10,13 @@ import { VirtualMachineModule } from '../virtual-machine/virtual-machine.module'
 import { serviceFeature } from '../service/features/service.feature';
 import { installedServiceFeature } from '../service/features/installed-service.feature';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ContractModule } from '../smartcontract/contract.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature(serviceFeature),
     MongooseModule.forFeature(installedServiceFeature),
+    forwardRef(() => ContractModule),
     forwardRef(() => VirtualMachineModule),
     forwardRef(() => UserModule),
     forwardRef(() => ServiceModule),

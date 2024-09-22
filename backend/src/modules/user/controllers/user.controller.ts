@@ -126,8 +126,6 @@ export class UserController {
     @Body() body: signupByEmailDto,
     @Request() request,
   ) {
-
-    
     return await this.userService.sendOTPCodeForSignupByEmail({
       ...body,
       email: body.email.toString().toLocaleLowerCase(),
@@ -182,84 +180,44 @@ export class UserController {
     @Query('email') email: string,
     @Query('otp') otp: string,
     @Body() body: verifyOtpCodeSentByEmailDto,
-    //@Req() req: Request,
     @Response() res: Res,
   ) {
     body.email = email;
     body.otp = otp;
     console.log('We are in verifyOTPCodeSentByEmailForSignup function!');
     console.log('Email is: ', email);
-    console.log('otp is: ', otp);
+    console.log('OTP is: ', otp);
 
-    let otpIsVerified: boolean = false;
+    try {
+      const otpIsVerified =
+        await this.userService.verifyOtpCodeSentByEmailForSignup(body);
 
-    // let otpIsVerified = await this.userService.verifyOtpCodeSentByEmailForSignup(body);
-
-    await this.userService
-      .verifyOtpCodeSentByEmailForSignup(body)
-      .then((data) => {
-        otpIsVerified = data;
-
-        // Show congratulations page.
-
-        fs.readFile(
-          join(
+      const filePath = otpIsVerified
+        ? join(
             __dirname,
             '../../../../assets/web-pages/signup-congrat-msg.html',
-          ),
-          function (error, pgResp) {
-            if (error) {
-              res.writeHead(404);
-              res.write('Response web page does not found!');
-            } else {
-              if (otpIsVerified) {
-                res.writeHead(200, { 'Content-Type': 'text/html' });
-                // res.write('<h1> successful </h1>');
-                res.write(pgResp);
-              } else {
-                res.writeHead(200, { 'Content-Type': 'text/html' });
-                res.write('<h1> unsuccessful </h1>');
-              }
-              res.end();
-            }
-
-            res.end();
-          },
-        );
-      })
-      .catch((error) => {
-        // Show unsuccessful page.
-
-        fs.readFile(
-          join(
+          )
+        : join(
             __dirname,
             '../../../../assets/web-pages/signup-unsuccessful-msg.html',
-          ),
-          function (error, pgResp) {
-            if (error) {
-              res.writeHead(404);
-              res.write('Response web page does not found!');
-            } else {
-              if (!otpIsVerified) {
-                res.writeHead(200, { 'Content-Type': 'text/html' });
-                // res.write('<h1> successful </h1>');
-                res.write(pgResp);
-              } else {
-                res.writeHead(200, { 'Content-Type': 'text/html' });
-                res.write('<h1> unsuccessful </h1>');
-              }
-              res.end();
-            }
+          );
 
-            res.end();
-          },
-        );
+      // Read file as a string
+      const pgResp = await fs.promises.readFile(filePath, { encoding: 'utf8' });
 
-        // let errorMessage = 'Some errors occurred while user verification by email!';
-        // throw new GeneralException(ErrorTypeEnum.UNPROCESSABLE_ENTITY, errorMessage)
-      });
+      const responseHtml = pgResp
+        .replace(/{{NodeImageSrc}}/g, process.env.THEME_LOGO)
+        .replace(/{{NodeName}}/g, process.env.NODE_NAME);
 
-    // return await this.userService.verifyOtpCodeSentByEmailForSignup(body);
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.write(responseHtml);
+    } catch (error) {
+      console.error('Error verifying OTP or reading file:', error);
+      res.writeHead(500, { 'Content-Type': 'text/html' });
+      res.write('<h1>Internal Server Error</h1>');
+    } finally {
+      res.end();
+    }
   }
 
   @Get('v1/user/verify-otp-code-sent-by-email-for-reset-password')
@@ -284,64 +242,70 @@ export class UserController {
     @Query('email') email: string,
     @Query('otp') otp: string,
     @Body() body: verifyOtpCodeSentByEmailDto,
-    //@Req() req: Request,
     @Response() res: Res,
   ) {
     body.email = email;
     body.otp = otp;
     console.log('We are in verifyOTPCodeSentByEmailForResetPassword function!');
     console.log('Email is: ', email);
-    console.log('otp is: ', otp);
+    console.log('OTP is: ', otp);
 
-    let otpCode: string = '';
+    try {
+      // Read the HTML file
+      const filePath = join(
+        __dirname,
+        '../../../../assets/web-pages/reset-pass-page.html',
+      );
+      let htmlContent = await fs.promises.readFile(filePath, 'utf8');
 
-    // Read the HTML file
-    const filePath = join(
-      __dirname,
-      '../../../../assets/web-pages/reset-pass-page.html',
-    );
-    let htmlContent = await fsPromise.readFile(filePath, 'utf8');
-    htmlContent = htmlContent.replace(
-      '{{ url }}',
-      `${process.env.HOST_PROTOCOL}${process.env.HOST_NAME_OR_IP}/app/v1/user/reset-password-by-otp-code`,
-    );
-    htmlContent = htmlContent.replace('{{ email }}', email);
+      // Replace placeholders
+      htmlContent = htmlContent.replace(
+        '{{ url }}',
+        `${process.env.HOST_PROTOCOL}${process.env.HOST_NAME_OR_IP}/app/v1/user/reset-password-by-otp-code`,
+      );
 
-    await this.userService
-      .verifyOtpCodeSentByEmailForResetPassword(body)
-      .then((data) => {
-        otpCode = data;
-        htmlContent = htmlContent.replace('{{ otp }}', otpCode);
-        console.log('otpCode:', otpCode);
-        res.writeHead(200, { 'Content-Type': 'text/html' });
-        res.write(htmlContent);
-        res.end();
-      })
-      .catch((error) => {
-        // Show unsuccessful page.
+      htmlContent = htmlContent.replace('{{ email }}', email);
 
-        fs.readFile(
-          join(
-            __dirname,
-            '../../../../assets/web-pages/reset-pass-unsuccessful-msg.html',
-          ),
-          function (error, pgResp) {
-            if (error) {
-              res.writeHead(404);
-              res.write('Response web page does not found!');
-            } else {
-              res.writeHead(200, { 'Content-Type': 'text/html' });
-              res.write(pgResp);
-            }
-            res.end();
-          },
+      htmlContent = htmlContent.replace(
+        '{{NodeImageSrc}}',
+        process.env.THEME_LOGO,
+      );
+
+      // Verify OTP code
+      const otpCode =
+        await this.userService.verifyOtpCodeSentByEmailForResetPassword(body);
+      htmlContent = htmlContent.replace('{{ otp }}', otpCode);
+      console.log('otpCode:', otpCode);
+
+      // Respond with the updated HTML content
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.write(htmlContent);
+      res.end();
+    } catch (error) {
+      console.error('Error verifying OTP or reading file:', error);
+
+      // Show unsuccessful page
+      try {
+        const errorFilePath = join(
+          __dirname,
+          '../../../../assets/web-pages/reset-pass-unsuccessful-msg.html',
         );
+        const pgResp = await fs.promises.readFile(errorFilePath, 'utf8');
 
-        // let errorMessage = 'Some errors occurred while user verification by email!';
-        // throw new GeneralException(ErrorTypeEnum.UNPROCESSABLE_ENTITY, errorMessage)
-      });
+        const responseHtml = pgResp
+          .replace(/{{NodeImageSrc}}/g, process.env.THEME_LOGO)
+          .replace(/{{NodeName}}/g, process.env.NODE_NAME);
 
-    // return await this.userService.verifyOtpCodeSentByEmailForResetPassword(body);
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.write(responseHtml);
+      } catch (readError) {
+        console.error('Error reading unsuccessful message page:', readError);
+        res.writeHead(404);
+        res.write('Response web page does not found!');
+      } finally {
+        res.end();
+      }
+    }
   }
 
   @Get('v1/user/verify-otp-code-sent-by-email-for-verify-email')
@@ -366,85 +330,41 @@ export class UserController {
     @Query('email') email: string,
     @Query('otp') otp: string,
     @Body() body: verifyOtpCodeSentByEmailDto,
-    //@Req() req: Request,
     @Response() res: Res,
-  ) {
+) {
     body.email = email;
     body.otp = otp;
     console.log('We are in verifyOTPCodeSentByEmailForVerifyEmail function!');
     console.log('Email is: ', email);
-    console.log('otp is: ', otp);
+    console.log('OTP is: ', otp);
 
-    let otpIsVerified: boolean = false;
+    try {
+        // Verify the OTP code
+        const otpIsVerified = await this.userService.verifyOtpCodeSentByEmailForVerify(body);
 
-    // let otpIsVerified = await this.userService.verifyOTPCodeSentByEmailForVerifyEmail(body);
+        // Read the appropriate HTML file based on verification status
+        const filePath = otpIsVerified
+            ? join(__dirname, '../../../../assets/web-pages/verify-email-congrat-msg.html')
+            : join(__dirname, '../../../../assets/web-pages/verify-email-unsuccessful-msg.html');
 
-    await this.userService
-      .verifyOtpCodeSentByEmailForVerify(body)
-      .then((data) => {
-        otpIsVerified = data;
+        const pgResp = await fs.promises.readFile(filePath, 'utf8');
 
-        // Show congratulations page.
+        const responseHtml = pgResp
+        .replace(/{{NodeImageSrc}}/g, process.env.THEME_LOGO)
+        .replace(/{{NodeName}}/g, process.env.NODE_NAME);
 
-        fs.readFile(
-          join(
-            __dirname,
-            '../../../../assets/web-pages/verify-email-congrat-msg.html',
-          ),
-          function (error, pgResp) {
-            if (error) {
-              res.writeHead(404);
-              res.write('Response web page does not found!');
-            } else {
-              if (otpIsVerified) {
-                res.writeHead(200, { 'Content-Type': 'text/html' });
-                // res.write('<h1> successful </h1>');
-                res.write(pgResp);
-              } else {
-                res.writeHead(200, { 'Content-Type': 'text/html' });
-                res.write('<h1> unsuccessful </h1>');
-              }
-              res.end();
-            }
 
-            res.end();
-          },
-        );
-      })
-      .catch((error) => {
-        // Show unsuccessful page.
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.write(responseHtml);
+        res.end();
+    } catch (error) {
+        console.error('Error verifying OTP or reading file:', error);
+        res.writeHead(404);
+        res.write('Response web page does not found!');
+        res.end();
+    }
+}
 
-        fs.readFile(
-          join(
-            __dirname,
-            '../../../../assets/web-pages/verify-email-unsuccessful-msg.html',
-          ),
-          function (error, pgResp) {
-            if (error) {
-              res.writeHead(404);
-              res.write('Response web page does not found!');
-            } else {
-              if (!otpIsVerified) {
-                res.writeHead(200, { 'Content-Type': 'text/html' });
-                // res.write('<h1> successful </h1>');
-                res.write(pgResp);
-              } else {
-                res.writeHead(200, { 'Content-Type': 'text/html' });
-                res.write('<h1> unsuccessful </h1>');
-              }
-              res.end();
-            }
-
-            res.end();
-          },
-        );
-
-        // let errorMessage = 'Some errors occurred while user verification by email!';
-        // throw new GeneralException(ErrorTypeEnum.UNPROCESSABLE_ENTITY, errorMessage)
-      });
-
-    // return await this.userService.verifyOtpCodeSentByEmailForResetPassword(body);
-  }
 
   @Post('v1/user/verify-otp-code-sent-by-email')
   @HttpCode(200)

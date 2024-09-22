@@ -6,9 +6,6 @@ import { GeneralException } from 'src/modules/utility/exceptions/general.excepti
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
-    console.log('process.env.ACCESS_TOKEN_SECRET_KEY:1111111111111111111');
-    console.log(process.env.ACCESS_TOKEN_SECRET_KEY);
-
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,

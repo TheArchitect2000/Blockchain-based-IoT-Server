@@ -63,9 +63,7 @@ export class ContractService {
       contractData.serviceDeviceContractABI,
       this.adminWallet,
     );
-    
 
-    
     this.contracts.storeZkp = new ethers.Contract(
       contractData.storeZkpContractAddress,
       contractData.storeZkpContractABI,
@@ -430,6 +428,30 @@ export class ContractService {
         this.deviceService.insertDevice(newDevice);
       }
     });
+  }
+
+  async storeZKP(
+    nodeId: string,
+    deviceId: string,
+    deviceType: string,
+    hardwareVersion: string,
+    firmwareVersion: string,
+    data_payload: string,
+    zkp_payload: string,
+  ) {
+    const unixTimestamp = Math.floor(Date.now() / 1000);
+
+
+    const result = await this.contracts.storeZkp.storeZKP(
+      nodeId,
+      deviceId,
+      deviceType,
+      hardwareVersion,
+      firmwareVersion,
+      zkp_payload,
+      String(unixTimestamp),
+      data_payload,
+    );
   }
 
   async zpkProof(proofString: string): Promise<boolean> {

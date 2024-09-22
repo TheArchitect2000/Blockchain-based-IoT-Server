@@ -329,7 +329,7 @@ export class UserService {
     );
 
     if (!this.otp || verifyOTP == false) {
-      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, 'Otp is not valid');
+      return false
     }
 
     if (verifyOTP) {

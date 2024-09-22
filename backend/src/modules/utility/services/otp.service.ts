@@ -175,7 +175,8 @@ export class OTPService {
   async verifyOTP(findOTP, userOTP) {
     let newThis = this;
 
-    return await bcrypt
+    try {
+      return await bcrypt
       .compare(String(userOTP), findOTP.sentCode)
       .then(async function (result) {
         if (result) {
@@ -195,6 +196,11 @@ export class OTPService {
           return false;
         }
       });
+    } catch (error) {
+      return false
+    }
+
+    
   }
 
   async setVerificationStatus(otpId, verificationStatus, verificationReason) {
