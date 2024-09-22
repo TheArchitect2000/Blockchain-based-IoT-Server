@@ -22,7 +22,6 @@ import { UtilityModule } from './modules/utility/utility.module';
 import { MediaModule } from './modules/media/media.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { BuildingModule } from './modules/building/building.module';
-import { EventsGateway } from './getaways/events.gateway';
 //import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
@@ -82,7 +81,6 @@ import { EventsGateway } from './getaways/events.gateway';
       useClass: ResponseTransformInterceptor,
     },
     AppService,
-    ...(process.env.GETAWAY ? [EventsGateway] : []),
   ],
   exports: [AppService],
 })
