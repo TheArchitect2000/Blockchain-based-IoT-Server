@@ -256,6 +256,9 @@ PORT = 5000
 NODE_NAME = "your.node.name"
 SWAGGER_LOCAL_SERVER = http://localhost:5000
 
+# Rpc Url
+RPC_URL = 'https://fidesf1-rpc.fidesinnova.io'
+
 # Smart contract user & pass
 REMIX_USER = 'rmadmin'
 REMIX_PASS = 'rm123'
