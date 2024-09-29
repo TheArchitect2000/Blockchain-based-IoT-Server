@@ -334,10 +334,11 @@ Update these parameters:
 NODE_NAME = "your-node-name"
 NODE_ID = "your-node-url" # Set this to your node URL
 
+HOST_NAME_OR_IP = 'panel.YOUR-DOMAIN.COM'
+
 FAUCET_WALLET_PRIVATE_KEY = "your-faucet-wallet-private-key"
 ADMIN_WALLET_PRIVATE_KEY = 'your-admin-wallet-private-key'
 
-HOST_NAME_OR_IP = 'panel.YOUR-DOMAIN.COM'
 
 MAIL_HOST = YOUR-HOST-MAIL-SERVER-PROVIDER
 MAIL_PORT = 465
@@ -345,17 +346,16 @@ MAIL_USER = noreply@YOUR-DOMAIN.COM
 MAIL_PASSWORD = YOUR-MAIL-SERVER-PASSWORD
 MAIL_FROM = noreply@YOUR_-DOMAIN.COM
 
-
-RPC_URL = 'your-rpc-url'
+THEME_LOGO = 'your-logo-url'
 
 REMIX_USER = 'your-remix-username'
 REMIX_PASS = 'your-remix-password'
 
-
 ZKP_USER = 'your-zkp-username'
 ZKP_PASS = 'your-zkp-password'
 
-THEME_LOGO = 'your-logo-url'
+RPC_URL = 'your-rpc-url'
+
 ```
 
 -  From `/etc/nginx/ssl`, copy the files `fullchain.pem`, `privkey.pem` and rename them:
