@@ -355,7 +355,6 @@ ZKP_USER = 'your-zkp-username'
 ZKP_PASS = 'your-zkp-password'
 
 RPC_URL = 'your-rpc-url'
-
 ```
 
 -  From `/etc/nginx/ssl`, copy the files `fullchain.pem`, `privkey.pem` and rename them:
