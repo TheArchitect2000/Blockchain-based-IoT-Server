@@ -331,21 +331,31 @@ MULTER_MEDIA_SIZE = 10000000    # 10 MB
 ```
 Update these parameters:
 ```
-NODE_NAME = "your.node.name"
-NODE_ID = "your.node.url" # Set this to your node URL
+NODE_NAME = "your-node-name"
+NODE_ID = "your-node-url" # Set this to your node URL
 
 FAUCET_WALLET_PRIVATE_KEY = "your-faucet-wallet-private-key"
 ADMIN_WALLET_PRIVATE_KEY = 'your-admin-wallet-private-key'
 
-HOST_NAME_OR_IP = 'panel.YOUR_DOMAIN.COM'
+HOST_NAME_OR_IP = 'panel.YOUR-DOMAIN.COM'
 
-MAIL_HOST = YOUR_HOST_MAIL_SERVER_PROVIDER
+MAIL_HOST = YOUR-HOST-MAIL-SERVER-PROVIDER
 MAIL_PORT = 465
-MAIL_USER = noreply@YOUR_DOMAIN.COM
-MAIL_PASSWORD = YOUR_MAIL_SERVER_PASSWORD
-MAIL_FROM = noreply@YOUR_DOMAIN.COM
+MAIL_USER = noreply@YOUR-DOMAIN.COM
+MAIL_PASSWORD = YOUR-MAIL-SERVER-PASSWORD
+MAIL_FROM = noreply@YOUR_-DOMAIN.COM
 
-THEME_LOGO = 'your.logo.url'
+
+RPC_URL = 'your-rpc-url'
+
+REMIX_USER = 'your-remix-username'
+REMIX_PASS = 'your-remix-password'
+
+
+ZKP_USER = 'your-zkp-username'
+ZKP_PASS = 'your-zkp-password'
+
+THEME_LOGO = 'your-logo-url'
 ```
 
 -  From `/etc/nginx/ssl`, copy the files `fullchain.pem`, `privkey.pem` and rename them:
