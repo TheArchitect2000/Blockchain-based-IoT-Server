@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import axios from 'axios';
 import { DeviceEventsEnum } from '../enums/device-events.enum';
 import { ContractService } from 'src/modules/smartcontract/services/contract.service';
+import { DeviceService } from 'src/modules/device/services/device.service';
 
 /**
 1883 : MQTT, unencrypted, unauthenticated
@@ -21,9 +22,34 @@ import { ContractService } from 'src/modules/smartcontract/services/contract.ser
 
 // let aedes = new Aedes();
 
+const triggerData = {};
+
+function shouldTrigger(id: string, hours: number): boolean {
+  const now = Date.now();
+
+  if (triggerData[id]) {
+    const lastTriggerTime = triggerData[id];
+    const hoursSinceLastTrigger = (now - lastTriggerTime) / (1000 * 60 * 60);
+
+    if (hoursSinceLastTrigger >= hours) {
+      triggerData[id] = now; // Update the time
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    // First time this ID is used
+    triggerData[id] = now;
+    return true;
+  }
+}
+
 @Injectable()
 export class MqttService implements OnModuleInit {
-  constructor(private readonly contractService?: ContractService) {}
+  constructor(
+    private readonly contractService?: ContractService,
+    private readonly deviceService?: DeviceService,
+  ) {}
 
   async onModuleInit() {
     console.log('Initialization of MqttService...');
@@ -37,7 +63,6 @@ export class MqttService implements OnModuleInit {
       ws: 8080,
       wss: 8081,
     };
-    
 
     //   this.mqttLogService = new MqttLogService();
     // await this.callLogService();
@@ -87,7 +112,6 @@ export class MqttService implements OnModuleInit {
     });
 
     aedes.on('subscribe', async function (subscriptions, client) {
-      
       console.log(
         'MQTT client \x1b[32m' +
           (client ? client.id : client) +
@@ -221,8 +245,6 @@ export class MqttService implements OnModuleInit {
         });
     });
 
-    
-
     aedes.on('publish', async (packet, client) => {
       console.log('Published packet: ', packet);
 
@@ -256,6 +278,22 @@ export class MqttService implements OnModuleInit {
               JSON.stringify(dataWithoutProof),
               JSON.stringify(proof),
             );
+          }
+
+          if (shouldTrigger(String(parsedPayload.from), 6)) {
+            const deviceData = await this.deviceService.getDeviceInfoByEncryptedId(String(parsedPayload.from), '', true)
+
+            //QTA6NzY6NEU6NTg6MTE6RTQ=
+            await this.deviceService.editDevice(
+              {
+                deviceId: String(deviceData._id),
+                hardwareVersion: Number(String(parsedPayload.data.HV)),
+                firmwareVersion: Number(String(parsedPayload.data.FV)),
+              } as any,
+              'root',
+              true
+            );
+            console.log(`HV and FV of device with id: ${parsedPayload.data._id} updated successfully.`)
           }
 
           axios
