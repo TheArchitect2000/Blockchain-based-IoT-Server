@@ -94,11 +94,12 @@ const Header = (props: HeaderProps) => {
             if (dialogState == 'Smart Contract Console') {
                 navigate(`/remix?user=${username}&pass=${password}`)
             } else if (dialogState == 'zkp Commitment Generator') {
-                setCommitmentDialog(true)
                 window.open(
                     'https://fidesinnova-1.gitbook.io/fidesinnova-docs/zero-knowledge-proof-zkp-scheme/2-commitment-phase',
                     '_blank'
                 )
+            } else if (dialogState == 'zkp Commitment Publisher') {
+                setCommitmentDialog(true)
             }
         } else {
             toast.push(
@@ -208,7 +209,7 @@ const Header = (props: HeaderProps) => {
                                         </FormRow>
                                         <FormRow
                                             name="name"
-                                            label="Device Hardware Version"
+                                            label="Hardware Version"
                                             {...validatorProps}
                                         >
                                             <Field
