@@ -11,6 +11,7 @@ import {
     Input,
     Notification,
     toast,
+    Upload,
 } from '@/components/ui'
 import { useNavigate } from 'react-router-dom'
 import { useConfig } from '../ui/ConfigProvider'
@@ -23,7 +24,8 @@ import './style.css'
 import { Field, Form, Formik } from 'formik'
 import FormDesription from '@/views/account/Settings/components/FormDesription'
 import FormRow from '@/views/account/Settings/components/FormRow'
-import { HiHashtag } from 'react-icons/hi'
+import { HiUpload } from 'react-icons/hi'
+import { apiStoreCommitment } from '@/services/ContractServices'
 
 interface HeaderProps extends CommonProps {
     headerStart?: ReactNode
@@ -32,13 +34,13 @@ interface HeaderProps extends CommonProps {
     container?: boolean
 }
 
-type AddressFormModel = {
-    line_1: string
-    line_2?: string
-    country: string
-    city: string
-    state: string
-    zipCode: string
+type CommitmentFormModel = {
+    manufacturerName: string
+    deviceType: string
+    hardwareVersion: string
+    firmwareVersion: string
+    lines: string
+    commitmentFile: any
 }
 
 const Header = (props: HeaderProps) => {
@@ -57,6 +59,30 @@ const Header = (props: HeaderProps) => {
 
     const onCreateNewService = () => {
         navigate(`/services/new`)
+    }
+
+    const handleJsonFileChange = (event: any) => {
+        const file = event.target.files[0]
+
+        if (file && file.type === 'application/json') {
+            toast.push(
+                <Notification type="success">
+                    {'Commitment file uploaded successfully.'}
+                </Notification>,
+                {
+                    placement: 'top-center',
+                }
+            )
+        } else {
+            toast.push(
+                <Notification type="danger">
+                    {'Please upload a valid JSON file.'}
+                </Notification>,
+                {
+                    placement: 'top-center',
+                }
+            )
+        }
     }
 
     const { themeBackground } = useConfig()
@@ -125,29 +151,57 @@ const Header = (props: HeaderProps) => {
     }
 
     const validationSchema = Yup.object().shape({
-        name: Yup.string().required('Home name is required'),
-        line_1: Yup.string().required('Line 1 is required'),
-        line_2: Yup.string(),
-        city: Yup.string().required('City is required'),
-        state: Yup.string().required('State is required'),
-        zipCode: Yup.string().required('Zip Code is required'),
+        manufacturerName: Yup.string().required('Manufacturer is required'),
+        deviceType: Yup.string().required('Device Type is required'),
+        hardwareVersion: Yup.string().required('Hardware Version is required'),
+        firmwareVersion: Yup.string().required('Firmware Version is required'),
+        lines: Yup.string().required('Lines is required'),
+        commitmentFile: Yup.mixed().required('Commitment File is required'),
     })
 
     const onFormSubmit = async (
-        values: AddressFormModel,
+        values: CommitmentFormModel,
         setSubmitting: (isSubmitting: boolean) => void
     ) => {
-        setSubmitting(true)
-        const dbDatas = {
-            ...apiData,
-            address: { ...values, country: selectedCountry.label },
+        const reader = new FileReader()
+        reader.onload = async (e) => {
+            if (e.target?.result) {
+                const jsonText = e.target.result as string
+
+                const storeResult = await apiStoreCommitment(
+                    values.manufacturerName,
+                    values.deviceType,
+                    values.hardwareVersion,
+                    values.firmwareVersion,
+                    values.lines,
+                    jsonText
+                )
+
+                console.log('Store log is:', storeResult)
+
+                setSubmitting(false)
+                setCommitmentDialog(false)
+
+                toast.push(
+                    <Notification type="success">
+                        {'Commitment published successfully.'}
+                    </Notification>,
+                    {
+                        placement: 'top-center',
+                    }
+                )
+            } else {
+                toast.push(
+                    <Notification type="danger">
+                        {'Error while publishing your commitment.'}
+                    </Notification>,
+                    {
+                        placement: 'top-center',
+                    }
+                )
+            }
         }
-        const res = await apiEditUserProfile(userId?.toString() || '', dbDatas)
-        toast.push(<Notification title={'Address updated'} type="success" />, {
-            placement: 'top-center',
-        })
-        setSubmitting(false)
-        console.log('values', dbDatas)
+        reader.readAsText(values.commitmentFile)
     }
 
     return (
@@ -164,116 +218,155 @@ const Header = (props: HeaderProps) => {
             >
                 <Formik
                     enableReinitialize
-                    initialValues={{}}
+                    initialValues={{
+                        manufacturerName: '',
+                        deviceType: '',
+                        hardwareVersion: '',
+                        firmwareVersion: '',
+                        lines: '',
+                        commitmentFile: null,
+                    }}
                     validationSchema={validationSchema}
                     onSubmit={(values, { setSubmitting }) => {
                         onFormSubmit(values, setSubmitting)
                     }}
                 >
-                    {({ touched, errors, isSubmitting, resetForm }) => {
+                    {({
+                        touched,
+                        errors,
+                        isSubmitting,
+                        resetForm,
+                        setFieldValue,
+                        values,
+                    }) => {
                         const validatorProps = { touched, errors }
+
                         return (
                             <Form>
-                                {
-                                    <FormContainer>
-                                        <FormDesription
-                                            className=""
-                                            title="Commitment publisher"
-                                            desc=""
+                                <FormContainer>
+                                    <FormDesription
+                                        title="Commitment publisher"
+                                        desc=""
+                                    />
+                                    <FormRow
+                                        name="manufacturerName"
+                                        label="Manufacturer Name"
+                                        {...validatorProps}
+                                    >
+                                        <Field
+                                            type="text"
+                                            autoComplete="off"
+                                            name="manufacturerName"
+                                            placeholder=""
+                                            component={Input}
                                         />
-                                        <FormRow
-                                            name="name"
-                                            label="Manufacturer Name"
-                                            {...validatorProps}
+                                    </FormRow>
+                                    <FormRow
+                                        name="deviceType"
+                                        label="Device Type"
+                                        {...validatorProps}
+                                    >
+                                        <Field
+                                            type="text"
+                                            autoComplete="off"
+                                            name="deviceType"
+                                            placeholder=""
+                                            component={Input}
+                                        />
+                                    </FormRow>
+                                    <FormRow
+                                        name="hardwareVersion"
+                                        label="Hardware Version"
+                                        {...validatorProps}
+                                    >
+                                        <Field
+                                            type="text"
+                                            autoComplete="off"
+                                            name="hardwareVersion"
+                                            placeholder=""
+                                            component={Input}
+                                        />
+                                    </FormRow>
+                                    <FormRow
+                                        name="firmwareVersion"
+                                        label="Firmware Version"
+                                        {...validatorProps}
+                                    >
+                                        <Field
+                                            type="text"
+                                            autoComplete="off"
+                                            name="firmwareVersion"
+                                            placeholder=""
+                                            component={Input}
+                                        />
+                                    </FormRow>
+                                    <FormRow
+                                        name="lines"
+                                        label="Lines"
+                                        {...validatorProps}
+                                    >
+                                        <Field
+                                            type="text"
+                                            autoComplete="off"
+                                            name="lines"
+                                            placeholder=""
+                                            component={Input}
+                                        />
+                                    </FormRow>
+                                    <FormRow
+                                        name="commitmentFile"
+                                        label="Commitment File"
+                                        {...validatorProps}
+                                    >
+                                        <Upload
+                                            className="flex items-center justify-around w-full"
+                                            showList={false}
+                                            uploadLimit={1}
+                                            accept=".json"
+                                            onChange={(event: any) => {
+                                                handleJsonFileChange(event)
+                                                setFieldValue(
+                                                    'commitmentFile',
+                                                    event?.target?.files[0]
+                                                )
+                                            }}
                                         >
-                                            <Field
-                                                type="text"
-                                                autoComplete="off"
-                                                name="name"
-                                                placeholder=""
-                                                component={Input}
-                                            />
-                                        </FormRow>
-                                        <FormRow
-                                            name="name"
-                                            label="Device Type"
-                                            {...validatorProps}
-                                        >
-                                            <Field
-                                                type="text"
-                                                autoComplete="off"
-                                                name="name"
-                                                placeholder=""
-                                                component={Input}
-                                            />
-                                        </FormRow>
-                                        <FormRow
-                                            name="name"
-                                            label="Hardware Version"
-                                            {...validatorProps}
-                                        >
-                                            <Field
-                                                type="text"
-                                                autoComplete="off"
-                                                name="name"
-                                                placeholder=""
-                                                component={Input}
-                                            />
-                                        </FormRow>
-                                        <FormRow
-                                            name="name"
-                                            label="Firmware Version"
-                                            {...validatorProps}
-                                        >
-                                            <Field
-                                                type="text"
-                                                autoComplete="off"
-                                                name="name"
-                                                placeholder=""
-                                                component={Input}
-                                            />
-                                        </FormRow>
-                                        <FormRow
-                                            name="name"
-                                            label="Lines"
-                                            {...validatorProps}
-                                        >
-                                            <Field
-                                                type="text"
-                                                autoComplete="off"
-                                                name="name"
-                                                placeholder=""
-                                                component={Input}
-                                            />
-                                        </FormRow>
-                                        <FormRow
-                                            name="name"
-                                            label="Commitment Data"
-                                            {...validatorProps}
-                                        >
-                                            <Field
-                                                textArea={true}
-                                                type="text"
-                                                autoComplete="off"
-                                                name="name"
-                                                placeholder=""
-                                                component={Input}
-                                            />
-                                        </FormRow>
-
-                                        <div className="flex items-center justify-center mt-4 ltr:text-right">
+                                            <p className="text-lg">
+                                                Status:
+                                                <span
+                                                    className={`ml-1 ${
+                                                        values.commitmentFile
+                                                            ? 'text-green-500'
+                                                            : 'text-red-500'
+                                                    }`}
+                                                >
+                                                    {values.commitmentFile
+                                                        ? 'File Selected'
+                                                        : 'No File Selected'}
+                                                </span>
+                                            </p>
                                             <Button
-                                                variant="solid"
-                                                loading={isSubmitting}
-                                                type="submit"
+                                                type="button"
+                                                className="flex items-center gap-2"
                                             >
-                                                {isSubmitting
-                                                    ? 'Publishing'
-                                                    : 'Publish'}
+                                                Upload{' '}
+                                                <HiUpload className="text-[1.2rem]" />
                                             </Button>
-                                        </div>
-                                    </FormContainer>
-                                }
+                                        </Upload>
+                                    </FormRow>
+
+                                    <div className="flex items-center justify-center mt-4 ltr:text-right">
+                                        <Button
+                                            variant="solid"
+                                            loading={isSubmitting}
+                                            type="submit"
+                                        >
+                                            {isSubmitting
+                                                ? 'Publishing'
+                                                : 'Publish'}
+                                        </Button>
+                                    </div>
+                                </FormContainer>
                             </Form>
                         )
                     }}

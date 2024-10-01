@@ -82,7 +82,17 @@ const Address = () => {
     return (
         <Formik
             enableReinitialize
-            initialValues={apiData?.address || {}}
+            initialValues={
+                apiData?.address || {
+                    name: '',
+                    line_1: '',
+                    line_2: '',
+                    country: '',
+                    city: '',
+                    state: '',
+                    zipCode: '',
+                }
+            }
             validationSchema={validationSchema}
             onSubmit={(values, { setSubmitting }) => {
                 onFormSubmit(values, setSubmitting)

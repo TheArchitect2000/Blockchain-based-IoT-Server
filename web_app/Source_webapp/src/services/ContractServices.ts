@@ -14,6 +14,28 @@ export async function apiRequestFaucet() {
     })
 }
 
+export async function apiStoreCommitment(
+    manufacturerName: string,
+    deviceType: string,
+    deviceHardwareVersion: string,
+    firmwareVersion: string,
+    lines: string,
+    commitmentData: string
+) {
+    return ApiService.fetchData({
+        url: import.meta.env.VITE_URL + 'v1/contract/store-commitment',
+        method: 'post',
+        data: {
+            manufacturerName,
+            deviceType,
+            deviceHardwareVersion,
+            firmwareVersion,
+            lines,
+            commitmentData,
+        },
+    })
+}
+
 export async function apiGetAdminWalletData() {
     return ApiService.fetchData({
         url: import.meta.env.VITE_URL + 'v1/contract/admin-wallet',
