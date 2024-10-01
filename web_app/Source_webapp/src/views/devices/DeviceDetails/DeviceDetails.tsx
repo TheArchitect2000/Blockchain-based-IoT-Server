@@ -58,8 +58,6 @@ export function formatToCustomDateTime(convertedDateString: string) {
     return formattedDateTime
 }
 
-
-
 function DeviceDetails() {
     const [data, setData] = useState<DeviceData>()
     const [loading, setLoading] = useState(true)
@@ -219,52 +217,54 @@ function DeviceDetails() {
                             defaultValue={new Date()}
                         />
                     </div>
-                    {(logLoading && <Loading loading={true} />) || (
-                        <Chart data={chartData.chart} loading={logLoading} />
-                    )}
+                    {(logLoading && (
+                        <div className="flex items-center justify-center w-full h-[40dvh]">
+                            <Loading loading={true} />
+                        </div>
+                    )) || <Chart data={chartData.chart} loading={logLoading} />}
                 </Card>
-                <Card
-                    bodyClass="flex h-full justify-center px-5 gap-5 py-10"
-                    className="w-full min-h-[65dvh] mt-10 card card-border"
-                >
-                    {(logLoading && <Loading loading={true} />) || (
-                        <>
-                            {chartData?.button &&
-                                chartData?.button.length > 0 && (
-                                    <div className="w-1/3 h-full">
-                                        <Table2D
-                                            data={chartData.button}
-                                            rowsPerPage={10}
-                                        />
-                                    </div>
-                                )}
-                            {chartData?.motion &&
-                                chartData?.motion.length > 0 && (
-                                    <div className="w-1/3 h-full">
-                                        <Table2D
-                                            data={chartData?.motion}
-                                            rowsPerPage={10}
-                                        />
-                                    </div>
-                                )}
-                            {chartData?.door && chartData?.door.length > 0 && (
-                                <div className="w-1/3 h-full">
-                                    <Table2D
-                                        data={chartData?.door}
-                                        rowsPerPage={10}
-                                    />
-                                </div>
+
+                {logLoading == false &&
+                    (chartData?.door.length !== 0 ||
+                        chartData?.motion.length !== 0 ||
+                        chartData?.button.length !== 0) && (
+                        <Card
+                            bodyClass="flex h-full justify-center px-5 gap-5 py-10"
+                            className="w-full min-h-[65dvh] mt-10 card card-border"
+                        >
+                            {(logLoading && <Loading loading={true} />) || (
+                                <>
+                                    {chartData?.button &&
+                                        chartData?.button.length > 0 && (
+                                            <div className="w-1/3 h-full">
+                                                <Table2D
+                                                    data={chartData.button}
+                                                    rowsPerPage={10}
+                                                />
+                                            </div>
+                                        )}
+                                    {chartData?.motion &&
+                                        chartData?.motion.length > 0 && (
+                                            <div className="w-1/3 h-full">
+                                                <Table2D
+                                                    data={chartData?.motion}
+                                                    rowsPerPage={10}
+                                                />
+                                            </div>
+                                        )}
+                                    {chartData?.door &&
+                                        chartData?.door.length > 0 && (
+                                            <div className="w-1/3 h-full">
+                                                <Table2D
+                                                    data={chartData?.door}
+                                                    rowsPerPage={10}
+                                                />
+                                            </div>
+                                        )}
+                                </>
                             )}
-                            {chartData?.door.length === 0 &&
-                                chartData?.motion.length === 0 &&
-                                chartData?.button.length === 0 && (
-                                    <h1 className="self-center">
-                                        Data not found
-                                    </h1>
-                                )}
-                        </>
+                        </Card>
                     )}
-                </Card>
             </div>
         )
 }

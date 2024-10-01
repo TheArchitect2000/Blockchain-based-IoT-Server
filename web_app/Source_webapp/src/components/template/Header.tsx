@@ -2,10 +2,12 @@ import classNames from 'classnames'
 import { HEADER_HEIGHT_CLASS } from '@/constants/theme.constant'
 import { useState, type ReactNode } from 'react'
 import type { CommonProps } from '@/@types/common'
+import * as Yup from 'yup'
 import {
     Button,
     Dialog,
     Dropdown,
+    FormContainer,
     Input,
     Notification,
     toast,
@@ -18,6 +20,10 @@ import {
 } from '@/services/UserApi'
 import { PasswordInput } from '../shared'
 import './style.css'
+import { Field, Form, Formik } from 'formik'
+import FormDesription from '@/views/account/Settings/components/FormDesription'
+import FormRow from '@/views/account/Settings/components/FormRow'
+import { HiHashtag } from 'react-icons/hi'
 
 interface HeaderProps extends CommonProps {
     headerStart?: ReactNode
@@ -26,9 +32,19 @@ interface HeaderProps extends CommonProps {
     container?: boolean
 }
 
+type AddressFormModel = {
+    line_1: string
+    line_2?: string
+    country: string
+    city: string
+    state: string
+    zipCode: string
+}
+
 const Header = (props: HeaderProps) => {
     const { headerStart, headerEnd, headerMiddle, className, container } = props
     const navigate = useNavigate()
+    const [commitmentDialog, setCommitmentDialog] = useState(false)
     const [consoleDialog, setConsoleDialog] = useState(false)
     const [dialogState, setDialogState] = useState('')
     const [loading, setLoading] = useState(false)
@@ -77,9 +93,12 @@ const Header = (props: HeaderProps) => {
             setConsoleDialog(false)
             if (dialogState == 'Smart Contract Console') {
                 navigate(`/remix?user=${username}&pass=${password}`)
-                
-            } else {
-                navigate(`/`)
+            } else if (dialogState == 'zkp Commitment Generator') {
+                setCommitmentDialog(true)
+                window.open(
+                    'https://fidesinnova-1.gitbook.io/fidesinnova-docs/zero-knowledge-proof-zkp-scheme/2-commitment-phase',
+                    '_blank'
+                )
             }
         } else {
             toast.push(
@@ -104,6 +123,32 @@ const Header = (props: HeaderProps) => {
         setConsoleDialog(true)
     }
 
+    const validationSchema = Yup.object().shape({
+        name: Yup.string().required('Home name is required'),
+        line_1: Yup.string().required('Line 1 is required'),
+        line_2: Yup.string(),
+        city: Yup.string().required('City is required'),
+        state: Yup.string().required('State is required'),
+        zipCode: Yup.string().required('Zip Code is required'),
+    })
+
+    const onFormSubmit = async (
+        values: AddressFormModel,
+        setSubmitting: (isSubmitting: boolean) => void
+    ) => {
+        setSubmitting(true)
+        const dbDatas = {
+            ...apiData,
+            address: { ...values, country: selectedCountry.label },
+        }
+        const res = await apiEditUserProfile(userId?.toString() || '', dbDatas)
+        toast.push(<Notification title={'Address updated'} type="success" />, {
+            placement: 'top-center',
+        })
+        setSubmitting(false)
+        console.log('values', dbDatas)
+    }
+
     return (
         <header
             className={classNames(
@@ -112,6 +157,128 @@ const Header = (props: HeaderProps) => {
                 className
             )}
         >
+            <Dialog
+                isOpen={commitmentDialog}
+                onClose={() => setCommitmentDialog(false)}
+            >
+                <Formik
+                    enableReinitialize
+                    initialValues={{}}
+                    validationSchema={validationSchema}
+                    onSubmit={(values, { setSubmitting }) => {
+                        onFormSubmit(values, setSubmitting)
+                    }}
+                >
+                    {({ touched, errors, isSubmitting, resetForm }) => {
+                        const validatorProps = { touched, errors }
+                        return (
+                            <Form>
+                                {
+                                    <FormContainer>
+                                        <FormDesription
+                                            className=""
+                                            title="Commitment publisher"
+                                            desc=""
+                                        />
+                                        <FormRow
+                                            name="name"
+                                            label="Manufacturer Name"
+                                            {...validatorProps}
+                                        >
+                                            <Field
+                                                type="text"
+                                                autoComplete="off"
+                                                name="name"
+                                                placeholder=""
+                                                component={Input}
+                                            />
+                                        </FormRow>
+                                        <FormRow
+                                            name="name"
+                                            label="Device Type"
+                                            {...validatorProps}
+                                        >
+                                            <Field
+                                                type="text"
+                                                autoComplete="off"
+                                                name="name"
+                                                placeholder=""
+                                                component={Input}
+                                            />
+                                        </FormRow>
+                                        <FormRow
+                                            name="name"
+                                            label="Device Hardware Version"
+                                            {...validatorProps}
+                                        >
+                                            <Field
+                                                type="text"
+                                                autoComplete="off"
+                                                name="name"
+                                                placeholder=""
+                                                component={Input}
+                                            />
+                                        </FormRow>
+                                        <FormRow
+                                            name="name"
+                                            label="Firmware Version"
+                                            {...validatorProps}
+                                        >
+                                            <Field
+                                                type="text"
+                                                autoComplete="off"
+                                                name="name"
+                                                placeholder=""
+                                                component={Input}
+                                            />
+                                        </FormRow>
+                                        <FormRow
+                                            name="name"
+                                            label="Lines"
+                                            {...validatorProps}
+                                        >
+                                            <Field
+                                                type="text"
+                                                autoComplete="off"
+                                                name="name"
+                                                placeholder=""
+                                                component={Input}
+                                            />
+                                        </FormRow>
+                                        <FormRow
+                                            name="name"
+                                            label="Commitment Data"
+                                            {...validatorProps}
+                                        >
+                                            <Field
+                                                textArea={true}
+                                                type="text"
+                                                autoComplete="off"
+                                                name="name"
+                                                placeholder=""
+                                                component={Input}
+                                            />
+                                        </FormRow>
+
+                                        <div className="flex items-center justify-center mt-4 ltr:text-right">
+                                            <Button
+                                                variant="solid"
+                                                loading={isSubmitting}
+                                                type="submit"
+                                            >
+                                                {isSubmitting
+                                                    ? 'Publishing'
+                                                    : 'Publish'}
+                                            </Button>
+                                        </div>
+                                    </FormContainer>
+                                }
+                            </Form>
+                        )
+                    }}
+                </Formik>
+            </Dialog>
+
             <Dialog
                 isOpen={consoleDialog}
                 onClose={() => setConsoleDialog(false)}
