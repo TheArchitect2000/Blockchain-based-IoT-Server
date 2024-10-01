@@ -5,6 +5,8 @@ export const zkpContractAddress = '0xf1AdF8eD7569e0BceC73B371f4876Db69515CD20';
 
 export const storeZkpContractAddress = '0xCFC00106081c541389D449183D4EEADF5d895D37';
 
+export const commitmentContractAddress = '0x36921A3DED02dd1614744D7349ED2CA4E5b9Aa59'
+
 export const zkpContractABI = [
   {
     inputs: [
@@ -1226,4 +1228,237 @@ export const storeZkpContractABI = [
       stateMutability: "view",
       type: "function"
   }
+]
+
+export const commitmentContractABI = [
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "index",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "timestamp",
+				"type": "uint256"
+			}
+		],
+		"name": "CommitmentRemoved",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "manufacturerName",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "deviceType",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "deviceHardwareVersion",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "firmwareVersion",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "lines",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "commitmentData",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "timestamp",
+				"type": "uint256"
+			}
+		],
+		"name": "CommitmentStored",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "index",
+				"type": "uint256"
+			}
+		],
+		"name": "removeCommitment",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "manufacturerName",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "deviceType",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "deviceHardwareVersion",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "firmwareVersion",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "lines",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "commitmentData",
+				"type": "string"
+			}
+		],
+		"name": "storeCommitment",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "commitments",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "manufacturerName",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "deviceType",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "deviceHardwareVersion",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "firmwareVersion",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "lines",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "commitmentData",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "timestamp",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "index",
+				"type": "uint256"
+			}
+		],
+		"name": "getCommitment",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "manufacturerName",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "deviceType",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "deviceHardwareVersion",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "firmwareVersion",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "lines",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "commitmentData",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "timestamp",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getCommitmentCount",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
 ]

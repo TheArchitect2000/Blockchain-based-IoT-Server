@@ -5,6 +5,7 @@ import { GeneralException } from 'src/modules/utility/exceptions/general.excepti
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { DeviceService } from 'src/modules/device/services/device.service';
 import { ServiceService } from 'src/modules/service/services/service.service';
+import { storeCommitmentDto } from '../dto/contract-dto';
 
 function parseProofString(proofString) {
   let cleanedString = proofString.substring(1, proofString.length - 1);
@@ -29,6 +30,7 @@ export class ContractService {
     zkp: null,
     serviceDevice: null,
     storeZkp: null,
+    commitment: null,
   };
 
   constructor(
@@ -67,6 +69,12 @@ export class ContractService {
     this.contracts.storeZkp = new ethers.Contract(
       contractData.storeZkpContractAddress,
       contractData.storeZkpContractABI,
+      this.adminWallet,
+    );
+
+    this.contracts.commitment = new ethers.Contract(
+      contractData.commitmentContractAddress,
+      contractData.commitmentContractABI,
       this.adminWallet,
     );
 
@@ -441,7 +449,6 @@ export class ContractService {
   ) {
     const unixTimestamp = Math.floor(Date.now() / 1000);
 
-
     const result = await this.contracts.storeZkp.storeZKP(
       nodeId,
       deviceId,
@@ -452,6 +459,28 @@ export class ContractService {
       String(unixTimestamp),
       data_payload,
     );
+  }
+
+  async storeCommitment(data: storeCommitmentDto) {
+    const {
+      manufacturerName,
+      deviceType,
+      deviceHardwareVersion,
+      firmwareVersion,
+      lines,
+      commitmentData,
+    } = data;
+
+    const result = await this.contracts.commitment.storeCommitment(
+      manufacturerName,
+      deviceType,
+      deviceHardwareVersion,
+      firmwareVersion,
+      lines,
+      commitmentData,
+    );
+
+    return result;
   }
 
   async zpkProof(proofString: string): Promise<boolean> {

@@ -283,7 +283,6 @@ export class MqttService implements OnModuleInit {
           if (shouldTrigger(String(parsedPayload.from), 6)) {
             const deviceData = await this.deviceService.getDeviceInfoByEncryptedId(String(parsedPayload.from), '', true)
 
-            //QTA6NzY6NEU6NTg6MTE6RTQ=
             await this.deviceService.editDevice(
               {
                 deviceId: String(deviceData._id),

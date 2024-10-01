@@ -28,6 +28,7 @@ import { JwtAuthGuard } from 'src/modules/authentication/guard/jwt-auth.guard';
 import {
   removeDeviceDto,
   removeServiceDto,
+  storeCommitmentDto,
   verifyProofDto,
 } from '../dto/contract-dto';
 import { ContractService } from '../services/contract.service';
@@ -66,6 +67,20 @@ export class contractController {
     }
 
     return this.contractService.zpkProof(body.proof);
+  }
+
+  @Post('/store-commitment')
+  @HttpCode(201)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Storing the commitment.',
+    description: 'This api will store the user commitment file in smart contract.',
+  })
+  async storeCommitment(@Body() body: storeCommitmentDto) {
+    console.log('We are in Store Commitment section', body);
+
+    return this.contractService.storeCommitment(body);
   }
 
   @Get('/get-wallet-balance')
