@@ -454,6 +454,7 @@ To update both the backend and frontend applications, simply run the \`update.sh
    Before running the update script for the first time, ensure it has executable permissions by running the following command in the terminal:
 
    ```
+   cd ~/iot_node_backend_web_app/
    chmod +x update.sh
    ```
 
@@ -461,6 +462,7 @@ To update both the backend and frontend applications, simply run the \`update.sh
    After setting the permissions, update the applications automatically by running:
 
    ```
+   cd ~/iot_node_backend_web_app/
    ./update.sh
    ```
 
