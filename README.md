@@ -445,32 +445,6 @@ npm run test:cov
 
 -------------------------------------------------------------------------------------------------
 
-## Update Process
-
-To update both the backend and frontend applications, simply run the \`update.sh\` script located in the root directory of the project. 
-
-### Steps:
-1. **Set the appropriate permissions** (one-time step):
-   Before running the update script for the first time, ensure it has executable permissions by running the following command in the terminal:
-
-   ```
-   cd ~/iot_node_backend_web_app/
-   chmod +x update.sh
-   ```
-
-2. **Run the update script**:
-   After setting the permissions, update the applications automatically by running:
-
-   ```
-   cd ~/iot_node_backend_web_app/
-   ./update.sh
-   ```
-
-This script will handle pulling the latest changes, rebuilding the apps, and restarting services automatically.
-
-
--------------------------------------------------------------------------------------------------
-
 # How to Install WebApp
 
 ### Note:
@@ -649,3 +623,30 @@ node main.js
 ```
 npm run start:prod
 ```
+-------------------------------------------------------------------------------------------------
+
+# Update Process
+
+To update both the backend and frontend applications, simply run the \`update.sh\` script located in the root directory of the project. 
+
+### Steps:
+1. **Set the appropriate permissions** (one-time step):
+   Before running the update script for the first time, ensure it has executable permissions by running the following command in the terminal:
+
+   ```
+   cd ~/iot_node_backend_web_app/
+   chmod +x update.sh
+   ```
+
+2. **Run the update script**:
+   After setting the permissions, update the applications automatically by running:
+
+   ```
+   cd ~/iot_node_backend_web_app/
+   ./update.sh
+   ```
+
+This script will handle pulling the latest changes, rebuilding the apps, and restarting services automatically.
+
+
+-------------------------------------------------------------------------------------------------
