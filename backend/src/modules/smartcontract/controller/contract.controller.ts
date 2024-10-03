@@ -75,12 +75,16 @@ export class contractController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Storing the commitment.',
-    description: 'This api will store the user commitment file in smart contract.',
+    description:
+      'This api will store the user commitment file in smart contract.',
   })
-  async storeCommitment(@Body() body: storeCommitmentDto) {
+  async storeCommitment(@Body() body: storeCommitmentDto, @Request() request) {
     console.log('We are in Store Commitment section', body);
 
-    return this.contractService.storeCommitment(body);
+    return this.contractService.storeCommitment({
+      ...body,
+      userId: request.user.userId,
+    });
   }
 
   @Get('/get-wallet-balance')
@@ -111,6 +115,18 @@ export class contractController {
     }
 
     return this.contractService.getWalletBalance(walletAddress);
+  }
+
+  @Get('/my-commitments')
+  @HttpCode(201)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'user commitment saved in data base.',
+    description: 'This api returns commitment of a user that are saved in database.',
+  })
+  async getMyCommitments(@Request() request) {
+    return this.contractService.getCommitmentsByUserId(request.user.userId);
   }
 
   @Get('/admin-wallet')

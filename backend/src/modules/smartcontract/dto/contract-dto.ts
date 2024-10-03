@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class verifyProofDto {
@@ -7,6 +7,17 @@ export class verifyProofDto {
   @ApiProperty({ required: true })
   proof: string;
 }
+
+export interface StoreCommitmentData {
+  userId: string;
+  manufacturerName: string;
+  deviceType: string;
+  deviceHardwareVersion: string;
+  firmwareVersion: string;
+  lines: string;
+  commitmentData: string;
+}
+
 
 export class storeCommitmentDto {
   @IsNotEmpty({ message: 'manufacturerName is required and must be entered.' })
@@ -19,7 +30,9 @@ export class storeCommitmentDto {
   @ApiProperty({ required: true })
   deviceType: string;
 
-  @IsNotEmpty({ message: 'deviceHardwareVersion is required and must be entered.' })
+  @IsNotEmpty({
+    message: 'deviceHardwareVersion is required and must be entered.',
+  })
   @IsString({ message: 'deviceHardwareVersion must be string.' })
   @ApiProperty({ required: true })
   deviceHardwareVersion: string;

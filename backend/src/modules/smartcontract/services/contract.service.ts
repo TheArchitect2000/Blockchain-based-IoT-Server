@@ -5,7 +5,8 @@ import { GeneralException } from 'src/modules/utility/exceptions/general.excepti
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { DeviceService } from 'src/modules/device/services/device.service';
 import { ServiceService } from 'src/modules/service/services/service.service';
-import { storeCommitmentDto } from '../dto/contract-dto';
+import { StoreCommitmentData } from '../dto/contract-dto';
+import { ContractRepository } from '../repository/contract.repository';
 
 function parseProofString(proofString) {
   let cleanedString = proofString.substring(1, proofString.length - 1);
@@ -34,6 +35,7 @@ export class ContractService {
   };
 
   constructor(
+    private readonly contractRepository?: ContractRepository,
     @Inject(forwardRef(() => DeviceService))
     private readonly deviceService?: DeviceService,
     @Inject(forwardRef(() => ServiceService))
@@ -461,7 +463,7 @@ export class ContractService {
     );
   }
 
-  async storeCommitment(data: storeCommitmentDto) {
+  async storeCommitment(data: StoreCommitmentData) {
     const {
       manufacturerName,
       deviceType,
@@ -470,6 +472,8 @@ export class ContractService {
       lines,
       commitmentData,
     } = data;
+
+    await this.saveCommitmentInDB(data);
 
     const result = await this.contracts.commitment.storeCommitment(
       manufacturerName,
@@ -497,5 +501,21 @@ export class ContractService {
       console.error('Error calling verifyProof:', error);
       return false;
     }
+  }
+
+  async saveCommitmentInDB(data: StoreCommitmentData) {
+    return await this.contractRepository.saveCommitment({
+      userId: data.userId,
+      manufacturerName: data.manufacturerName,
+      deviceType: data.deviceType,
+      hardwareVersion: data.deviceHardwareVersion,
+      firmwareVersion: data.firmwareVersion,
+      lines: data.lines,
+      commitmentData: data.commitmentData,
+    });
+  }
+
+  async getCommitmentsByUserId(userId: string) {
+    return await this.contractRepository.getCommitmentsByUserId(userId);
   }
 }
