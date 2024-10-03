@@ -48,6 +48,7 @@
         "mqtt": "^5.7.0",
         "npm": "^10.8.1",
         "popper.js": "^1.16.1",
+        "prismjs": "^1.29.0",
         "react": "^18.2.0",
         "react-apexcharts": "^1.4.0",
         "react-beautiful-dnd": "^13.1.1",

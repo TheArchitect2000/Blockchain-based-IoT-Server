@@ -36,6 +36,13 @@ export async function apiStoreCommitment(
     })
 }
 
+export async function apiGetMyCommitments() {
+    return ApiService.fetchData({
+        url: import.meta.env.VITE_URL + 'v1/contract/my-commitments',
+        method: 'get',
+    })
+}
+
 export async function apiGetAdminWalletData() {
     return ApiService.fetchData({
         url: import.meta.env.VITE_URL + 'v1/contract/admin-wallet',

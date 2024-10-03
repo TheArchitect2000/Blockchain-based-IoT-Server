@@ -24,6 +24,12 @@ export const protectedRoutes = [
         authority: [],
     },
     {
+        key: 'commitment-publisher',
+        path: '/commitment',
+        component: lazy(() => import('@/views/commitment')),
+        authority: [],
+    },
+    {
         key: 'services',
         path: '/services',
         component: lazy(() => import('@/views/services/Services')),
@@ -65,7 +71,7 @@ export const protectedRoutes = [
         component: lazy(() => import('@/views/building/pages/createedit')),
         authority: [],
     },
-/*     {
+    /*     {
         key: 'buildings.see',
         path: '/buildings/details/:id',
         component: lazy(() => import('@/views/building/pages/details')),

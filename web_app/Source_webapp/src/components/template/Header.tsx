@@ -2,7 +2,7 @@ import classNames from 'classnames'
 import { HEADER_HEIGHT_CLASS } from '@/constants/theme.constant'
 import { useState, type ReactNode } from 'react'
 import type { CommonProps } from '@/@types/common'
-import * as Yup from 'yup'
+
 import {
     Button,
     Dialog,
@@ -21,11 +21,7 @@ import {
 } from '@/services/UserApi'
 import { PasswordInput } from '../shared'
 import './style.css'
-import { Field, Form, Formik } from 'formik'
-import FormDesription from '@/views/account/Settings/components/FormDesription'
-import FormRow from '@/views/account/Settings/components/FormRow'
-import { HiUpload } from 'react-icons/hi'
-import { apiStoreCommitment } from '@/services/ContractServices'
+
 
 interface HeaderProps extends CommonProps {
     headerStart?: ReactNode
@@ -34,19 +30,11 @@ interface HeaderProps extends CommonProps {
     container?: boolean
 }
 
-type CommitmentFormModel = {
-    manufacturerName: string
-    deviceType: string
-    hardwareVersion: string
-    firmwareVersion: string
-    lines: string
-    commitmentFile: any
-}
+
 
 const Header = (props: HeaderProps) => {
     const { headerStart, headerEnd, headerMiddle, className, container } = props
     const navigate = useNavigate()
-    const [commitmentDialog, setCommitmentDialog] = useState(false)
     const [consoleDialog, setConsoleDialog] = useState(false)
     const [dialogState, setDialogState] = useState('')
     const [loading, setLoading] = useState(false)
@@ -61,29 +49,7 @@ const Header = (props: HeaderProps) => {
         navigate(`/services/new`)
     }
 
-    const handleJsonFileChange = (event: any) => {
-        const file = event.target.files[0]
-
-        if (file && file.type === 'application/json') {
-            toast.push(
-                <Notification type="success">
-                    {'Commitment file uploaded successfully.'}
-                </Notification>,
-                {
-                    placement: 'top-center',
-                }
-            )
-        } else {
-            toast.push(
-                <Notification type="danger">
-                    {'Please upload a valid JSON file.'}
-                </Notification>,
-                {
-                    placement: 'top-center',
-                }
-            )
-        }
-    }
+    
 
     const { themeBackground } = useConfig()
 
@@ -125,7 +91,7 @@ const Header = (props: HeaderProps) => {
                     '_blank'
                 )
             } else if (dialogState == 'zkp Commitment Publisher') {
-                setCommitmentDialog(true)
+                navigate(`/commitment?user=${username}&pass=${password}`)
             }
         } else {
             toast.push(
@@ -150,59 +116,9 @@ const Header = (props: HeaderProps) => {
         setConsoleDialog(true)
     }
 
-    const validationSchema = Yup.object().shape({
-        manufacturerName: Yup.string().required('Manufacturer is required'),
-        deviceType: Yup.string().required('Device Type is required'),
-        hardwareVersion: Yup.string().required('Hardware Version is required'),
-        firmwareVersion: Yup.string().required('Firmware Version is required'),
-        lines: Yup.string().required('Lines is required'),
-        commitmentFile: Yup.mixed().required('Commitment File is required'),
-    })
+    
 
-    const onFormSubmit = async (
-        values: CommitmentFormModel,
-        setSubmitting: (isSubmitting: boolean) => void
-    ) => {
-        const reader = new FileReader()
-        reader.onload = async (e) => {
-            if (e.target?.result) {
-                const jsonText = e.target.result as string
-
-                const storeResult = await apiStoreCommitment(
-                    values.manufacturerName,
-                    values.deviceType,
-                    values.hardwareVersion,
-                    values.firmwareVersion,
-                    values.lines,
-                    jsonText
-                )
-
-                console.log('Store log is:', storeResult)
-
-                setSubmitting(false)
-                setCommitmentDialog(false)
-
-                toast.push(
-                    <Notification type="success">
-                        {'Commitment published successfully.'}
-                    </Notification>,
-                    {
-                        placement: 'top-center',
-                    }
-                )
-            } else {
-                toast.push(
-                    <Notification type="danger">
-                        {'Error while publishing your commitment.'}
-                    </Notification>,
-                    {
-                        placement: 'top-center',
-                    }
-                )
-            }
-        }
-        reader.readAsText(values.commitmentFile)
-    }
+    
 
     return (
         <header
@@ -212,167 +128,6 @@ const Header = (props: HeaderProps) => {
                 className
             )}
         >
-            <Dialog
-                isOpen={commitmentDialog}
-                onClose={() => setCommitmentDialog(false)}
-            >
-                <Formik
-                    enableReinitialize
-                    initialValues={{
-                        manufacturerName: '',
-                        deviceType: '',
-                        hardwareVersion: '',
-                        firmwareVersion: '',
-                        lines: '',
-                        commitmentFile: null,
-                    }}
-                    validationSchema={validationSchema}
-                    onSubmit={(values, { setSubmitting }) => {
-                        onFormSubmit(values, setSubmitting)
-                    }}
-                >
-                    {({
-                        touched,
-                        errors,
-                        isSubmitting,
-                        resetForm,
-                        setFieldValue,
-                        values,
-                    }) => {
-                        const validatorProps = { touched, errors }
-
-                        return (
-                            <Form>
-                                <FormContainer>
-                                    <FormDesription
-                                        title="Commitment publisher"
-                                        desc=""
-                                    />
-                                    <FormRow
-                                        name="manufacturerName"
-                                        label="Manufacturer Name"
-                                        {...validatorProps}
-                                    >
-                                        <Field
-                                            type="text"
-                                            autoComplete="off"
-                                            name="manufacturerName"
-                                            placeholder=""
-                                            component={Input}
-                                        />
-                                    </FormRow>
-                                    <FormRow
-                                        name="deviceType"
-                                        label="Device Type"
-                                        {...validatorProps}
-                                    >
-                                        <Field
-                                            type="text"
-                                            autoComplete="off"
-                                            name="deviceType"
-                                            placeholder=""
-                                            component={Input}
-                                        />
-                                    </FormRow>
-                                    <FormRow
-                                        name="hardwareVersion"
-                                        label="Hardware Version"
-                                        {...validatorProps}
-                                    >
-                                        <Field
-                                            type="text"
-                                            autoComplete="off"
-                                            name="hardwareVersion"
-                                            placeholder=""
-                                            component={Input}
-                                        />
-                                    </FormRow>
-                                    <FormRow
-                                        name="firmwareVersion"
-                                        label="Firmware Version"
-                                        {...validatorProps}
-                                    >
-                                        <Field
-                                            type="text"
-                                            autoComplete="off"
-                                            name="firmwareVersion"
-                                            placeholder=""
-                                            component={Input}
-                                        />
-                                    </FormRow>
-                                    <FormRow
-                                        name="lines"
-                                        label="Lines"
-                                        {...validatorProps}
-                                    >
-                                        <Field
-                                            type="text"
-                                            autoComplete="off"
-                                            name="lines"
-                                            placeholder=""
-                                            component={Input}
-                                        />
-                                    </FormRow>
-                                    <FormRow
-                                        name="commitmentFile"
-                                        label="Commitment File"
-                                        {...validatorProps}
-                                    >
-                                        <Upload
-                                            className="flex items-center justify-around w-full"
-                                            showList={false}
-                                            uploadLimit={1}
-                                            accept=".json"
-                                            onChange={(event: any) => {
-                                                handleJsonFileChange(event)
-                                                setFieldValue(
-                                                    'commitmentFile',
-                                                    event?.target?.files[0]
-                                                )
-                                            }}
-                                        >
-                                            <p className="text-lg">
-                                                Status:
-                                                <span
-                                                    className={`ml-1 ${
-                                                        values.commitmentFile
-                                                            ? 'text-green-500'
-                                                            : 'text-red-500'
-                                                    }`}
-                                                >
-                                                    {values.commitmentFile
-                                                        ? 'File Selected'
-                                                        : 'No File Selected'}
-                                                </span>
-                                            </p>
-                                            <Button
-                                                type="button"
-                                                className="flex items-center gap-2"
-                                            >
-                                                Upload{' '}
-                                                <HiUpload className="text-[1.2rem]" />
-                                            </Button>
-                                        </Upload>
-                                    </FormRow>
-
-                                    <div className="flex items-center justify-center mt-4 ltr:text-right">
-                                        <Button
-                                            variant="solid"
-                                            loading={isSubmitting}
-                                            type="submit"
-                                        >
-                                            {isSubmitting
-                                                ? 'Publishing'
-                                                : 'Publish'}
-                                        </Button>
-                                    </div>
-                                </FormContainer>
-                            </Form>
-                        )
-                    }}
-                </Formik>
-            </Dialog>
-
             <Dialog
                 isOpen={consoleDialog}
                 onClose={() => setConsoleDialog(false)}
