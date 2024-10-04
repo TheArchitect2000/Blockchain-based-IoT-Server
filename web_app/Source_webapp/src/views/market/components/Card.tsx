@@ -59,7 +59,7 @@ const ServiceCard = ({
                 <BsCoin size="32" />
                 <span>
                     <h6 className="text-sm">Installation Price</h6>
-                    <span className="text-xs">${installationPrice}</span>
+                    <span className="text-xs">{installationPrice} FDS</span>
                 </span>
             </div>
             <Button

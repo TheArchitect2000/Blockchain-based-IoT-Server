@@ -78,7 +78,7 @@ const ServiceTable = () => {
                                         </div>
                                     </Td>
                                     <Td>{service.serviceType}</Td>
-                                    <Td>{service.installationPrice}</Td>
+                                    <Td>{service.installationPrice} FDS</Td>
                                 </Tr>
                             ))}
                     </TBody>
