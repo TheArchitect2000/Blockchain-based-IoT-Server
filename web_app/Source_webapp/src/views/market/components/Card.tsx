@@ -380,9 +380,10 @@ const ServiceCard = ({
             </Dialog>
             <Card
                 clickable
-                className="w-[300px] hover:shadow-lg transition duration-150 ease-in-out dark:border dark:border-gray-600 dark:border-solid"
+                className="flex flex-col w-[300px] h-full hover:shadow-lg transition duration-150 ease-in-out dark:border dark:border-gray-600 dark:border-solid"
                 header={cardHeader}
                 footer={cardFooter}
+                footerClass='mt-auto'
                 headerClass="p-0"
                 footerBorder={false}
                 headerBorder={false}

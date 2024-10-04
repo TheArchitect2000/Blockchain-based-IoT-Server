@@ -44,7 +44,7 @@ const Side = ({ children, content, ...rest }: SideProps) => {
                         className="aspect-auto w-[15%] max-w-[70px]"
                         alt="logo"
                     />
-                    <p>{import.meta.env.VITE_NODE_NAME} Powered by FidesInnova technology</p>
+                    <p>{import.meta.env.VITE_NODE_NAME} Powered by FidesInnova Technology</p>
                 </div>
 
                 {/* <Logo mode="dark" /> */}

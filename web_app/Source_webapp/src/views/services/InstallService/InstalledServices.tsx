@@ -6,6 +6,7 @@ import ServiceCard from '@/views/demo/component'
 import { apiGetDevices } from '@/services/DeviceApi'
 import { Button } from '@/components/ui'
 import { useNavigate } from 'react-router-dom'
+import CardHolder from '@/components/ui/CardHolder'
 
 const CollapseMenuItemView1: React.FC = () => {
     const [installedServices, setInstalledServices] = useState<any[]>([]) // State to hold the fetched services
@@ -32,8 +33,10 @@ const CollapseMenuItemView1: React.FC = () => {
                     data.data.map((element: any) => {
                         deviceRes.data.data.forEach((device: any) => {
                             if (
+                                element &&
+                                element.deviceMap &&
                                 device.deviceEncryptedId ==
-                                element.deviceMap.MULTI_SENSOR_1
+                                    element.deviceMap.MULTI_SENSOR_1
                             ) {
                                 element.deviceName = device.deviceName
                                 element.mac = device.mac
@@ -56,7 +59,8 @@ const CollapseMenuItemView1: React.FC = () => {
             <div className="w-full flex justify-between pb-4">
                 <h3 className="">Installed Services</h3>
             </div>
-            <div className="grid xl:grid-cols-3">
+
+            <CardHolder>
                 {loading === false &&
                     installedServices?.map((service) => (
                         <ServiceCard
@@ -72,7 +76,7 @@ const CollapseMenuItemView1: React.FC = () => {
                             refresh={refreshPage}
                         />
                     ))}
-            </div>
+            </CardHolder>
 
             {loading === true && (
                 <div className="w-full h-[80vh] flex justify-center items-center">
@@ -82,23 +86,23 @@ const CollapseMenuItemView1: React.FC = () => {
 
             {loading === false && installedServices.length === 0 && (
                 <section className="w-full h-[75dvh] flex flex-col gap-3 items-center justify-center">
-                <DoubleSidedImage
-                    className="w-2/12 max-w-[250px]"
-                    src="/img/others/img-2.png"
-                    darkModeSrc="/img/others/img-2-dark.png"
-                    alt="No product found!"
-                />
-                <h3>No services installed!</h3>
-                <Button
-                    onClick={() => {
-                        navigateTo('/market')
-                    }}
-                    variant="solid"
-                    color="green-600"
-                >
-                    Explore Service Market
-                </Button>
-            </section>
+                    <DoubleSidedImage
+                        className="w-2/12 max-w-[250px]"
+                        src="/img/others/img-2.png"
+                        darkModeSrc="/img/others/img-2-dark.png"
+                        alt="No product found!"
+                    />
+                    <h3>No services installed!</h3>
+                    <Button
+                        onClick={() => {
+                            navigateTo('/market')
+                        }}
+                        variant="solid"
+                        color="green-600"
+                    >
+                        Explore Service Market
+                    </Button>
+                </section>
             )}
         </div>
     )

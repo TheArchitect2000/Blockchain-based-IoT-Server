@@ -3,13 +3,12 @@ import { BlocklyWorkspace } from 'react-blockly'
 import { javascriptGenerator } from 'blockly/javascript'
 import './style.scss'
 import './customBlocks/custom_Blocks'
-import { Button, Checkbox, Input, Notification, toast } from '@/components/ui'
+import { Button, Checkbox, Notification, toast } from '@/components/ui'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
     apiEditService,
     apiGetServiceByServiceId,
 } from '@/services/ServiceAPI'
-import { ServiceData } from '@/utils/hooks/useGetServices'
 import { useAppSelector } from '@/store'
 
 const toolbox = {

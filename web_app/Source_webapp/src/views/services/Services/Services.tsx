@@ -7,6 +7,7 @@ import { apiGetService } from '@/services/ServiceAPI'
 import { useEffect, useState } from 'react'
 import { DoubleSidedImage, Loading } from '@/components/shared'
 import { useNavigate } from 'react-router-dom'
+import CardHolder from '@/components/ui/CardHolder'
 
 function Services() {
     const { _id: userId } = useAppSelector((state) => state.auth.user)
@@ -33,7 +34,8 @@ function Services() {
         <div>
             <h3 className="mb-4">My Services</h3>
             <Statistic />
-            <div className="grid xl:grid-cols-3">
+
+            <CardHolder>
                 {data &&
                     data?.map((service) => (
                         <ServiceCard
@@ -49,7 +51,7 @@ function Services() {
                             serviceData={service}
                         />
                     ))}
-            </div>
+            </CardHolder>
 
             {loading === true && (
                 <div className="w-full h-[80vh] flex justify-center items-center">

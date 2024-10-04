@@ -8,6 +8,7 @@ import { Button } from '@/components/ui'
 import { DeviceData } from '@/utils/hooks/useGetDevices'
 import { apiGetAllSharedDevices, apiGetDevices } from '@/services/DeviceApi'
 import { useAppSelector } from '@/store'
+import CardHolder from '@/components/ui/CardHolder'
 
 function Market() {
     const [loading, setLoading] = useState(true)
@@ -49,7 +50,7 @@ function Market() {
             <Statistic />
 
             <h4 className="mt-8">
-                Current IoT Servers on the FidesInnova Network
+                Available IoT Servers in FidesInnova Network
             </h4>
             <div className="flex border-b items-center justify-start gap-6 p-4">
                 {nodeIds.map((nodeId) => (
@@ -73,13 +74,13 @@ function Market() {
 
             {/* Render services */}
             {(loading === false && (
-                <div className="grid xl:grid-cols-3 gap-4">
+                <CardHolder>
                     {sortedData.map((service: ServiceData) => (
                         <ServiceCard
                             sharedDevices={sharedDevices}
                             myDevices={myDevices}
                             key={service._id}
-                            className="mt-8 mx-auto"
+                            className=""
                             node={service.nodeId || ''}
                             name={service.serviceName}
                             description={service.description}
@@ -89,7 +90,7 @@ function Market() {
                             serviceData={service}
                         />
                     ))}
-                </div>
+                </CardHolder>
             )) || (
                 <div className="w-full h-[65vh] flex justify-center items-center">
                     <Loading loading={true} />

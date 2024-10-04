@@ -15,6 +15,7 @@ import ServiceTable from './components/ServiceTable'
 import MapComponent from '@/components/map/MapComponent'
 import { useGetSharedDevices } from '@/utils/hooks/useGetDevices'
 import { generateParisData } from '@/components/map/ParisDeviceGen'
+import { apiGetAllSharedDevices } from '@/services/DeviceApi'
 
 injectReducer('crmDashboard', reducer)
 
@@ -38,35 +39,39 @@ const CrmDashboard = () => {
         dispatch(getCrmDashboardData())
     }
 
-    const { devices } = useGetSharedDevices()
     const [mapLoading, setMapLoading] = useState(true)
     const [positions, setPositions] = useState<
         [number, number, number, number, string][]
     >([])
 
     useEffect(() => {
-        if (devices?.data.data) {
-            const newPositions: [number, number, number, number, string][] =
-                devices.data.data
-                    .filter((item) => item.location.coordinates)
-                    .map(
-                        (item: any) =>
-                            [
-                                ...item.location.coordinates,
-                                (item.lastLog &&
-                                    item.lastLog?.data?.Temperature) ||
-                                    null,
-                                (item.lastLog &&
-                                    item.lastLog?.data?.Humidity) ||
-                                    null,
-                                String(item.nodeId),
-                            ] as [number, number, number, number, string]
-                    )
+        async function fetchDeviceDatas() {
+            setMapLoading(true)
+            const res = (await apiGetAllSharedDevices()) as any
+            if (res?.data.data) {
+                const newPositions: [number, number, number, number, string][] =
+                    res.data.data
+                        .filter((item: any) => item.location.coordinates)
+                        .map(
+                            (item: any) =>
+                                [
+                                    ...item.location.coordinates,
+                                    (item.lastLog &&
+                                        item.lastLog?.data?.Temperature) ||
+                                        null,
+                                    (item.lastLog &&
+                                        item.lastLog?.data?.Humidity) ||
+                                        null,
+                                    String(item.nodeId),
+                                ] as [number, number, number, number, string]
+                        )
 
-            setPositions([...newPositions, ...generateParisData(500, 500)])
-            setMapLoading(false)
+                setPositions([...newPositions, ...generateParisData(500, 500)])
+                setMapLoading(false)
+            }
         }
-    }, [devices])
+        fetchDeviceDatas()
+    }, [])
 
     return (
         <div className="flex flex-col gap-4 h-full">
