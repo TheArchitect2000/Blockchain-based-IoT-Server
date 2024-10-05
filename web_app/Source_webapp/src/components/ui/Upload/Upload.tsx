@@ -17,7 +17,12 @@ export interface UploadProps extends CommonProps {
     draggable?: boolean
     fileList?: File[]
     multiple?: boolean
-    onChange?: (event: ChangeEvent<HTMLInputElement>, file: File[], fileList: File[]) => void
+    changeForReset?: number
+    onChange?: (
+        event: ChangeEvent<HTMLInputElement>,
+        file: File[],
+        fileList: File[]
+    ) => void
     onFileRemove?: (file: File[]) => void
     showList?: boolean
     tip?: string | ReactNode
@@ -46,6 +51,7 @@ const Upload = forwardRef<HTMLDivElement, UploadProps>((props, ref) => {
         children,
         className,
         field,
+        changeForReset,
         ...rest
     } = props
 
@@ -56,7 +62,25 @@ const Upload = forwardRef<HTMLDivElement, UploadProps>((props, ref) => {
     const { themeColor, primaryColorLevel } = useConfig()
 
     useEffect(() => {
-        if (JSON.stringify(files) !== JSON.stringify(fileList)) {
+        if (files.length > 0) {
+            setFiles([])
+            onChange?.(
+                {
+                    target: {
+                        files: [null],
+                    },
+                },
+                [],
+                []
+            )
+        }
+    }, [changeForReset])
+
+    useEffect(() => {
+        if (
+            JSON.stringify(files) !== JSON.stringify(fileList) &&
+            fileList.length > 0
+        ) {
             setFiles(fileList)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -120,6 +144,10 @@ const Upload = forwardRef<HTMLDivElement, UploadProps>((props, ref) => {
         if (result) {
             const updatedFiles = addNewFiles(newFiles)
             setFiles(updatedFiles)
+            console.log('Files2:', updatedFiles)
+            setTimeout(() => {
+                console.log('Files3:', files)
+            }, 2500)
             onChange?.(e, updatedFiles, files)
         }
     }

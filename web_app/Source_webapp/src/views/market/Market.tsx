@@ -52,7 +52,7 @@ function Market() {
             <h4 className="mt-8">
                 Available IoT Servers in FidesInnova Network
             </h4>
-            <div className="flex border-b items-center justify-start gap-6 p-4">
+            <div className="flex items-center justify-start gap-6 p-4">
                 {nodeIds.map((nodeId) => (
                     <Button
                         key={nodeId}
@@ -72,7 +72,8 @@ function Market() {
                 </Button>
             </div>
 
-            {/* Render services */}
+            <h4 className="mt-6">Available Service Contracts</h4>
+
             {(loading === false && (
                 <CardHolder>
                     {sortedData.map((service: ServiceData) => (

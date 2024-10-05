@@ -111,7 +111,7 @@ const CommitmentTable = ({ data }: { data: CommitmentFormModel[] }) => {
                 onClose={() => setConsoleDialog(false)}
             >
                 <h3>Commitment Data</h3>
-                <div className="h-[80dvh] overflow-y-scroll">
+                <div className="h-[80dvh] overflow-y-auto">
                     <JsonDisplay jsonData={commitmentData} />
                 </div>
             </Dialog>

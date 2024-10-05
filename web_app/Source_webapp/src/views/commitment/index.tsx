@@ -33,6 +33,7 @@ export type CommitmentFormModel = {
 export default function CommitmentPage() {
     const [loading, setLoading] = useState(true)
     const [commitmentLoading, setCommitmentLoading] = useState(true)
+    const [resetUpload, setResetUpload] = useState(0)
     const [refreshCommitments, setRefreshCommitments] = useState(0)
     const [commitments, setCommitments] = useState<CommitmentFormModel[]>([])
     const location = useLocation()
@@ -67,7 +68,7 @@ export default function CommitmentPage() {
 
     const validationSchema = Yup.object().shape({
         manufacturerName: Yup.string().required('Manufacturer is required'),
-        deviceType: Yup.string().required('Device Type is required'),
+        deviceType: Yup.string().required('Device Name is required'),
         hardwareVersion: Yup.string().required('Hardware Version is required'),
         firmwareVersion: Yup.string().required('Firmware Version is required'),
         lines: Yup.string().required('Lines is required'),
@@ -78,14 +79,46 @@ export default function CommitmentPage() {
         const file = event.target.files[0]
 
         if (file && file.type === 'application/json') {
-            toast.push(
-                <Notification type="success">
-                    {'Commitment file uploaded successfully.'}
-                </Notification>,
-                {
-                    placement: 'top-center',
+            const reader = new FileReader()
+            reader.onload = async (e) => {
+                if (e.target?.result) {
+                    const jsonText = e.target.result as string
+
+                    try {
+                        const parsedJson = JSON.parse(jsonText)
+                        toast.push(
+                            <Notification type="success">
+                                {'Commitment file uploaded successfully.'}
+                            </Notification>,
+                            {
+                                placement: 'top-center',
+                            }
+                        )
+                    } catch (error) {
+                        setResetUpload(resetUpload + 1)
+                        return toast.push(
+                            <Notification type="danger">
+                                {'Please upload a valid JSON file.'}
+                            </Notification>,
+                            {
+                                placement: 'top-center',
+                            }
+                        )
+                    }
+                } else {
+                    setResetUpload(resetUpload + 1)
+                    toast.push(
+                        <Notification type="danger">
+                            {'Please upload a valid JSON file.'}
+                        </Notification>,
+                        {
+                            placement: 'top-center',
+                        }
+                    )
                 }
-            )
+            }
+
+            reader.readAsText(file)
         } else {
             toast.push(
                 <Notification type="danger">
@@ -107,6 +140,19 @@ export default function CommitmentPage() {
             if (e.target?.result) {
                 const jsonText = e.target.result as string
 
+                try {
+                    const parsedJson = JSON.parse(jsonText)
+                } catch (error) {
+                    return toast.push(
+                        <Notification type="danger">
+                            {'Please upload a valid JSON file.'}
+                        </Notification>,
+                        {
+                            placement: 'top-center',
+                        }
+                    )
+                }
+
                 const storeResult = await apiStoreCommitment(
                     values.manufacturerName,
                     values.deviceType,
@@ -116,9 +162,11 @@ export default function CommitmentPage() {
                     jsonText
                 )
 
+                setLoading(true)
+
                 setTimeout(() => {
                     setRefreshCommitments(refreshCommitments + 1)
-                }, 3000)
+                }, 2000)
 
                 console.log('Store log is:', storeResult)
 
@@ -187,7 +235,7 @@ export default function CommitmentPage() {
                                 <h3>Commitment publisher</h3>
                                 <FormRow
                                     name="manufacturerName"
-                                    label="Manufacturer Name"
+                                    label="IoT Manufacturer Name"
                                     {...validatorProps}
                                 >
                                     <Field
@@ -200,7 +248,7 @@ export default function CommitmentPage() {
                                 </FormRow>
                                 <FormRow
                                     name="deviceType"
-                                    label="Device Type"
+                                    label="IoT Device Name"
                                     {...validatorProps}
                                 >
                                     <Field
@@ -256,6 +304,7 @@ export default function CommitmentPage() {
                                     {...validatorProps}
                                 >
                                     <Upload
+                                        changeForReset={resetUpload}
                                         className="flex items-center justify-around w-full"
                                         showList={false}
                                         uploadLimit={1}
