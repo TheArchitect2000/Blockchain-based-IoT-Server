@@ -32,6 +32,7 @@ const sideNavCollapseStyle = {
 }
 
 const SideNav = () => {
+    const { themeBackground } = useAppSelector((state) => state.theme)
     const themeColor = useAppSelector((state) => state.theme.themeColor)
     const primaryColorLevel = useAppSelector(
         (state) => state.theme.primaryColorLevel
@@ -85,7 +86,7 @@ const SideNav = () => {
                         sideNavCollapse ? sideNavCollapseStyle : sideNavStyle
                     }
                     className={classNames(
-                        'side-nav w-full',
+                        `side-nav w-full bg-${themeBackground}`,
                         sideNavColor(),
                         !sideNavCollapse && 'side-nav-expand'
                     )}

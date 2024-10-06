@@ -242,7 +242,7 @@ export default function CommitmentPage() {
                                         type="text"
                                         autoComplete="off"
                                         name="manufacturerName"
-                                        placeholder=""
+                                        placeholder="e.g. DJI"
                                         component={Input}
                                     />
                                 </FormRow>
@@ -255,7 +255,7 @@ export default function CommitmentPage() {
                                         type="text"
                                         autoComplete="off"
                                         name="deviceType"
-                                        placeholder=""
+                                        placeholder="e.g. Drone"
                                         component={Input}
                                     />
                                 </FormRow>
@@ -268,7 +268,7 @@ export default function CommitmentPage() {
                                         type="text"
                                         autoComplete="off"
                                         name="hardwareVersion"
-                                        placeholder=""
+                                        placeholder="e.g. 1"
                                         component={Input}
                                     />
                                 </FormRow>
@@ -281,7 +281,7 @@ export default function CommitmentPage() {
                                         type="text"
                                         autoComplete="off"
                                         name="firmwareVersion"
-                                        placeholder=""
+                                        placeholder="e.g. 1"
                                         component={Input}
                                     />
                                 </FormRow>
@@ -294,7 +294,7 @@ export default function CommitmentPage() {
                                         type="text"
                                         autoComplete="off"
                                         name="lines"
-                                        placeholder=""
+                                        placeholder="e.g. 200,350,4000-4010"
                                         component={Input}
                                     />
                                 </FormRow>

@@ -144,10 +144,6 @@ const Upload = forwardRef<HTMLDivElement, UploadProps>((props, ref) => {
         if (result) {
             const updatedFiles = addNewFiles(newFiles)
             setFiles(updatedFiles)
-            console.log('Files2:', updatedFiles)
-            setTimeout(() => {
-                console.log('Files3:', files)
-            }, 2500)
             onChange?.(e, updatedFiles, files)
         }
     }

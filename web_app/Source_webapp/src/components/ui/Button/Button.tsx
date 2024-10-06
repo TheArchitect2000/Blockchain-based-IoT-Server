@@ -57,7 +57,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
     const buttonSize = size || inputGroupSize || formControlSize || controlSize
     const buttonColor = splitedColor[0] || themeColor
     const buttonColorLevel = splitedColor[1] || primaryColorLevel
-
+    
     const [increaseLevel, decreaseLevel] = useColorLevel(
         buttonColorLevel as ColorLevel
     )

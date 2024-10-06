@@ -1,7 +1,7 @@
 import { Button, Dropdown, Input, Notification, toast } from '@/components/ui'
 import React, { useEffect, useRef, useState } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
-import './style.css'
+import './style.scss'
 import {
     HiChevronDown,
     HiChevronUp,
@@ -31,6 +31,7 @@ interface DeviceData {
 
 export function CreateEditBuilding() {
     const maxFloor = 15
+    const unitCreationLimit = 16
     const [buildData, setBuildData] = useState<any>({
         name: 'Tower 1',
         details: {
@@ -47,6 +48,8 @@ export function CreateEditBuilding() {
     })
     const query = new URLSearchParams(useLocation().search)
     const viewMode = query.get('view')
+    const [viewingCorridor, setViewingCorridor] = useState<number>(0)
+    const [corridor, setCorridor] = useState<number>(0)
     const [apiLoading, setApiLoading] = useState(false)
     const [deviceListIsOpen, setDeviceListIsOpen] = useState<number>(0)
     const [mainLoading, setMainLoading] = useState(true)
@@ -57,7 +60,9 @@ export function CreateEditBuilding() {
     const [unsavedChanges, setUnsavedChanges] = useState(false)
     const [myDevices, setMyDevices] = useState<DeviceData[]>([])
     const [unitRefs, setUnitRefs] = useState<React.RefObject<any>[]>(
-        [1, 2, 3, 4].map(() => React.createRef())
+        Array.from({ length: (corridor + 1) * 4 }, (_, index) => {
+            return React.createRef()
+        })
     )
     const [buildingView, setBuildingView] = useState<string>('tower')
     const { type } = useParams<{ type: string }>()
@@ -71,6 +76,39 @@ export function CreateEditBuilding() {
     const primaryColorLevel = useAppSelector(
         (state) => state.theme.primaryColorLevel
     )
+
+    const NextUnit: React.FC = () => {
+        function handleNextUnitsClick() {
+            if (viewingCorridor < corridor) {
+                setViewingCorridor(viewingCorridor + 1)
+            } else {
+                setCorridor(corridor + 1)
+                setTimeout(() => {
+                    setViewingCorridor(viewingCorridor + 1)
+                }, 100)
+            }
+        }
+
+        return (
+            <div onClick={handleNextUnitsClick} className="unit-bt">
+                <p>Continue to Next Units</p>
+            </div>
+        )
+    }
+
+    const PervUnit: React.FC = () => {
+        function handlePervUnitsClick() {
+            if (viewingCorridor > 0) {
+                setViewingCorridor(viewingCorridor - 1)
+            }
+        }
+
+        return (
+            <div onClick={handlePervUnitsClick} className="unit-bt back">
+                <p>Back to Previous Units</p>
+            </div>
+        )
+    }
 
     const getTotalFloors = (): number => {
         return Object.keys(buildData.details).length
@@ -253,12 +291,10 @@ export function CreateEditBuilding() {
 
             const unitCount = Object.keys(floor.units).length
 
-            // Check if the unit to be created follows the sequence
-
-            if (unitCount >= 4) {
+            if (unitCount >= unitCreationLimit) {
                 toast.push(
                     <Notification type="warning">
-                        Maximum of 6 units per floor allowed
+                        Maximum of {unitCreationLimit} units per floor allowed
                     </Notification>,
                     {
                         placement: 'top-center',
@@ -362,8 +398,8 @@ export function CreateEditBuilding() {
                     (device: any) => !_ids.has(device._id)
                 )
 
-                console.log('deviceRes', deviceRes.data.data)
-                console.log('filteredSharedDevices', filteredSharedDevices)
+                //console.log('deviceRes', deviceRes.data.data)
+                //console.log('filteredSharedDevices', filteredSharedDevices)
 
                 // Combine the filtered sharedDevices with deviceRes
                 setMyDevices([...deviceRes.data.data, ...filteredSharedDevices])
@@ -424,6 +460,43 @@ export function CreateEditBuilding() {
         fetchData()
     }, [type, navigateTo])
 
+    useEffect(() => {
+        const newCorridor = Math.ceil(getTotalUnits(selectedFloor) / 4) - 1
+        if (
+            newCorridor === viewingCorridor - 1 &&
+            getTotalUnits(selectedFloor) % 4 === 0
+        ) {
+            // If newCorridor is less that the corridor is viewing then do nothing
+        } else if (
+            newCorridor === viewingCorridor - 1 &&
+            getTotalUnits(selectedFloor) % 4 <= 3
+        ) {
+            setCorridor(newCorridor)
+            setViewingCorridor(newCorridor)
+        } else if (newCorridor > viewingCorridor) {
+            setCorridor(newCorridor)
+            setTimeout(() => {
+                setViewingCorridor(newCorridor)
+            }, 100)
+        } else {
+            setCorridor(newCorridor)
+        }
+    }, [getTotalUnits(selectedFloor)])
+
+    useEffect(() => {
+        setTimeout(() => {
+            setViewingCorridor(0)
+        }, 200)
+    }, [selectedFloor])
+
+    useEffect(() => {
+        setUnitRefs(
+            Array.from({ length: (corridor + 1) * 4 }, (_, index) => {
+                return React.createRef()
+            })
+        )
+    }, [corridor])
+
     function scrollToView() {
         setScroll((perv) => perv + 1)
     }
@@ -435,7 +508,7 @@ export function CreateEditBuilding() {
                     behavior: 'smooth',
                 })
             }
-            if (scrollToUnitsRef.current) {
+            if (scrollToUnitsRef.current && corridor == 0) {
                 scrollToUnitsRef.current.scrollIntoView({
                     behavior: 'smooth',
                 })
@@ -554,7 +627,7 @@ export function CreateEditBuilding() {
 
     if (mainLoading == true) {
         return (
-            <div className="w-full h-screen flex items-center justify-center">
+            <div className="w-full h-screen overflow-hidden flex items-center justify-center">
                 <Loading loading={true} />
             </div>
         )
@@ -643,10 +716,17 @@ export function CreateEditBuilding() {
     }
 
     return (
-        <section className="flex flex-col gap-6 w-full building-section">
+        <section
+            className={`flex flex-col gap-6 w-full ${
+                buildingView === 'floor' && 'h-screen overflow-hidden'
+            } building-section`}
+        >
+            {/* <h3>
+                Corridor: {corridor}, ViewingCorridor: {viewingCorridor}
+            </h3> */}
             <h3 className="text-xl font-semibold">
                 {(buildingView == 'tower' &&
-                    'Building Configuration Dashboard') ||
+                    `Building Configuration Dashboard`) ||
                     `Unit Configuration for Floor ${selectedFloor} of building "${buildData.name}"`}
             </h3>
             <p className="text-justify w-8/12">
@@ -678,7 +758,6 @@ export function CreateEditBuilding() {
                 </Button> */}
                 </div>
             )}
-
             {buildingView == 'tower' && (
                 <section
                     style={{
@@ -733,159 +812,208 @@ export function CreateEditBuilding() {
                 </section>
             )}
 
-            {buildingView == 'floor' && (
-                <section className="relative w-full">
-                    <img
-                        ref={scrollToUnitsRef}
-                        className="w-full h-full no-select"
-                        src="/img/building/floor-background.png"
-                        alt=""
-                    />
-                    {[1, 2, 3, 4].map((unitNumber) => {
-                        const unitKey = `unit_${unitNumber}`
-                        const unitExists =
-                            buildData.details[`floor_${selectedFloor}`]?.units[
-                                unitKey
-                            ]
-                        const prevUnitKey = `unit_${unitNumber - 1}`
-                        const prevUnitExists =
-                            buildData.details[`floor_${selectedFloor}`]?.units[
-                                prevUnitKey
-                            ]
-
-                        return (
-                            <React.Fragment key={unitNumber}>
-                                <img
-                                    className={`door left-pos-${unitNumber} no-select`}
-                                    src={`/img/building/floor-door-${
-                                        unitExists ? 'opacity' : 'low-opacity'
-                                    }.png`}
-                                    alt={`Unit ${unitNumber}`}
-                                />
-                                <h3
-                                    className={`door-num left-pos-${unitNumber}`}
-                                >
-                                    {`${selectedFloor}0${unitNumber}`}
-                                </h3>
-
-                                {unitExists && (
-                                    <>
-                                        {/* Input for Unit Name */}
-                                        <Input
-                                            type="text"
-                                            value={
-                                                buildData.details[
-                                                    `floor_${selectedFloor}`
-                                                ]?.units[unitKey].name || ''
-                                            }
-                                            onChange={(e) =>
-                                                handleUnitNameChange(unitKey, e)
-                                            }
-                                            disabled={viewMode == 'true'}
-                                            placeholder={`Unit Name`}
-                                            style={{
-                                                background: '#1F1B21',
-                                                cursor: viewMode
-                                                    ? 'not-allowed'
-                                                    : '',
-                                            }}
-                                            className={`unit-name left-pos-${unitNumber}`}
-                                        />
-
-                                        {/* Dropdown for Device Selection */}
-                                        <div
-                                            style={{
-                                                zIndex:
-                                                    deviceListIsOpen ==
-                                                    unitNumber
-                                                        ? 150
-                                                        : 25,
-                                                cursor: viewMode
-                                                    ? 'not-allowed'
-                                                    : '',
-                                            }}
-                                            className={`flex items-center justify-end unit-dropdown left-pos-${unitNumber}`}
-                                            onClick={() => {
-                                                unitRefs[
-                                                    unitNumber - 1
-                                                ].current?.children[0]?.click()
-                                            }}
-                                        >
-                                            <p
-                                                style={{
-                                                    color: viewMode
-                                                        ? '#B4B3B5'
-                                                        : '',
-                                                }}
-                                            >
-                                                {getSelectedDeviceName(
-                                                    selectedFloor,
-                                                    unitNumber
-                                                )}
-                                            </p>
-                                            <Dropdown
-                                                ref={unitRefs[unitNumber - 1]}
-                                                trigger="click"
-                                                disabled={viewMode == 'true'}
-                                                onSelect={(device) =>
-                                                    handleDeviceSelect(
-                                                        `floor_${selectedFloor}`,
-                                                        unitKey,
-                                                        device
-                                                    )
-                                                }
-                                                onOpen={() =>
-                                                    setDeviceListIsOpen(
-                                                        unitNumber
-                                                    )
-                                                }
-                                                onClose={() =>
-                                                    setDeviceListIsOpen(0)
-                                                }
-                                                placement="middle-start-top"
-                                                activeKey={
-                                                    buildData.details[
-                                                        `floor_${selectedFloor}`
-                                                    ]?.units[unitKey]?.device ||
-                                                    ''
-                                                }
-                                            >
-                                                {/* Unselect Option */}
-                                                <Dropdown.Item eventKey="">
-                                                    Unselect Device
-                                                </Dropdown.Item>
-
-                                                {/* Available Devices */}
-                                                {getAvailableDevices(
-                                                    buildData.details[
-                                                        `floor_${selectedFloor}`
-                                                    ]?.units[unitKey]?.device
-                                                ).map((device) => (
-                                                    <Dropdown.Item
-                                                        eventKey={device._id}
-                                                        key={device._id}
-                                                    >
-                                                        {device.deviceName} (
-                                                        {(device.nodeDeviceId &&
-                                                            ` IoT Server: ${
-                                                                device.nodeId.split(
-                                                                    '.'
-                                                                )[0]
-                                                            } `) ||
-                                                            ` Your Device `}
-                                                        )
-                                                    </Dropdown.Item>
-                                                ))}
-                                            </Dropdown>
-                                        </div>
-                                    </>
+            {buildingView === 'floor' && (
+                <>
+                    {Array.from({ length: corridor + 1 }, (_, index) => (
+                        <section
+                            key={index}
+                            style={{
+                                top: `${index * -83.45}%`,
+                                left: `${(index - viewingCorridor) * 100}%`,
+                            }}
+                            className={`floor-container`}
+                        >
+                            <img
+                                ref={scrollToUnitsRef}
+                                className="w-full h-full no-select"
+                                src="/img/building/floor-background.png"
+                                alt=""
+                            />
+                            {getTotalUnits(selectedFloor) > 0 &&
+                                ((getTotalUnits(selectedFloor) % 4 === 0 &&
+                                    getTotalUnits(selectedFloor) / 4 ===
+                                        index + 1 &&
+                                    getTotalUnits(selectedFloor) <
+                                        unitCreationLimit) ||
+                                    (index === viewingCorridor &&
+                                        viewingCorridor < corridor)) && (
+                                    <NextUnit />
                                 )}
-                            </React.Fragment>
-                        )
-                    })}
-                </section>
-            )}
 
+                            {viewingCorridor > 0 && <PervUnit />}
+
+                            {[1, 2, 3, 4].map((unitNumber) => {
+                                const realUnitNumber = unitNumber + index * 4
+                                const unitKey = `unit_${realUnitNumber}`
+                                const unitExists =
+                                    buildData.details[`floor_${selectedFloor}`]
+                                        ?.units[unitKey]
+                                const prevUnitKey = `unit_${realUnitNumber - 1}`
+                                const prevUnitExists =
+                                    buildData.details[`floor_${selectedFloor}`]
+                                        ?.units[prevUnitKey]
+
+                                return (
+                                    <React.Fragment key={realUnitNumber}>
+                                        <img
+                                            className={`door left-pos-${unitNumber} no-select`}
+                                            src={`/img/building/floor-door-${
+                                                unitExists
+                                                    ? 'opacity'
+                                                    : 'low-opacity'
+                                            }.png`}
+                                            alt={`Unit ${realUnitNumber}`}
+                                        />
+                                        <h3
+                                            className={`door-num left-pos-${unitNumber}`}
+                                        >
+                                            {`${
+                                                selectedFloor * 100 +
+                                                realUnitNumber
+                                            }`}
+                                        </h3>
+
+                                        {unitExists && (
+                                            <>
+                                                {/* Input for Unit Name */}
+                                                <Input
+                                                    type="text"
+                                                    value={
+                                                        buildData.details[
+                                                            `floor_${selectedFloor}`
+                                                        ]?.units[unitKey]
+                                                            ?.name || ''
+                                                    }
+                                                    onChange={(e) =>
+                                                        handleUnitNameChange(
+                                                            unitKey,
+                                                            e
+                                                        )
+                                                    }
+                                                    disabled={
+                                                        viewMode === 'true'
+                                                    }
+                                                    placeholder={`Unit Name`}
+                                                    style={{
+                                                        background: '#1F1B21',
+                                                        cursor: viewMode
+                                                            ? 'not-allowed'
+                                                            : '',
+                                                    }}
+                                                    className={`unit-name left-pos-${unitNumber}`}
+                                                />
+
+                                                {/* Dropdown for Device Selection */}
+                                                <div
+                                                    style={{
+                                                        zIndex:
+                                                            deviceListIsOpen ===
+                                                            realUnitNumber
+                                                                ? 150
+                                                                : 25,
+                                                        cursor: viewMode
+                                                            ? 'not-allowed'
+                                                            : '',
+                                                    }}
+                                                    className={`flex items-center justify-end unit-dropdown left-pos-${unitNumber}`}
+                                                    onClick={() => {
+                                                        unitRefs[
+                                                            realUnitNumber - 1
+                                                        ].current?.children[0]?.click()
+                                                    }}
+                                                >
+                                                    <p
+                                                        style={{
+                                                            color: viewMode
+                                                                ? '#B4B3B5'
+                                                                : '',
+                                                        }}
+                                                    >
+                                                        {getSelectedDeviceName(
+                                                            selectedFloor,
+                                                            realUnitNumber
+                                                        )}
+                                                    </p>
+                                                    <Dropdown
+                                                        ref={
+                                                            unitRefs[
+                                                                realUnitNumber -
+                                                                    1
+                                                            ]
+                                                        }
+                                                        trigger="click"
+                                                        disabled={
+                                                            viewMode === 'true'
+                                                        }
+                                                        onSelect={(device) =>
+                                                            handleDeviceSelect(
+                                                                `floor_${selectedFloor}`,
+                                                                unitKey,
+                                                                device
+                                                            )
+                                                        }
+                                                        onOpen={() =>
+                                                            setDeviceListIsOpen(
+                                                                realUnitNumber
+                                                            )
+                                                        }
+                                                        onClose={() =>
+                                                            setDeviceListIsOpen(
+                                                                0
+                                                            )
+                                                        }
+                                                        menuClass="max-h-[250px] overflow-auto"
+                                                        placement="middle-start-top"
+                                                        activeKey={
+                                                            buildData.details[
+                                                                `floor_${selectedFloor}`
+                                                            ]?.units[unitKey]
+                                                                ?.device || ''
+                                                        }
+                                                    >
+                                                        {/* Unselect Option */}
+                                                        <Dropdown.Item eventKey="">
+                                                            Unselect Device
+                                                        </Dropdown.Item>
+
+                                                        {/* Available Devices */}
+                                                        {getAvailableDevices(
+                                                            buildData.details[
+                                                                `floor_${selectedFloor}`
+                                                            ]?.units[unitKey]
+                                                                ?.device
+                                                        ).map((device) => (
+                                                            <Dropdown.Item
+                                                                eventKey={
+                                                                    device._id
+                                                                }
+                                                                key={device._id}
+                                                            >
+                                                                {
+                                                                    device.deviceName
+                                                                }{' '}
+                                                                (
+                                                                {(device.nodeDeviceId &&
+                                                                    ` IoT Server: ${
+                                                                        device.nodeId.split(
+                                                                            '.'
+                                                                        )[0]
+                                                                    } `) ||
+                                                                    ` Your Device `}
+                                                                )
+                                                            </Dropdown.Item>
+                                                        ))}
+                                                    </Dropdown>
+                                                </div>
+                                            </>
+                                        )}
+                                    </React.Fragment>
+                                )
+                            })}
+                        </section>
+                    ))}
+                </>
+            )}
             {/* Building control section */}
             <div className="build-setup flex flex-col">
                 {buildingView == 'tower' && (
@@ -923,7 +1051,7 @@ export function CreateEditBuilding() {
                                     onClick={createNewFloor}
                                     icon={<HiPlus />}
                                     size="sm"
-                                    color="green"
+                                    color="green-500"
                                     variant="solid"
                                     disabled={getTotalFloors() == maxFloor}
                                     className="col-span-1 w-full"
@@ -938,7 +1066,7 @@ export function CreateEditBuilding() {
                                     }}
                                     icon={<HiMinus />}
                                     size="sm"
-                                    color="red"
+                                    color="red-500"
                                     variant="solid"
                                     className="col-span-1 w-full"
                                     disabled={floorEntries.length == 1}
@@ -954,7 +1082,7 @@ export function CreateEditBuilding() {
                                 size="sm"
                                 className="col-span-1 w-full"
                                 variant="solid"
-                                color="blue"
+                                color="blue-500"
                                 disabled={
                                     !selectedFloor ||
                                     floorEntries.findIndex(
@@ -971,7 +1099,7 @@ export function CreateEditBuilding() {
                                 size="sm"
                                 className="col-span-1 w-full"
                                 variant="solid"
-                                color="blue"
+                                color="blue-500"
                                 disabled={
                                     !selectedFloor ||
                                     floorEntries.findIndex(
@@ -990,7 +1118,7 @@ export function CreateEditBuilding() {
                             size="sm"
                             className="w-full"
                             variant="solid"
-                            color="yellow"
+                            color="yellow-500"
                             onClick={() => {
                                 setBuildingView('floor')
                                 scrollToView()
@@ -1006,7 +1134,7 @@ export function CreateEditBuilding() {
                                 className="w-full"
                                 size="sm"
                                 variant="solid"
-                                color="red"
+                                color="red-500"
                             >
                                 Exit
                             </Button>
@@ -1017,7 +1145,7 @@ export function CreateEditBuilding() {
                                 className="w-full"
                                 size="sm"
                                 variant="solid"
-                                color="blue"
+                                color="blue-500"
                             >
                                 {editing
                                     ? 'Submit Changes'
@@ -1051,7 +1179,7 @@ export function CreateEditBuilding() {
                                 <Button
                                     icon={<HiPlus />}
                                     size="sm"
-                                    color="green"
+                                    color="green-500"
                                     variant="solid"
                                     className="col-span-1 w-full"
                                     onClick={() =>
@@ -1067,7 +1195,7 @@ export function CreateEditBuilding() {
                                     disabled={
                                         getTotalUnitsByFloor(
                                             `floor_${selectedFloor}`
-                                        ) == 4
+                                        ) == unitCreationLimit
                                     }
                                 >
                                     Add Unit
@@ -1076,7 +1204,7 @@ export function CreateEditBuilding() {
                                 <Button
                                     icon={<HiMinus />}
                                     size="sm"
-                                    color="red"
+                                    color="red-500"
                                     variant="solid"
                                     className="col-span-1 w-full"
                                     onClick={() =>
@@ -1104,7 +1232,7 @@ export function CreateEditBuilding() {
                                 size="sm"
                                 variant="solid"
                                 className="w-full"
-                                color="blue"
+                                color="blue-500"
                                 disabled={!unsavedChanges}
                             >
                                 Save
@@ -1114,7 +1242,7 @@ export function CreateEditBuilding() {
                         <Button
                             onClick={handleBack}
                             size="sm"
-                            color={unsavedChanges ? 'yellow' : 'blue'}
+                            color={unsavedChanges ? 'yellow-500' : 'blue-500'}
                             variant="solid"
                             className="w-full"
                         >
