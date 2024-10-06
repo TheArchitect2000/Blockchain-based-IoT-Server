@@ -16,8 +16,9 @@ export async function apiRequestFaucet() {
 
 export async function apiStoreCommitment(
     manufacturerName: string,
+    deviceName: string,
     deviceType: string,
-    deviceHardwareVersion: string,
+    hardwareVersion: string,
     firmwareVersion: string,
     lines: string,
     commitmentData: string
@@ -26,12 +27,13 @@ export async function apiStoreCommitment(
         url: import.meta.env.VITE_URL + 'v1/contract/store-commitment',
         method: 'post',
         data: {
-            manufacturerName,
-            deviceType,
-            deviceHardwareVersion,
-            firmwareVersion,
-            lines,
-            commitmentData,
+            manufacturerName: manufacturerName,
+            deviceName: deviceName,
+            deviceType: deviceType,
+            hardwareVersion: hardwareVersion,
+            firmwareVersion: firmwareVersion,
+            lines: lines,
+            commitmentData: commitmentData,
         },
     })
 }

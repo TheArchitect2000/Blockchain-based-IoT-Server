@@ -194,11 +194,11 @@ function DeviceDetails() {
                 {/* <div className="card card-border">
                     <MapLocation />
                 </div>  */}
-                <div className="grid xl:grid-cols-3 gap-4 mt-8">
-                    <div className="card card-border col-span-1  ">
+                <div className="grid grid-cols-2 gap-4 mt-8">
+                    <div className="card w-full card-border col-span-1">
                         <UserInfo profileData={profileData} />
                     </div>
-                    <div className="card card-border col-span-2">
+                    <div className="card card-border col-span-1">
                         <DeviceSpecifics data={data} />
                     </div>
                 </div>

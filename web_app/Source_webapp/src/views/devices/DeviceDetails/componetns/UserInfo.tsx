@@ -24,7 +24,6 @@ const UserInfo = ({ profileData }: { profileData: any }) => {
     const [number, setNumber] = useState('')
 
     useEffect(() => {
-
         if (profileData?.tel && profileData?.tel?.countryCode) {
             setNumber(
                 `${profileData.tel?.countryCode.value} ${profileData.tel?.phoneNumber}`
@@ -33,7 +32,7 @@ const UserInfo = ({ profileData }: { profileData: any }) => {
     }, [])
 
     return (
-        <Card bordered={false}>
+        <Card className="w-full bg-red-500" bodyClass="w-full" bordered={false}>
             <div className="flex flex-col xl:justify-between h-full 2xl:min-w-[360px] mx-auto">
                 <div className="flex xl:flex-col items-center gap-4">
                     <Avatar
@@ -46,114 +45,48 @@ const UserInfo = ({ profileData }: { profileData: any }) => {
                             )) || <HiOutlineUser />
                         }
                     />
-                    <h4 className="font-bold">{`${
-                        (profileData?.firstName && profileData?.firstName) ||
-                        'First Name'
-                    } ${
-                        (profileData?.lastName && profileData?.lastName) ||
-                        'Last Name'
-                    }`}</h4>
+                    {(profileData &&
+                        (profileData?.firstName || profileData?.lastName) && (
+                            <h4 className="font-bold">{`${
+                                profileData?.firstName || ''
+                            } ${profileData?.lastName || ''}`}</h4>
+                        )) || <h4>User</h4>}
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-y-7 gap-x-4 mt-8">
+                <div className="grid grid-cols-2 gap-y-7 gap-x-4 mt-8">
                     <CustomerInfoField
                         title="Email"
-                        value={profileData?.email || 'No email found'}
+                        value={profileData?.email || 'Not provided'}
                     />
                     <CustomerInfoField
                         title="Tel"
-                        value={number || 'No tel number found'}
+                        value={number || 'Not provided'}
                     />
                     <CustomerInfoField
                         title="Timezone"
-                        value={profileData?.timezone || 'No timezone found'}
+                        value={profileData?.timezone || 'Not provided'}
                     />
                     <CustomerInfoField
                         title="Country"
-                        value={
-                            profileData?.address?.country || 'No country found'
-                        }
+                        value={profileData?.address?.country || 'Not provided'}
                     />
                     <CustomerInfoField
                         title="Address Line 1"
-                        value={
-                            profileData?.address?.line_1 || 'No address found'
-                        }
+                        value={profileData?.address?.line_1 || 'Not provided'}
                     />
 
-                    <div className="w-full justify-between flex">
-                        <CustomerInfoField
-                            title="City"
-                            value={
-                                profileData?.address?.city || 'No city found'
-                            }
-                        />
-                        <CustomerInfoField
-                            title="State"
-                            value={
-                                profileData?.address?.state ||
-                                'No state found'
-                            }
-                        />
-
-                        <CustomerInfoField
-                            title="ZipCode"
-                            value={
-                                profileData?.address?.zipCode ||
-                                'No zipcode found'
-                            }
-                        />
-                    </div>
-                    {/* 
-                    city : "gojestan" 
-                    country : "United Arab Emirates" 
-                    line_1 :"no where" 
-                    line_2 : "my house" 
-                    state : "111" 
-                    zipCode : "222" */}
-                    {/* <CustomerInfoField title="Location" value="London, UK" /> */}
-                    {/* <CustomerInfoField
-                        title="Date of birth"
-                        value={data.personalInfo?.birthday}
+                    <CustomerInfoField
+                        title="City"
+                        value={profileData?.address?.city || 'Not provided'}
                     />
                     <CustomerInfoField
-                        title="Title"
-                        value={data.personalInfo?.title}
-                    /> */}
-                    {/* <div className="mb-7">
-                        <span>Social</span>
-                        <div className="flex mt-4">
-                            <Button
-                                className="mr-2"
-                                shape="circle"
-                                size="sm"
-                                icon={
-                                    <FaFacebookF className="text-[#1773ea]" />
-                                }
-                            />
-                            <Button
-                                className="mr-2"
-                                shape="circle"
-                                size="sm"
-                                icon={<FaTwitter className="text-[#1da1f3]" />}
-                            />
-                            <Button
-                                className="mr-2"
-                                shape="circle"
-                                size="sm"
-                                icon={
-                                    <FaLinkedinIn className="text-[#0077b5]" />
-                                }
-                            />
-                            <Button
-                                className="mr-2"
-                                shape="circle"
-                                size="sm"
-                                icon={
-                                    <FaPinterestP className="text-[#df0018]" />
-                                }
-                            />
-                        </div>
-                    </div> */}
+                        title="State"
+                        value={profileData?.address?.state || 'Not provided'}
+                    />
+
+                    <CustomerInfoField
+                        title="ZipCode"
+                        value={profileData?.address?.zipCode || 'Not provided'}
+                    />
                 </div>
             </div>
         </Card>

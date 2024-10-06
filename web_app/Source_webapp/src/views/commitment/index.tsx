@@ -23,6 +23,7 @@ import CommitmentTable from './CommitmentTable'
 export type CommitmentFormModel = {
     userId?: string
     manufacturerName: string
+    deviceName: string
     deviceType: string
     hardwareVersion: string
     firmwareVersion: string
@@ -68,7 +69,8 @@ export default function CommitmentPage() {
 
     const validationSchema = Yup.object().shape({
         manufacturerName: Yup.string().required('Manufacturer is required'),
-        deviceType: Yup.string().required('Device Name is required'),
+        deviceName: Yup.string().required('Device Name is required'),
+        deviceType: Yup.string().required('Device Type is required'),
         hardwareVersion: Yup.string().required('Hardware Version is required'),
         firmwareVersion: Yup.string().required('Firmware Version is required'),
         lines: Yup.string().required('Lines is required'),
@@ -155,6 +157,7 @@ export default function CommitmentPage() {
 
                 const storeResult = await apiStoreCommitment(
                     values.manufacturerName,
+                    values.deviceName,
                     values.deviceType,
                     values.hardwareVersion,
                     values.firmwareVersion,
@@ -162,7 +165,7 @@ export default function CommitmentPage() {
                     jsonText
                 )
 
-                setLoading(true)
+                setCommitmentLoading(true)
 
                 setTimeout(() => {
                     setRefreshCommitments(refreshCommitments + 1)
@@ -208,6 +211,7 @@ export default function CommitmentPage() {
                 enableReinitialize
                 initialValues={{
                     manufacturerName: '',
+                    deviceName: '',
                     deviceType: '',
                     hardwareVersion: '',
                     firmwareVersion: '',
@@ -247,15 +251,28 @@ export default function CommitmentPage() {
                                     />
                                 </FormRow>
                                 <FormRow
-                                    name="deviceType"
+                                    name="deviceName"
                                     label="IoT Device Name"
                                     {...validatorProps}
                                 >
                                     <Field
                                         type="text"
                                         autoComplete="off"
-                                        name="deviceType"
+                                        name="deviceName"
                                         placeholder="e.g. Drone"
+                                        component={Input}
+                                    />
+                                </FormRow>
+                                <FormRow
+                                    name="deviceType"
+                                    label="IoT Device Type"
+                                    {...validatorProps}
+                                >
+                                    <Field
+                                        type="text"
+                                        autoComplete="off"
+                                        name="deviceType"
+                                        placeholder="e.g. MULTI_SENSOR"
                                         component={Input}
                                     />
                                 </FormRow>
