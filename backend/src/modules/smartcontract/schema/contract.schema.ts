@@ -7,7 +7,15 @@ const schema = new Schema({
     required: true,
     default: null,
   },
+  nodeId: {
+    type: String,
+    required: true,
+  },
   manufacturerName: {
+    type: String,
+    required: true,
+  },
+  deviceName: {
     type: String,
     required: true,
   },

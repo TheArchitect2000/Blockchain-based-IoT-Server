@@ -11,13 +11,13 @@ export class verifyProofDto {
 export interface StoreCommitmentData {
   userId: string;
   manufacturerName: string;
+  deviceName: string;
   deviceType: string;
-  deviceHardwareVersion: string;
+  hardwareVersion: string;
   firmwareVersion: string;
   lines: string;
   commitmentData: string;
 }
-
 
 export class storeCommitmentDto {
   @IsNotEmpty({ message: 'manufacturerName is required and must be entered.' })
@@ -25,17 +25,22 @@ export class storeCommitmentDto {
   @ApiProperty({ required: true })
   manufacturerName: string;
 
+  @IsNotEmpty({ message: 'deviceName is required and must be entered.' })
+  @IsString({ message: 'deviceName must be string.' })
+  @ApiProperty({ required: true })
+  deviceName: string;
+
   @IsNotEmpty({ message: 'deviceType is required and must be entered.' })
-  @IsString({ message: 'deviceType must be string.' })
+  @IsString({ message: 'deviceType must be string.' })  
   @ApiProperty({ required: true })
   deviceType: string;
 
   @IsNotEmpty({
-    message: 'deviceHardwareVersion is required and must be entered.',
+    message: 'hardwareVersion is required and must be entered.',
   })
-  @IsString({ message: 'deviceHardwareVersion must be string.' })
+  @IsString({ message: 'hardwareVersion must be string.' })
   @ApiProperty({ required: true })
-  deviceHardwareVersion: string;
+  hardwareVersion: string;
 
   @IsNotEmpty({ message: 'firmwareVersion is required and must be entered.' })
   @IsString({ message: 'firmwareVersion must be string.' })

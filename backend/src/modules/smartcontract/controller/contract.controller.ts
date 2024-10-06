@@ -83,7 +83,7 @@ export class contractController {
 
     return this.contractService.storeCommitment({
       ...body,
-      userId: request.user.userId,
+      userId: String(request.user.userId),
     });
   }
 
@@ -123,7 +123,8 @@ export class contractController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'user commitment saved in data base.',
-    description: 'This api returns commitment of a user that are saved in database.',
+    description:
+      'This api returns commitment of a user that are saved in database.',
   })
   async getMyCommitments(@Request() request) {
     return this.contractService.getCommitmentsByUserId(request.user.userId);

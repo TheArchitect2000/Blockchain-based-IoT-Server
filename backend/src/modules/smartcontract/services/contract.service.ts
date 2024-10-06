@@ -466,8 +466,9 @@ export class ContractService {
   async storeCommitment(data: StoreCommitmentData) {
     const {
       manufacturerName,
+      deviceName,
       deviceType,
-      deviceHardwareVersion,
+      hardwareVersion,
       firmwareVersion,
       lines,
       commitmentData,
@@ -476,9 +477,11 @@ export class ContractService {
     await this.saveCommitmentInDB(data);
 
     const result = await this.contracts.commitment.storeCommitment(
+      process.env.NODE_ID,
       manufacturerName,
+      deviceName,
       deviceType,
-      deviceHardwareVersion,
+      hardwareVersion,
       firmwareVersion,
       lines,
       commitmentData,
@@ -505,10 +508,12 @@ export class ContractService {
 
   async saveCommitmentInDB(data: StoreCommitmentData) {
     return await this.contractRepository.saveCommitment({
+      nodeId: process.env.NODE_ID,
       userId: data.userId,
       manufacturerName: data.manufacturerName,
+      deviceName: data.deviceName,
       deviceType: data.deviceType,
-      hardwareVersion: data.deviceHardwareVersion,
+      hardwareVersion: data.hardwareVersion,
       firmwareVersion: data.firmwareVersion,
       lines: data.lines,
       commitmentData: data.commitmentData,

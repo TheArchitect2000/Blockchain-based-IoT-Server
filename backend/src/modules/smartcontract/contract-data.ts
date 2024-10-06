@@ -5,7 +5,7 @@ export const zkpContractAddress = '0xf1AdF8eD7569e0BceC73B371f4876Db69515CD20';
 
 export const storeZkpContractAddress = '0xCFC00106081c541389D449183D4EEADF5d895D37';
 
-export const commitmentContractAddress = '0x36921A3DED02dd1614744D7349ED2CA4E5b9Aa59'
+export const commitmentContractAddress = '0xf7d96b2dd60A75cf7355af6415fbF59567d8b317'
 
 export const zkpContractABI = [
   {
@@ -1256,7 +1256,19 @@ export const commitmentContractABI = [
 			{
 				"indexed": false,
 				"internalType": "string",
+				"name": "nodeId",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
 				"name": "manufacturerName",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "deviceName",
 				"type": "string"
 			},
 			{
@@ -1268,7 +1280,7 @@ export const commitmentContractABI = [
 			{
 				"indexed": false,
 				"internalType": "string",
-				"name": "deviceHardwareVersion",
+				"name": "hardwareVersion",
 				"type": "string"
 			},
 			{
@@ -1316,7 +1328,17 @@ export const commitmentContractABI = [
 		"inputs": [
 			{
 				"internalType": "string",
+				"name": "nodeId",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
 				"name": "manufacturerName",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "deviceName",
 				"type": "string"
 			},
 			{
@@ -1326,7 +1348,7 @@ export const commitmentContractABI = [
 			},
 			{
 				"internalType": "string",
-				"name": "deviceHardwareVersion",
+				"name": "hardwareVersion",
 				"type": "string"
 			},
 			{
@@ -1362,7 +1384,17 @@ export const commitmentContractABI = [
 		"outputs": [
 			{
 				"internalType": "string",
+				"name": "nodeId",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
 				"name": "manufacturerName",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "deviceName",
 				"type": "string"
 			},
 			{
@@ -1372,7 +1404,7 @@ export const commitmentContractABI = [
 			},
 			{
 				"internalType": "string",
-				"name": "deviceHardwareVersion",
+				"name": "hardwareVersion",
 				"type": "string"
 			},
 			{
@@ -1411,7 +1443,17 @@ export const commitmentContractABI = [
 		"outputs": [
 			{
 				"internalType": "string",
+				"name": "nodeId",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
 				"name": "manufacturerName",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "deviceName",
 				"type": "string"
 			},
 			{
@@ -1421,7 +1463,7 @@ export const commitmentContractABI = [
 			},
 			{
 				"internalType": "string",
-				"name": "deviceHardwareVersion",
+				"name": "hardwareVersion",
 				"type": "string"
 			},
 			{

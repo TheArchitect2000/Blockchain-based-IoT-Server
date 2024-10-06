@@ -76,8 +76,8 @@ export class AppController {
   }
 
   @Get('/v1/devices')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  /* @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth() */
   @ApiOperation({
     summary: 'get device list.',
     description: '',
