@@ -179,7 +179,8 @@
 }
 
 .floor-container {
-    position: relative;
+    position: absolute;
+    top: 130px;
     width: 100%;
     transition: all 0.5s;
 }

@@ -717,18 +717,16 @@ export function CreateEditBuilding() {
 
     return (
         <section
-            className={`flex flex-col gap-6 w-full ${
+            className={`relative flex flex-col gap-6 w-full ${
                 buildingView === 'floor' && 'h-screen overflow-hidden'
             } building-section`}
         >
-            {/* <h3>
-                Corridor: {corridor}, ViewingCorridor: {viewingCorridor}
-            </h3> */}
             <h3 className="text-xl font-semibold">
                 {(buildingView == 'tower' &&
                     `Building Configuration Dashboard`) ||
                     `Unit Configuration for Floor ${selectedFloor} of building "${buildData.name}"`}
             </h3>
+
             <p className="text-justify w-8/12">
                 {(buildingView == 'tower' &&
                     `In this section, you can specify the number of floors for your
@@ -740,6 +738,7 @@ export function CreateEditBuilding() {
                 customize the unit name as needed . To delete a unit, click the
                 trash icon at the bottom of the unit's door`}
             </p>
+
             {buildingView == 'tower' && (
                 <div className="flex gap-4 w-full lg:w-2/3 xl:w-5/12 items-center">
                     <p className="build-p">Building name: </p>
@@ -758,6 +757,7 @@ export function CreateEditBuilding() {
                 </Button> */}
                 </div>
             )}
+
             {buildingView == 'tower' && (
                 <section
                     style={{
@@ -818,7 +818,6 @@ export function CreateEditBuilding() {
                         <section
                             key={index}
                             style={{
-                                top: `${index * -83.45}%`,
                                 left: `${(index - viewingCorridor) * 100}%`,
                             }}
                             className={`floor-container`}
