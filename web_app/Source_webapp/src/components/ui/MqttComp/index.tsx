@@ -1,19 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import mqtt from 'mqtt'
-import Button from '../Button'
 
 const MQTTComponent: React.FC = () => {
-    const [mqttUrl, setMqttUrl] = useState(
-        'wss://developer.fidesinnova.io:8083'
-    ) // default URL
-    const [client, setClient] = useState<mqtt.MqttClient | null>(null)
-    const [isConnecting, setIsConnecting] = useState(false)
-    const [error, setError] = useState<string | null>(null)
-
-    const handleConnect = () => {
-        setError(null)
-        setIsConnecting(true)
-
+    useEffect(() => {
+        const mqttUrl = 'wss://developer.fidesinnova.io:8083' // Change to your broker URL
         const options = {
             connectTimeout: 4000,
             reconnectPeriod: 1000,
@@ -21,13 +11,15 @@ const MQTTComponent: React.FC = () => {
             rejectUnauthorized: false, // For self-signed certificates, if applicable
         }
 
-        const newClient = mqtt.connect(mqttUrl, options)
+        // Create a client instance
+        const client = mqtt.connect(mqttUrl, options)
 
-        newClient.on('connect', () => {
+        client.on('connect', () => {
             console.log('Connected to MQTT broker')
-            setIsConnecting(false)
-            const topic = 'your/topic' // Replace with your topic
-            newClient.subscribe(topic, (err) => {
+
+            // Subscribe to a topic
+            const topic = 'your/topic' // Replace with the topic you want to subscribe to
+            client.subscribe(topic, (err) => {
                 if (err) {
                     console.error('Subscribe error: ', err)
                 } else {
@@ -36,53 +28,22 @@ const MQTTComponent: React.FC = () => {
             })
         })
 
-        newClient.on('error', (err) => {
+        client.on('error', (err) => {
             console.error('Connection error: ', err)
-            setError('Connection error, check URL or broker.')
-            setIsConnecting(false)
-            newClient.end()
+            client.end()
         })
 
-        newClient.on('message', (topic, message) => {
+        client.on('message', (topic, message) => {
             console.log('Received Message:', topic, message.toString())
         })
 
-        newClient.on('close', () => {
+        // Optional: handle disconnection
+        client.on('close', () => {
             console.log('Disconnected from MQTT broker')
         })
+    }, [])
 
-        setClient(newClient)
-    }
-
-    const handleCancel = () => {
-        if (client) {
-            client.end()
-            setClient(null)
-            console.log('Connection attempt canceled.')
-        }
-        setIsConnecting(false)
-    }
-
-    return (
-        <div className="flex flex-col gap-4 w-1/3">
-            <input
-                type="text"
-                value={mqttUrl}
-                onChange={(e) => setMqttUrl(e.target.value)}
-                placeholder="Enter MQTT URL"
-                disabled={isConnecting}
-            />
-            <div className='flex gap-4'>
-                <Button onClick={handleConnect} disabled={isConnecting}>
-                    {isConnecting ? 'Connecting...' : 'Connect'}
-                </Button>
-                <Button onClick={handleCancel} disabled={!isConnecting}>
-                    Cancel
-                </Button>
-            </div>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-        </div>
-    )
+    return <div></div>
 }
 
 export default MQTTComponent
