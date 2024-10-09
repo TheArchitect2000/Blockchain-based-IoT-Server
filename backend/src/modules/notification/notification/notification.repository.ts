@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { MongoClient, ObjectID } from 'mongodb';
-import { Types } from 'mongoose';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { NotificationModel } from './notification.model';

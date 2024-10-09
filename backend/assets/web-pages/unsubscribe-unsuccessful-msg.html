@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 	<head>
 		<title></title>
@@ -14,6 +15,7 @@
 						url(https://fonts.gstatic.com/s/lato/v11/qIIYRU-oROkIk8vfvxw6QvesZW2xOQ-xsNqO47m55DA.woff)
 							format("woff");
 				}
+
 				@font-face {
 					font-family: "Lato";
 					font-style: normal;
@@ -22,6 +24,7 @@
 						url(https://fonts.gstatic.com/s/lato/v11/qdgUG4U09HnJwhYI-uK18wLUuEpTyoUstqEm5AMlJo4.woff)
 							format("woff");
 				}
+
 				@font-face {
 					font-family: "Lato";
 					font-style: italic;
@@ -30,6 +33,7 @@
 						url(https://fonts.gstatic.com/s/lato/v11/RYyZNoeFgb0l7W3Vu1aSWOvvDin1pK8aKteLpeZ5c0A.woff)
 							format("woff");
 				}
+
 				@font-face {
 					font-family: "Lato";
 					font-style: italic;
@@ -38,7 +42,9 @@
 						url(https://fonts.gstatic.com/s/lato/v11/HkF_qI1x_noxlxhrhMQYELO3LdcAZYWl9Si6vvxL-qU.woff)
 							format("woff");
 				}
-			} /* CLIENT-SPECIFIC STYLES */
+			}
+
+			/* CLIENT-SPECIFIC STYLES */
 			body,
 			table,
 			td,
@@ -46,14 +52,18 @@
 				-webkit-text-size-adjust: 100%;
 				-ms-text-size-adjust: 100%;
 			}
+
 			table,
 			td {
 				mso-table-lspace: 0pt;
 				mso-table-rspace: 0pt;
 			}
+
 			img {
 				-ms-interpolation-mode: bicubic;
-			} /* RESET STYLES */
+			}
+
+			/* RESET STYLES */
 			img {
 				border: 0;
 				height: auto;
@@ -61,15 +71,19 @@
 				outline: none;
 				text-decoration: none;
 			}
+
 			table {
 				border-collapse: collapse !important;
 			}
+
 			body {
 				height: 100% !important;
 				margin: 0 !important;
 				padding: 0 !important;
 				width: 100% !important;
-			} /* iOS BLUE LINKS */
+			}
+
+			/* iOS BLUE LINKS */
 			a[x-apple-data-detectors] {
 				color: inherit !important;
 				text-decoration: none !important;
@@ -77,13 +91,17 @@
 				font-family: inherit !important;
 				font-weight: inherit !important;
 				line-height: inherit !important;
-			} /* MOBILE STYLES */
-			@media screen and (max-width: 650px) {
+			}
+
+			/* MOBILE STYLES */
+			@media screen and (max-width: 600px) {
 				h1 {
 					font-size: 32px !important;
 					line-height: 32px !important;
 				}
-			} /* ANDROID CENTER FIX */
+			}
+
+			/* ANDROID CENTER FIX */
 			div[style*="margin: 16px 0;"] {
 				margin: 0 !important;
 			}
@@ -111,8 +129,8 @@
 				overflow: hidden;
 			"
 		>
-			We have received a request to reset the password for your
-			{{NodeName}} ID.
+			We're thrilled to have you here! Get ready to dive into your new
+			account.
 		</div>
 		<table border="0" cellpadding="0" cellspacing="0" width="100%">
 			<!-- LOGO -->
@@ -123,7 +141,7 @@
 						cellpadding="0"
 						cellspacing="0"
 						width="100%"
-						style="max-width: 650px"
+						style="max-width: 600px"
 					>
 						<tr>
 							<td
@@ -146,7 +164,7 @@
 						cellpadding="0"
 						cellspacing="0"
 						width="100%"
-						style="max-width: 650px"
+						style="max-width: 600px"
 					>
 						<tr>
 							<td
@@ -180,11 +198,12 @@
 										font-size: 48px;
 										font-weight: 400;
 										margin: 2;
+										color: red;
 									"
 								>
-									Password reset
+									Unsubscription Failed
 								</h1>
-								<!--<img src="cid:logo" width="200" style="display: block; border: 0px;" />-->
+								<!-- <img src="../../../images/logo-fidesinnova-black.png" width="200" style="display: block; border: 0px;" /> -->
 							</td>
 						</tr>
 					</table>
@@ -201,7 +220,7 @@
 						cellpadding="0"
 						cellspacing="0"
 						width="100%"
-						style="max-width: 650px"
+						style="max-width: 600px"
 					>
 						<tr>
 							<td
@@ -217,17 +236,61 @@
 									line-height: 25px;
 								"
 							>
-								<p style="margin: 0">
-									Hey {{name}},<br />We received a request to
-									reset your password. If you have not
-									submitted this request, please ignore this
-									email.<br />
-
-									Otherwise, please click this button to reset
-									your password:
+								<p style="margin: 5px 0 0">
+									We're sorry, but there was an error
+									processing your unsubscription request.
+									Please try again later or contact support.
 								</p>
 							</td>
 						</tr>
+
+						<tr>
+							<td
+								bgcolor="#ffffff"
+								align="left"
+								style="
+									max-height: 150px;
+									display: flex;
+									justify-content: space-between;
+									padding: 0px 30px 40px 30px;
+									border-radius: 0px 0px 4px 4px;
+									color: #666666;
+									font-family: 'Lato', Helvetica, Arial,
+										sans-serif;
+									font-size: 18px;
+									font-weight: 400;
+									line-height: 25px;
+								"
+							>
+								<div
+									style="
+										width: 50%;
+										display: flex;
+										align-items: center;
+									"
+								>
+									<p style="margin: 0">
+										Cheers,<br /><br />{{NodeName}} Team
+									</p>
+								</div>
+								<div style="width: 50%; margin-bottom: 15px">
+									<img
+										style="
+											width: 100%;
+											height: 100%;
+											object-fit: contain;
+											margin-inline: auto;
+										"
+										src="https://fidesinnova.io/Download/logo/fidesinnova.png"
+										alt=""
+									/>
+									<p style="text-align: center">
+										Powered by FidesInnova
+									</p>
+								</div>
+							</td>
+						</tr>
+
 						<tr>
 							<td bgcolor="#ffffff" align="left">
 								<table
@@ -247,36 +310,7 @@
 												cellspacing="0"
 												cellpadding="0"
 											>
-												<tr>
-													<td
-														align="center"
-														style="
-															border-radius: 3px;
-														"
-														bgcolor="#4F46E5"
-													>
-														<a
-															href="{{url}}"
-															target="_blank"
-															style="
-																font-size: 20px;
-																font-family: Helvetica,
-																	Arial,
-																	sans-serif;
-																color: #ffffff;
-																text-decoration: none;
-																color: #ffffff;
-																text-decoration: none;
-																padding: 15px
-																	25px;
-																border-radius: 2px;
-																border: 0;
-																display: inline-block;
-															"
-															>Reset Password</a
-														>
-													</td>
-												</tr>
+												<tr></tr>
 											</table>
 										</td>
 									</tr>
@@ -284,74 +318,22 @@
 							</td>
 						</tr>
 
-						<table
-							width="100%"
-							border="0"
-							bgcolor="#ffffff"
-							cellspacing="0"
-							cellpadding="15"
-							style="
-								max-width: 650px;
-								color: #666666;
-								font-family: 'Lato', Helvetica, Arial,
-									sans-serif;
-								font-size: 18px;
-							"
-						>
-							<tr>
-								<td align="left" width="50%">
-									<table
-										width="100%"
-										border="0"
-										cellspacing="0"
-										cellpadding="0"
-									>
-										<tr>
-											<td>
-												<p>Cheers,</p>
-												<p>{{NodeName}} Team</p>
-												<p>
-													Unsubscribe from our emails:
-													<a
-														href="{{unsubscribeEmailUrl}}"
-														style="
-															color: cornflowerblue;
-															text-decoration: underline;
-														"
-														>here</a
-													>
-												</p>
-											</td>
-										</tr>
-									</table>
-								</td>
-								<td align="right" width="50%">
-									<table
-										width="100%"
-										border="0"
-										cellspacing="0"
-										cellpadding="0"
-									>
-										<tr>
-											<td align="center">
-												<img
-													src="https://fidesinnova.io/Download/logo/fidesinnova.png"
-													alt="FidesInnova Logo"
-													style="
-														width: 100%;
-														height: 150px;
-														object-fit: contain;
-													"
-												/>
-												<p style="text-align: center">
-													Powered by FidesInnova
-												</p>
-											</td>
-										</tr>
-									</table>
-								</td>
-							</tr>
-						</table>
+						<tr>
+							<td
+								bgcolor="#ffffff"
+								align="left"
+								style="
+									padding: 0px 30px 40px 30px;
+									border-radius: 0px 0px 4px 4px;
+									color: #666666;
+									font-family: 'Lato', Helvetica, Arial,
+										sans-serif;
+									font-size: 18px;
+									font-weight: 400;
+									line-height: 25px;
+								"
+							></td>
+						</tr>
 					</table>
 				</td>
 			</tr>
@@ -362,7 +344,7 @@
 						cellpadding="0"
 						cellspacing="0"
 						width="100%"
-						style="max-width: 650px"
+						style="max-width: 600px"
 					>
 						<tr>
 							<td

@@ -133,6 +133,11 @@ const schema = new Schema({
     type: Date,
     required: true,
   },
+  unsubscribed: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
   isDeletable: {
     type: Boolean,
     required: false,

@@ -10,15 +10,8 @@ import {
 } from '@nestjs/common';
 import { NotificationService } from './notification.service';
 import { JwtAuthGuard } from 'src/modules/authentication/guard/jwt-auth.guard';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiProperty,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SendTokenRequestBodyDto } from '../dto/send-token';
-import { SendNotificationRequestBodyDto } from '../dto/send-notif-dto';
-import { Types } from 'mongoose';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import {
@@ -212,10 +205,7 @@ export class NotificationController {
     summary: 'add notification for user when opening app or site.',
     description: '',
   })
-  async readNotification(
-    @Body() body: ReadNotificationRequestBodyDto,
-    @Request() request,
-  ) {
+  async readNotification(@Body() body: ReadNotificationRequestBodyDto) {
     return this.service.readNotificationsByNotificationIds(body.notifications);
   }
 

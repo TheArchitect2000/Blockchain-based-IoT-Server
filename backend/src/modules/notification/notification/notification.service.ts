@@ -1,5 +1,9 @@
-import { log } from 'console';
-import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { UserService } from 'src/modules/user/services/user/user.service';
 import { SendNotificationRequestBodyDto } from '../dto/send-notif-dto';
 import firebase from 'firebase-admin';
@@ -112,9 +116,7 @@ export class NotificationService {
     return this.notificationRepository.getNotificationById(notifId);
   }
 
-  async readNotificationsByNotificationIds(
-    notifList: string[],
-  ) {
+  async readNotificationsByNotificationIds(notifList: string[]) {
     notifList.forEach(async (item: any) => {
       await this.notificationRepository.editNotificationByNotifId(item, {
         read: true,
@@ -147,7 +149,7 @@ export class NotificationService {
       notifData.userId != userId &&
       isAdmin == false
     ) {
-      let errorMessage = 'Access Denied!';
+      const errorMessage = 'Access Denied!';
       return {
         message: errorMessage,
         success: false,
@@ -161,7 +163,7 @@ export class NotificationService {
         { ...editedValues, expiryDate: expireDate },
       );
     } else {
-      const { expiryDate, ...rest } = editedValues;
+      const { ...rest } = editedValues;
       return await this.notificationRepository.editNotificationByNotifId(
         notifId,
         rest,

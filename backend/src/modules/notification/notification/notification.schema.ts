@@ -1,6 +1,5 @@
 import { Schema } from 'mongoose';
 
-
 const schema = new Schema({
   title: {
     type: String,
@@ -55,6 +54,5 @@ const schema = new Schema({
 schema.plugin(require('mongoose-paginate-v2'));
 schema.plugin(require('mongoose-aggregate-paginate-v2'));
 schema.index({ '$**': 'text' });
-
 
 export const NotificationSchema = schema;

@@ -1,4 +1,4 @@
-import { Inject, Injectable, OnModuleInit, forwardRef } from '@nestjs/common';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 const aedes = require('aedes')();
 import * as fs from 'fs';
 import axios from 'axios';

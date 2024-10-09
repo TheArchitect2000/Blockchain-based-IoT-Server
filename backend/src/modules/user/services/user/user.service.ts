@@ -29,6 +29,7 @@ import { DeviceLogService } from 'src/modules/device/services/device-log.service
 import { userSchema } from '../../schemas/user.schema';
 import { checkPasswordDto } from '../../data-transfer-objects/user/credential.dto';
 import { BuildingService } from 'src/modules/building/buildings/building.service';
+import { UserInterface } from '../../interfaces/user.interface';
 
 const saltRounds = 10;
 
@@ -830,9 +831,9 @@ export class UserService {
     );
 
     if (this.user) {
-      for (const property in data) {
+      /* for (const property in data) {
         this.user[property] = data[property];
-      }
+      } */
 
       data.updatedBy = userId;
       data.updateDate = new Date();
@@ -1393,7 +1394,7 @@ export class UserService {
     return this.result;
   }
 
-  async getUserByEmail(userEmail) {
+  async getUserByEmail(userEmail): Promise<UserInterface> {
     const whereCondition = {};
     const populateCondition = [];
     const selectCondition = this.getUserKeys();

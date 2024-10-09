@@ -35,7 +35,7 @@ import { BuildingModule } from '../building/building.module';
     forwardRef(() => ServiceModule),
     forwardRef(() => DeviceModule),
     forwardRef(() => BuildingModule),
-    UtilityModule,
+    forwardRef(() => UtilityModule),
     PanelModule,
     MulterModule.registerAsync({
       useClass: MulterConfigService,

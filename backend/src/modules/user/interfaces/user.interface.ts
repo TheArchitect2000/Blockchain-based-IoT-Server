@@ -1,6 +1,6 @@
 import { Document } from 'mongoose';
 
-export interface User extends Document {
+export interface UserInterface extends Document {
   firstName: string;
   lastName: string;
   userName: string;
@@ -9,6 +9,7 @@ export interface User extends Document {
   timezone: string;
   email: string;
   password: string;
+  unsubscribed: boolean;
   newPassword: string;
   walletAddress: string;
   roles: string[];

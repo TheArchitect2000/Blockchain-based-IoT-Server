@@ -3,22 +3,57 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { User } from './user.entity';
 import { GeneralException } from '../exceptions/general.exception';
 import { ErrorTypeEnum } from '../enums/error-type.enum';
-import { join } from 'path';
-import * as fs from 'fs';
-import https from 'https';
-import axios, { isCancel, AxiosError, AxiosRequestConfig } from 'axios';
 import { NotificationService } from 'src/modules/notification/notification/notification.service';
+import { SubscriptionsService } from 'src/modules/subscriptions/services/subscriptions.service';
+import { UserService } from 'src/modules/user/services/user/user.service';
 
 @Injectable()
 export class MailService {
+  private validateTokenUrl = `${process.env.HOST_PROTOCOL}${process.env.HOST_NAME_OR_IP}/${process.env.HOST_SUB_DIRECTORY}/v1/subscriptions/unsubscribe-email?token=`;
+
   constructor(
     private readonly mailerService?: MailerService,
     private readonly notificationService?: NotificationService,
+    private readonly subscriptionsService?: SubscriptionsService,
+    @Inject(forwardRef(() => UserService))
+    private readonly userService?: UserService,
   ) {}
+
+  async getUserIdByEmail(email: string) {
+    const res = await this.userService.getUserByEmail(email);
+    return res._id;
+  }
+
+  async generateUserUnsubscribeToken(userId: string) {
+    const res = await this.subscriptionsService.generateAndsaveUserToken(
+      userId,
+    );
+    return res.token;
+  }
+
+  async getTokenWithUserEmail(email: string) {
+    const theUserId = await this.getUserIdByEmail(email);
+    const theToken = await this.generateUserUnsubscribeToken(theUserId);
+    return theToken;
+  }
+
+  async isUserUnsubscribed(userEmail: string) {
+    const theUserId = await this.getUserIdByEmail(userEmail);
+    const res = await this.subscriptionsService.checkUserUnsubscribed(
+      theUserId,
+    );
+    return res;
+  }
 
   async sendUserConfirmation(user: User, token: string) {
     // const url = `example.com/auth/confirm?token=${token}`;
     const url = 'https://programming.cpvanda.com/auth/confirm?token=${token}';
+
+    if (await this.isUserUnsubscribed(user.email)) {
+      return false;
+    }
+
+    const userToken = await this.getTokenWithUserEmail(user.email);
 
     await this.mailerService
       .sendMail({
@@ -31,6 +66,7 @@ export class MailService {
           name: user.name,
           NodeName: process.env.NODE_NAME,
           url,
+          unsubscribeEmailUrl: `${this.validateTokenUrl}${userToken}`,
         },
       })
       .then((data) => {
@@ -49,6 +85,12 @@ export class MailService {
     // const url = `example.com/auth/confirm?token=${token}`;
     const url = 'https://programming.cpvanda.com/auth/confirm?token=${token}';
 
+    if (await this.isUserUnsubscribed(user.email)) {
+      return false;
+    }
+    
+    const userToken = await this.getTokenWithUserEmail(user.email);
+    
     await this.mailerService
       .sendMail({
         to: user.email,
@@ -60,6 +102,7 @@ export class MailService {
           name: user.name,
           NodeName: process.env.NODE_NAME,
           url,
+          unsubscribeEmailUrl: `${this.validateTokenUrl}${userToken}`,
         },
       })
       .then((data) => {
@@ -94,6 +137,12 @@ export class MailService {
 
     console.log('email url: ', url);
 
+    if (await this.isUserUnsubscribed(email)) {
+      return false;
+    }
+    
+    const userToken = await this.getTokenWithUserEmail(email);
+
     await this.mailerService
       .sendMail({
         to: email,
@@ -106,6 +155,7 @@ export class MailService {
           NodeName: process.env.NODE_NAME,
           NodeImageSrc: process.env.THEME_LOGO,
           url: url,
+          unsubscribeEmailUrl: `${this.validateTokenUrl}${userToken}`,
         },
         /*attachments: [
           {
@@ -156,6 +206,12 @@ export class MailService {
     try {
       console.log('Sending email');
 
+      if (await this.isUserUnsubscribed(email)) {
+        return false;
+      }
+
+      const userToken = await this.getTokenWithUserEmail(email);
+
       await this.mailerService
         .sendMail({
           to: email,
@@ -166,6 +222,7 @@ export class MailService {
             NodeName: process.env.NODE_NAME,
             NodeImageSrc: process.env.THEME_LOGO,
             url: url,
+            unsubscribeEmailUrl: `${this.validateTokenUrl}${userToken}`,
           },
         })
         .then((data) => {
@@ -204,6 +261,12 @@ export class MailService {
 
     console.log('url: ', url);
 
+    if (await this.isUserUnsubscribed(email)) {
+      return false;
+    }
+
+    const userToken = await this.getTokenWithUserEmail(email);
+
     await this.mailerService
       .sendMail({
         to: email,
@@ -216,6 +279,7 @@ export class MailService {
           NodeName: process.env.NODE_NAME,
           NodeImageSrc: process.env.THEME_LOGO,
           url: url,
+          unsubscribeEmailUrl: `${this.validateTokenUrl}${userToken}`,
         },
         /*attachments: [
           {
@@ -267,17 +331,14 @@ export class MailService {
       notificationMessage,
     );
 
-    const url =
-      process.env.HOST_PROTOCOL +
-      process.env.HOST_NAME_OR_IP +
-      '/' +
-      process.env.HOST_SUB_DIRECTORY +
-      '/v1/user/verify-otp-code-sent-by-email-for-reset-password?email=' +
-      email;
-
-    console.log('url: ', url);
-
     if (process.env.NOTIFICATION_BY_MAIL == 'enabled') {
+
+      if (await this.isUserUnsubscribed(email)) {
+        return false;
+      }
+
+      const userToken = await this.getTokenWithUserEmail(email);
+
       await this.mailerService
         .sendMail({
           to: email,
@@ -292,6 +353,7 @@ export class MailService {
             notificationMessage: String(notificationMessage),
             subject: subject,
             date: this.getCurrentTimeFormatted(),
+            unsubscribeEmailUrl: `${this.validateTokenUrl}${userToken}`,
           },
           /*attachments: [
             {

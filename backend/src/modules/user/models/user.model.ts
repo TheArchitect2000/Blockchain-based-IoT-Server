@@ -1,6 +1,6 @@
 import { Model } from 'mongoose';
-import { User } from '../interfaces/user.interface';
+import { UserInterface } from '../interfaces/user.interface';
 
-export interface UserModel extends Model<User> {
+export interface UserModel extends Model<UserInterface> {
   [x: string]: any;
 }

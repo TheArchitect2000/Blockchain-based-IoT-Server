@@ -19,7 +19,8 @@ import { join } from 'path';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { NotificationModule } from '../notification/notification.module';
 import { DeviceModule } from '../device/device.module';
-import { ServiceModule } from '../service/service.module';
+import { UserModule } from '../user/user.module';
+import { SubscriptionsModule } from '../subscriptions/subscriptions.module';
 
 
 @Module({
@@ -31,6 +32,8 @@ import { ServiceModule } from '../service/service.module';
     MongooseModule.forFeature(categoryFeature),
     forwardRef(() => NotificationModule),
     forwardRef(() => DeviceModule),
+    forwardRef(() => UserModule),
+    forwardRef(() => SubscriptionsModule),
     MulterModule.registerAsync({
       useClass: MulterConfigService,
     }),

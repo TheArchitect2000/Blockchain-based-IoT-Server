@@ -11,6 +11,7 @@ import { BlocklyModule } from './modules/blockly/blockly.module';
 import { BrokerModule } from './modules/broker/broker.module';
 import { DeviceModule } from './modules/device/device.module';
 import { ContractModule } from './modules/smartcontract/contract.module';
+import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
 import { NotificationModule } from './modules/notification/notification.module';
 import { PanelModule } from './modules/panel/panel.module';
 import { ServiceModule } from './modules/service/service.module';
@@ -73,6 +74,7 @@ import { BuildingModule } from './modules/building/building.module';
     ContractModule,
     MediaModule,
     AdminModule,
+    SubscriptionsModule,
   ],
   controllers: [AppController],
   providers: [
