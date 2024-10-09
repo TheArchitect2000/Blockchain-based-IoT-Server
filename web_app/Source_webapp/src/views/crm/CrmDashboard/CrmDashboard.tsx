@@ -79,8 +79,6 @@ const CrmDashboard = () => {
             <Loading loading={false}>
                 <Statistic />
 
-                <MQTTComponent />
-
                 <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
                     <EmailSent className="xl:col-span-1" data={emailSentData} />
 
