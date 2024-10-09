@@ -30,6 +30,7 @@ const Profile = lazy(() => import('./components/Profile'))
 const Address = lazy(() => import('./components/Address'))
 const Password = lazy(() => import('./components/Password'))
 const Verify = lazy(() => import('./components/Verify'))
+const Subscriptions = lazy(() => import('./components/Subscriptions'))
 const Wallet = lazy(() => import('./components/Wallet'))
 
 const { TabNav, TabList } = Tabs
@@ -45,6 +46,7 @@ const settingsMenu: Record<
     wallet: { label: 'Wallet', path: 'wallet' },
     address: { label: 'Address', path: 'address' },
     verify: { label: 'Verify', path: 'verify' },
+    subscriptions: { label: 'Subscriptions', path: 'subscriptions' },
     password: { label: 'Password', path: 'password' },
 }
 
@@ -82,7 +84,7 @@ const Settings = () => {
 
     return (
         <Container>
-            <AdaptableCard className='p-4'>
+            <AdaptableCard className="p-4">
                 <Tabs value={currentTab} onChange={(val) => onTabChange(val)}>
                     <TabList>
                         {Object.keys(settingsMenu).map((key) => (
@@ -97,12 +99,9 @@ const Settings = () => {
                         {currentTab === 'profile' && (
                             <Profile data={data.profile as any} />
                         )}
-                        {currentTab === 'password' && (
-                            <Password />
-                        )}
-                        {currentTab === 'verify' && (
-                            <Verify />
-                        )}
+                        {currentTab === 'password' && <Password />}
+                        {currentTab === 'verify' && <Verify />}
+                        {currentTab === 'subscriptions' && <Subscriptions />}
                         {currentTab === 'address' && <Address />}
                         {currentTab === 'wallet' && <Wallet />}
                     </Suspense>

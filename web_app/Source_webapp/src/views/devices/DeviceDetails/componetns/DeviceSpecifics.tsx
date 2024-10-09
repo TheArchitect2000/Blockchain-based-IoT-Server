@@ -3,8 +3,6 @@ import { useEffect, useState } from 'react'
 //import mqtt from 'mqtt'
 import { DeviceData } from '@/utils/hooks/useGetDevices'
 import { Card } from '@/components/ui'
-import mqtt from 'mqtt'
-import MQTTComponent from '@/components/ui/MqttComp'
 
 const DeviceField = ({
     title,
