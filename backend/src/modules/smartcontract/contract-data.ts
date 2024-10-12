@@ -5,7 +5,7 @@ export const zkpContractAddress = '0xf1AdF8eD7569e0BceC73B371f4876Db69515CD20';
 
 export const storeZkpContractAddress = '0xCFC00106081c541389D449183D4EEADF5d895D37';
 
-export const commitmentContractAddress = '0xf7d96b2dd60A75cf7355af6415fbF59567d8b317'
+export const commitmentContractAddress = '0xA196D2B69c0CFD632953030302147Fa1927f2A8A'
 
 export const zkpContractABI = [
   {
@@ -1236,9 +1236,15 @@ export const commitmentContractABI = [
 		"inputs": [
 			{
 				"indexed": false,
-				"internalType": "uint256",
-				"name": "index",
-				"type": "uint256"
+				"internalType": "string",
+				"name": "commitmentID",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "nodeId",
+				"type": "string"
 			},
 			{
 				"indexed": false,
@@ -1253,6 +1259,12 @@ export const commitmentContractABI = [
 	{
 		"anonymous": false,
 		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "commitmentID",
+				"type": "string"
+			},
 			{
 				"indexed": false,
 				"internalType": "string",
@@ -1314,9 +1326,14 @@ export const commitmentContractABI = [
 	{
 		"inputs": [
 			{
-				"internalType": "uint256",
-				"name": "index",
-				"type": "uint256"
+				"internalType": "string",
+				"name": "commitmentID",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "nodeId",
+				"type": "string"
 			}
 		],
 		"name": "removeCommitment",
@@ -1326,6 +1343,11 @@ export const commitmentContractABI = [
 	},
 	{
 		"inputs": [
+			{
+				"internalType": "string",
+				"name": "commitmentID",
+				"type": "string"
+			},
 			{
 				"internalType": "string",
 				"name": "nodeId",
@@ -1384,6 +1406,11 @@ export const commitmentContractABI = [
 		"outputs": [
 			{
 				"internalType": "string",
+				"name": "commitmentID",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
 				"name": "nodeId",
 				"type": "string"
 			},
@@ -1434,16 +1461,26 @@ export const commitmentContractABI = [
 	{
 		"inputs": [
 			{
-				"internalType": "uint256",
-				"name": "index",
-				"type": "uint256"
+				"internalType": "string",
+				"name": "commitmentID",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "nodeId",
+				"type": "string"
 			}
 		],
 		"name": "getCommitment",
 		"outputs": [
 			{
 				"internalType": "string",
-				"name": "nodeId",
+				"name": "commitmentIDResult",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "nodeIdResult",
 				"type": "string"
 			},
 			{

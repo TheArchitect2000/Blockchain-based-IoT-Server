@@ -474,9 +474,10 @@ export class ContractService {
       commitmentData,
     } = data;
 
-    await this.saveCommitmentInDB(data);
+    const res = await this.saveCommitmentInDB(data);
 
     const result = await this.contracts.commitment.storeCommitment(
+      String(res._id),
       process.env.NODE_ID,
       manufacturerName,
       deviceName,
@@ -488,6 +489,33 @@ export class ContractService {
     );
 
     return result;
+  }
+
+  async removeCommitment(commitmentId: string, nodeId: string) {
+    const commitmentDb =
+      await this.contractRepository.getCommitmentByCommitmentIdAndNodeId(
+        commitmentId,
+        nodeId,
+      );
+
+    if (commitmentDb) {
+      await this.contractRepository.deleteCommitmentByCommitmentIdAndNodeId(
+        commitmentId,
+        nodeId,
+      );
+
+      const result = await this.contracts.commitment.removeCommitment(
+        commitmentId,
+        nodeId,
+      );
+
+      return result;
+    } else {
+      throw new GeneralException(
+        ErrorTypeEnum.NOT_FOUND,
+        `Commitment not found.`,
+      );
+    }
   }
 
   async zpkProof(proofString: string): Promise<boolean> {

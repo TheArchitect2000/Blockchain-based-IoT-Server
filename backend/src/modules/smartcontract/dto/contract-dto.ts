@@ -58,6 +58,18 @@ export class storeCommitmentDto {
   commitmentData: string;
 }
 
+export class removeCommitmentDto {
+  @IsNotEmpty({ message: 'commitmentId is required and must be entered.' })
+  @IsString({ message: 'commitmentId must be string.' })
+  @ApiProperty({ required: true })
+  commitmentId: string;
+
+  @IsNotEmpty({ message: 'nodeId is required and must be entered.' })
+  @IsString({ message: 'nodeId must be string.' })
+  @ApiProperty({ required: true })
+  nodeId: string;
+}
+
 export class walletBalanceDto {
   @IsNotEmpty({ message: 'walletAddress is required and must be entered.' })
   @IsString({ message: 'walletAddress must be string.' })

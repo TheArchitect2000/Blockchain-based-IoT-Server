@@ -26,6 +26,7 @@ import { GeneralException } from 'src/modules/utility/exceptions/general.excepti
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { JwtAuthGuard } from 'src/modules/authentication/guard/jwt-auth.guard';
 import {
+  removeCommitmentDto,
   removeDeviceDto,
   removeServiceDto,
   storeCommitmentDto,
@@ -85,6 +86,21 @@ export class contractController {
       ...body,
       userId: String(request.user.userId),
     });
+  }
+
+  @Post('/remove-commitment')
+  @HttpCode(201)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Storing the commitment.',
+    description:
+      'This api will store the user commitment file in smart contract.',
+  })
+  async removeCommitment(@Body() body: removeCommitmentDto, @Request() request) {
+    console.log('We are in Remove Commitment section', body);
+
+    return this.contractService.removeCommitment(body.commitmentId, body.nodeId);
   }
 
   @Get('/get-wallet-balance')

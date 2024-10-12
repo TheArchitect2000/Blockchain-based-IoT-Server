@@ -32,6 +32,32 @@ export class ContractRepository {
     return this.result;
   }
 
+  async getCommitmentByCommitmentIdAndNodeId(
+    commitmentId: string,
+    nodeId: string,
+  ) {
+    console.log('we are in getCommitmentByCommitmentIdAndNodeId repository!');
+
+    return await this.contractModel
+      .findOne({ _id: commitmentId, nodeId: nodeId })
+      .where({})
+      .populate([])
+      .select(this.selectCondition);
+  }
+
+  async deleteCommitmentByCommitmentIdAndNodeId(
+    commitmentId: string,
+    nodeId: string,
+  ) {
+    console.log(
+      'we are in deleteCommitmentByCommitmentIdAndNodeId repository!',
+    );
+
+    return await this.contractModel
+      .deleteOne({ _id: commitmentId, nodeId: nodeId })
+      .where({});
+  }
+
   async getCommitmentsByUserId(userId: string) {
     console.log('we are in getCommitmentsByUserId repository!');
 
