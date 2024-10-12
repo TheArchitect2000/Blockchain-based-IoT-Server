@@ -28,10 +28,10 @@ export class editUserByUserDto {
   lastName: string;
 
   @IsOptional()
-  @MinLength(5, { message: 'userName cannot be less than 5 letters.' })
-  @IsString({ message: 'userName must be string.' })
+  @MinLength(5, { message: 'email cannot be less than 5 letters.' })
+  @IsString({ message: 'email must be string.' })
   @ApiProperty({ required: false })
-  userName: string;
+  email: string;
 
   @IsOptional()
   @IsString({ message: 'mobile must be string.' })

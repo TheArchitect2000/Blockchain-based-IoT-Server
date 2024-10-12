@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { MongoClient, ObjectID } from 'mongodb';
 import { Types } from 'mongoose';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
-import { UserModel } from '../models/user.model';
+import { ChangeEmailTokenModel, UserModel } from '../models/user.model';
+import { UserChangeEmailTokenInterface } from '../interfaces/user.interface';
+import { changeEmailTokenSchema, userSchema } from '../schemas/user.schema';
 
 @Injectable()
 export class UserRepository {
@@ -13,7 +14,78 @@ export class UserRepository {
   constructor(
     @InjectModel('user')
     private readonly userModel?: UserModel,
-  ) {}
+    @InjectModel('email-token')
+    private readonly changeEmailTokenModel?: ChangeEmailTokenModel,
+  ) {
+    setTimeout(() => {
+      this.runAllDataBaseEmailChanges();
+    }, 3000);
+  }
+
+  getUserKeys(): string {
+    return Object.keys(userSchema.paths).join(' ');
+  }
+
+  getChangeEmailKeys(): string {
+    return Object.keys(changeEmailTokenSchema.paths).join(' ');
+  }
+
+  async runAllDataBaseEmailChanges() {
+    await this.replaceAllEmailsWithUserNames();
+    await this.deleteAllUserNames();
+  }
+
+  async getChangeEmailWithToken(token: string) {
+    return await this.changeEmailTokenModel
+      .findOne({ token: token })
+      .where({ expireDate: { $gt: new Date() } })
+      .populate([])
+      .select(this.getChangeEmailKeys());
+  }
+  
+  async getChangeEmailWithUserId(userId: string) {
+    return await this.changeEmailTokenModel
+      .findOne({ userId: userId })
+      .where({ expireDate: { $gt: new Date() } })
+      .populate([])
+      .select(this.getChangeEmailKeys());
+  }
+
+  async deleteChangeEmailToken(token: string) {
+    return await this.changeEmailTokenModel
+      .deleteOne({ token: token })
+      .where({})
+      .populate([]);
+  }
+
+  async replaceAllEmailsWithUserNames() {
+    await this.userModel.updateMany(
+      {
+        userName: { $exists: true, $ne: null },
+        email: { $exists: true, $ne: null },
+      },
+      [{ $set: { email: { $ifNull: ['$userName', '$email'] } } }],
+    );
+
+    return true;
+  }
+
+  async deleteAllUserNames() {
+    try {
+      await this.userModel.updateMany(
+        { userName: { $exists: true, $ne: null } }, // No filter, applies to all documents
+        { $unset: { userName: '' } }, // Remove the userName field
+      );
+      return true;
+    } catch (error) {
+      const errorMessage = 'Some errors occurred while deleting userName!';
+      console.log(error.message); // Log the actual error
+      throw new GeneralException(
+        ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+        errorMessage,
+      );
+    }
+  }
 
   async insertUser(data) {
     await this.userModel
@@ -31,13 +103,48 @@ export class UserRepository {
       });
 
     return this.result;
+  }
 
-    // return await this.userModel.create(data)
+  async insertChangeEmailToken(data) {
+    await this.changeEmailTokenModel
+      .create(data)
+      .then((data) => {
+        this.result = data;
+      })
+      .catch((error) => {
+        const errorMessage =
+          'Some errors occurred while insert change email token!';
+        console.log(error.message);
+        throw new GeneralException(
+          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+          errorMessage,
+        );
+      });
+
+    return this.result;
+  }
+
+  async changeUserEmail(userId, newEmail) {
+    await this.userModel
+      .updateOne({ _id: userId }, { $set: {email: newEmail} })
+      .then((data) => {
+        this.result = data;
+      })
+      .catch((error) => {
+        const errorMessage = 'Some errors occurred while user change email!';
+        throw new GeneralException(
+          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+          errorMessage,
+        );
+      });
+
+    return this.result;
   }
 
   async editUser(id, editedData) {
+    const { email, ...restData } = editedData;
     await this.userModel
-      .updateOne({ _id: id }, { $set: editedData })
+      .updateOne({ _id: id }, { $set: restData })
       .then((data) => {
         this.result = data;
       })
@@ -104,19 +211,6 @@ export class UserRepository {
       });
 
     return this.result;
-  }
-
-  async findAUserByUserName(
-    userName,
-    whereCondition,
-    populateCondition,
-    selectCondition,
-  ) {
-    return await this.userModel
-      .findOne({ userName: userName })
-      .where(whereCondition)
-      .populate(populateCondition)
-      .select(selectCondition);
   }
 
   async deleteUserPermanently(userId) {

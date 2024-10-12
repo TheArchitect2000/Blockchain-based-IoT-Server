@@ -11,12 +11,7 @@ import {
   UseGuards,
   Param,
   Query,
-  //Req,
-  Put,
-  UseInterceptors,
-  UploadedFile,
 } from '@nestjs/common';
-// import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -25,22 +20,8 @@ import {
 } from '@nestjs/swagger';
 import { Types } from 'mongoose';
 import { JwtAuthGuard } from 'src/modules/authentication/guard/jwt-auth.guard';
-import { ChangeActivationStatusGeneralDto } from 'src/modules/utility/data-transfer-objects/change-activation-status-general.dto';
-import { ChangeVerificationStatusGeneralDto } from 'src/modules/utility/data-transfer-objects/change-verification-status-general.dto';
-import { DeleteGeneralDto } from 'src/modules/utility/data-transfer-objects/delete-general.dto';
-// import { MediaUploadDto } from 'src/modules/utility/data-transfer-objects/media-upload.dto';
-import { Permissions } from 'src/modules/utility/decorators/permissions.decorator';
-import { ActivationStatusEnum } from 'src/modules/utility/enums/activation-status.enum';
-import { BooleanEnum } from 'src/modules/utility/enums/boolean.enum';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
-import { OTPTypeEnum } from 'src/modules/utility/enums/otp-type.enum';
-import { SortModeEnum } from 'src/modules/utility/enums/sort-mode.enum';
-import { VerificationStatusEnum } from 'src/modules/utility/enums/verification-status.enum';
 import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
-import { PermissionsGuard } from 'src/modules/utility/guards/permissions.guard';
-import { editUserProfileByPanelDto } from '../data-transfer-objects/user/edit-user-profile-by-panel.dto';
-// import { InsertUserByPanelDto } from '../data-transfer-objects/user/insert-user-by-panel.dto';
-import { UserApiPermissionsEnum } from '../enums/user-api-permissions.enum';
 import { UserService } from '../services/user/user.service';
 import { verifyOtpCodeDto } from '../data-transfer-objects/user/verify-otp-code.dto';
 import { verifyResetPasswordCodeDto } from './../data-transfer-objects/user/verify-reset-password-code.dto';
@@ -49,24 +30,24 @@ import {
   credentialDto,
 } from './../data-transfer-objects/user/credential.dto';
 import { refreshTokensDto } from './../data-transfer-objects/user/refresh-tokens.dto';
-import { insertUserByPanelDto } from './../data-transfer-objects/user/insert-user-by-panel.dto';
 import { UserActivationStatusEnum } from './../enums/user-activation-status.enum';
 import { UserVerificationStatusEnum } from './../enums/user-verification-status.enum';
-import { User } from 'src/modules/utility/services/user.entity'; /// Temp
+import { User } from 'src/modules/utility/services/user.entity';
 import { MailService } from 'src/modules/utility/services/mail.service';
 import { verifyOtpCodeSentByEmailDto } from '../data-transfer-objects/user/verify-otp-code-sent-by-email.dto';
 import { changePasswordByEmailDto } from '../data-transfer-objects/user/change-password-by-email.dto';
 import { signupByEmailDto } from '../data-transfer-objects/user/signup-by-email.dto';
 import { Response as Res } from 'express';
 import { join } from 'path';
-import { editUserAndInfoByUserDto } from '../data-transfer-objects/user/edit-user-and-info-by-user.dto';
 import { editUserByUserDto } from '../data-transfer-objects/user/edit-user-by-user.dto';
 import { verifyEmailDto } from '../data-transfer-objects/user/verify-email.dto';
 import { VirtualMachineHandlerService } from 'src/modules/virtual-machine/services/service-handler.service';
 import { makeUserAdminDto } from '../data-transfer-objects/user/make-user-admin.dto';
+import {
+  requestChangeEmailWithTokenDto,
+  verifyChangeEmailWithTokenDto,
+} from '../data-transfer-objects/user/verify-change-email.dto';
 var fs = require('fs');
-import { promises as fsPromise } from 'fs';
-import { UserRoleService } from '../services/user-role/user-role.service';
 
 @ApiTags('Manage Users')
 @Controller('app')
@@ -76,7 +57,7 @@ export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly mailService: MailService,
-    private readonly userRoleService: UserRoleService,
+    //private readonly userRoleService: UserRoleService,
     private readonly VirtualMachineService?: VirtualMachineHandlerService,
   ) {}
 
@@ -96,7 +77,7 @@ export class UserController {
     }
   }
 
-  @Post('user/test')
+  /* @Post('user/test')
   @HttpCode(200)
   @ApiOperation({
     summary: 'Send otp code to user.',
@@ -114,7 +95,7 @@ export class UserController {
     console.log('Email sent!');
 
     // return await this.userService.sendOTPCode(mobile)
-  }
+  } */
 
   @Post('v1/user/request-otp-code-for-signup-by-email')
   @HttpCode(200)
@@ -432,7 +413,7 @@ export class UserController {
     summary: 'Send otp code to user.',
     description: 'This api requires a user mobile.',
   })
-  async credential(@Body() body: credentialDto, @Request() request) {
+  async credential(@Body() body: credentialDto) {
     return await this.userService.credential({
       ...body,
       email: body.email.toString().toLocaleLowerCase(),
@@ -616,53 +597,6 @@ export class UserController {
     return await this.userService.editUserByUser(userId, body);
   }
 
-  /* @Patch('v1/user/edit-user-and-info-by-user')
-  @HttpCode(200)
-  @ApiOperation({
-    summary: 'Edit user and info by user.',
-    description:
-      'Edit user and info by user. This api requires a user profile in json format.',
-  })
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  async editUserAndInfoByUser(
-    @Body() body: editUserAndInfoByUserDto,
-    @Request() request,
-  ) {
-    if (body.profileImage) {
-      if (
-        body.profileImage === null ||
-        body.profileImage === undefined ||
-        body.profileImage === '' ||
-        Types.ObjectId.isValid(String(body.profileImage)) === false
-      ) {
-        throw new GeneralException(
-          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-          'profileImage is required and must be entered and must be entered correctly with objectId type.',
-        );
-      }
-    }
-
-    if (body.headerImage) {
-      if (
-        body.headerImage === null ||
-        body.headerImage === undefined ||
-        body.headerImage === '' ||
-        Types.ObjectId.isValid(String(body.headerImage)) === false
-      ) {
-        throw new GeneralException(
-          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-          'headerImage is required and must be entered and must be entered correctly with objectId type.',
-        );
-      }
-    }
-
-    return await this.userService.editUserAndInfoByUser(
-      body,
-      request.user.userId,
-    );
-  } */
-
   @Patch('v1/user/change-my-profile-activation')
   @HttpCode(200)
   @ApiOperation({
@@ -753,53 +687,33 @@ export class UserController {
     return await this.userService.getUserProfileByIdFromUser(userId);
   }
 
-  @Get('v1/user/get-profile-by-username/:userName')
+  @Get('v1/user/get-profile-by-email/:userEmail')
   @HttpCode(200)
   @ApiOperation({
-    summary: 'Get a user by username.',
+    summary: 'Get a user by userEmail.',
     description:
-      'Gets a user by user username. This api requires a user username.',
+      'Gets a user by user userEmail. This api requires a user userEmail.',
   })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  async getUserProfileByUserNameFromUser(
-    @Param('userName') userName: string,
+  async getUserProfileByuserEmailFromUser(
+    @Param('userEmail') userEmail: string,
     @Request() request,
   ) {
-    if (userName === null || userName === undefined || userName === '') {
+    if (userEmail === null || userEmail === undefined || userEmail === '') {
       throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-        'userName is required and must be entered.',
+        'userEmail is required and must be entered.',
       );
     }
 
     const isAdmin = await this.isAdmin(request.user.userId);
 
-    if (isAdmin === false && request.user.email !== userName) {
+    if (isAdmin === false && request.user.email !== userEmail) {
       throw new GeneralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
 
-    return await this.userService.getUserProfileByUserNameFromUser(userName);
-  }
-
-  @Get('v1/user/check-username-is-exists/:userName')
-  @HttpCode(200)
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({
-    summary: 'Get a user by username.',
-    description:
-      'Gets a user by user username. This api requires a user username.',
-  })
-  async checkUserNameIsExist(@Param('userName') userName: string) {
-    if (userName === null || userName === undefined || userName === '') {
-      throw new GeneralException(
-        ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-        'userName is required and must be entered.',
-      );
-    }
-
-    return await this.userService.checkUserNameIsExist(userName);
+    return await this.userService.getUserProfileByUserEmail(userEmail);
   }
 
   @Get('v1/user/check-user-email-is-exists/:userEmail')
@@ -820,49 +734,6 @@ export class UserController {
     return await this.userService.checkUserEmailIsExist(userEmail);
   }
 
-  @Post('user/insert')
-  @HttpCode(201)
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({
-    summary: 'Send otp code to user.',
-    description: 'This api requires a user mobile.',
-  })
-  async insertUserByPanel(
-    @Body() body: insertUserByPanelDto,
-    @Request() request,
-  ) {
-    if (body.profileImage) {
-      if (
-        body.profileImage === null ||
-        body.profileImage === undefined ||
-        body.profileImage === '' ||
-        Types.ObjectId.isValid(String(body.profileImage)) === false
-      ) {
-        throw new GeneralException(
-          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-          'profileImage is required and must be entered and must be entered correctly with objectId type.',
-        );
-      }
-    }
-
-    if (body.headerImage) {
-      if (
-        body.headerImage === null ||
-        body.headerImage === undefined ||
-        body.headerImage === '' ||
-        Types.ObjectId.isValid(String(body.headerImage)) === false
-      ) {
-        throw new GeneralException(
-          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-          'headerImage is required and must be entered and must be entered correctly with objectId type.',
-        );
-      }
-    }
-
-    return await this.userService.insertUserByPanel(body, request.user.userId);
-  }
-
   @Post('user/give-admin')
   @HttpCode(201)
   @UseGuards(JwtAuthGuard)
@@ -872,15 +743,15 @@ export class UserController {
     description: 'This api will give user admin ranks.',
   })
   async makeUserAdmin(@Body() body: makeUserAdminDto, @Request() request) {
-    if (body.userName) {
+    if (body.userEmail) {
       if (
-        body.userName === null ||
-        body.userName === undefined ||
-        body.userName === ''
+        body.userEmail === null ||
+        body.userEmail === undefined ||
+        body.userEmail === ''
       ) {
         throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-          'userName is required and must be entered and must be entered correctly.',
+          'userEmail is required and must be entered and must be entered correctly.',
         );
       }
     }
@@ -891,10 +762,10 @@ export class UserController {
       throw new GeneralException(ErrorTypeEnum.UNAUTHORIZED, 'Access Denied !');
     }
 
-    return await this.userService.makeUserAdmin(body.userName, body.roleNames);
+    return await this.userService.makeUserAdmin(body.userEmail, body.roleNames);
   }
 
-  @Get('user/get-short-roles/:userName')
+  @Get('user/get-short-roles/:userEmail')
   @HttpCode(201)
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -903,25 +774,25 @@ export class UserController {
     description: 'This api will return short name of the user roles.',
   })
   async getUserShortRoles(
-    @Param('userName') userName: string,
+    @Param('userEmail') userEmail: string,
     @Request() request,
   ) {
-    if (userName) {
-      if (userName === null || userName === undefined || userName === '') {
+    if (userEmail) {
+      if (userEmail === null || userEmail === undefined || userEmail === '') {
         throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-          'userName is required and must be entered and must be entered correctly.',
+          'userEmail is required and must be entered and must be entered correctly.',
         );
       }
     }
 
     const isAdmin = await this.isAdmin(request.user.userId);
 
-    if (isAdmin === false && request.user.email !== userName) {
+    if (isAdmin === false && request.user.email !== userEmail) {
       throw new GeneralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
 
-    return this.userService.getUserShortRolesByUserName(userName);
+    return this.userService.getUserShortRolesByUserEmail(userEmail);
   }
 
   @Post('user/take-admin')
@@ -933,15 +804,15 @@ export class UserController {
     description: 'This api will take user admin ranks.',
   })
   async takeUserAdminRanks(@Body() body: makeUserAdminDto, @Request() request) {
-    if (body.userName) {
+    if (body.userEmail) {
       if (
-        body.userName === null ||
-        body.userName === undefined ||
-        body.userName === ''
+        body.userEmail === null ||
+        body.userEmail === undefined ||
+        body.userEmail === ''
       ) {
         throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-          'userName is required and must be entered and must be entered correctly.',
+          'userEmail is required and must be entered and must be entered correctly.',
         );
       }
     }
@@ -953,71 +824,10 @@ export class UserController {
     }
 
     return await this.userService.takeUserAdminRanks(
-      body.userName,
+      body.userEmail,
       body.roleNames,
     );
   }
-
-  /* @Patch('v1/user/edit-user-by-panel/:userId')
-  @HttpCode(200)
-  @ApiOperation({
-    summary: 'Edit user profile by user.',
-    description:
-      'Edit user profile by user. This api requires a user profile in json format.',
-  })
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  async editUserProfileByPanel(
-    @Param('userId') userId: string,
-    @Body() body: editUserProfileByPanelDto,
-    @Request() request,
-  ) {
-    if (
-      userId === null ||
-      userId === undefined ||
-      userId === '' ||
-      Types.ObjectId.isValid(String(userId)) === false
-    ) {
-      throw new GeneralException(
-        ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-        'userId is required and must be entered and must be entered correctly with objectId type.',
-      );
-    }
-
-    if (body.profileImage) {
-      if (
-        body.profileImage === null ||
-        body.profileImage === undefined ||
-        body.profileImage === '' ||
-        Types.ObjectId.isValid(String(body.profileImage)) === false
-      ) {
-        throw new GeneralException(
-          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-          'profileImage is required and must be entered and must be entered correctly with objectId type.',
-        );
-      }
-    }
-
-    if (body.headerImage) {
-      if (
-        body.headerImage === null ||
-        body.headerImage === undefined ||
-        body.headerImage === '' ||
-        Types.ObjectId.isValid(String(body.headerImage)) === false
-      ) {
-        throw new GeneralException(
-          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-          'headerImage is required and must be entered and must be entered correctly with objectId type.',
-        );
-      }
-    }
-
-    return await this.userService.editUserByPanel(
-      body,
-      userId,
-      request.user.userId,
-    );
-  } */
 
   @Patch('user/change-profile-activation/:userId')
   @HttpCode(200)
@@ -1295,5 +1105,41 @@ export class UserController {
       });
 
     return this.result;
+  }
+
+  @Post('v1/user/request-change-email-token')
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Generating change email token.',
+    description: 'This api save a token for changin email in database.',
+  })
+  async generateChangeEmailToken(
+    @Body() body: requestChangeEmailWithTokenDto,
+    @Request() request,
+  ) {
+    const res = await this.userService.generateAndSaveChangeEmailToken({
+      userId: request.user.userId,
+      newEmail: body.newEmail,
+    });
+
+    return res;
+  }
+
+  @Post('v1/user/verify-change-email-with-token')
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Generating change email token.',
+    description: 'This api save a token for changin email in database.',
+  })
+  async verifyChangeEmailWithToken(
+    @Body() body: verifyChangeEmailWithTokenDto,
+    @Request() request,
+  ) {
+    const res = await this.userService.verifyChangeEmailWithToken(body.token);
+    return res;
   }
 }

@@ -409,15 +409,15 @@ export class CategoryService {
       populate: [
         {
           path: 'insertedBy',
-          select: '_id userName mobile firstName lastName',
+          select: '_id email mobile firstName lastName',
         },
         {
           path: 'updatedBy',
-          select: '_id userName mobile firstName lastName',
+          select: '_id email mobile firstName lastName',
         },
         {
           path: 'deletedBy',
-          select: '_id userName mobile firstName lastName',
+          select: '_id email mobile firstName lastName',
         },
       ],
       limit: limit,

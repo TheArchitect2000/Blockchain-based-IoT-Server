@@ -422,15 +422,15 @@ export class TagService {
       populate: [
         {
           path: 'insertedBy',
-          select: '_id userName mobile firstName lastName',
+          select: '_id email mobile firstName lastName',
         },
         {
           path: 'updatedBy',
-          select: '_id userName mobile firstName lastName',
+          select: '_id email mobile firstName lastName',
         },
         {
           path: 'deletedBy',
-          select: '_id userName mobile firstName lastName',
+          select: '_id email mobile firstName lastName',
         },
       ],
       limit: limit,
@@ -602,15 +602,15 @@ export class TagService {
       populate: [
         {
           path: 'insertedBy',
-          select: 'firstName lastName userName mobile',
+          select: 'firstName lastName email mobile',
         },
         {
           path: 'updatedBy',
-          select: 'firstName lastName userName mobile',
+          select: 'firstName lastName email mobile',
         },
         {
           path: 'deletedBy',
-          select: 'firstName lastName userName mobile',
+          select: 'firstName lastName email mobile',
         },
       ],
       limit: limit,

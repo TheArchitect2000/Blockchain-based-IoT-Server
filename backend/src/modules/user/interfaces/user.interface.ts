@@ -1,9 +1,15 @@
 import { Document } from 'mongoose';
 
+export interface UserChangeEmailTokenInterface extends Document {
+  userId: string;
+  newEmail: string;
+  token: string;
+  expireDate: Date;
+}
+
 export interface UserInterface extends Document {
   firstName: string;
   lastName: string;
-  userName: string;
   tel: Object;
   address: Object;
   timezone: string;

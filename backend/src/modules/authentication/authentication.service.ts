@@ -386,9 +386,6 @@ export class AuthenticationService {
       if (!profile) throw new Error('token is invalid');
       let user = await this.userService.findAUserByEmail(
         profile.email,
-        { isDeleted: false },
-        [],
-        '',
       );
       if (!user) {
         user = await this.userService.insertAUserByEmail({
@@ -454,9 +451,7 @@ export class AuthenticationService {
       if (!decoded) throw new Error('token is invalid');
       let user = await this.userService.findAUserByEmail(
         decoded.email,
-        { isDeleted: false },
-        [],
-        '',
+    
       );
       if (!user) {
         user = await this.userService.insertAUserByEmail({

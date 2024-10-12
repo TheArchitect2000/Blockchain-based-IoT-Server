@@ -81,6 +81,38 @@ export class MailService {
       });
   }
 
+  async sendChangeEmailToken(user: User, token: string) {
+    await this.mailerService
+      .sendMail({
+        to: user.email,
+        // from: '"Support Team" <support@example.com>', // override default from
+        subject: `Your Verification Code for Changing Email Address`,
+        template: './change-email-token', // `.hbs` extension is appended automatically
+        context: {
+          // filling curly brackets with content
+          NodeName: process.env.NODE_NAME,
+          NodeImageSrc: process.env.THEME_LOGO,
+          token_1: token[0],
+          token_2: token[1],
+          token_3: token[2],
+          token_4: token[3],
+          token_5: token[4],
+        },
+      })
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((error) => {
+        console.log("Erorrrrrrrrrrrrr:", error);
+        
+        let errorMessage = 'Some errors occurred while sending email';
+        throw new GeneralException(
+          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+          errorMessage,
+        );
+      });
+  }
+
   async sendRegistrationToken(user: User, token: string) {
     // const url = `example.com/auth/confirm?token=${token}`;
     const url = 'https://programming.cpvanda.com/auth/confirm?token=${token}';
@@ -88,9 +120,9 @@ export class MailService {
     if (await this.isUserUnsubscribed(user.email)) {
       return false;
     }
-    
+
     const userToken = await this.getTokenWithUserEmail(user.email);
-    
+
     await this.mailerService
       .sendMail({
         to: user.email,
@@ -140,7 +172,7 @@ export class MailService {
     if (await this.isUserUnsubscribed(email)) {
       return false;
     }
-    
+
     const userToken = await this.getTokenWithUserEmail(email);
 
     await this.mailerService
@@ -332,7 +364,6 @@ export class MailService {
     );
 
     if (process.env.NOTIFICATION_BY_MAIL == 'enabled') {
-
       if (await this.isUserUnsubscribed(email)) {
         return false;
       }

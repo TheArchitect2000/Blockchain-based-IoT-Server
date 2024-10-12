@@ -1,32 +1,9 @@
 import {
-  Body,
   Controller,
-  HttpCode,
-  Post,
-  Get,
-  Patch,
-  Delete,
-  Request,
-  Response,
-  UseGuards,
-  Param,
-  Query,
-  Req,
-  Put,
-  UseInterceptors,
-  UploadedFile,
 } from '@nestjs/common';
 import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { Types } from 'mongoose';
-import { JwtAuthGuard } from 'src/modules/authentication/guard/jwt-auth.guard';
-import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
-import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
-import { insertCustomerDto } from '../data-transfer-objects/customer/insert-customer.dto';
 import { CustomerService } from '../services/customer.service';
 
 @ApiTags('Manage Panel Customer')

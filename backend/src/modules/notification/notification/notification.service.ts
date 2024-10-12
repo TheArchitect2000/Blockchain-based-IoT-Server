@@ -81,12 +81,7 @@ export class NotificationService {
   async addNotificationForUserByEmail(
     data: AddNotificationByEmailRequestBodyDto,
   ) {
-    const theUser = await this.userService.findAUserByEmail(
-      data.userEmail,
-      { isDeleted: false },
-      [],
-      '_id firstName lastName email',
-    );
+    const theUser = await this.userService.findAUserByEmail(data.userEmail);
 
     const insertData = {
       ...data,

@@ -29,7 +29,11 @@ import { DeviceLogService } from 'src/modules/device/services/device-log.service
 import { userSchema } from '../../schemas/user.schema';
 import { checkPasswordDto } from '../../data-transfer-objects/user/credential.dto';
 import { BuildingService } from 'src/modules/building/buildings/building.service';
-import { UserInterface } from '../../interfaces/user.interface';
+import {
+  UserChangeEmailTokenInterface,
+  UserInterface,
+} from '../../interfaces/user.interface';
+import { MailService } from 'src/modules/utility/services/mail.service';
 
 const saltRounds = 10;
 
@@ -54,6 +58,7 @@ export class UserService {
     private readonly userRoleRepository?: UserRoleRepository,
     private jwtService?: JwtService,
     private readonly mediaService?: MediaService,
+    private readonly mailService?: MailService,
     private readonly deviceService?: DeviceService,
     private readonly deviceLogService?: DeviceLogService,
     private readonly serviceService?: ServiceService,
@@ -63,6 +68,119 @@ export class UserService {
 
   getUserKeys(): string {
     return Object.keys(userSchema.paths).join(' ');
+  }
+
+  validateEmail(email: string) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return email.trim() && emailRegex.test(email.trim());
+  }
+
+  generateEmailToken(): string {
+    let result = '';
+    for (let i = 0; i < 5; i++) {
+      result += Math.floor(Math.random() * 10);
+    }
+    return result;
+  }
+
+  async generateAndSaveChangeEmailToken(data) {
+    console.log('data.newEmail:', String(data.newEmail));
+
+    if (this.validateEmail(String(data.newEmail)) == false) {
+      throw new GeneralException(
+        ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+        'Email is invalid.',
+      );
+    }
+
+    const isExist = await this.checkUserEmailIsExist(data.newEmail);
+
+    if (isExist == true) {
+      throw new GeneralException(
+        ErrorTypeEnum.CONFLICT,
+        'User with this email already exist.',
+      );
+    }
+
+    const requestedBefore = await this.userRepository.getChangeEmailWithUserId(
+      data.userId,
+    );
+
+    if (requestedBefore) {
+      throw new GeneralException(
+        ErrorTypeEnum.CONFLICT,
+        'You have already requested a change email code. Please wait until the current token expires before requesting a new one.',
+      );
+    }
+
+    const token = this.generateEmailToken();
+
+    const expireDate = new Date(Date.now() + 2 * 60 * 1000); // 2 minutes later
+
+    await this.userRepository.insertChangeEmailToken({
+      userId: data.userId,
+      newEmail: data.newEmail,
+      token: token,
+      expireDate: expireDate,
+    });
+
+    await this.mailService.sendChangeEmailToken(
+      {
+        email: data.newEmail,
+        name: '',
+      },
+      token,
+    );
+
+    return true;
+  }
+
+  async verifyChangeEmailWithToken(token: string) {
+    try {
+      this.result = await this.userRepository.getChangeEmailWithToken(token);
+      console.log(this.result);
+    } catch (error) {
+      throw new GeneralException(
+        ErrorTypeEnum.CONFLICT,
+        'Token is invalid or expired.',
+      );
+    }
+
+    if (this.result) {
+      const userExist = await this.checkUserEmailIsExist(this.result.newEmail);
+      if (userExist) {
+        throw new GeneralException(
+          ErrorTypeEnum.CONFLICT,
+          'User with this email already exist.',
+        );
+      }
+
+      await this.userRepository.changeUserEmail(
+        this.result.userId,
+        this.result.newEmail,
+      );
+      await this.userRepository.deleteChangeEmailToken(token);
+
+      await this.setActivationStatus(
+        this.result.userId,
+        UserActivationStatusEnum.ACTIVE,
+        UserActivationStatusChangeReasonsEnum.ACIVATION_BY_USER_VIA_EMAIL,
+        this.result.userId,
+      );
+      await this.setVerificationStatus(
+        this.result.userId,
+        UserVerificationStatusEnum.VERIFIED,
+        UserVerificationStatusChangeReasonsEnum.VERIFICATION_BY_EMAIL_VIA_EMAIL,
+        this.result.userId,
+      );
+
+      return true;
+    } else {
+      throw new GeneralException(
+        ErrorTypeEnum.CONFLICT,
+        'Token is invalid or expired.',
+      );
+    }
   }
 
   async sendOTPCodeForSignupByEmail(body) {
@@ -86,7 +204,7 @@ export class UserService {
       const newUser = await this.insertAUserByEmail({ ...body, StorX: {} });
       const payload = { mobile: newUser.mobile, sub: newUser._id };
 
-      this.buildingService.createDefaultBuilding(newUser._id)
+      this.buildingService.createDefaultBuilding(newUser._id);
 
       const accessSignOptions: any = {};
       accessSignOptions.expiresIn = process.env.ACCESS_TOKEN_EXPIRATION_TIME;
@@ -143,15 +261,7 @@ export class UserService {
       );
     }
 
-    const whereCondition = { isDeleted: false };
-    const populateCondition = [];
-    const selectCondition = '';
-    await this.findAUserByEmail(
-      body.email,
-      whereCondition,
-      populateCondition,
-      selectCondition,
-    );
+    await this.findAUserByEmail(body.email);
 
     console.log('this.user', this.user);
 
@@ -201,22 +311,13 @@ export class UserService {
     );
 
     if (verifyOTP) {
-      const whereCondition = { isDeleted: false };
-      const populateCondition = [];
-      const selectCondition = this.getUserKeys();
-
       await this.otpService.setVerificationStatus(
         this.otp[this.otp.length - 1]._id,
         VerificationStatusEnum.VERIFIED,
         VerificationStatusChangeReasonsEnum.VERIFICATION_BY_EMAIL_VIA_EMAIL,
       );
 
-      await this.findAUserByEmail(
-        body.email,
-        whereCondition,
-        populateCondition,
-        selectCondition,
-      );
+      await this.findAUserByEmail(body.email);
 
       console.log('this.user: ', this.user);
 
@@ -242,27 +343,6 @@ export class UserService {
           this.user._id,
         );
 
-        // Start of finding a customer in panel...
-        /* console.log("Activating a customer in panel...");
-
-                let whereCondition={};
-                let populateCondition=[];
-                let selectCondition='IsActive Email Username Password FirstName LastName Mobile createdAt updatedAt';
-                let foundCustomer = null;
-                
-                foundCustomer = await this.customerService.findACustomerByEmail(body.email, whereCondition, populateCondition, selectCondition);
-
-                if(foundCustomer){
-                    console.log("Customer found!");
-                    await this.customerService.changeActivationStatusOfCustomer({_id: foundCustomer._id, isActive: true});
-                } else {
-                    console.log("Customer not found!");
-                    throw new GeneralException(ErrorTypeEnum.NOT_FOUND,'Customer does not exist.');
-                } */
-        // End of finding a customer in panel.
-
-        // return await response
-
         return true;
       } else {
         // User does not exists.
@@ -278,7 +358,6 @@ export class UserService {
 
         const newUser = {
           email: body.email,
-          userName: body.email,
           roles: roles,
           insertDate: new Date(),
           updateDate: new Date(),
@@ -330,26 +409,17 @@ export class UserService {
     );
 
     if (!this.otp || verifyOTP == false) {
-      return false
+      return false;
     }
 
     if (verifyOTP) {
-      const whereCondition = { isDeleted: false };
-      const populateCondition = [];
-      const selectCondition = this.getUserKeys();
-
       await this.otpService.setVerificationStatus(
         this.otp[this.otp.length - 1]._id,
         VerificationStatusEnum.VERIFIED,
         VerificationStatusChangeReasonsEnum.VERIFICATION_BY_EMAIL_VIA_EMAIL,
       );
 
-      await this.findAUserByEmail(
-        body.email,
-        whereCondition,
-        populateCondition,
-        selectCondition,
-      );
+      await this.findAUserByEmail(body.email);
 
       console.log('this.user: ', this.user);
 
@@ -374,27 +444,6 @@ export class UserService {
           this.user.email,
           this.user._id,
         );
-
-        // Start of finding a customer in panel...
-        /* console.log("Activating a customer in panel...");
-
-                let whereCondition={};
-                let populateCondition=[];
-                let selectCondition='IsActive Email Username Password FirstName LastName Mobile createdAt updatedAt';
-                let foundCustomer = null;
-                
-                foundCustomer = await this.customerService.findACustomerByEmail(body.email, whereCondition, populateCondition, selectCondition);
-
-                if(foundCustomer){
-                    console.log("Customer found!");
-                    await this.customerService.changeActivationStatusOfCustomer({_id: foundCustomer._id, isActive: true});
-                } else {
-                    console.log("Customer not found!");
-                    throw new GeneralException(ErrorTypeEnum.NOT_FOUND,'Customer does not exist.');
-                } */
-        // End of finding a customer in panel.
-
-        // return await response
 
         return true;
       }
@@ -429,97 +478,10 @@ export class UserService {
     );
 
     return otp;
-
-    /* if (verifyOTP) {
-       const whereCondition = { isDeleted: false };
-      const populateCondition = [];
-      const selectCondition = this.getUserKeys();
-
-      console.log('I am in verifyOtpCodeSentByEmailForResetPassword service!');
-
-      await this.findAUserByEmail(
-        body.email,
-        whereCondition,
-        populateCondition,
-        selectCondition,
-      );
-
-      console.log('this.user: ', this.user);
-
-      await this.otpService.setVerificationStatus(
-        this.otp[this.otp.length - 1]._id,
-        VerificationStatusEnum.VERIFIED,
-        VerificationStatusChangeReasonsEnum.VERIFICATION_BY_EMAIL_VIA_EMAIL,
-      );
-
-      if (this.user) {
-        // User found
-
-        this.user.password = this.user.newPassword;
-        this.user.activationStatus = ActivationStatusEnum.ACTIVE;
-        this.user.activationStatusChangeReason =
-          UserActivationStatusChangeReasonsEnum.ACIVATION_BY_USER_VIA_EMAIL;
-        this.user.activationStatusChangeDate = new Date();
-        this.user.verificationStatus = VerificationStatusEnum.VERIFIED;
-        this.user.verificationStatusChangeReason =
-          UserVerificationStatusChangeReasonsEnum.VERIFICATION_BY_EMAIL_VIA_EMAIL;
-        this.user.verificationStatusChangeDate = new Date();
-        this.user.updateDate = new Date();
-
-        console.log('this.user: ', this.user);
-
-        await this.userRepository.editUser(this.user._id, this.user);
-
-        // Start of finding a customer in panel...
-        //console.log("Activating a customer in panel...");
-
-        //        let whereCondition={};
-        //        let populateCondition=[];
-        //        let selectCondition='IsActive Email Username Password NewPassword firstName lastName avatar lang title Mobile createdAt updatedAt';
-        //        let foundCustomer = null;
-        //        
-        //        foundCustomer = await this.customerService.findACustomerByEmail(body.email, whereCondition, populateCondition, selectCondition);
-
-        //        if(foundCustomer){
-        //            console.log("Customer found!\n", foundCustomer);
-        //            foundCustomer.Password = foundCustomer.NewPassword;
-        //            foundCustomer.updatedAt = new Date();
-
-        //            await this.customerService.editCustomer(foundCustomer._id, foundCustomer);
-        //        } else {
-        //            console.log("Customer not found!");
-        //            throw new GeneralException(ErrorTypeEnum.NOT_FOUND,'Customer does not exist.');
-        //        }
-        // End of finding a customer in panel.
-
-        // return await this.findAUserById(this.user._id);
-
-        return true;
-      } else {
-        // User not found
-
-        // return console.log('There is not such user!');
-
-        return true;
-      } 
-      return true
-      // return console.log('Correct code');
-    } else {
-      // return console.log('expired code');
-      return false;
-    } */
   }
 
   async changePasswordAndActivateAccount(data) {
-    const whereCondition = { isDeleted: false };
-    const populateCondition = [];
-    const selectCondition = '';
-    await this.findAUserByEmail(
-      data.email,
-      whereCondition,
-      populateCondition,
-      selectCondition,
-    );
+    await this.findAUserByEmail(data.email);
 
     // Check if user found
     if (this.user) {
@@ -580,16 +542,7 @@ export class UserService {
   }
 
   async sendOTPForChangePassword(email) {
-    const whereCondition = { isDeleted: false };
-    const populateCondition = [];
-    const selectCondition = '';
-
-    this.user = await this.findAUserByEmail(
-      email,
-      whereCondition,
-      populateCondition,
-      selectCondition,
-    );
+    this.user = await this.findAUserByEmail(email);
 
     this.otp = await this.otpService.findOTP(
       email,
@@ -615,35 +568,17 @@ export class UserService {
     }
   }
 
-  async checkUserNameIsExist(userName) {
-    const theUser = await this.findAUserByUserName(userName);
-
-    if (theUser) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  async checkUserEmailIsExist(userEmail) {
-    const whereCondition = { isDeleted: false };
-    const populateCondition = [];
-    const selectCondition = this.getUserKeys();
-
+  async checkUserEmailIsExist(userEmail): Promise<boolean> {
     console.log('I am in checkUserEmailIsExist!');
 
-    await this.findAUserByEmail(
-      userEmail,
-      whereCondition,
-      populateCondition,
-      selectCondition,
-    );
+    await this.findAUserByEmail(userEmail);
 
     if (this.user) {
       console.log('User found!');
       return true;
     } else {
       console.log('User not found!');
+      return false;
       throw new GeneralException(
         ErrorTypeEnum.NOT_FOUND,
         'User does not exist.',
@@ -664,16 +599,7 @@ export class UserService {
     );
 
     if (verifyOTP) {
-      const whereCondition = { isDeleted: false };
-      const populateCondition = [];
-      const selectCondition = '';
-
-      await this.findAUserByEmail(
-        data.email,
-        whereCondition,
-        populateCondition,
-        selectCondition,
-      );
+      await this.findAUserByEmail(data.email);
 
       const salt = bcrypt.genSaltSync(saltRounds);
       const hashedNewPassword = bcrypt.hashSync(String(data.newPassword), salt);
@@ -688,12 +614,18 @@ export class UserService {
     }
   }
 
-  async findAUserByEmail(
-    email,
-    whereCondition,
-    populateCondition,
-    selectCondition,
-  ) {
+  async findAUserByEmail(email) {
+    const whereCondition = { isDeleted: false };
+    const populateCondition = [
+      {
+        path: 'roles',
+        populate: {
+          path: 'permissions',
+        },
+      },
+    ];
+    const selectCondition = this.getUserKeys();
+
     return (this.user = await this.userRepository.findUserByEmail(
       email,
       whereCondition,
@@ -716,27 +648,7 @@ export class UserService {
     ));
   }
 
-  async findAUserByUserName(userName) {
-    const whereCondition = { isDeleted: false };
-    const populateCondition = [
-      {
-        path: 'roles',
-        populate: {
-          path: 'permissions',
-        },
-      },
-    ];
-    const selectCondition = this.getUserKeys();
-
-    return await this.userRepository.findAUserByUserName(
-      userName,
-      whereCondition,
-      populateCondition,
-      selectCondition,
-    );
-  }
-
-  async makeUserAdmin(userName: string, roleNames: Array<string>) {
+  async makeUserAdmin(userEmail: string, roleNames: Array<string>) {
     let newRoles = [];
 
     for (const theRole of roleNames) {
@@ -761,7 +673,7 @@ export class UserService {
       newRoles.push(adminRolePermissions._id.toString());
     }
 
-    let userRes = (await this.findAUserByUserName(userName)) as any;
+    let userRes = (await this.findAUserByEmail(userEmail)) as any;
 
     if (!userRes) {
       throw new GeneralException(
@@ -786,8 +698,8 @@ export class UserService {
     };
   }
 
-  async takeUserAdminRanks(userName: string, roleNames: Array<string>) {
-    const userRes = await this.findAUserByUserName(userName);
+  async takeUserAdminRanks(userEmail: string, roleNames: Array<string>) {
+    const userRes = await this.findAUserByEmail(userEmail);
 
     if (!userRes) {
       throw new GeneralException(
@@ -831,10 +743,6 @@ export class UserService {
     );
 
     if (this.user) {
-      /* for (const property in data) {
-        this.user[property] = data[property];
-      } */
-
       data.updatedBy = userId;
       data.updateDate = new Date();
       console.log('Edited Data:', data);
@@ -845,124 +753,6 @@ export class UserService {
       throw new GeneralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
     }
   }
-
-  /* async editUserAndInfoByUser(data, userId) {
-    const whereCondition = { isDeleted: false };
-    const populateCondition = [];
-    const selectCondition = '';
-
-    const checkUserName = await this.findAUserByUserName(data.userName);
-    if (checkUserName != null || checkUserName != undefined) {
-      throw new GeneralException(
-        ErrorTypeEnum.NOT_FOUND,
-        'This userName does not exists.',
-      );
-    }
-
-    let foundedProfileImage;
-    if (data.profileImage) {
-      foundedProfileImage = await this.mediaService.findById(
-        data.profileImage,
-        whereCondition,
-        populateCondition,
-        selectCondition,
-      );
-      if (!foundedProfileImage) {
-        throw new GeneralException(
-          ErrorTypeEnum.NOT_FOUND,
-          'profileImage not uploaded or does not exist.',
-        );
-      }
-    }
-
-    let foundedHeaderImage;
-    if (data.headerImage) {
-      foundedHeaderImage = await this.mediaService.findById(
-        data.headerImage,
-        whereCondition,
-        populateCondition,
-        selectCondition,
-      );
-      if (!foundedHeaderImage) {
-        throw new GeneralException(
-          ErrorTypeEnum.NOT_FOUND,
-          'headerImage not uploaded or does not exist.',
-        );
-      }
-    }
-
-    this.user = await this.userRepository.findUserById(
-      userId,
-      whereCondition,
-      populateCondition,
-      selectCondition,
-    );
-
-    if (this.user) {
-      this.user.firstName = data.firstName;
-      this.user.lastName = data.lastName;
-      this.user.userName = data.userName;
-      this.user.updatedBy = this.user._id;
-      this.user.updateDate = new Date();
-
-      if (this.user.info == null || this.user.info == undefined) {
-        const userInfoData = {
-          user: this.user._id,
-          nationalCode: data.nationalCode,
-          levelOfEducation: data.levelOfEducation,
-          nickName: data.nickName,
-          fatherName: data.fatherName,
-          email: data.email,
-          website: data.website,
-          telephone: data.telephone,
-          fax: data.fax,
-          biography: data.biography,
-          profileImage: data.profileImage ? foundedProfileImage._id : null,
-          headerImage: data.headerImage ? foundedHeaderImage._id : null,
-          insertedBy: this.user._id,
-          insertDate: new Date(),
-          updatedBy: this.user._id,
-          updateDate: new Date(),
-        };
-
-        this.userInfo = await this.userInfoRepository.create(userInfoData);
-        this.user.info = await this.userInfo._id;
-        await this.userRepository.editUser(this.user._id, this.user);
-        return await this.findAUserById(this.user._id);
-      } else {
-        this.userInfo = await this.userInfoRepository.findAUserInfoByUserId(
-          this.user._id,
-        );
-
-        this.userInfo.nationalCode = data.nationalCode;
-        this.userInfo.levelOfEducation = data.levelOfEducation;
-        this.userInfo.nickName = data.nickName;
-        this.userInfo.fatherName = data.fatherName;
-        this.userInfo.email = data.email;
-        this.userInfo.website = data.website;
-        this.userInfo.telephone = data.telephone;
-        this.userInfo.fax = data.fax;
-        this.userInfo.biography = data.biography;
-        this.userInfo.profileImage = data.profileImage
-          ? foundedProfileImage._id
-          : this.userInfo.profileImage;
-        this.userInfo.headerImage = data.headerImage
-          ? foundedHeaderImage._id
-          : this.userInfo.headerImage;
-        this.userInfo.updatedBy = this.user._id;
-        this.userInfo.updateDate = new Date();
-
-        await this.userInfoRepository.editUserInfo(
-          this.userInfo._id,
-          this.userInfo,
-        );
-        await this.userRepository.editUser(this.user._id, this.user);
-        return await this.findAUserById(this.user._id);
-      }
-    } else {
-      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
-    }
-  } */
 
   async changeMyProfileActivation(userId) {
     const whereCondition = { isDeleted: false };
@@ -1064,233 +854,6 @@ export class UserService {
     } else {
       throw new GeneralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
     }
-  }
-
-  async editUserByPanel(data, user, userId) {
-    const whereCondition = { isDeleted: false };
-    const populateCondition = [];
-    const selectCondition = '';
-
-    const checkUserName = await this.findAUserByUserName(data.userName);
-    if (checkUserName != null || checkUserName != undefined) {
-      throw new GeneralException(
-        ErrorTypeEnum.NOT_FOUND,
-        'This userName is exist.',
-      );
-    }
-
-    const foundedProfileImage = await this.mediaService.findById(
-      data.profileImage,
-      whereCondition,
-      populateCondition,
-      selectCondition,
-    );
-    if (data.profileImage) {
-      if (!foundedProfileImage) {
-        throw new GeneralException(
-          ErrorTypeEnum.NOT_FOUND,
-          'profileImage not uploaded or does not exist.',
-        );
-      }
-    }
-
-    const foundedHeaderImage = await this.mediaService.findById(
-      data.headerImage,
-      whereCondition,
-      populateCondition,
-      selectCondition,
-    );
-    if (data.headerImage) {
-      if (!foundedHeaderImage) {
-        throw new GeneralException(
-          ErrorTypeEnum.NOT_FOUND,
-          'headerImage not uploaded or does not exist.',
-        );
-      }
-    }
-
-    this.user = await this.userRepository.findUserById(
-      user,
-      whereCondition,
-      populateCondition,
-      selectCondition,
-    );
-
-    if (this.user) {
-      this.user.firstName = data.firstName;
-      this.user.lastName = data.lastName;
-      this.user.userName = data.userName;
-      // this.user.mobile = data.mobile;
-      this.user.password = data.password;
-      this.user.roles = data.roles;
-      this.user.activationStatus = data.activationStatus;
-      this.user.verificationStatus = data.verificationStatus;
-      this.user.updatedBy = this.user._id;
-      this.user.updateDate = new Date();
-
-      if (this.user.info == null || this.user.info == undefined) {
-        const userInfoData = {
-          user: this.user._id,
-          nationalCode: data.nationalCode,
-          levelOfEducation: data.levelOfEducation,
-          nickName: data.nickName,
-          fatherName: data.fatherName,
-          email: data.email,
-          website: data.website,
-          telephone: data.telephone,
-          fax: data.fax,
-          biography: data.biography,
-          profileImage: foundedProfileImage._id,
-          headerImage: foundedHeaderImage._id,
-          insertedBy: this.user._id,
-          insertDate: new Date(),
-          updatedBy: this.user._id,
-          updateDate: new Date(),
-        };
-
-        this.userInfo = await this.userInfoRepository.create(userInfoData);
-        this.user.info = await this.userInfo._id;
-        await this.userRepository.editUser(this.user._id, this.user);
-        return await this.findAUserById(this.user._id);
-      } else {
-        this.userInfo = await this.userInfoRepository.findAUserInfoByUserId(
-          this.user._id,
-        );
-
-        this.userInfo.nationalCode = data.nationalCode;
-        this.userInfo.levelOfEducation = data.levelOfEducation;
-        this.userInfo.nickName = data.nickName;
-        this.userInfo.fatherName = data.fatherName;
-        this.userInfo.email = data.email;
-        this.userInfo.website = data.website;
-        this.userInfo.telephone = data.telephone;
-        this.userInfo.fax = data.fax;
-        this.userInfo.biography = data.biography;
-        this.userInfo.profileImage = foundedProfileImage._id;
-        this.userInfo.headerImage = foundedHeaderImage._id;
-        this.userInfo.updatedBy = this.user._id;
-        this.userInfo.updateDate = new Date();
-
-        await this.userInfoRepository.editUserInfo(
-          this.userInfo._id,
-          this.userInfo,
-        );
-        await this.userRepository.editUser(this.user._id, this.user);
-        return await this.findAUserById(this.user._id);
-      }
-    } else {
-      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
-    }
-  }
-
-  async insertUserByPanel(data, userId) {
-    const whereCondition = { isDeleted: false };
-    const populateCondition = [];
-    const selectCondition = '';
-
-    const checkUserName = await this.findAUserByUserName(data.userName);
-    if (checkUserName != null || checkUserName != undefined) {
-      throw new GeneralException(
-        ErrorTypeEnum.NOT_FOUND,
-        'This userName is exist.',
-      );
-    }
-
-    const foundedProfileImage = await this.mediaService.findById(
-      data.profileImage,
-      whereCondition,
-      populateCondition,
-      selectCondition,
-    );
-    if (data.profileImage) {
-      if (!foundedProfileImage) {
-        throw new GeneralException(
-          ErrorTypeEnum.NOT_FOUND,
-          'profileImage not uploaded or does not exist.',
-        );
-      }
-    }
-
-    const foundedHeaderImage = await this.mediaService.findById(
-      data.headerImage,
-      whereCondition,
-      populateCondition,
-      selectCondition,
-    );
-    if (data.headerImage) {
-      if (!foundedHeaderImage) {
-        throw new GeneralException(
-          ErrorTypeEnum.NOT_FOUND,
-          'headerImage not uploaded or does not exist.',
-        );
-      }
-    }
-
-    const salt = bcrypt.genSaltSync(saltRounds);
-    const hashedNewPassword = bcrypt.hashSync(String(data.password), salt);
-
-    const newUser = {
-      firstName: data.firstName ? data.firstName : null,
-      lastName: data.lastName ? data.lastName : null,
-      userName: data.userName ? data.userName : null,
-      mobile: data.mobile ? data.mobile : null,
-      password: data.password ? hashedNewPassword : null,
-      roles: data.roles ? data.roles : null,
-      activationStatus: data.activationStatus ? data.activationStatus : null,
-      verificationStatus: data.verificationStatus
-        ? data.verificationStatus
-        : null,
-      insertedBy: userId,
-      insertDate: new Date(),
-      updatedBy: userId,
-      updateDate: new Date(),
-    };
-
-    const insertedUser = await this.userRepository.insertUser(newUser);
-
-    if (
-      data.nationalCode ||
-      data.levelOfEducation ||
-      data.nickName ||
-      data.fatherName ||
-      data.email ||
-      data.website ||
-      data.telephone ||
-      data.fax ||
-      data.biography ||
-      data.profileImage ||
-      data.headerImage
-    ) {
-      const userInfoData = {
-        user: insertedUser._id,
-        nationalCode: data.nationalCode,
-        levelOfEducation: data.levelOfEducation,
-        nickName: data.nickName,
-        fatherName: data.fatherName,
-        email: data.email,
-        website: data.website,
-        telephone: data.telephone,
-        fax: data.fax,
-        biography: data.biography,
-        profileImage: foundedProfileImage._id,
-        headerImage: foundedHeaderImage._id,
-        insertedBy: userId,
-        insertDate: new Date(),
-        updatedBy: userId,
-        updateDate: new Date(),
-      };
-
-      const insertedUserInfo = await this.userInfoRepository.create(
-        userInfoData,
-      );
-
-      const newUserInfo = {
-        info: insertedUserInfo._id,
-      };
-      await this.userRepository.editUser(insertedUser._id, newUserInfo);
-    }
-
-    return await this.findAUserById(insertedUser._id);
   }
 
   async generateTokensByEmail(email, userId) {
@@ -1483,11 +1046,29 @@ export class UserService {
       },
     ];
     const selectCondition = this.getUserKeys();
-    //'firstName lastName address avatar lang title userName StorX email mobile walletAddress roles info activationStatus activationStatusChangeReason activationStatusChangedBy activationStatusChangeDate verificationStatus verificationStatusChangeReason verificationStatusChangedBy verificationStatusChangeDate insertedBy insertDate updatedBy updateDate isDeletable isDeleted deletedBy deleteDate deletionReason'
-    //this.getUserKeys();
 
     return await this.userRepository.findUserById(
       userId,
+      whereCondition,
+      populateCondition,
+      selectCondition,
+    );
+  }
+
+  async getUserProfileByUserEmail(userEmail: string) {
+    const whereCondition = { isDeleted: false };
+    const populateCondition = [
+      {
+        path: 'roles',
+        populate: {
+          path: 'permissions',
+        },
+      },
+    ];
+    const selectCondition = this.getUserKeys();
+
+    return await this.userRepository.findUserByEmail(
+      userEmail,
       whereCondition,
       populateCondition,
       selectCondition,
@@ -1506,30 +1087,6 @@ export class UserService {
       userId,
       whereCondition,
       [],
-      selectCondition,
-    );
-  }
-
-  async getUserProfileByUserNameFromUser(userName) {
-    const whereCondition = {
-      isDeleted: false,
-      // activationStatus: UserActivationStatusEnum.ACTIVE,
-      // verificationStatus: UserVerificationStatusEnum.VERIFIED,
-    };
-    const populateCondition = [
-      {
-        path: 'roles',
-        populate: {
-          path: 'permissions',
-        },
-      },
-    ];
-    const selectCondition = this.getUserKeys();
-
-    return await this.userRepository.findAUserByUserName(
-      userName,
-      whereCondition,
-      populateCondition,
       selectCondition,
     );
   }
@@ -1644,7 +1201,6 @@ export class UserService {
         $or: [
           { firstName: { $regex: searchText, $options: 'i' } },
           { lastNname: { $regex: searchText, $options: 'i' } },
-          { userName: { $regex: searchText, $options: 'i' } },
           { mobile: { $regex: searchText, $options: 'i' } },
           {
             activationStatusChangeReason: { $regex: searchText, $options: 'i' },
@@ -1666,15 +1222,15 @@ export class UserService {
       populate: [
         {
           path: 'insertedBy',
-          select: '_id userName mobile firstName lastName',
+          select: '_id email mobile firstName lastName',
         },
         {
           path: 'updatedBy',
-          select: '_id userName mobile firstName lastName',
+          select: '_id email mobile firstName lastName',
         },
         {
           path: 'deletedBy',
-          select: '_id userName mobile firstName lastName',
+          select: '_id email mobile firstName lastName',
         },
       ],
       limit: limit,
@@ -1847,8 +1403,8 @@ export class UserService {
     }
   }
 
-  async getUserShortRolesByUserName(userName) {
-    const userRes = await this.findAUserByUserName(userName);
+  async getUserShortRolesByUserEmail(userEmail: string) {
+    const userRes = await this.findAUserByEmail(userEmail);
     if (!userRes) {
       throw new GeneralException(ErrorTypeEnum.NOT_FOUND, 'Account not found!');
     }
@@ -1987,7 +1543,7 @@ export class UserService {
       _id: data._id,
       firstName: data.firstName ? data.firstName : '',
       lastName: data.lastName ? data.lastName : '',
-      userName: data.userName ? data.userName : '',
+      email: data.email ? data.email : '',
       mobile: data.mobile ? data.mobile : '',
       roles: data.roles ? data.roles : [],
       info: data.info ? data.info : {},
@@ -2007,7 +1563,6 @@ export class UserService {
       _id: data._id,
       firstName: data.firstName ? data.firstName : '',
       lastName: data.lastName ? data.lastName : '',
-      userName: data.userName ? data.userName : '',
       address: data.address ? data.address : '',
       timezone: data.timezone ? data.timezone : '',
       mobile: data.mobile ? data.mobile : '',
@@ -2093,7 +1648,7 @@ export class UserService {
         $or: [
           { firstName: { $regex: searchText, $options: 'i' } },
           { lastName: { $regex: searchText, $options: 'i' } },
-          { userName: { $regex: searchText, $options: 'i' } },
+          { email: { $regex: searchText, $options: 'i' } },
           { mobile: { $regex: searchText, $options: 'i' } },
         ],
       };
@@ -2111,20 +1666,20 @@ export class UserService {
         },
         {
           path: 'insertedBy',
-          select: 'firstName lastName userName mobile',
+          select: 'firstName lastName email mobile',
         },
         {
           path: 'updatedBy',
-          select: 'firstName lastName userName mobile',
+          select: 'firstName lastName email mobile',
         },
         {
           path: 'deletedBy',
-          select: 'firstName lastName userName mobile',
+          select: 'firstName lastName email mobile',
         },
       ],
       limit: limit,
       select:
-        'firstName lastName avatar lang title userName StorX mobile roles info activationStatus activationStatusChangeReason activationStatusChangedBy activationStatusChangeDate verificationStatus verificationStatusChangeReason verificationStatusChangedBy verificationStatusChangeDate insertedBy insertDate updatedBy updateDate isDeletable isDeleted deletedBy deleteDate deletionReason',
+        'firstName lastName avatar lang title email StorX mobile roles info activationStatus activationStatusChangeReason activationStatusChangedBy activationStatusChangeDate verificationStatus verificationStatusChangeReason verificationStatusChangedBy verificationStatusChangeDate insertedBy insertDate updatedBy updateDate isDeletable isDeleted deletedBy deleteDate deletionReason',
     };
 
     return await this.userRepository.paginate(finalQuery, options);
@@ -2182,7 +1737,6 @@ export class UserService {
 
     const newUser = {
       email: body.email,
-      userName: body.email,
       password: bcrypt.hashSync(String(body.password), salt),
       StorX: body.StorX || {},
       roles: roles,
@@ -2196,18 +1750,9 @@ export class UserService {
   }
 
   async insertUserByEmail(body) {
-    const whereCondition = { isDeleted: false };
-    const populateCondition = [];
-    const selectCondition = this.getUserKeys();
-
     console.log('I am in insertUserByEmail service!');
 
-    await this.findAUserByEmail(
-      body.email,
-      whereCondition,
-      populateCondition,
-      selectCondition,
-    );
+    await this.findAUserByEmail(body.email);
 
     console.log('this.user: ', this.user);
 
@@ -2231,7 +1776,6 @@ export class UserService {
 
       const newUser = {
         email: body.email,
-        userName: body.email,
         password: bcrypt.hashSync(String(body.password), salt),
         roles: roles,
         insertDate: new Date(),

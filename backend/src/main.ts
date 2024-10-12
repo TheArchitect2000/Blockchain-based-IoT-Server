@@ -37,6 +37,8 @@ async function bootstrap() {
   // app.enableCors();
   app.enableCors({
     origin: [
+      'http://localhost:5173',
+      'http://localhost:5174',
       'http://localhost:3000',
       'http://localhost:4000',
       'https://developer.fidesinnova.io:3000',

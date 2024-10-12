@@ -15,13 +15,6 @@ const schema = new Schema({
     required: false,
     default: null,
   },
-  userName: {
-    type: String,
-    required: false,
-    // unique: true,
-    // lowercase: true,
-    default: null,
-  },
   tel: {
     type: Object,
     required: false,
@@ -191,8 +184,33 @@ const schema = new Schema({
   },
 });
 
+const emailTokenSchema = new Schema({
+  userId: {
+    type: String,
+    required: true,
+  },
+  token: {
+    type: String,
+    required: true,
+  },
+  newEmail: {
+    type: String,
+    required: true,
+  },
+  expireDate: {
+    type: Date,
+    required: true,
+  },
+});
+
 schema.plugin(require('mongoose-paginate-v2'));
 schema.plugin(require('mongoose-aggregate-paginate-v2'));
 schema.index({ '$**': 'text' });
 
+emailTokenSchema.plugin(require('mongoose-paginate-v2'));
+emailTokenSchema.plugin(require('mongoose-aggregate-paginate-v2'));
+emailTokenSchema.index({ '$**': 'text' });
+
 export const userSchema = schema;
+
+export const changeEmailTokenSchema = emailTokenSchema;

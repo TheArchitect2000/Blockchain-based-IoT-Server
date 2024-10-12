@@ -6,9 +6,9 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class makeUserAdminDto {
   @IsOptional()
-  @IsString({ message: 'userName must be string.' })
+  @IsString({ message: 'userEmail must be string.' })
   @ApiProperty({ required: true })
-  userName: string;
+  userEmail: string;
   
   @IsOptional()
   @IsString({ message: 'roleNames must be array of strings.' })

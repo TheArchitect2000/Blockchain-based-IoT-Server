@@ -80,10 +80,10 @@ export class MediaService {
     let populateCondition = [
       {
         path: 'user',
-        select: 'firstName lastName userName mobile',
+        select: 'firstName lastName email mobile',
       },
     ];
-    let selectCondition = 'firstName lastName userName mobile';
+    let selectCondition = 'firstName lastName email mobile';
 
     return await this.mediaRepository.findById(id);
   }

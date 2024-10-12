@@ -1,5 +1,6 @@
-import { userSchema } from '../schemas/user.schema';
+import { changeEmailTokenSchema, userSchema } from '../schemas/user.schema';
 
 export const userFeature = [
-  { name: 'user', schema: userSchema }, // The name of user must be the same in @InjectModel in repository and service
+  { name: 'user', schema: userSchema },
+  { name: 'email-token', schema: changeEmailTokenSchema },
 ];

@@ -127,7 +127,7 @@ export class UserInfoController {
     return this.result;
   }
 
-  @Patch('user-info')
+  /* @Patch('user-info')
   @HttpCode(201)
   @ApiOperation({
     summary: 'Edit user info by panel.',
@@ -154,7 +154,7 @@ export class UserInfoController {
       });
 
     return this.result;
-  }
+  } */
 
   @Delete('user-info')
   @HttpCode(200)
