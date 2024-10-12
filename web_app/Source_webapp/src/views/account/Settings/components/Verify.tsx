@@ -24,7 +24,7 @@ const Verify = () => {
     async function requestVerifyAccount() {
         setRequestLoading(true)
         try {
-            const res = await apiRequestVerifyEmail(apiData?.userName || '')
+            const res = await apiRequestVerifyEmail(apiData?.email || '')
             if (res) {
                 toast.push(
                     <Notification title="Success" type="success">

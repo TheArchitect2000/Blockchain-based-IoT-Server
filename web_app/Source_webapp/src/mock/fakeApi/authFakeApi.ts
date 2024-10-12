@@ -11,9 +11,9 @@ export default function authFakeApi(server: Server, apiPrefix: string) {
         })
         console.log('user', user)
         if (user) {
-            const { avatar, userName, email, authority } = user
+            const { avatar, email, authority } = user
             return {
-                user: { avatar, userName, email, authority },
+                user: { avatar, email, authority },
                 token: 'wVYrxaeNa9OxdnULvde1Au5m5w63',
             }
         }

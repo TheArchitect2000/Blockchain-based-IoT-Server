@@ -129,19 +129,6 @@ const SignUpForm = (props: SignUpFormProps) => {
                 {({ touched, errors, isSubmitting }) => (
                     <Form>
                         <FormContainer>
-                            {/* <FormItem
-                                label="User Name"
-                                invalid={errors.userName && touched.userName}
-                                errorMessage={errors.userName}
-                            >
-                                <Field
-                                    type="text"
-                                    autoComplete="off"
-                                    name="userName"
-                                    placeholder="User Name"
-                                    component={Input}
-                                />
-                            </FormItem> */}
                             <FormItem
                                 label="Email"
                                 invalid={errors.email && touched.email}

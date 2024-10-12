@@ -46,7 +46,6 @@ function useAuth() {
                         setUser(
                             user || {
                                 avatar: '',
-                                userName: 'Anonymous',
                                 authority: ['USER'],
                                 email: '',
                             }
@@ -114,7 +113,6 @@ function useAuth() {
         dispatch(
             setUser({
                 avatar: '',
-                userName: '',
                 email: '',
                 authority: [],
             })

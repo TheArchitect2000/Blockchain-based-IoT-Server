@@ -4,9 +4,14 @@ import React, { useState, useEffect } from 'react'
 interface ImageWithFallbackProps {
     src: string
     alt: string
+    className?: string
 }
 
-const ImageWithFallBack: React.FC<ImageWithFallbackProps> = ({ src, alt }) => {
+const ImageWithFallBack: React.FC<ImageWithFallbackProps> = ({
+    src,
+    alt,
+    className,
+}) => {
     const [imageSrc, setImageSrc] = useState<string>('/img/others/img-1.jpg') // Fallback image
     const [isLoaded, setIsLoaded] = useState<boolean>(false)
 
@@ -22,13 +27,14 @@ const ImageWithFallBack: React.FC<ImageWithFallbackProps> = ({ src, alt }) => {
     return (
         <figure className="relative">
             <img
+                className={className || ''}
                 src={imageSrc}
                 alt={alt}
                 style={{ opacity: isLoaded ? 1 : 0.5 }} // Optional: style to indicate loading state
             />
             <Loading
                 loading={!isLoaded}
-                spinnerClass='text-[cyan]'
+                spinnerClass="text-[cyan]"
                 className="absolute inset-0 m-auto w-1/2 h-1/2 flex justify-center items-center"
             />
         </figure>

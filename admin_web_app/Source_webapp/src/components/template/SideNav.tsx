@@ -10,13 +10,14 @@ import {
     LOGO_X_GUTTER,
 } from '@/constants/theme.constant'
 import Logo from '@/components/template/Logo'
-import navigationConfig from '@/configs/navigation.config'
+import navigationConfig, { fixNavigationWithRoles } from '@/configs/navigation.config'
 import VerticalMenuContent from '@/components/template/VerticalMenuContent'
 import useResponsive from '@/utils/hooks/useResponsive'
 import { useAppSelector } from '@/store'
 import { useEffect, useState } from 'react'
 import { apiGetNodeTheme } from '@/services/UserApi'
 import ImageWithFallBack from '@/utils/components/ImageWithFallBack'
+import { NavigationTree } from '@/@types/navigation'
 
 const sideNavStyle = {
     width: SIDE_NAV_WIDTH,
@@ -32,6 +33,7 @@ const sideNavCollapseStyle = {
 }
 
 const SideNav = () => {
+    const { themeBackground } = useAppSelector((state) => state.theme)
     const themeColor = useAppSelector((state) => state.theme.themeColor)
     const primaryColorLevel = useAppSelector(
         (state) => state.theme.primaryColorLevel
@@ -51,8 +53,14 @@ const SideNav = () => {
 
     const [nodeLogo, setNodeLogo] = useState('')
 
+    const [nav, setNav] = useState<NavigationTree[]>([])
+
+    const { email: userEmail } = useAppSelector((state) => state.auth.user)
+
     useEffect(() => {
         async function fetchData() {
+            const navConf = await fixNavigationWithRoles(userEmail || '')
+            setNav(navConf)
             const res = (await apiGetNodeTheme()) as any
             setNodeLogo(res?.data?.data.logo)
         }
@@ -70,7 +78,7 @@ const SideNav = () => {
         <VerticalMenuContent
             navMode={navMode}
             collapsed={sideNavCollapse}
-            navigationTree={navigationConfig}
+            navigationTree={nav}
             routeKey={currentRouteKey}
             userAuthority={userAuthority as string[]}
             direction={direction}
@@ -85,7 +93,7 @@ const SideNav = () => {
                         sideNavCollapse ? sideNavCollapseStyle : sideNavStyle
                     }
                     className={classNames(
-                        'side-nav w-full',
+                        `side-nav w-full bg-${themeBackground}`,
                         sideNavColor(),
                         !sideNavCollapse && 'side-nav-expand'
                     )}

@@ -201,13 +201,9 @@ const UsersTable: React.FC<UsersTableProps> = ({ setCount }) => {
                         className="!w-[60px] !h-[60px] overflow-hidden border-2 border-white dark:border-gray-800 shadow-lg"
                         size={60}
                         shape="circle"
+                        src={row.avatar}
                     >
-                        {(row.avatar && (
-                            <img
-                                className="allusers-profile"
-                                src={row.avatar}
-                            />
-                        )) || (
+                        {!row.avatar && (
                             <span className="text-3xl">
                                 <HiUser />
                             </span>

@@ -20,7 +20,6 @@ type UserData = {
     _id: string
     firstName: string
     lastName: string
-    userName: string
     mobile: string
     email: string
     walletAddress: string
