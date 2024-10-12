@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react'
 //import { useMQTT } from 'mqtt-vue-hook'
 //import mqtt from 'mqtt'
@@ -13,7 +12,7 @@ const DeviceField = ({
     value: string | number
 }) => {
     return (
-        <div>
+        <div className="flex flex-col justify-end">
             <span>{title}</span>
             <p className="text-gray-700 dark:text-gray-200 font-semibold">
                 {value}
@@ -23,92 +22,14 @@ const DeviceField = ({
 }
 
 function DeviceSpecifics({ data }: { data: DeviceData }) {
-    const connectUrl = `mqtts://${import.meta.env.VITE_HOST_NAME}:8883`
-    //const mqttHook = useMQTT()
-    let topic = data.deviceEncryptedId
-    const [client, setClient] = useState<any>(null)
-    const [connectStatus, setConnectStatus] = useState('')
-
-    const mqttConnect = (host: string, mqttOption: any) => {
-        setConnectStatus('Connecting')
-        //setClient(mqtt.connect(host, mqttOption))
-    }
-
-    /* mqttConnect(connectUrl, {
-        clean: true,
-        connectTimeout: 4000,
-        reconnectPeriod: 1000,
-        protocolId: 'MQIsdp',
-        protocolVersion: 3,
-    }) */
-
-    useEffect(() => {
-        if (client) {
-            console.log(client)
-            client.on('connect', () => {
-                setConnectStatus('Connected')
-            })
-            client.on('error', (err: any) => {
-                console.error('Connection error: ', err)
-                client.end()
-            })
-            client.on('reconnect', () => {
-                setConnectStatus('Reconnecting')
-            })
-            client.on('message', (topic: any, message: any) => {
-                const payload = { topic, message: message.toString() }
-                //setPayload(payload)
-            })
-        }
-    }, [client])
-
-    useEffect(() => {
-        /* async function connect() {
-            mqttHook.connect(connectUrl, {
-                clean: true,
-                connectTimeout: 4000,
-                reconnectPeriod: 1000,
-                clientId: `mqtt_client_${Math.random()
-                    .toString(16)
-                    .substring(2, 10)}`,
-                protocolId: 'MQIsdp',
-                protocolVersion: 3,
-            })
-
-            mqttHook.registerEvent(
-                'on-connect', // mqtt status: on-connect, on-reconnect, on-disconnect, on-connect-fail
-                (topic: string, message: string) => {
-                    console.log('mqtt connected')
-                },
-                'string_key'
-            )
-        } */
-
-        //connect()
-
-        /* const client = mqtt.connect(connectUrl.toString(), {
-            clean: true,
-            connectTimeout: 4000,
-            reconnectPeriod: 1000,
-            protocolId: 'MQIsdp',
-            protocolVersion: 3,
-        })
-
-        client.on('connect', () => {
-            client.subscribe(topic, (err) => {
-                if (!err) {
-                    console.log('Connected To :', topic)
-                } else {
-                    console.log('Error While Connecting To :', topic)
-                }
-            })
-        }) */
-    }, [])
-
     return (
-        <Card className="p-6 h-full">
-            <h2 className="mb-4">Device Details</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-y-7 gap-x-4 mt-8">
+        <Card
+            className="h-full"
+            bodyClass="flex flex-col p-6 gap-[24px] h-full justify-between"
+        >
+            <h2>Device Details</h2>
+
+            <div className="w-full h-full grid grid-cols-2 gap-y-7 gap-x-4">
                 <DeviceField title="Device Name" value={data.deviceName} />
                 <DeviceField title="Device Type" value={data.deviceType} />
 

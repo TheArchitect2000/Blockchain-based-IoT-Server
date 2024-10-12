@@ -128,11 +128,11 @@ export default function MakeAdmin() {
     async function handleRankApply() {
         try {
             setApiCalling(true)
-            await apiGiveUserAdminRank(selected.userName, selectedRanks)
-            await apiTakeUserAdminRank(selected.userName, notSelectedRanks)
+            await apiGiveUserAdminRank(selected.email, selectedRanks)
+            await apiTakeUserAdminRank(selected.email, notSelectedRanks)
             toast.push(
                 <Notification
-                    title={`Ranks successfully gived to ${selected.userName}`}
+                    title={`Ranks successfully gived to ${selected.email}`}
                     type="success"
                 />,
                 {

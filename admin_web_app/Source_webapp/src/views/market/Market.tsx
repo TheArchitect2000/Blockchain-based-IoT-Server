@@ -3,7 +3,12 @@ import ServiceCard from './components/Card'
 import Statistic from '../crm/CrmDashboard/components/Statistic'
 import { useEffect, useState } from 'react'
 import { Loading } from '@/components/shared'
-import { apiGetAllPublishedServices, apiGetAllRequestPublishServices, apiGetAllServices } from '@/services/ServiceAPI'
+import {
+    apiGetAllPublishedServices,
+    apiGetAllRequestPublishServices,
+    apiGetAllServices,
+} from '@/services/ServiceAPI'
+import CardHolder from '@/components/ui/CardHolder'
 
 function Market() {
     const [loading, setLoading] = useState(true)
@@ -23,19 +28,21 @@ function Market() {
             <h3 className="pb-4">Service Market</h3>
             <Statistic />
             {(loading === false && (
-                <div className="grid xl:grid-cols-3">
+                <CardHolder>
                     {data?.map((service: any) => (
                         <ServiceCard
                             key={service._id}
-                            className="mt-8 mx-auto"
+                            className=""
+                            node={service.nodeId || ''}
                             name={service.serviceName}
                             description={service.description}
                             type={service.serviceType}
                             installationPrice={service.installationPrice}
                             serviceImage={service.serviceImage || ''}
+                            serviceData={service}
                         />
                     ))}
-                </div>
+                </CardHolder>
             )) || (
                 <div className="w-full h-[65vh] flex justify-center items-center">
                     <Loading loading={true} />

@@ -11,7 +11,7 @@ export async function apiGetUserProfileByEmail<T>(userEmail: string) {
     return ApiService.fetchData<T>({
         url:
             import.meta.env.VITE_URL +
-            `v1/user/get-profile-by-username/${userEmail}`,
+            `v1/user/get-profile-by-email/${userEmail}`,
         method: 'get',
     })
 }
@@ -39,9 +39,9 @@ export async function apiGetAllUsers<T>() {
     })
 }
 
-export async function apiGetUserAdminRoles<T>(userName: string) {
+export async function apiGetUserAdminRoles<T>(userEmail: string) {
     return ApiService.fetchData<T>({
-        url: `${import.meta.env.VITE_URL}user/get-short-roles/${userName}`,
+        url: `${import.meta.env.VITE_URL}user/get-short-roles/${userEmail}`,
         method: 'get',
     })
 }
@@ -54,7 +54,7 @@ export async function apiGiveUserAdminRank<T>(
         url: `${import.meta.env.VITE_URL}user/give-admin`,
         method: 'post',
         data: {
-            userName: userEmail,
+            userEmail: userEmail,
             roleNames: roleNames,
         },
     })
@@ -67,7 +67,7 @@ export async function apiTakeUserAdminRank<T>(
     return ApiService.fetchData<T>({
         url: `${import.meta.env.VITE_URL}user/take-admin`,
         method: 'post',
-        data: { userName: userEmail, roleNames: roleNames },
+        data: { userEmail: userEmail, roleNames: roleNames },
     })
 }
 

@@ -1,3 +1,4 @@
+import './style.scss'
 import Input from '@/components/ui/Input'
 import Avatar from '@/components/ui/Avatar'
 import Upload from '@/components/ui/Upload'
@@ -7,8 +8,8 @@ import Switcher from '@/components/ui/Switcher'
 import Notification from '@/components/ui/Notification'
 import toast from '@/components/ui/toast'
 import { FormContainer } from '@/components/ui/Form'
-import FormDesription from './FormDesription'
-import FormRow from './FormRow'
+import FormDesription from '../FormDesription'
+import FormRow from '../FormRow'
 import { Field, Form, Formik } from 'formik'
 import {
     HiOutlineUserCircle,
@@ -38,16 +39,22 @@ import {
     useAppDispatch,
     useAppSelector,
 } from '@/store'
-import { apiEditUserProfile, apiGetCurUserProfile } from '@/services/UserApi'
+import {
+    apiEditUserProfile,
+    apiGetCurUserProfile,
+    apiRequestChangeEmail,
+    apiVerifyChangeEmailWithToken,
+} from '@/services/UserApi'
 import { useEffect, useState } from 'react'
 import { apiUploadMedia } from '@/services/MediaAPI'
 import { Loading } from '@/components/shared'
 import { Dialog } from '@/components/ui'
 import ServerImageDialog from '@/views/dialog/ServerImageDialog'
-import TimeZoneSelector from './TimezoneSelector'
-import CountrySelector from './CountrySelector'
-import PhoneNumberSelector from './PhoneNumberSelector'
+import TimeZoneSelector from '../TimezoneSelector'
+import CountrySelector from '../CountrySelector'
+import PhoneNumberSelector from '../PhoneNumberSelector'
 import { SingleValue } from 'react-select'
+import useAuth from '@/utils/hooks/useAuth'
 
 export type ProfileFormModel = {
     firstName: string
@@ -104,12 +111,22 @@ interface Country {
     value: string
 }
 
+function validateEmail(email: string) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return emailRegex.test(email)
+}
+
 const Profile = ({}: ProfileProps) => {
     const [apiData, setApiData] = useState<any>({})
     const [imageSrc, setImageSrc] = useState('')
     const [imageFile, setImageFile] = useState('')
     const [loading, setLoading] = useState(true)
+    const [apiLoading, setApiLoading] = useState(false)
     const [imageModal, setImageModal] = useState(false)
+    const [emailModal, setEmailModal] = useState(false)
+    const [newMail, setNewMail] = useState('')
+    const [changeEmailStep, setChangeEmailStep] = useState<string>('')
+    const [inputs, setInputs] = useState<string[]>(Array(5).fill(''))
     const [selectImageModal, setSelectImageModal] = useState(false)
     const [selectedTimeZone, setSelectedTimeZone] = useState<any>()
     const [phoneNumber, setPhoneNumber] = useState<{
@@ -120,6 +137,8 @@ const Profile = ({}: ProfileProps) => {
         countryCode: null,
     })
     const dispatch = useAppDispatch()
+
+    const { signOut } = useAuth()
 
     useEffect(() => {
         async function fetchData() {
@@ -232,6 +251,111 @@ const Profile = ({}: ProfileProps) => {
         }
     }
 
+    async function handleRequestChangeEmail() {
+        if (!validateEmail(newMail)) {
+            return toast.push(
+                <Notification title={'Invalid email address'} type="danger" />,
+                {
+                    placement: 'top-center',
+                }
+            )
+        }
+        if (newMail.length == 0) {
+            return toast.push(
+                <Notification
+                    title={`New email input can't be empty`}
+                    type="danger"
+                />,
+                {
+                    placement: 'top-center',
+                }
+            )
+        }
+        setApiLoading(true)
+        try {
+            const res = await apiRequestChangeEmail(newMail)
+            setApiLoading(false)
+            setChangeEmailStep('token')
+            toast.push(
+                <Notification
+                    title={
+                        'A verification code has been sent to your email. Please enter the code to complete the email change.'
+                    }
+                    type="success"
+                />,
+                {
+                    placement: 'top-center',
+                }
+            )
+        } catch (error: any) {
+            setApiLoading(false)
+            return toast.push(
+                <Notification
+                    title={error.response.data.message}
+                    type="danger"
+                />,
+                {
+                    placement: 'top-center',
+                }
+            )
+        }
+    }
+
+    const clearTokenInputs = () => {
+        setInputs(Array(5).fill(''))
+    }
+
+    const handleTokenInputsChange = (value: string, index: number) => {
+        const newInputs = [...inputs]
+        newInputs[index] = value
+
+        if (value.length === 1 && index < inputs.length - 1) {
+            const nextInput = document.getElementById(`input-${index + 1}`)
+            nextInput?.focus()
+        }
+
+        setInputs(newInputs)
+
+        if (newInputs.every((input) => input.length === 1)) {
+            fetchValidateToken(newInputs)
+        }
+    }
+
+    const fetchValidateToken = async (inputValues: string[]) => {
+        const token = inputValues.join('')
+        setApiLoading(true)
+        toast.push(
+            <Notification
+                title={'Checking your entered token, please wait...'}
+                type="info"
+            />,
+            {
+                placement: 'top-center',
+            }
+        )
+        try {
+            const res = await apiVerifyChangeEmailWithToken(token)
+            setApiLoading(false)
+            setChangeEmailStep('finish')
+            setTimeout(() => {
+                signOut()
+            }, 2000)
+        } catch (error: any) {
+            setChangeEmailStep('finish')
+            setApiLoading(false)
+            clearTokenInputs()
+            return toast.push(
+                <Notification
+                    title={error.response.data.message}
+                    type="danger"
+                />,
+                {
+                    placement: 'top-center',
+                }
+            )
+        }
+    }
+
     return (
         <Formik
             enableReinitialize
@@ -248,6 +372,77 @@ const Profile = ({}: ProfileProps) => {
                 const validatorProps = { touched, errors }
                 return (
                     <Form>
+                        <Dialog
+                            isOpen={emailModal}
+                            onClose={() => {
+                                setEmailModal(false)
+                                setChangeEmailStep('')
+                                setNewMail('')
+                                clearTokenInputs()
+                            }}
+                            contentClassName="w-1/3 h-1/3"
+                            closable={!apiLoading}
+                        >
+                            <h4 className="mb-8">Change Email</h4>
+                            {changeEmailStep === '' && (
+                                <section className="flex flex-col w-full gap-4">
+                                    <div className="flex w-full gap-4 items-center">
+                                        <p className="nowrap">New Email:</p>
+                                        <Input
+                                            disabled={apiLoading}
+                                            type="email"
+                                            value={newMail}
+                                            onChange={(e) =>
+                                                setNewMail(e.target.value)
+                                            }
+                                            placeholder="example@mail.com"
+                                        />
+                                    </div>
+                                    <Button
+                                        loading={apiLoading}
+                                        onClick={handleRequestChangeEmail}
+                                        type="button"
+                                        className="w-fit mx-auto"
+                                    >
+                                        Send Verification
+                                    </Button>
+                                </section>
+                            )}
+                            {changeEmailStep === 'token' && (
+                                <section className="flex w-full items-center justify-center gap-12">
+                                    {inputs.map((value, index) => (
+                                        <Input
+                                            key={index}
+                                            id={`input-${index}`}
+                                            type="text"
+                                            maxLength={1}
+                                            disabled={apiLoading}
+                                            value={value}
+                                            onChange={(e) =>
+                                                handleTokenInputsChange(
+                                                    e.target.value,
+                                                    index
+                                                )
+                                            }
+                                            className="text-center border rounded-lg text-2xl text-white"
+                                        />
+                                    ))}
+                                </section>
+                            )}
+                            {changeEmailStep === 'finish' && (
+                                <div className="flex flex-col items-center">
+                                    <img
+                                        className="self-center w-[200px] lg:w-[300px]"
+                                        loading="lazy"
+                                        src="/img/others/success.png"
+                                    />
+                                    <h3>
+                                        Your email has been successfully
+                                        changed!
+                                    </h3>
+                                </div>
+                            )}
+                        </Dialog>
                         {(loading === false && (
                             <FormContainer>
                                 <FormDesription
@@ -291,16 +486,26 @@ const Profile = ({}: ProfileProps) => {
                                     label="Email"
                                     {...validatorProps}
                                 >
-                                    <Field
-                                        type="email"
-                                        autoComplete="off"
-                                        name="email"
-                                        placeholder="Email"
-                                        component={Input}
-                                        prefix={
-                                            <HiOutlineMail className="text-xl" />
-                                        }
-                                    />
+                                    <section className="flex w-full gap-6">
+                                        <Field
+                                            type="email"
+                                            autoComplete="off"
+                                            name="email"
+                                            placeholder="Email"
+                                            component={Input}
+                                            prefix={
+                                                <HiOutlineMail className="text-xl" />
+                                            }
+                                            disabled={true}
+                                        />
+                                        <Button
+                                            onClick={() => setEmailModal(true)}
+                                            type="button"
+                                            variant="default"
+                                        >
+                                            Change
+                                        </Button>
+                                    </section>
                                 </FormRow>
                                 <FormRow
                                     name="tel"

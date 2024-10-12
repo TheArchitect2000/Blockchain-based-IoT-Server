@@ -322,7 +322,7 @@ const RequestTable: React.FC<UsersTableProps> = ({ setCount }) => {
                     </h6>
 
                     <h6>
-                        Owner Username: <strong>{userProfile?.userName}</strong>
+                        Owner Email: <strong>{userProfile?.email}</strong>
                     </h6>
 
                     <h6>

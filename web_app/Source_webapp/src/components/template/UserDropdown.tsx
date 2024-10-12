@@ -31,7 +31,7 @@ const dropdownItemList: DropdownList[] = [
 
 const _UserDropdown = ({ className }: CommonProps) => {
     const [profileData, setProfileData] = useState('') as any
-    const { userName, authority, email } = useAppSelector(
+    const { authority, email } = useAppSelector(
         (state) => state.auth.user
     )
     const { avatarLink, firstName } = useAppSelector((state) => state.locale)
@@ -89,7 +89,7 @@ const _UserDropdown = ({ className }: CommonProps) => {
                         />
                         <div>
                             <div className="font-bold text-gray-900 dark:text-gray-100">
-                                {userName?.split('@')[0]}
+                                {firstName && firstName || email?.split('@')[0]}
                             </div>
                             <div className="text-xs">{email}</div>
                         </div>

@@ -65,13 +65,9 @@ export default function AdminsList() {
                         className="!w-[60px] !h-[60px] overflow-hidden border-2 border-white dark:border-gray-800 shadow-lg"
                         size={60}
                         shape="circle"
+                        src={row.avatar}
                     >
-                        {(row.avatar && (
-                            <img
-                                className="allusers-profile"
-                                src={row.avatar}
-                            />
-                        )) || (
+                        {!row.avatar && (
                             <span className="text-3xl">
                                 <HiUser />
                             </span>
@@ -222,8 +218,8 @@ export default function AdminsList() {
     }, [refresh])
 
     return (
-        <main className='p-6'>
-            <h3 className='mb-6'>All Admins List ( {count} )</h3>
+        <main className="p-6">
+            <h3 className="mb-6">All Admins List ( {count} )</h3>
             <div className="flex justify-between mb-4">
                 <input
                     type="text"

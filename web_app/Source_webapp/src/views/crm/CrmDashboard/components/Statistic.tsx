@@ -186,7 +186,7 @@ const Statistic = ({ data = [] }: { data?: Partial<Statistic>[] }) => {
                 3
             } gap-4`}
         >
-            {loading === false &&
+            {/* {loading === false &&
                 userData.verificationStatus !== 'verified' && (
                     <StatisticCard
                         className="cursor-pointer"
@@ -200,7 +200,7 @@ const Statistic = ({ data = [] }: { data?: Partial<Statistic>[] }) => {
                             desc: 'Your account is not verified. Please verify your account to access all features',
                         }}
                     />
-                )}
+                )} */}
 
             <StatisticCard
                 key="installed"

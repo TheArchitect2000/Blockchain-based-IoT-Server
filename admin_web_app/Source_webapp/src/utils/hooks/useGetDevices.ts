@@ -19,7 +19,6 @@ export type UserData = {
     firstName: string
     lastName: string
     mobile: string
-    userName: string
     _id: string
     creationDate: string
 }

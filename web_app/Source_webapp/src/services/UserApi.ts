@@ -47,7 +47,9 @@ export async function apiCreateNewBuilding<T>(data: any) {
 
 export async function apiDeleteByBuildId<T>(buildId: string) {
     return ApiService.fetchData<T>({
-        url: `${import.meta.env.VITE_URL}v1/building/delete-by-build-id/${buildId}`,
+        url: `${
+            import.meta.env.VITE_URL
+        }v1/building/delete-by-build-id/${buildId}`,
         method: 'delete',
     })
 }
@@ -66,11 +68,11 @@ export async function apiEditBuildingByBuildId<T>(
     })
 }
 
-export async function apiGetBuildingsByUserId<T>(
-    userId: string,
-) {
+export async function apiGetBuildingsByUserId<T>(userId: string) {
     return ApiService.fetchData<T>({
-        url: `${import.meta.env.VITE_URL}v1/building/get-buildings-by-user-id/${userId}`,
+        url: `${
+            import.meta.env.VITE_URL
+        }v1/building/get-buildings-by-user-id/${userId}`,
         method: 'get',
     })
 }
@@ -98,14 +100,18 @@ export async function apiRequestVerifyEmail<T>(email: string) {
 
 export async function apiValidateRemixIDE<T>(user: string, pass: string) {
     return ApiService.fetchData<T>({
-        url: import.meta.env.VITE_URL + `v1/user/validate-smart-contract-console?user=${user}&pass=${pass}`,
+        url:
+            import.meta.env.VITE_URL +
+            `v1/user/validate-smart-contract-console?user=${user}&pass=${pass}`,
         method: 'get',
     })
 }
 
 export async function apiValidateZkpCommitment<T>(user: string, pass: string) {
     return ApiService.fetchData<T>({
-        url: import.meta.env.VITE_URL + `v1/user/validate-zkp-commitment-console?user=${user}&pass=${pass}`,
+        url:
+            import.meta.env.VITE_URL +
+            `v1/user/validate-zkp-commitment-console?user=${user}&pass=${pass}`,
         method: 'get',
     })
 }
@@ -121,5 +127,26 @@ export async function apiGetNodeTheme<T>() {
     return ApiService.fetchData<T>({
         url: import.meta.env.VITE_URL + `v1/theme`,
         method: 'get',
+    })
+}
+
+export async function apiRequestChangeEmail<T>(newEmail: string) {
+    return ApiService.fetchData<T>({
+        url: import.meta.env.VITE_URL + `v1/user/request-change-email-token`,
+        method: 'post',
+        data: {
+            newEmail: newEmail,
+        },
+    })
+}
+
+export async function apiVerifyChangeEmailWithToken<T>(token: string) {
+    return ApiService.fetchData<T>({
+        url:
+            import.meta.env.VITE_URL + `v1/user/verify-change-email-with-token`,
+        method: 'post',
+        data: {
+            token: token,
+        },
     })
 }
