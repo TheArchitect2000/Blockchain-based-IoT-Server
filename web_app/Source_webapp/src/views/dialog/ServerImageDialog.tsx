@@ -35,7 +35,7 @@ export default function ServerImageDialog({
                         setImageSrc(imgUrl)
                         onClose(true)
                     }
-
+                    
                     return (
                         <Avatar
                             onClick={serverImageHandle}

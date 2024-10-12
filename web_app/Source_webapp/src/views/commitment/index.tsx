@@ -21,6 +21,7 @@ import { AdaptableCard, Loading } from '@/components/shared'
 import CommitmentTable from './CommitmentTable'
 
 export type CommitmentFormModel = {
+    nodeId: string
     userId?: string
     manufacturerName: string
     deviceName: string
@@ -29,6 +30,7 @@ export type CommitmentFormModel = {
     firmwareVersion: string
     lines: string
     commitmentData: any
+    _id: string
 }
 
 export default function CommitmentPage() {
@@ -133,6 +135,10 @@ export default function CommitmentPage() {
         }
     }
 
+    function refreshCommitmentList() {
+        setRefreshCommitments(refreshCommitments + 1)
+    }
+
     const onFormSubmit = async (
         values: CommitmentFormModel,
         setSubmitting: (isSubmitting: boolean) => void
@@ -168,7 +174,7 @@ export default function CommitmentPage() {
                 setCommitmentLoading(true)
 
                 setTimeout(() => {
-                    setRefreshCommitments(refreshCommitments + 1)
+                    refreshCommitmentList()
                 }, 2000)
 
                 console.log('Store log is:', storeResult)
@@ -379,7 +385,7 @@ export default function CommitmentPage() {
                 <h3 className="mb-6">Commitment List</h3>
 
                 {(commitmentLoading == false && (
-                    <CommitmentTable data={commitments} />
+                    <CommitmentTable refreshData={refreshCommitmentList} data={commitments} />
                 )) || (
                     <div className="flex w-full h-[30dvh] items-center justify-center">
                         <Loading loading={true} />

@@ -31,6 +31,7 @@ const Address = lazy(() => import('./components/Address'))
 const Password = lazy(() => import('./components/Password'))
 const Verify = lazy(() => import('./components/Verify'))
 const Subscriptions = lazy(() => import('./components/Subscriptions'))
+const StorX = lazy(() => import('./components/StorX/StorX'))
 const Wallet = lazy(() => import('./components/Wallet'))
 
 const { TabNav, TabList } = Tabs
@@ -47,6 +48,7 @@ const settingsMenu: Record<
     address: { label: 'Address', path: 'address' },
     /* verify: { label: 'Verify', path: 'verify' }, */
     subscriptions: { label: 'Subscriptions', path: 'subscriptions' },
+    storx: { label: 'StorX', path: 'storx' },
     password: { label: 'Password', path: 'password' },
 }
 
@@ -102,6 +104,7 @@ const Settings = () => {
                         {currentTab === 'password' && <Password />}
                         {/* {currentTab === 'verify' && <Verify />} */}
                         {currentTab === 'subscriptions' && <Subscriptions />}
+                        {currentTab === 'storx' && <StorX />}
                         {currentTab === 'address' && <Address />}
                         {currentTab === 'wallet' && <Wallet />}
                     </Suspense>

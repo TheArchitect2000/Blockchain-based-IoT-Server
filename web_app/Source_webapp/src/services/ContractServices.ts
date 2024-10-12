@@ -38,6 +38,20 @@ export async function apiStoreCommitment(
     })
 }
 
+export async function apiRemoveCommitment(
+    commitmentId: string,
+    nodeId: string
+) {
+    return ApiService.fetchData({
+        url: import.meta.env.VITE_URL + 'v1/contract/remove-commitment',
+        method: 'post',
+        data: {
+            commitmentId: commitmentId,
+            nodeId: nodeId,
+        },
+    })
+}
+
 export async function apiGetMyCommitments() {
     return ApiService.fetchData({
         url: import.meta.env.VITE_URL + 'v1/contract/my-commitments',

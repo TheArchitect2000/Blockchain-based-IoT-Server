@@ -7,20 +7,33 @@ import {
     useReactTable,
 } from '@tanstack/react-table'
 import type { ColumnDef, ColumnSort } from '@tanstack/react-table'
-import { HiOutlineEye } from 'react-icons/hi'
+import { HiOutlineEye, HiTrash } from 'react-icons/hi'
 import useThemeClass from '@/utils/hooks/useThemeClass'
 import { useNavigate } from 'react-router-dom'
 import { DoubleSidedImage } from '@/components/shared'
 import { CommitmentFormModel } from '.'
-import { Dialog } from '@/components/ui'
+import { Button, Dialog, Notification, toast } from '@/components/ui'
 import JsonDisplay from '@/components/ui/JsonDisplay'
+import { apiRemoveCommitment } from '@/services/ContractServices'
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
-const CommitmentTable = ({ data }: { data: CommitmentFormModel[] }) => {
+const CommitmentTable = ({
+    data,
+    refreshData,
+}: {
+    data: CommitmentFormModel[]
+    refreshData: Function
+}) => {
     const [sorting, setSorting] = useState<ColumnSort[]>([])
     const [consoleDialog, setConsoleDialog] = useState<boolean>(false)
+    const [deleteDialog, setDeleteDialog] = useState<boolean>(false)
+    const [apiLoading, setApiLoading] = useState<boolean>(false)
     const [commitmentData, setCommitmentData] = useState<string>('')
+    const [deleteData, setDeleteData] = useState<{
+        commitmentId: string
+        nodeId: string
+    }>({ commitmentId: '', nodeId: '' })
 
     const ActionColumn = ({ row }: { row: CommitmentFormModel }) => {
         const { textTheme } = useThemeClass()
@@ -30,12 +43,21 @@ const CommitmentTable = ({ data }: { data: CommitmentFormModel[] }) => {
             setConsoleDialog(true)
         }
 
+        function onDelete() {
+            setDeleteData({ commitmentId: row._id, nodeId: row.nodeId })
+            setDeleteDialog(true)
+        }
+
         return (
-            <span
-                className={`cursor-pointer p-2 hover:${textTheme}`}
-                onClick={onView}
-            >
-                <HiOutlineEye />
+            <span className={`flex gap-4 justify-center p-2`}>
+                <HiOutlineEye
+                    onClick={onView}
+                    className={`cursor-pointer hover:${textTheme}`}
+                />
+                <HiTrash
+                    onClick={onDelete}
+                    className="cursor-pointer hover:text-red-500"
+                />
             </span>
         )
     }
@@ -87,7 +109,7 @@ const CommitmentTable = ({ data }: { data: CommitmentFormModel[] }) => {
         },
 
         {
-            header: 'Commitment Data',
+            header: '',
             id: 'action',
             cell: (props) => <ActionColumn row={props.row.original} />,
         },
@@ -104,6 +126,41 @@ const CommitmentTable = ({ data }: { data: CommitmentFormModel[] }) => {
         getSortedRowModel: getSortedRowModel(),
     })
 
+    async function handleDeleteCommitment() {
+        setApiLoading(true)
+        try {
+            const res = await apiRemoveCommitment(
+                deleteData.commitmentId,
+                deleteData.nodeId
+            )
+            setApiLoading(false)
+            setDeleteDialog(false)
+            setTimeout(() => {
+                refreshData()
+            }, 1000)
+            toast.push(
+                <Notification
+                    title={'Commitment deleted successfully'}
+                    type="success"
+                />,
+                {
+                    placement: 'top-center',
+                }
+            )
+        } catch (error: any) {
+            setApiLoading(false)
+            return toast.push(
+                <Notification
+                    title={error.response.data.message}
+                    type="danger"
+                />,
+                {
+                    placement: 'top-center',
+                }
+            )
+        }
+    }
+
     return (
         <>
             <Dialog
@@ -113,6 +170,36 @@ const CommitmentTable = ({ data }: { data: CommitmentFormModel[] }) => {
                 <h3>Commitment Data</h3>
                 <div className="h-[80dvh] overflow-y-auto">
                     <JsonDisplay jsonData={commitmentData} />
+                </div>
+            </Dialog>
+
+            <Dialog
+                isOpen={deleteDialog}
+                onClose={() => setDeleteDialog(false)}
+                closable={false}
+                contentClassName="flex flex-col gap-4"
+            >
+                <h3>Delete Confirmation</h3>
+                <p className="text-[1.2rem] text-center text-white">
+                    Are you sure you want to delete this commitment? This action
+                    cannot be undone.
+                </p>
+                <div className="flex justify-center gap-8">
+                    <Button
+                        onClick={handleDeleteCommitment}
+                        variant="solid"
+                        color="red-500"
+                        loading={apiLoading}
+                    >
+                        Delete
+                    </Button>
+                    <Button
+                        loading={apiLoading}
+                        onClick={() => setDeleteDialog(false)}
+                        variant="default"
+                    >
+                        Cancel
+                    </Button>
                 </div>
             </Dialog>
 
