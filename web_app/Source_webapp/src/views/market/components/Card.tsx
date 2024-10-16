@@ -15,6 +15,7 @@ import {
 } from '@/services/ServiceAPI'
 import { ServiceData } from '@/utils/hooks/useGetServices'
 import { useNavigate } from 'react-router-dom'
+import { SyntaxHighlighter } from '@/components/shared'
 
 const ServiceCard = ({
     sharedDevices,
@@ -26,6 +27,7 @@ const ServiceCard = ({
     description,
     serviceImage,
     serviceData,
+    code,
     node,
 }: {
     sharedDevices: Array<DeviceData>
@@ -36,6 +38,7 @@ const ServiceCard = ({
     name: string
     installationPrice: number
     type: string
+    code: string
     description: string
     serviceData?: ServiceData
 }) => {
@@ -43,6 +46,7 @@ const ServiceCard = ({
     const [deviceModal, setDeviceModal] = useState(false)
     const [installModal, setInstallModal] = useState(false)
     const [installLoading, setInstallLoading] = useState(false)
+    const [codeModal, setCodeModal] = useState(false)
     const [deviceOwner, setDeviceOwner] = useState('')
     const [selectedDevice, setSelectedDevice] = useState({
         name: '',
@@ -68,6 +72,13 @@ const ServiceCard = ({
                 onClick={() => setModalOpen(true)}
             >
                 Install Service
+            </Button>
+            <Button
+                variant="default"
+                size="sm"
+                onClick={() => setCodeModal(true)}
+            >
+                View Code
             </Button>
         </section>
     )
@@ -210,6 +221,38 @@ const ServiceCard = ({
 
     return (
         <div className={`max-w-xs ${className}`}>
+            <Dialog
+                width={'40%'}
+                className={''}
+                isOpen={codeModal}
+                onClose={() => setCodeModal(false)}
+            >
+                <h5 className="mb-4">'{name}' Code</h5>
+                <div className="">
+                    <SyntaxHighlighter language="javascript">
+                        {code || ''}
+                    </SyntaxHighlighter>
+                </div>
+                <Button
+                    variant="solid"
+                    size="sm"
+                    className="w-full mt-4"
+                    onClick={() => {
+                        toast.push(
+                            <Notification
+                                title={'Code copied successfully'}
+                                type="success"
+                            />,
+                            {
+                                placement: 'top-center',
+                            }
+                        )
+                        navigator.clipboard.writeText(code || '')
+                    }}
+                >
+                    Copy
+                </Button>
+            </Dialog>
             <Dialog isOpen={modalOpen} onClose={() => setModalOpen(false)}>
                 <h3 className="mb-8">Install Service</h3>
                 <div className="flex mb-4 items-center justify-center">
@@ -383,7 +426,7 @@ const ServiceCard = ({
                 className="flex flex-col w-[300px] h-full hover:shadow-lg transition duration-150 ease-in-out dark:border dark:border-gray-600 dark:border-solid"
                 header={cardHeader}
                 footer={cardFooter}
-                footerClass='mt-auto'
+                footerClass="mt-auto"
                 headerClass="p-0"
                 footerBorder={false}
                 headerBorder={false}

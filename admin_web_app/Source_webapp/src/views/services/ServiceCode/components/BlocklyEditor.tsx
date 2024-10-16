@@ -5,10 +5,8 @@ import './style.scss'
 import './customBlocks/custom_Blocks'
 import { Button, Checkbox, Input, Notification, toast } from '@/components/ui'
 import { useNavigate, useParams } from 'react-router-dom'
-import {
-    apiEditService,
-    apiGetAllServices,
-} from '@/services/ServiceAPI'
+import { apiEditService, apiGetAllServices } from '@/services/ServiceAPI'
+import { SyntaxHighlighter } from '@/components/shared'
 
 const toolbox = {
     kind: 'categoryToolbox',
@@ -257,7 +255,7 @@ export default function BlocklyEditor() {
                             serviceName: filteredService[0].serviceName,
                             serviceType: filteredService[0].serviceType,
                             description: filteredService[0].description,
-                            devices: "MULTI_SENSOR_1",
+                            devices: 'MULTI_SENSOR_1',
                             serviceImage: filteredService[0].serviceImage,
                             status: filteredService[0].status,
                         })
@@ -350,11 +348,9 @@ export default function BlocklyEditor() {
                         onWorkspaceChange={workspaceDidChange}
                     />
                     {showCode && (
-                        <textarea
-                            className="bg-black text-white p-4 resize-none"
-                            value={code}
-                            readOnly
-                        />
+                        <SyntaxHighlighter language="javascript">
+                            {code || ''}
+                        </SyntaxHighlighter>
                     )}
                     <div className="flex mt-5 gap-x-5 col-span-full items-center justify-center">
                         <div className="flex items-center">

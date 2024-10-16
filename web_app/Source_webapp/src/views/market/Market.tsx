@@ -86,6 +86,7 @@ function Market() {
                             name={service.serviceName}
                             description={service.description}
                             type={service.serviceType}
+                            code={service.code || ''}
                             installationPrice={service.installationPrice}
                             serviceImage={service.serviceImage || ''}
                             serviceData={service}

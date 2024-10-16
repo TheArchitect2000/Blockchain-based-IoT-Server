@@ -32,6 +32,7 @@ const Password = lazy(() => import('./components/Password'))
 const Verify = lazy(() => import('./components/Verify'))
 const Subscriptions = lazy(() => import('./components/Subscriptions'))
 const StorX = lazy(() => import('./components/StorX/StorX'))
+const DeleteAccount = lazy(() => import('./components/DeleteAccount'))
 const Wallet = lazy(() => import('./components/Wallet'))
 
 const { TabNav, TabList } = Tabs
@@ -41,6 +42,7 @@ const settingsMenu: Record<
     {
         label: string
         path: string
+        className?: string
     }
 > = {
     profile: { label: 'Profile', path: 'profile' },
@@ -50,6 +52,10 @@ const settingsMenu: Record<
     subscriptions: { label: 'Subscriptions', path: 'subscriptions' },
     storx: { label: 'StorX', path: 'storx' },
     password: { label: 'Password', path: 'password' },
+    deleteaccount: {
+        label: 'Delete Account',
+        path: 'deleteaccount',
+    },
 }
 
 const Settings = () => {
@@ -90,7 +96,15 @@ const Settings = () => {
                 <Tabs value={currentTab} onChange={(val) => onTabChange(val)}>
                     <TabList>
                         {Object.keys(settingsMenu).map((key) => (
-                            <TabNav key={key} value={key}>
+                            <TabNav
+                                className={
+                                    (settingsMenu[key].className &&
+                                        settingsMenu[key].className) ||
+                                    ''
+                                }
+                                key={key}
+                                value={key}
+                            >
                                 {settingsMenu[key].label}
                             </TabNav>
                         ))}
@@ -102,11 +116,12 @@ const Settings = () => {
                             <Profile data={data.profile as any} />
                         )}
                         {currentTab === 'password' && <Password />}
-                        {/* {currentTab === 'verify' && <Verify />} */}
                         {currentTab === 'subscriptions' && <Subscriptions />}
                         {currentTab === 'storx' && <StorX />}
                         {currentTab === 'address' && <Address />}
                         {currentTab === 'wallet' && <Wallet />}
+                        {currentTab === 'deleteaccount' && <DeleteAccount />}
+                        {/* {currentTab === 'verify' && <Verify />} */}
                     </Suspense>
                 </div>
             </AdaptableCard>

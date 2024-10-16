@@ -10,9 +10,12 @@ import type { ColumnDef, ColumnSort } from '@tanstack/react-table'
 import { DeviceData, useGetDevices } from '@/utils/hooks/useGetDevices'
 import Avatar from '@/components/ui/Avatar'
 import {
+    HiDocumentRemove,
+    HiFolderRemove,
     HiOutlineEye,
     HiOutlinePencil,
     HiOutlineTrash,
+    HiShare,
     HiTrash,
 } from 'react-icons/hi'
 import { FiPackage } from 'react-icons/fi'
@@ -30,6 +33,7 @@ import {
     apiDeleteDeviceById,
     apiGetAllDevices,
     apiGetDevices,
+    apiUnshareDevice,
 } from '@/services/DeviceApi'
 import { Loading } from '@/components/shared'
 import DownloadCSVButton from '@/views/account/Settings/components/DownloadCsv'
@@ -39,17 +43,20 @@ const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
 interface UsersTableProps {
     setCount: (count: number) => void
+    superAdmin: boolean
 }
 
-const DevicesTable: React.FC<UsersTableProps> = ({ setCount }) => {
+const DevicesTable: React.FC<UsersTableProps> = ({ setCount, superAdmin }) => {
     const [sorting, setSorting] = useState<ColumnSort[]>([])
     const [data, setData] = useState<DeviceData[]>([])
     const [filteredData, setFilteredData] = useState<DeviceData[]>([])
     const [searchQuery, setSearchQuery] = useState('')
     const [loading, setLoading] = useState(true)
+    const [apiloading, setApiLoading] = useState(false)
     const [refresh, setRefresh] = useState(0)
     const [deleteDialog, setDeleteDialog] = useState(false)
-    const [deleteData, setDeleteData] = useState<DeviceData | null>(null)
+    const [unshareDialog, setUnshareDialog] = useState(false)
+    const [deviceData, setDeviceData] = useState<DeviceData | null>(null)
 
     const ActionColumn = ({ row }: { row: DeviceData }) => {
         const navigate = useNavigate()
@@ -60,7 +67,7 @@ const DevicesTable: React.FC<UsersTableProps> = ({ setCount }) => {
 
         async function handleDeleteDevice() {
             const res = (await apiDeleteDeviceById(
-                deleteData?._id || ''
+                deviceData?._id || ''
             )) as any
             setDeleteDialog(false)
             refreshPage()
@@ -87,15 +94,80 @@ const DevicesTable: React.FC<UsersTableProps> = ({ setCount }) => {
             }
         }
 
+        async function handleUnshareDevice() {
+            try {
+                setApiLoading(true)
+                const res = await apiUnshareDevice(String(deviceData?._id))
+                setApiLoading(false)
+                setUnshareDialog(false)
+                toast.push(
+                    <Notification
+                        title={'Device was successfully unshared.'}
+                        type="success"
+                    />,
+                    {
+                        placement: 'top-center',
+                    }
+                )
+                refreshPage()
+            } catch (error: any) {
+                setApiLoading(false)
+                setUnshareDialog(false)
+                return toast.push(
+                    <Notification
+                        title={error.response.data.message}
+                        type="danger"
+                    />,
+                    {
+                        placement: 'top-center',
+                    }
+                )
+            }
+        }
+
         return (
             <div className="flex justify-end text-lg">
                 <Dialog
+                    overlayClassName={'flex items-center'}
+                    isOpen={unshareDialog}
+                    closable={false}
+                    onClose={() => setUnshareDialog(false)}
+                >
+                    <h3 className="mb-8">Unshare Device</h3>
+                    <p className="text-center text-[1.1rem] mb-6">
+                        Are you sure you want to unshare the device '
+                        {deviceData?.deviceName}'?
+                    </p>
+                    <div className="flex w-2/3 mx-auto justify-between">
+                        <Button
+                            onClick={() => {
+                                handleUnshareDevice()
+                            }}
+                            loading={apiloading}
+                            variant="solid"
+                            color="red"
+                        >
+                            Unshare
+                        </Button>
+                        <Button
+                            onClick={() => setUnshareDialog(false)}
+                            variant="solid"
+                            loading={apiloading}
+                            color="green"
+                        >
+                            Cancel
+                        </Button>
+                    </div>
+                </Dialog>
+                <Dialog
+                    overlayClassName={'flex items-center'}
                     isOpen={deleteDialog}
+                    closable={false}
                     onClose={() => setDeleteDialog(false)}
                 >
                     <h3 className="mb-8">Delete Device</h3>
                     <p className="text-center text-[1.1rem] mb-6">
-                        Are you sure about deleting '{deleteData?.deviceName}'
+                        Are you sure about deleting '{deviceData?.deviceName}'
                         device ?
                     </p>
                     <div className="flex w-2/3 mx-auto justify-between">
@@ -126,7 +198,7 @@ const DevicesTable: React.FC<UsersTableProps> = ({ setCount }) => {
                 <span
                     className="cursor-pointer p-2 hover:${textTheme}"
                     onClick={() => {
-                        setDeleteData(row)
+                        setDeviceData(row)
                         setDeleteDialog(true)
                     }}
                 >
@@ -252,8 +324,23 @@ const DevicesTable: React.FC<UsersTableProps> = ({ setCount }) => {
             cell: (props) => {
                 const row = props.row.original
                 return (
-                    <span>
+                    <span className={`relative flex gap-4`}>
                         {(row?.isShared && row.isShared.toString()) || '_'}
+
+                        {row?.isShared && superAdmin && (
+                            <div
+                                className="relative cursor-pointer"
+                                onClick={() => {
+                                    setDeviceData(row)
+                                    setUnshareDialog(true)
+                                }}
+                            >
+                                <HiShare className="text-[1.3rem]" />
+                                <p className="absolute top-[-13px] left-[-3px] text-red-500 text-[1.3rem]">
+                                    ___
+                                </p>
+                            </div>
+                        )}
                     </span>
                 )
             },

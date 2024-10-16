@@ -5,11 +5,13 @@ import type { SyntaxHighlighterProps as ReactSyntaxHighlighterProps } from 'reac
 type SyntaxHighlighterProps = ReactSyntaxHighlighterProps
 
 const SyntaxHighlighter = (props: SyntaxHighlighterProps) => {
-    const { children, ...rest } = props
+    const { children, className, ...rest } = props
 
     return (
         <Prism
-            className={'max-h-[65vh] overflow-y-scroll'}
+            className={`max-h-[65vh] overflow-y-scroll ${
+                className && className
+            }`}
             style={oneDark}
             {...rest}
         >

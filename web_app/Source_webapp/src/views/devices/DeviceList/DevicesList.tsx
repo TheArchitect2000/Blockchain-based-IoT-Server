@@ -7,11 +7,12 @@ import { useGetDevices } from '@/utils/hooks/useGetDevices'
 import DeviceTable from './components/DeviceTable'
 import TableRowSkeleton from '@/components/shared/loaders/TableRowSkeleton'
 import { Loading } from '@/components/shared'
+import { Button } from '@/components/ui'
 
 injectReducer('salesProductList', reducer)
 
 const ProductList = () => {
-    const { status } = useGetDevices()
+    const { status, refresh } = useGetDevices()
     const loading = status !== 'success'
 
     if (loading) return <Loading loading={loading} />
@@ -21,7 +22,7 @@ const ProductList = () => {
                 <h3 className="mb-4 lg:mb-0">Device List</h3>
                 <ProductTableTools />
             </div>
-            <DeviceTable />
+            <DeviceTable refreshPage={refresh} />
             {/* <ProductTable /> */}
         </AdaptableCard>
     )

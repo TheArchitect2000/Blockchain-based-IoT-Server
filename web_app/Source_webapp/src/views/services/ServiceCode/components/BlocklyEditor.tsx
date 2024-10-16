@@ -5,11 +5,9 @@ import './style.scss'
 import './customBlocks/custom_Blocks'
 import { Button, Checkbox, Notification, toast } from '@/components/ui'
 import { useNavigate, useParams } from 'react-router-dom'
-import {
-    apiEditService,
-    apiGetServiceByServiceId,
-} from '@/services/ServiceAPI'
+import { apiEditService, apiGetServiceByServiceId } from '@/services/ServiceAPI'
 import { useAppSelector } from '@/store'
+import { SyntaxHighlighter } from '@/components/shared'
 
 const toolbox = {
     kind: 'categoryToolbox',
@@ -400,11 +398,12 @@ export default function BlocklyEditor() {
                         onWorkspaceChange={workspaceDidChange}
                     />
                     {showCode && (
-                        <textarea
-                            className="bg-black text-white p-4 resize-none"
-                            value={code}
-                            readOnly
-                        />
+                        <SyntaxHighlighter
+                            className="!h-full !max-h-[57.5vh] !m-0"
+                            language="javascript"
+                        >
+                            {code || ''}
+                        </SyntaxHighlighter>
                     )}
                     <div className="flex mt-5 gap-x-5 col-span-full items-center justify-center">
                         <div className="flex items-center">

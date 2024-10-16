@@ -150,3 +150,11 @@ export async function apiVerifyChangeEmailWithToken<T>(token: string) {
         },
     })
 }
+
+export async function apiPermanentDeleteUserAccount<T>(userId: string) {
+    return ApiService.fetchData<T>({
+        url:
+            import.meta.env.VITE_URL + `v1/user/delete-all-user-data?userId=${userId}`,
+        method: 'delete',
+    })
+}

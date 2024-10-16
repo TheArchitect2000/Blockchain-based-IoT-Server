@@ -22,50 +22,13 @@ import {
 import useThemeClass from '@/utils/hooks/useThemeClass'
 import { useNavigate } from 'react-router-dom'
 import ProductDeleteConfirmation from './ProductDeleteConfirmation'
-import { apiGetDevices } from '@/services/DeviceApi'
+import {
+    apiDeleteDeviceById,
+    apiGetDevices,
+    apiRenameDevice,
+} from '@/services/DeviceApi'
 import { DoubleSidedImage, Loading } from '@/components/shared'
-
-const ActionColumn = ({ row }: { row: DeviceData }) => {
-    const dispatch = useAppDispatch()
-    const { textTheme } = useThemeClass()
-    const navigate = useNavigate()
-
-    const onEdit = () => {
-        navigate(`/devices/edit/${row._id}`)
-    }
-
-    const onView = () => {
-        navigate(`/devices/${row._id}`)
-    }
-
-    const onDelete = () => {
-        dispatch(toggleDeleteConfirmation(true))
-        // dispatch(setSelectedProduct(row._id))
-    }
-
-    return (
-        <div className="flex justify-end text-lg">
-            {/* <span
-                className={`cursor-pointer p-2 hover:${textTheme}`}
-                onClick={onEdit}
-            >
-                <HiOutlinePencil />
-            </span> */}
-            <span
-                className="cursor-pointer p-2 hover:${textTheme}"
-                onClick={onView}
-            >
-                <HiOutlineEye />
-            </span>
-            {/* <span
-                className="cursor-pointer p-2 hover:text-red-500"
-                onClick={onDelete}
-            >
-                <HiOutlineTrash />
-            </span> */}
-        </div>
-    )
-}
+import { Button, Dialog, Input, Notification, toast } from '@/components/ui'
 
 const ProductColumn = ({ row }: { row: DeviceData }) => {
     const avatar = <Avatar icon={<FiPackage />} />
@@ -82,11 +45,135 @@ const ProductColumn = ({ row }: { row: DeviceData }) => {
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
-const DeviceTable = () => {
+const DeviceTable = ({ refreshPage }: { refreshPage: Function }) => {
     const [sorting, setSorting] = useState<ColumnSort[]>([])
     const [data, setData] = useState<DeviceData[]>([])
     const [loading, setLoading] = useState(true)
     const { _id: userId } = useAppSelector((state) => state.auth.user)
+    const [deleteDialog, setDeleteDialog] = useState(false)
+    const [renameDialog, setRenameDialog] = useState(false)
+    const [newDeviceName, setNewDeviceName] = useState('')
+    const [deviceData, setDeviceData] = useState<DeviceData | null>(null)
+
+    const ActionColumn = ({ row }: { row: DeviceData }) => {
+        const dispatch = useAppDispatch()
+        const { textTheme } = useThemeClass()
+        const navigate = useNavigate()
+
+        const onEdit = () => {
+            setDeviceData(row)
+            setNewDeviceName(row?.deviceName || '')
+            setRenameDialog(true)
+        }
+
+        const onView = () => {
+            navigate(`/devices/${row._id}`)
+        }
+
+        const onDelete = () => {
+            setDeviceData(row)
+            setDeleteDialog(true)
+        }
+
+        return (
+            <div className="flex justify-end text-lg">
+                <span
+                    className={`cursor-pointer p-2 hover:${textTheme}`}
+                    onClick={onEdit}
+                >
+                    <HiOutlinePencil />
+                </span>
+                <span
+                    className="cursor-pointer p-2 hover:${textTheme}"
+                    onClick={onView}
+                >
+                    <HiOutlineEye />
+                </span>
+                <span
+                    className="cursor-pointer p-2 hover:text-red-500"
+                    onClick={onDelete}
+                >
+                    <HiOutlineTrash />
+                </span>
+            </div>
+        )
+    }
+
+    async function handleDeviceRename() {
+        if (newDeviceName.length === 0) {
+            return toast.push(
+                <Notification
+                    title={'The device name must contain at least one letter.'}
+                    type="danger"
+                />,
+                {
+                    placement: 'top-center',
+                }
+            )
+        }
+        setLoading(true)
+        const res = (await apiRenameDevice(
+            deviceData?._id || '',
+            newDeviceName
+        )) as any
+        setDeleteDialog(false)
+        setTimeout(() => {
+            refreshPage()
+            setLoading(false)
+        }, 1000)
+        if (res?.data?.success) {
+            toast.push(
+                <Notification
+                    title={'The device has been renamed successfully.'}
+                    type="success"
+                />,
+                {
+                    placement: 'top-center',
+                }
+            )
+        } else {
+            toast.push(
+                <Notification
+                    title={
+                        'An error occurred while renaming the device. Please try again.'
+                    }
+                    type="danger"
+                />,
+                {
+                    placement: 'top-center',
+                }
+            )
+        }
+    }
+
+    async function handleDeleteDevice() {
+        const res = (await apiDeleteDeviceById(deviceData?._id || '')) as any
+        setDeleteDialog(false)
+        setTimeout(() => {
+            refreshPage()
+        }, 1000)
+        if (res?.data?.success) {
+            toast.push(
+                <Notification
+                    title={'Device deleted successfully'}
+                    type="success"
+                />,
+                {
+                    placement: 'top-center',
+                }
+            )
+        } else {
+            toast.push(
+                <Notification
+                    title={'Error while deleting device'}
+                    type="danger"
+                />,
+                {
+                    placement: 'top-center',
+                }
+            )
+        }
+    }
 
     useEffect(() => {
         async function getDevices() {
@@ -170,6 +257,78 @@ const DeviceTable = () => {
 
     return (
         <>
+            <Dialog
+                overlayClassName={'flex items-center'}
+                isOpen={renameDialog}
+                closable={false}
+                contentClassName="!w-1/3 flex flex-col gap-6"
+                onClose={() => setRenameDialog(false)}
+            >
+                <h3>Rename Device</h3>
+                <p className="text-center text-[1.4rem]">
+                    Enter a new name for the '{deviceData?.deviceName}' device.
+                </p>
+                <Input
+                    value={newDeviceName}
+                    onChange={(e) => setNewDeviceName(e.target.value)}
+                    placeholder="Device name..."
+                />
+                <div className="flex w-2/3 mx-auto justify-between">
+                    <Button
+                        onClick={() => {
+                            handleDeviceRename()
+                        }}
+                        loading={loading}
+                        variant="solid"
+                        color="green"
+                    >
+                        Rename
+                    </Button>
+                    <Button
+                        onClick={() => setRenameDialog(false)}
+                        variant="default"
+                        loading={loading}
+                    >
+                        Cancel
+                    </Button>
+                </div>
+            </Dialog>
+
+            <Dialog
+                overlayClassName={'flex items-center'}
+                isOpen={deleteDialog}
+                closable={false}
+                contentClassName="!w-1/3"
+                onClose={() => setDeleteDialog(false)}
+            >
+                <h3 className="mb-8">Delete Device</h3>
+                <p className="text-left text-[1.4rem] mb-8">
+                    Are you sure you want to delete the
+                    "{deviceData?.deviceName}" device?
+                    <p className="text-red-400 text-left mt-2 text-[0.9rem]">
+                        *This action cannot be undone. and you will need to
+                        re-add the device using the mobile app.
+                    </p>
+                </p>
+
+                <div className="flex w-2/3 mx-auto justify-between">
+                    <Button
+                        onClick={() => {
+                            handleDeleteDevice()
+                        }}
+                        variant="solid"
+                        color="red"
+                    >
+                        Delete
+                    </Button>
+                    <Button
+                        onClick={() => setDeleteDialog(false)}
+                        variant="default"
+                    >
+                        Cancel
+                    </Button>
+                </div>
+            </Dialog>
             {(loading === false && (
                 <Table>
                     <THead>

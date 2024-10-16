@@ -9,13 +9,21 @@ export async function apiGetDevices<T>(userId: string) {
     })
 }
 
-
 export async function apiGetAllDevices<T>() {
     return ApiService.fetchData<T>({
-        url: `${
-            import.meta.env.VITE_URL
-        }v1/device/get-all-devices/`,
+        url: `${import.meta.env.VITE_URL}v1/device/get-all-devices/`,
         method: 'get',
+    })
+}
+
+export async function apiUnshareDevice<T>(deviceId: string) {
+    return ApiService.fetchData<T>({
+        url: `${import.meta.env.VITE_URL}v1/device/edit`,
+        method: 'patch',
+        data: {
+            deviceId: deviceId,
+            isShared: false,
+        },
     })
 }
 

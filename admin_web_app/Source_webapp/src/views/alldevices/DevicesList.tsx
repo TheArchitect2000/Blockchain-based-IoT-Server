@@ -17,6 +17,7 @@ const ProductList = () => {
     const [dataCount, setDataCount] = useState(0)
     const navigateTo = useNavigate()
     const { loading, result } = useCheckPage('device')
+    const { loading: roleLoading, result: superResult } = useCheckPage('super')
     if (loading == false) {
         if (result == false) {
             navigateTo('/')
@@ -25,14 +26,14 @@ const ProductList = () => {
 
     return (
         <AdaptableCard className="h-full p-6" bodyClass="h-full">
-            {(loading == false && (
+            {(loading == false && roleLoading == false && (
                 <>
                     <div className="lg:flex items-center justify-between mb-4">
                         <h3 className="mb-4 lg:mb-0">
                             All Devices List ( {dataCount} )
                         </h3>
                     </div>
-                    <DevicesTable setCount={setDataCount} />
+                    <DevicesTable superAdmin={superResult} setCount={setDataCount} />
                 </>
             )) || <Loading loading={true} />}
 

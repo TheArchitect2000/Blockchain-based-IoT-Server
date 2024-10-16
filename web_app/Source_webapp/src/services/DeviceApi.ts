@@ -9,6 +9,26 @@ export async function apiGetDevices<T>(userId: string) {
     })
 }
 
+export async function apiDeleteDeviceById<T>(deviceId: string) {
+    return ApiService.fetchData<T>({
+        url: `${
+            import.meta.env.VITE_URL
+        }v1/device/delete-device-by-device-id/${deviceId}`,
+        method: 'delete',
+    })
+}
+
+export async function apiRenameDevice<T>(deviceId: string, deviceName: string) {
+    return ApiService.fetchData<T>({
+        url: `${import.meta.env.VITE_URL}v1/device/rename-device`,
+        method: 'patch',
+        data: {
+            deviceId: deviceId,
+            deviceName: deviceName,
+        },
+    })
+}
+
 export async function apiGetAllSharedDevices<T>() {
     return ApiService.fetchData<T>({
         url: `${import.meta.env.VITE_URL}v1/device/get-all-shared-devices`,

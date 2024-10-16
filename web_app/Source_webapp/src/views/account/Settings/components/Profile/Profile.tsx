@@ -676,7 +676,7 @@ const Profile = ({}: ProfileProps) => {
                                     </div>
                                 </FormRow>
 
-                                <div className="mt-4 ltr:text-right">
+                                <div className="flex gap-4 justify-end mt-4 ltr:text-right">
                                     {/* <Button
                                         className="ltr:mr-2 rtl:ml-2"
                                         type="button"
