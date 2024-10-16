@@ -62,6 +62,11 @@ sudo apt-get update
 sudo apt-get install certbot
 sudo certbot certonly --standalone --preferred-challenges http
 ```
+- This command is used when you want to manually obtain an SSL certificate for a specific domain without directly modifying your web server configurations:
+```
+sudo certbot certonly --standalone --preferred-challenges http -d example.com
+```
+
 -  After creating certificates you have to copy `fullchain.pem`, `privkey.pem` files into `/etc/nginx/ssl`
 
 ### Update the `nginx.conf` file in `/etc/nginx/nginx.conf`
