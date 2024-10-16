@@ -1,5 +1,5 @@
 import { ServiceData } from '@/utils/hooks/useGetServices'
-import ServiceCard from './components/Card'
+import ServiceCard from './components/Card/Card'
 import Statistic from '../crm/CrmDashboard/components/Statistic'
 import { useEffect, useState } from 'react'
 import { apiGetAllPublishedServices } from '@/services/ServiceAPI'
@@ -82,13 +82,6 @@ function Market() {
                             myDevices={myDevices}
                             key={service._id}
                             className=""
-                            node={service.nodeId || ''}
-                            name={service.serviceName}
-                            description={service.description}
-                            type={service.serviceType}
-                            code={service.code || ''}
-                            installationPrice={service.installationPrice}
-                            serviceImage={service.serviceImage || ''}
                             serviceData={service}
                         />
                     ))}

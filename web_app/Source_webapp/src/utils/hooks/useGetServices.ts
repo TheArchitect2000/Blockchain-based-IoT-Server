@@ -21,7 +21,7 @@ export type ServiceData = {
     runningPrice: number
     rate: number
     serviceImage: string | null
-    blocklyJson: BlocklyJson | null
+    blocklyJson: string | null
     code: string | null
     insertedBy: string
     insertDate: string

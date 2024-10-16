@@ -16,30 +16,17 @@ import {
 import { ServiceData } from '@/utils/hooks/useGetServices'
 import { useNavigate } from 'react-router-dom'
 import { SyntaxHighlighter } from '@/components/shared'
+import CardBlockly from './blockly'
 
 const ServiceCard = ({
     sharedDevices,
     myDevices,
     className,
-    name,
-    installationPrice,
-    type,
-    description,
-    serviceImage,
     serviceData,
-    code,
-    node,
 }: {
     sharedDevices: Array<DeviceData>
     myDevices: Array<DeviceData>
-    serviceImage: string
-    node: string
     className: string
-    name: string
-    installationPrice: number
-    type: string
-    code: string
-    description: string
     serviceData?: ServiceData
 }) => {
     const [modalOpen, setModalOpen] = useState(false)
@@ -47,6 +34,7 @@ const ServiceCard = ({
     const [installModal, setInstallModal] = useState(false)
     const [installLoading, setInstallLoading] = useState(false)
     const [codeModal, setCodeModal] = useState(false)
+    const [blocklyModal, setBlocklyModal] = useState(false)
     const [deviceOwner, setDeviceOwner] = useState('')
     const [selectedDevice, setSelectedDevice] = useState({
         name: '',
@@ -63,7 +51,9 @@ const ServiceCard = ({
                 <BsCoin size="32" />
                 <span>
                     <h6 className="text-sm">Installation Price</h6>
-                    <span className="text-xs">{installationPrice} FDS</span>
+                    <span className="text-xs">
+                        {serviceData?.installationPrice} FDS
+                    </span>
                 </span>
             </div>
             <Button
@@ -73,20 +63,36 @@ const ServiceCard = ({
             >
                 Install Service
             </Button>
-            <Button
-                variant="default"
-                size="sm"
-                onClick={() => setCodeModal(true)}
-            >
-                View Code
-            </Button>
+            <div className="flex gap-2 w-full">
+                <Button
+                    className="w-full"
+                    variant="default"
+                    size="sm"
+                    onClick={() => setCodeModal(true)}
+                >
+                    View Code
+                </Button>
+                {serviceData?.blocklyJson && (
+                    <Button
+                        className="w-full"
+                        variant="default"
+                        size="sm"
+                        onClick={() => setBlocklyModal(true)}
+                    >
+                        View Blockly
+                    </Button>
+                )}
+            </div>
         </section>
     )
 
     const cardHeader = (
         <div className="flex card-header-svg items-center justify-center rounded-tl-lg rounded-tr-lg overflow-hidden">
             <ImageWithFallBack
-                src={(serviceImage && serviceImage) || '/img/others/img-1.jpg'}
+                src={
+                    (serviceData?.serviceImage && serviceData?.serviceImage) ||
+                    '/img/others/img-1.jpg'
+                }
                 alt="card header"
             />
         </div>
@@ -222,15 +228,58 @@ const ServiceCard = ({
     return (
         <div className={`max-w-xs ${className}`}>
             <Dialog
+                width={'50%'}
+                contentClassName="flex flex-col gap-4"
+                isOpen={blocklyModal}
+                onClose={() => setBlocklyModal(false)}
+            >
+                <h5>'{serviceData?.serviceName}' Blockly</h5>
+                <CardBlockly xml={serviceData?.blocklyJson || ''} />
+                <div className="flex justify-center gap-4">
+                    <Button
+                        variant="solid"
+                        size="sm"
+                        color="red-500"
+                        className="w-fit px-8"
+                        onClick={() => {
+                            setBlocklyModal(false)
+                        }}
+                    >
+                        Close
+                    </Button>
+                    <Button
+                        variant="solid"
+                        size="sm"
+                        className="w-fit px-8"
+                        onClick={() => {
+                            toast.push(
+                                <Notification
+                                    title={'XML copied successfully'}
+                                    type="success"
+                                />,
+                                {
+                                    placement: 'top-center',
+                                }
+                            )
+                            navigator.clipboard.writeText(
+                                serviceData?.blocklyJson || ''
+                            )
+                        }}
+                    >
+                        Copy XML
+                    </Button>
+                </div>
+            </Dialog>
+            <Dialog
                 width={'40%'}
                 className={''}
                 isOpen={codeModal}
                 onClose={() => setCodeModal(false)}
             >
-                <h5 className="mb-4">'{name}' Code</h5>
+                <h5 className="mb-4">'{serviceData?.serviceName}' Code</h5>
                 <div className="">
                     <SyntaxHighlighter language="javascript">
-                        {code || ''}
+                        {serviceData?.code || ''}
                     </SyntaxHighlighter>
                 </div>
                 <Button
@@ -247,7 +296,7 @@ const ServiceCard = ({
                                 placement: 'top-center',
                             }
                         )
-                        navigator.clipboard.writeText(code || '')
+                        navigator.clipboard.writeText(serviceData?.code || '')
                     }}
                 >
                     Copy
@@ -259,7 +308,8 @@ const ServiceCard = ({
                     <ImageWithFallBack
                         className="w-[300px] h-[175px] rounded-xl"
                         src={
-                            (serviceImage && serviceImage) ||
+                            (serviceData?.serviceImage &&
+                                serviceData?.serviceImage) ||
                             '/img/others/img-1.jpg'
                         }
                         alt="card header"
@@ -267,24 +317,25 @@ const ServiceCard = ({
                 </div>
                 <section className="flex flex-col gap-2 items-center text-[1rem]">
                     <p>
-                        <strong>Name:</strong> {name}
+                        <strong>Name:</strong> {serviceData?.serviceName}
                     </p>
                     <p>
-                        <strong>IoT Server:</strong> {node.split('.')[0]}
+                        <strong>IoT Server:</strong>{' '}
+                        {(serviceData?.nodeId || '').split('.')[0]}
                     </p>
                     <p>
-                        <strong>Type:</strong> {type}
+                        <strong>Type:</strong> {serviceData?.serviceType}
                     </p>
                     <p>
-                        <strong>Description:</strong> {description}
+                        <strong>Description:</strong> {serviceData?.description}
                     </p>
                     <p>
-                        <strong>Installation Price:</strong> {installationPrice}{' '}
-                        FDS
+                        <strong>Installation Price:</strong>{' '}
+                        {serviceData?.installationPrice} FDS
                     </p>
                     <p>
-                        <strong>Execution Price:</strong> {installationPrice}{' '}
-                        FDS
+                        <strong>Execution Price:</strong>{' '}
+                        {serviceData?.installationPrice} FDS
                     </p>
                     <p>
                         <strong>-------------------------------------</strong>
@@ -431,17 +482,21 @@ const ServiceCard = ({
                 footerBorder={false}
                 headerBorder={false}
             >
-                <span className="text-emerald-600 font-semibold">{type}</span>
-                <h4 className="font-bold my-3">{name}</h4>
+                <span className="text-emerald-600 font-semibold">
+                    {serviceData?.serviceType}
+                </span>
+                <h4 className="font-bold my-3">{serviceData?.serviceName}</h4>
                 <p className="mb-2 text-[1rem]">
                     IoT Server:{' '}
-                    <strong className="text-white">{node.split('.')[0]}</strong>
+                    <strong className="text-white">
+                        {(serviceData?.nodeId || '').split('.')[0]}
+                    </strong>
                 </p>
                 <div
                     className="h-16 line-clamp-4"
                     style={{ textOverflow: 'ellipsis' }}
                 >
-                    {description}
+                    {serviceData?.description}
                 </div>
             </Card>
         </div>

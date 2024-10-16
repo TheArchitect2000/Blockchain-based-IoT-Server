@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { BlocklyWorkspace } from 'react-blockly'
 import { javascriptGenerator } from 'blockly/javascript'
+import { Xml } from 'blockly/core'
+import Blockly from 'blockly'
 import './style.scss'
 import './customBlocks/custom_Blocks'
 import { Button, Checkbox, Notification, toast } from '@/components/ui'
@@ -9,7 +11,7 @@ import { apiEditService, apiGetServiceByServiceId } from '@/services/ServiceAPI'
 import { useAppSelector } from '@/store'
 import { SyntaxHighlighter } from '@/components/shared'
 
-const toolbox = {
+export const toolbox = {
     kind: 'categoryToolbox',
     contents: [
         {
@@ -251,6 +253,26 @@ const toolbox = {
         },
     ],
 }
+
+const validateBlocklyXml = (xmlString: string): boolean => {
+    try {
+        const parser = new DOMParser()
+        const xmlDoc = parser.parseFromString(xmlString, 'text/xml')
+
+        // Check if there are parsing errors
+        const parseError = xmlDoc.getElementsByTagName('parsererror')
+        if (parseError.length > 0) {
+            console.error('Error parsing XML:', parseError[0].textContent)
+            return false
+        }
+
+        return true // XML is valid
+    } catch (e) {
+        console.error('Invalid Blockly XML:', e)
+        return false
+    }
+}
+
 export default function BlocklyEditor() {
     const [showCode, setShowCode] = useState(false)
     const [xml, setXml] = useState<string>()
@@ -374,6 +396,27 @@ export default function BlocklyEditor() {
         setCode(code)
     }
 
+    const handlePaste = async () => {
+        try {
+            const pastedXml = await navigator.clipboard.readText() // Get the clipboard content as text
+            if (validateBlocklyXml(pastedXml)) {
+                console.log(pastedXml)
+                const parser = new DOMParser()
+                const xmlDoc = parser.parseFromString(pastedXml, 'text/xml')
+                const workspace = Blockly.getMainWorkspace() // Get the current workspace
+
+                workspace.clear() // Clear the current workspace
+                Xml.domToWorkspace(xmlDoc.documentElement, workspace) // Set the new XML to the workspace
+
+                console.log('Valid XML, workspace updated')
+            } else {
+                console.log('Invalid XML')
+            }
+        } catch (err) {
+            console.error('Failed to read clipboard contents:', err)
+        }
+    }
+
     return (
         <>
             {!loading && (
@@ -415,6 +458,13 @@ export default function BlocklyEditor() {
                             />
                             <label htmlFor="show-code">Show Code</label>
                         </div>
+                        <Button
+                            onClick={handlePaste}
+                            loading={isSaving}
+                            variant="default"
+                        >
+                            Paste XML from Clipboard
+                        </Button>
                         <Button
                             onClick={saveEditService}
                             loading={isSaving}
