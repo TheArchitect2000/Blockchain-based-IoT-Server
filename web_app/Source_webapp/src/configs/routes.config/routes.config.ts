@@ -71,12 +71,12 @@ export const protectedRoutes = [
         component: lazy(() => import('@/views/building/pages/createedit')),
         authority: [],
     },
-    /*     {
+        {
         key: 'buildings.see',
         path: '/buildings/details/:id',
         component: lazy(() => import('@/views/building/pages/details')),
         authority: [],
-    }, */
+    },
     {
         key: 'notifications',
         path: '/notifications',

@@ -424,7 +424,7 @@ export default function BlocklyEditor() {
                     <BlocklyWorkspace
                         className={`h-[30rem] ${
                             (showCode == true && 'col-span-2') || 'col-span-3'
-                        }`} // you can use whatever classes are appropriate for your app's CSS
+                        }`}
                         toolboxConfiguration={toolbox} // this must be a JSON toolbox definition
                         initialXml={xml}
                         onXmlChange={setXml as any}

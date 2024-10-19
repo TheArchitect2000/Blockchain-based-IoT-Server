@@ -409,25 +409,31 @@ const Profile = ({}: ProfileProps) => {
                                 </section>
                             )}
                             {changeEmailStep === 'token' && (
-                                <section className="flex w-full items-center justify-center gap-12">
-                                    {inputs.map((value, index) => (
-                                        <Input
-                                            key={index}
-                                            id={`input-${index}`}
-                                            type="text"
-                                            maxLength={1}
-                                            disabled={apiLoading}
-                                            value={value}
-                                            onChange={(e) =>
-                                                handleTokenInputsChange(
-                                                    e.target.value,
-                                                    index
-                                                )
-                                            }
-                                            className="text-center border rounded-lg text-2xl text-white"
-                                        />
-                                    ))}
-                                </section>
+                                <div className="flex flex-col gap-8">
+                                    <h3 className="text-start">
+                                        Please enter the verification code sent
+                                        to your email in the fields below.
+                                    </h3>
+                                    <section className="flex w-full items-center justify-center gap-12 mb-4">
+                                        {inputs.map((value, index) => (
+                                            <Input
+                                                key={index}
+                                                id={`input-${index}`}
+                                                type="text"
+                                                maxLength={1}
+                                                disabled={apiLoading}
+                                                value={value}
+                                                onChange={(e) =>
+                                                    handleTokenInputsChange(
+                                                        e.target.value,
+                                                        index
+                                                    )
+                                                }
+                                                className="text-center border rounded-lg text-2xl text-white"
+                                            />
+                                        ))}
+                                    </section>
+                                </div>
                             )}
                             {changeEmailStep === 'finish' && (
                                 <div className="flex flex-col items-center">
