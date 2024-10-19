@@ -68,6 +68,11 @@ sudo certbot certonly --standalone --preferred-challenges http -d example.com
 ```
 
 -  After creating certificates you have to copy `fullchain.pem`, `privkey.pem` files into `/etc/nginx/ssl`
+- Required commands for SSL by certbot
+```
+sudo certbot certificates  #Check the Certificate Expiration
+sudo certbot renew  #Renew the SSL Certificate
+```
 
 ### Update the `nginx.conf` file in `/etc/nginx/nginx.conf`
 ```
