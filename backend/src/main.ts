@@ -7,27 +7,25 @@ import { join } from 'path';
 import { Inject, Logger } from '@nestjs/common';
 import { TestService } from './modules/broker/services/test.service';
 import { MqttLogService } from './modules/broker/services/mqtt-log.service';
-import { readFileSync } from "fs";
+import { readFileSync } from 'fs';
 
 async function bootstrap() {
   // const app = await NestFactory.create(AppModule);
 
   const httpsOptions = {
-		key: readFileSync('assets/certificates/webprivate.pem'),
-		cert: readFileSync('assets/certificates/webpublic.pem'),
-	  };
+    key: readFileSync('/etc/nginx/ssl/privkey.pem'),
+    cert: readFileSync('/etc/nginx/ssl/fullchain.pem'),
+  };
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   const config = new DocumentBuilder()
     .setTitle('FidesInnova')
     .setDescription('The FidesInnova API description')
-    .setVersion('2.1.0')
+    .setVersion('4.0.0')
     .addTag('FidesInnova')
     .addBearerAuth()
     .build();
-
-
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('app/api', app, document);

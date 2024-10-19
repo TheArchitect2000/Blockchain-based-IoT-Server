@@ -77,6 +77,21 @@ export class UserController {
     }
   }
 
+  async isDeviceAdmin(userId: string) {
+    const profile = (await this.userService.getUserProfileByIdFromUser(
+      userId,
+    )) as any;
+    if (
+      !profile ||
+      !profile?.roles[0]?.name ||
+      profile?.roles.some((role) => role.name === 'device_admin') == false
+    ) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   /* @Post('user/test')
   @HttpCode(200)
   @ApiOperation({
@@ -679,8 +694,10 @@ export class UserController {
     }
 
     const isAdmin = await this.isAdmin(request.user.userId);
+    
+    const isDeviceAdmin = await this.isDeviceAdmin(request.user.userId)
 
-    if (isAdmin === false && request.user.userId !== userId) {
+    if (isAdmin === false && isDeviceAdmin === false && request.user.userId !== userId) {
       throw new GeneralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
 

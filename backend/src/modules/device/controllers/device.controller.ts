@@ -129,6 +129,8 @@ export class DeviceController {
         this.result = data;
       })
       .catch((error) => {
+        console.log("Error is:", error);
+        
         let errorMessage = 'Some errors occurred while editing the device!';
         throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,

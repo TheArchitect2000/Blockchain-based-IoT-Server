@@ -370,6 +370,8 @@ export class MailService {
 
       const userToken = await this.getTokenWithUserEmail(email);
 
+      const currentTime = await this.getCurrentTimeFormatted()
+
       await this.mailerService
         .sendMail({
           to: email,
@@ -383,7 +385,7 @@ export class MailService {
             NodeImageSrc: process.env.THEME_LOGO,
             notificationMessage: String(notificationMessage),
             subject: subject,
-            date: this.getCurrentTimeFormatted(),
+            date: currentTime,
             unsubscribeEmailUrl: `${this.validateTokenUrl}${userToken}`,
           },
           /*attachments: [

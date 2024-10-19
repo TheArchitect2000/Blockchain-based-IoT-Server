@@ -223,21 +223,12 @@ export class DeviceService {
   }
 
   async getDeviceById(deviceId) {
-    let whereCondition = { isDeleted: false };
-    let populateCondition = [];
-    let selectCondition =
-      '_id isDeleted userId deviceName deviceEncryptedId deviceType mac hardwareVersion firmwareVersion parameters isShared costOfUse location geometry insertedBy insertDate updatedBy updateDate';
     let foundDevice: any = null;
 
     // if (ObjectID.isValid(deviceId)){
     if (mongoose.isValidObjectId(deviceId)) {
       await this.deviceRepository
-        .getDeviceById(
-          deviceId,
-          whereCondition,
-          populateCondition,
-          selectCondition,
-        )
+        .getDeviceById(deviceId)
         .then((data) => {
           foundDevice = data;
         })
@@ -463,21 +454,12 @@ export class DeviceService {
   }
 
   async editDevice(body: EditDeviceDto, userId: any, isAdmin = false) {
-    let whereCondition = { _id: body.deviceId };
-    let populateCondition = [];
-    let selectCondition =
-      '_id isDeleted userId deviceName deviceEncryptedId parameters deviceType mac hardwareVersion firmwareVersion isShared costOfUse location geometry insertedBy insertDate updatedBy updateDate';
     let foundDevice: any = null;
 
     console.log('we are in editDevice service!');
 
     await this.deviceRepository
-      .getDeviceById(
-        body.deviceId,
-        whereCondition,
-        populateCondition,
-        selectCondition,
-      )
+      .getDeviceById(body.deviceId)
       .then((data) => {
         foundDevice = data;
       })
@@ -487,8 +469,18 @@ export class DeviceService {
         throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
-    // if(foundDevice && foundDevice !== undefined && foundDevice.deletable){
     if (foundDevice && foundDevice !== undefined) {
+      console.log('Founded Device is:', foundDevice);
+
+      console.log(
+        `Device Node: ${foundDevice.nodeId} ||| BackEnd Node: ${process.env.NODE_ID}`,
+      );
+
+      if (String(foundDevice.nodeId) !== String(process.env.NODE_ID)) {
+        let errorMessage = `You can't edit other nodes devices !`;
+        throw new GeneralException(ErrorTypeEnum.FORBIDDEN, errorMessage);
+      }
+
       if (
         foundDevice &&
         foundDevice != undefined &&
@@ -504,7 +496,8 @@ export class DeviceService {
         return this.result;
       }
       foundDevice.nodeId = String(process.env.NODE_ID);
-      foundDevice.updatedBy = String(userId) == 'root' ? foundDevice.updatedBy : userId;
+      foundDevice.updatedBy =
+        String(userId) == 'root' ? foundDevice.updatedBy : userId;
       foundDevice.updateDate = new Date();
     }
 
@@ -553,21 +546,12 @@ export class DeviceService {
   }
 
   async renameDevice(body, userId, isAdmin = false): Promise<any> {
-    let whereCondition = { _id: body.deviceId };
-    let populateCondition = [];
-    let selectCondition =
-      '_id isDeleted userId deviceName deviceEncryptedId deviceType mac insertedBy insertDate updatedBy updateDate';
     let foundDevice: any = null;
 
     console.log('we are in renameDevice service!');
 
     await this.deviceRepository
-      .getDeviceById(
-        body.deviceId,
-        whereCondition,
-        populateCondition,
-        selectCondition,
-      )
+      .getDeviceById(body.deviceId)
       .then((data) => {
         foundDevice = data;
       })
@@ -738,9 +722,6 @@ export class DeviceService {
 
     foundDevices = await this.deviceRepository.getDeviceByEncryptedId(
       encryptId,
-      whereCondition,
-      populateCondition,
-      selectCondition,
     );
 
     //console.log('foundeddddddd deviceeeeeeeeee: ', foundDevices);
@@ -821,19 +802,10 @@ export class DeviceService {
     userId = '',
     isAdmin = false,
   ): Promise<any> {
-    let whereCondition = { isDeleted: false };
-    let populateCondition = [];
-    let selectCondition =
-      '_id isDeleted userId deviceName deviceEncryptedId deviceType mac insertedBy insertDate updatedBy updateDate';
     let foundDevice: any = null;
 
     await this.deviceRepository
-      .getDeviceById(
-        deviceId,
-        whereCondition,
-        populateCondition,
-        selectCondition,
-      )
+      .getDeviceById(deviceId)
       .then((data) => {
         foundDevice = data;
       })
@@ -915,5 +887,36 @@ export class DeviceService {
       });
 
     return this.result;
+  }
+
+  async localShareDeviceWithUserId(
+    deviceId: string,
+    userId: string,
+    isAdmin = false,
+  ) {
+    const foundDevices = await this.deviceRepository.getDeviceById(deviceId);
+
+    if (
+      userId.length > 0 &&
+      foundDevices &&
+      foundDevices != undefined &&
+      String(foundDevices.userId) !== String(userId) &&
+      isAdmin == false
+    ) {
+      let errorMessage = 'Access Denied!';
+      throw new GeneralException(ErrorTypeEnum.FORBIDDEN, errorMessage);
+    }
+
+    const checkExist = await this.deviceRepository.isDeviceSharedWithUser(deviceId, userId)
+
+    if (checkExist == true) {
+      let errorMessage = 'This device is already shared with this user!';
+      throw new GeneralException(ErrorTypeEnum.CONFLICT, errorMessage);
+    }
+
+    const result = await this.deviceRepository.localShareDeviceWithId(deviceId, userId)
+
+    return result
+
   }
 }

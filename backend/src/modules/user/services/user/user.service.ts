@@ -578,7 +578,6 @@ export class UserService {
       return true;
     } else {
       console.log('User not found!');
-      return false;
       throw new GeneralException(
         ErrorTypeEnum.NOT_FOUND,
         'User does not exist.',

@@ -11,7 +11,8 @@ export interface Device extends Document {
   deviceEncryptedId: string;
   hardwareVersion: number;
   firmwareVersion: number;
-  parameters: [];
+  parameters: Array<string>;
+  sharedWith: Array<string>;
   isShared: boolean;
   costOfUse: number;
   location: string;

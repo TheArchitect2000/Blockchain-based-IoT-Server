@@ -5,6 +5,8 @@ import { Types } from 'mongoose';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { DeviceModel } from '../models/device.model';
+import { deviceSchema } from '../schemas/device.schema';
+import { userSchema } from 'src/modules/user/schemas/user.schema';
 
 @Injectable()
 export class DeviceRepository {
@@ -14,6 +16,14 @@ export class DeviceRepository {
     @InjectModel('device')
     private readonly deviceModel?: DeviceModel,
   ) {}
+
+  getDeviceKeys(): string {
+    return Object.keys(deviceSchema.paths).join(' ');
+  }
+
+  getUserKeys(): string {
+    return Object.keys(userSchema.paths).join(' ');
+  }
 
   async insertDevice(data) {
     await this.deviceModel
@@ -60,29 +70,26 @@ export class DeviceRepository {
     }
   }
 
-  async updateAllNodeIds(
-    nodeId: string,
-  ) {
-    return await this.deviceModel
-      .updateMany(
-        {
-          $or: [
-            { nodeDeviceId: { $exists: false } }, // checks if the nodeDeviceId field is missing
-            { nodeDeviceId: '' }, // checks if the nodeDeviceId field is empty
-          ],
-        },
-        {
-          $set: { nodeId: nodeId }, // updates the nodeId field with the provided nodeId value
-        },
-      )
+  async updateAllNodeIds(nodeId: string) {
+    return await this.deviceModel.updateMany(
+      {
+        $or: [
+          { nodeDeviceId: { $exists: false } }, // checks if the nodeDeviceId field is missing
+          { nodeDeviceId: '' }, // checks if the nodeDeviceId field is empty
+        ],
+      },
+      {
+        $set: { nodeId: nodeId }, // updates the nodeId field with the provided nodeId value
+      },
+    );
   }
 
-  async getDeviceById(_id, whereCondition, populateCondition, selectCondition) {
+  async getDeviceById(_id) {
     return await this.deviceModel
       .findOne({ _id })
-      .where(whereCondition)
-      .populate(populateCondition)
-      .select(selectCondition);
+      .where({ isDeleted: false })
+      .populate([])
+      .select(this.getDeviceKeys());
   }
 
   async getDevicesByUserId(
@@ -206,19 +213,14 @@ export class DeviceRepository {
     );
   }
 
-  async getDeviceByEncryptedId(
-    encryptId,
-    whereCondition,
-    populateCondition,
-    selectCondition,
-  ) {
+  async getDeviceByEncryptedId(encryptId) {
     console.log('we are in getAllDevices repository!');
 
     return await this.deviceModel
       .findOne({ deviceEncryptedId: encryptId })
-      .where(whereCondition)
-      .populate(populateCondition)
-      .select(selectCondition);
+      .where({ isDeleted: false })
+      .populate([])
+      .select(this.getDeviceKeys());
   }
 
   async getAllDevices(whereCondition, populateCondition, selectCondition) {
@@ -229,5 +231,51 @@ export class DeviceRepository {
       .where(whereCondition)
       .populate(populateCondition)
       .select(selectCondition);
+  }
+
+  async localShareDeviceWithId(deviceId: string, userId: string) {
+    return await this.deviceModel
+      .updateOne(
+        { _id: deviceId },
+        {
+          $addToSet: {
+            sharedWith: userId,
+          },
+        },
+      )
+      .select(this.getDeviceKeys());
+  }
+
+  async localUnshareDeviceWithId(deviceId: string, userId: string) {
+    return await this.deviceModel
+      .updateOne(
+        { _id: deviceId },
+        {
+          $pull: {
+            sharedWith: userId,
+          },
+        },
+      )
+      .select(this.getDeviceKeys());
+  }
+
+  async getLocalSharedUsersWithDeviceId(deviceId: string) {
+    return await this.deviceModel
+      .findById(deviceId)
+      .populate({
+        path: 'sharedWith',
+        model: 'user',
+        select: this.getUserKeys(),
+      })
+      .select('sharedWith');
+  }
+
+  async isDeviceSharedWithUser(deviceId: string, userId: string) {
+    const result = await this.deviceModel.findOne({
+      _id: deviceId,
+      sharedWith: { $elemMatch: { $eq: userId } }, // Checks if userId exists in sharedWith
+    });
+
+    return !!result; // Returns true if found, false otherwise
   }
 }

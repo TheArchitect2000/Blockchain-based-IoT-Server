@@ -5,6 +5,7 @@ import axios from 'axios';
 import { DeviceEventsEnum } from '../enums/device-events.enum';
 import { ContractService } from 'src/modules/smartcontract/services/contract.service';
 import { DeviceService } from 'src/modules/device/services/device.service';
+import { createServer } from 'tls';
 
 /**
 1883 : MQTT, unencrypted, unauthenticated
@@ -71,13 +72,13 @@ export class MqttService implements OnModuleInit {
     const host = 'https://' + process.env.HOST_NAME_OR_IP;
 
     // MQTT over TLS / MQTTS
+
     const options = {
-      key: fs.readFileSync('assets/certificates/webprivate.pem'),
-      cert: fs.readFileSync('assets/certificates/webpublic.pem'),
+      key: fs.readFileSync('/etc/nginx/ssl/privkey.pem'),
+      cert: fs.readFileSync('/etc/nginx/ssl/fullchain.pem'),
     };
 
-    const server = require('tls').createServer(options, aedes.handle);
-    //const server = require('tls').createServer(aedes.handle);
+    const server = createServer(options, aedes.handle);
 
     server.listen(mqttPorts.mqtts, function () {
       console.log(
@@ -281,7 +282,12 @@ export class MqttService implements OnModuleInit {
           }
 
           if (shouldTrigger(String(parsedPayload.from), 6)) {
-            const deviceData = await this.deviceService.getDeviceInfoByEncryptedId(String(parsedPayload.from), '', true)
+            const deviceData =
+              await this.deviceService.getDeviceInfoByEncryptedId(
+                String(parsedPayload.from),
+                '',
+                true,
+              );
 
             await this.deviceService.editDevice(
               {
@@ -290,9 +296,11 @@ export class MqttService implements OnModuleInit {
                 firmwareVersion: Number(String(parsedPayload.data.FV)),
               } as any,
               'root',
-              true
+              true,
             );
-            console.log(`HV and FV of device with id: ${parsedPayload.data._id} updated successfully.`)
+            console.log(
+              `HV and FV of device with id: ${deviceData._id} updated successfully.`,
+            );
           }
 
           axios

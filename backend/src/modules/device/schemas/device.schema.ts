@@ -62,6 +62,11 @@ const schema = new Schema({
     minlength: 1,
     required: false,
   },
+  sharedWith: {
+    type: [],
+    required: false,
+    default: [],
+  },
   isShared: {
     type: Boolean,
     required: false,
