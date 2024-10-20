@@ -427,13 +427,7 @@ Inside the `.env` file, past the parameters.
 VITE_URL='https://panel.YOUR_DOMAIN.COM/app/'
 VITE_NODE_NAME = 'your.node.name'
 ```
-## 2- Configure Firewall
-Allow Web App to connect to the server through port 4000 
-```
-sudo ufw allow 4000
-```
-## 3- Prepare app configuration
--  In project root folder, create `.env` file and edit parameters based on your node URL info
+-  In Runner_webapp folder, create `.env` file and edit parameters based on your node URL info
 ```
 cd ~/iot_node_backend_web_app_source/web_app/Runner_webapp
 sudo nano .env
@@ -442,21 +436,16 @@ Inside the `.env` file, past the parameters.
 ```
 PORT=4000
 ```
+## 2- Configure Firewall
+Allow Web App to connect to the server through port 4000 
+```
+sudo ufw allow 4000
+```
 
 -------------------------------------------------------------------------------------------------
 
 # How to Install Admin WebApp
-
-### Note:
-  * The program's source is situated in the folder "Source_webapp". After building it from the source, you can place it in the "Runner_webapp/frontend". The runner section has already been executed on the server following the provided instructions.
-  * If you are a Node owner, contact FidesInnova team at info@fidesinnova.io to add your Admin Web App URL address to FidesInnova website.
-## 1- Installation of packages
-```
-cd ~/iot_node_backend_web_app_source/admin_web_app/Source_webapp
-npm install
-```
-
-## 2- Prepare app configuration
+## 1- Prepare app configuration
 -  In project root folder, create `.env` file and edit parameters based on your node URL info
 ```
 cd ~/iot_node_backend_web_app_source/admin_web_app/Source_webapp
@@ -469,37 +458,7 @@ Inside the `.env` file, past the parameters.
 VITE_URL='https://panel.YOUR_DOMAIN.COM/app/'
 VITE_NODE_NAME = 'your.node.name'
 ```
-
--  From `/etc/nginx/ssl`, copy the files `fullchain.pem`, `privkey.pem` and rename them:
--  `fullchain.pem` into `webpublic.pem`
--  `privkey.pem` into `webprivate.pem`
-
-### Put SSL certificate files in the following path:
-```
-iot_node_backend_web_app_source/admin_web_app/Runner_webapp/assets/certificates/webpublic.pem
-iot_node_backend_web_app_source/admin_web_app/Runner_webapp/assets/certificates/webprivate.pem
-```
-
-## 3- Build
-```
-cd ~/iot_node_backend_web_app_source/admin_web_app/Source_webapp
-npm run build
-```
-**The build artifacts will be stored in the `iot_node_backend_web_app_source/admin_web_app/Source_webapp/build/` directory, you must copy the contents of the `build` folder into the `iot_node_backend_web_app_source/admin_web_app/Runner_webapp/frontend`.
-**
-
-
-## 4- Configure Firewall
-Allow Admin Web App to connect to the server through port 5000 
-```
-sudo ufw allow 5000
-```
-## 5- Install npm packages for Runner
-```
-cd ~/iot_node_backend_web_app_source/admin_web_app/Runner_webapp
-npm i
-```
--  In project root folder, create `.env` file and edit parameters based on your node URL info
+-  In Runner_webapp folder, create `.env` file and edit parameters based on your node URL info
 ```
 cd ~/iot_node_backend_web_app_source/admin_web_app/Runner_webapp
 sudo nano .env
@@ -508,24 +467,10 @@ Inside the `.env` file, past the parameters.
 ```
 PORT=5000
 ```
-
-## 6- Run the project with pm2
+## 2- Configure Firewall
+Allow Admin Web App to connect to the server through port 5000 
 ```
-cd ~/iot_node_backend_web_app_source/admin_web_app/Runner_webapp
-pm2 start main.js --name "Admin Web App"
-```
-## 7- Running the project in developer mode
-### Build the project
-```
-tsc
-```
-### Run the program
-```
-node main.js
-```
-### production mode (For developers)
-```
-npm run start:prod
+sudo ufw allow 5000
 ```
 -------------------------------------------------------------------------------------------------
 
