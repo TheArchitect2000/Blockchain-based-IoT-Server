@@ -38,13 +38,29 @@ echo "Building web_app..."
 if npm run build; then
     echo "web_app build completed successfully."
     echo "Cleaning up Runner_webapp frontend folder..."
-    rm -rf "../Runner_webapp/frontend"
-    mkdir "../Runner_webapp/frontend"
+    if [ ! -d "../Runner_webapp/frontend" ]; then
+        echo "Frontend folder does not exist. Creating it..."
+        mkdir "../Runner_webapp/frontend"
+    else
+        echo "Frontend folder exists. Cleaning it up..."
+        rm -rf "../Runner_webapp/frontend"
+        mkdir "../Runner_webapp/frontend"
+    fi
     echo "Moving web_app files to Runner_webapp/frontend..."
     mv build/* ../Runner_webapp/frontend/ || { echo "Error: Failed to move web_app files."; exit 1; }
     echo "web_app files moved successfully."
 else
     echo "Error: web_app build failed."
+    exit 1
+fi
+
+# Run build for web_app Runner_webapp
+echo "Building Runner_webapp for web_app..."
+cd ../Runner_webapp || { echo "Error: Failed to navigate to Runner_webapp directory."; exit 1; }
+if npm run build; then
+    echo "Runner_webapp for web_app built successfully."
+else
+    echo "Error: Runner_webapp build failed."
     exit 1
 fi
 
@@ -67,13 +83,29 @@ echo "Building admin_web_app..."
 if npm run build; then
     echo "admin_web_app build completed successfully."
     echo "Cleaning up Runner_webapp frontend folder..."
-    rm -rf "../Runner_webapp/frontend"
-    mkdir "../Runner_webapp/frontend"
+    if [ ! -d "../Runner_webapp/frontend" ]; then
+        echo "Frontend folder does not exist. Creating it..."
+        mkdir "../Runner_webapp/frontend"
+    else
+        echo "Frontend folder exists. Cleaning it up..."
+        rm -rf "../Runner_webapp/frontend"
+        mkdir "../Runner_webapp/frontend"
+    fi
     echo "Moving admin_web_app files to Runner_webapp/frontend..."
     mv build/* ../Runner_webapp/frontend/ || { echo "Error: Failed to move admin_web_app files."; exit 1; }
     echo "admin_web_app files moved successfully."
 else
     echo "Error: admin_web_app build failed."
+    exit 1
+fi
+
+# Run build for admin_web_app Runner_webapp
+echo "Building Runner_webapp for admin_web_app..."
+cd ../Runner_webapp || { echo "Error: Failed to navigate to Runner_webapp directory."; exit 1; }
+if npm run build; then
+    echo "Runner_webapp for admin_web_app built successfully."
+else
+    echo "Error: Runner_webapp build failed."
     exit 1
 fi
 
