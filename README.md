@@ -408,69 +408,13 @@ During the installation process in the mobile app, the following devices will be
 * `title:` The name of the device as it will appear in the mobile app's device installation list.
 * `type:` The device type, which is used by the node supervisor to categorize the devices.
 
-## 9- Installation of packages
-In the project root directory run the following commands to install npm packages and then, build the project:
-```
-cd ~/iot_node_backend_web_app_source/backend
-npm install
-npm run build
-```
-
-## 10- Run the project with pm2
-### install pm2
-```
-sudo npm i -g pm2
-```
-### Run the project with pm2
-```
-cd ~/iot_node_backend_web_app_source/backend
-pm2 start dist/main.js --name "Backend Server"
-pm2 save
-pm2 startup
-```
-
-## 11- Running the project in developer mode
-### development
-```
-npm run start
-```
-### watch mode (For developers)
-```
-npm run start:dev
-```
-### production mode (For developers)
-```
-npm run start:prod
-```
--  For first run of the app or after pull the project from GitHub or any change in project's code, before run following command you must run the app with `npm run start` once.
-
-### unit tests
-```
-npm run test
-```
-### e2e tests
-```
-npm run test:e2e
-```
-### test coverage
-```
-npm run test:cov
-```
-
 -------------------------------------------------------------------------------------------------
 
 # How to Install WebApp
 
 ### Note:
-  * The program's source is situated in the folder "Source_webapp". After building it from the source, you can place it in the "Runner_webapp/frontend". The runner section has already been executed on the server following the provided instructions.
   * If you are a Node owner, contact FidesInnova team at info@fidesinnova.io to add your Web App URL address to FidesInnova website.
-## 1- Installation of packages
-```
-cd ~/iot_node_backend_web_app_source/web_app/Source_webapp
-npm install
-```
-
-## 2- Prepare app configuration
+## 1- Prepare app configuration
 -  In project root folder, create `.env` file and edit parameters based on your node URL info
 ```
 cd ~/iot_node_backend_web_app_source/web_app/Source_webapp
@@ -483,47 +427,12 @@ Inside the `.env` file, past the parameters.
 VITE_URL='https://panel.YOUR_DOMAIN.COM/app/'
 VITE_NODE_NAME = 'your.node.name'
 ```
-
-### To obtain a new certificate for the admin domain:
-
-```
-sudo certbot certonly --standalone --preferred-challenges http
-```
--  From `/etc/letsencrypt/live/admin.<Your Domain>`, copy the files `fullchain.pem`, `privkey.pem` and rename them:
--  `fullchain.pem` into `webpublic.pem`
--  `privkey.pem` into `webprivate.pem`
--   `fullchain.pem` into `fullchainadmin.pem`
--  `privkey.pem` into `privkeyadmin.pem`
-
-### Put SSL certificate files in the following path:
-```
-iot_node_backend_web_app_source/web_app/Runner_webapp/assets/certificates/webpublic.pem
-iot_node_backend_web_app_source/web_app/Runner_webapp/assets/certificates/webprivate.pem
-
-etc/nginx/ssl/fullchainadmin.pem
-etc/nginx/ssl/privkeyadmin.pem
-
-```
-
-## 3- Build
-```
-cd ~/iot_node_backend_web_app_source/web_app/Source_webapp
-npm run build
-```
-**The build artifacts will be stored in the `iot_node_backend_web_app_source/web_app/Source_webapp/build/` directory, you must copy the contents of the `build` folder into the `iot_node_backend_web_app_source/web_app/Runner_webapp/frontend`.
-**
-
-
-## 4- Configure Firewall
+## 2- Configure Firewall
 Allow Web App to connect to the server through port 4000 
 ```
 sudo ufw allow 4000
 ```
-## 5- Install npm packages for Runner
-```
-cd ~/iot_node_backend_web_app_source/web_app/Runner_webapp
-npm i
-```
+## 3- Prepare app configuration
 -  In project root folder, create `.env` file and edit parameters based on your node URL info
 ```
 cd ~/iot_node_backend_web_app_source/web_app/Runner_webapp
@@ -532,25 +441,6 @@ sudo nano .env
 Inside the `.env` file, past the parameters.
 ```
 PORT=4000
-```
-
-## 6- Run the project with pm2
-```
-cd ~/iot_node_backend_web_app_source/web_app/Runner_webapp
-pm2 start main.js --name "Web App"
-```
-## 7- Running the project in developer mode
-### Build the project
-```
-tsc
-```
-### Run the program
-```
-node main.js
-```
-### production mode (For developers)
-```
-npm run start:prod
 ```
 
 -------------------------------------------------------------------------------------------------
