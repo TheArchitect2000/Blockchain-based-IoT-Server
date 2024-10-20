@@ -74,8 +74,8 @@ export class MqttService implements OnModuleInit {
     // MQTT over TLS / MQTTS
 
     const options = {
-      key: fs.readFileSync('/etc/nginx/ssl/private.key'),
-      cert: fs.readFileSync('/etc/nginx/ssl/fullchain.crt'),
+      key: fs.readFileSync('/etc/nginx/ssl/privkey.pem'),
+      cert: fs.readFileSync('/etc/nginx/ssl/fullchain.pem'),
     };
 
     const server = createServer(options, aedes.handle);
