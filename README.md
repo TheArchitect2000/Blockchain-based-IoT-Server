@@ -496,7 +496,7 @@ To automate the setup and build processes for both the backend and frontend appl
 
 This script will handle building both the backend and frontend applications and configuring PM2 services automatically.
 
-### Subsequent Updates
+## Subsequent Updates
 After the initial setup, you only need to run the update process to keep the applications up to date. Please refer to the \`Update Process\` section for instructions on how to do this.
 
 
