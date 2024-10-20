@@ -482,7 +482,7 @@ To automate the setup and build processes for both the backend and frontend appl
    Before running the setup script for the first time, ensure it has executable permissions by running the following command in the terminal:
 
    ```
-   cd ~/your_project_directory/
+   cd ~/iot_node_backend_web_app_source/
    chmod +x initial_setup.sh
    ```
 
@@ -490,7 +490,7 @@ To automate the setup and build processes for both the backend and frontend appl
    After setting the permissions, execute the setup script to build the applications and create PM2 services:
 
    ```
-   cd ~/your_project_directory/
+   cd ~/iot_node_backend_web_app_source/
    ./initial_setup.sh
    ```
 
