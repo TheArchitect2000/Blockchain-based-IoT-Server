@@ -56,23 +56,37 @@ sudo apt update
 sudo apt -y install nginx
 systemctl status nginx
 ```
-### How to take SSL by certbot
+### How to Take SSL by Certbot
 ```
 sudo apt-get update
 sudo apt-get install certbot
 sudo certbot certonly --standalone --preferred-challenges http
 ```
-- This command is used when you want to manually obtain an SSL certificate for a specific domain without directly modifying your web server configurations:
+
+# Obtain an SSL Certificate
+
+To manually obtain an SSL certificate for your domains without directly modifying your web server configurations, run the following command:
+
 ```
-sudo certbot certonly --standalone --preferred-challenges http -d example.com
+sudo certbot certonly --standalone --preferred-challenges http
 ```
 
--  After creating certificates you have to copy `fullchain.pem`, `privkey.pem` files into `/etc/nginx/ssl`
-- Required commands for SSL by certbot
+After running the command, enter your web app and admin web app domains separated by a space, like this:
+
 ```
-sudo certbot certificates  #Check the Certificate Expiration
-sudo certbot renew  #Renew the SSL Certificate
+test.com admin.test.com
 ```
+
+- After creating certificates, copy \`fullchain.pem\` and \`privkey.pem\` files into \`/etc/nginx/ssl\`.
+- Required commands for SSL by Certbot:
+  - Check the expiration date of your SSL certificates:
+  ```
+  sudo certbot certificates
+  ```
+  - Renew your SSL certificate:
+  ```
+  sudo certbot renew
+  ```
 
 ### Update the `nginx.conf` file in `/etc/nginx/nginx.conf`
 ```
@@ -111,8 +125,8 @@ http {
 	ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3; # Dropping SSLv3, ref: POODLE
 	ssl_prefer_server_ciphers on;
 
-	ssl_certificate  ssl/fullchain.pem;
-	ssl_certificate_key ssl/privkey.pem;
+	ssl_certificate  /etc/nginx/ssl/fullchain.pem;
+	ssl_certificate_key /etc/nginx/ssl/privkey.pem;
 
 	##
 	# Logging Settings
@@ -250,13 +264,13 @@ apt install git
 In the root directory clone the project
 ```
 cd /home
-git clone https://github.com/FidesInnova/iot_node_backend_web_app_source.git
+git clone https://github.com/FidesInnova/iot_node_backend_web_app_source_source.git
 ```
 
 ## 7- Prepare app host configuration
 -  In project root folder, create `.env` file and edit parameters based on your node URL info
 ```
-cd ~/iot_node_backend_web_app/backend
+cd ~/iot_node_backend_web_app_source/backend
 sudo nano .env
 ```
 Inside the `.env` file, past the parameters.
@@ -367,19 +381,9 @@ ZKP_PASS = 'your-zkp-password'
 RPC_URL = 'your-rpc-url'
 ```
 
--  From `/etc/nginx/ssl`, copy the files `fullchain.pem`, `privkey.pem` and rename them:
--  `fullchain.pem` into `webpublic.pem`
--  `privkey.pem` into `webprivate.pem`
-
-### put ssl certificate files in following directory:
-```
-iot_node_backend_web_app/backend/assets/certificates/webprivate.pem
-iot_node_backend_web_app/backend/assets/certificates/webpublic.pem
-```
-
 ## 8- Device Installation Data
 
-During the installation process in the mobile app, the following devices will be displayed based on the data provided in the `fidesinnova_node_iot/backend/src/data/devices.json` file. Each device is represented by an image and a title:
+During the installation process in the mobile app, the following devices will be displayed based on the data provided in the `iot_node_backend_web_app_source/backend/src/data/devices.json` file. Each device is represented by an image and a title:
 
 ```json
 [
@@ -400,14 +404,14 @@ During the installation process in the mobile app, the following devices will be
   }
 ]
 ```
-* `fileName:` Refers to the image file that should be placed in the `/fidesinnova_node_iot/backend/uploads/device` directory. This image will be displayed in the mobile app.
+* `fileName:` Refers to the image file that should be placed in the `/iot_node_backend_web_app_source/backend/uploads/device` directory. This image will be displayed in the mobile app.
 * `title:` The name of the device as it will appear in the mobile app's device installation list.
 * `type:` The device type, which is used by the node supervisor to categorize the devices.
 
 ## 9- Installation of packages
 In the project root directory run the following commands to install npm packages and then, build the project:
 ```
-cd ~/iot_node_backend_web_app/backend
+cd ~/iot_node_backend_web_app_source/backend
 npm install
 npm run build
 ```
@@ -419,7 +423,7 @@ sudo npm i -g pm2
 ```
 ### Run the project with pm2
 ```
-cd ~/iot_node_backend_web_app/backend
+cd ~/iot_node_backend_web_app_source/backend
 pm2 start dist/main.js --name "Backend Server"
 pm2 save
 pm2 startup
@@ -462,14 +466,14 @@ npm run test:cov
   * If you are a Node owner, contact FidesInnova team at info@fidesinnova.io to add your Web App URL address to FidesInnova website.
 ## 1- Installation of packages
 ```
-cd ~/iot_node_backend_web_app/web_app/Source_webapp
+cd ~/iot_node_backend_web_app_source/web_app/Source_webapp
 npm install
 ```
 
 ## 2- Prepare app configuration
 -  In project root folder, create `.env` file and edit parameters based on your node URL info
 ```
-cd ~/iot_node_backend_web_app/web_app/Source_webapp
+cd ~/iot_node_backend_web_app_source/web_app/Source_webapp
 sudo nano .env
 ```
 Inside the `.env` file, past the parameters.
@@ -493,8 +497,8 @@ sudo certbot certonly --standalone --preferred-challenges http
 
 ### Put SSL certificate files in the following path:
 ```
-iot_node_backend_web_app/web_app/Runner_webapp/assets/certificates/webpublic.pem
-iot_node_backend_web_app/web_app/Runner_webapp/assets/certificates/webprivate.pem
+iot_node_backend_web_app_source/web_app/Runner_webapp/assets/certificates/webpublic.pem
+iot_node_backend_web_app_source/web_app/Runner_webapp/assets/certificates/webprivate.pem
 
 etc/nginx/ssl/fullchainadmin.pem
 etc/nginx/ssl/privkeyadmin.pem
@@ -503,10 +507,10 @@ etc/nginx/ssl/privkeyadmin.pem
 
 ## 3- Build
 ```
-cd ~/iot_node_backend_web_app/web_app/Source_webapp
+cd ~/iot_node_backend_web_app_source/web_app/Source_webapp
 npm run build
 ```
-**The build artifacts will be stored in the `iot_node_backend_web_app/web_app/Source_webapp/build/` directory, you must copy the contents of the `build` folder into the `iot_node_backend_web_app/web_app/Runner_webapp/frontend`.
+**The build artifacts will be stored in the `iot_node_backend_web_app_source/web_app/Source_webapp/build/` directory, you must copy the contents of the `build` folder into the `iot_node_backend_web_app_source/web_app/Runner_webapp/frontend`.
 **
 
 
@@ -517,12 +521,12 @@ sudo ufw allow 4000
 ```
 ## 5- Install npm packages for Runner
 ```
-cd ~/iot_node_backend_web_app/web_app/Runner_webapp
+cd ~/iot_node_backend_web_app_source/web_app/Runner_webapp
 npm i
 ```
 -  In project root folder, create `.env` file and edit parameters based on your node URL info
 ```
-cd ~/iot_node_backend_web_app/web_app/Runner_webapp
+cd ~/iot_node_backend_web_app_source/web_app/Runner_webapp
 sudo nano .env
 ```
 Inside the `.env` file, past the parameters.
@@ -532,7 +536,7 @@ PORT=4000
 
 ## 6- Run the project with pm2
 ```
-cd ~/iot_node_backend_web_app/web_app/Runner_webapp
+cd ~/iot_node_backend_web_app_source/web_app/Runner_webapp
 pm2 start main.js --name "Web App"
 ```
 ## 7- Running the project in developer mode
@@ -558,14 +562,14 @@ npm run start:prod
   * If you are a Node owner, contact FidesInnova team at info@fidesinnova.io to add your Admin Web App URL address to FidesInnova website.
 ## 1- Installation of packages
 ```
-cd ~/iot_node_backend_web_app/admin_web_app/Source_webapp
+cd ~/iot_node_backend_web_app_source/admin_web_app/Source_webapp
 npm install
 ```
 
 ## 2- Prepare app configuration
 -  In project root folder, create `.env` file and edit parameters based on your node URL info
 ```
-cd ~/iot_node_backend_web_app/admin_web_app/Source_webapp
+cd ~/iot_node_backend_web_app_source/admin_web_app/Source_webapp
 sudo nano .env
 ```
 Inside the `.env` file, past the parameters.
@@ -582,16 +586,16 @@ VITE_NODE_NAME = 'your.node.name'
 
 ### Put SSL certificate files in the following path:
 ```
-iot_node_backend_web_app/admin_web_app/Runner_webapp/assets/certificates/webpublic.pem
-iot_node_backend_web_app/admin_web_app/Runner_webapp/assets/certificates/webprivate.pem
+iot_node_backend_web_app_source/admin_web_app/Runner_webapp/assets/certificates/webpublic.pem
+iot_node_backend_web_app_source/admin_web_app/Runner_webapp/assets/certificates/webprivate.pem
 ```
 
 ## 3- Build
 ```
-cd ~/iot_node_backend_web_app/admin_web_app/Source_webapp
+cd ~/iot_node_backend_web_app_source/admin_web_app/Source_webapp
 npm run build
 ```
-**The build artifacts will be stored in the `iot_node_backend_web_app/admin_web_app/Source_webapp/build/` directory, you must copy the contents of the `build` folder into the `iot_node_backend_web_app/admin_web_app/Runner_webapp/frontend`.
+**The build artifacts will be stored in the `iot_node_backend_web_app_source/admin_web_app/Source_webapp/build/` directory, you must copy the contents of the `build` folder into the `iot_node_backend_web_app_source/admin_web_app/Runner_webapp/frontend`.
 **
 
 
@@ -602,12 +606,12 @@ sudo ufw allow 5000
 ```
 ## 5- Install npm packages for Runner
 ```
-cd ~/iot_node_backend_web_app/admin_web_app/Runner_webapp
+cd ~/iot_node_backend_web_app_source/admin_web_app/Runner_webapp
 npm i
 ```
 -  In project root folder, create `.env` file and edit parameters based on your node URL info
 ```
-cd ~/iot_node_backend_web_app/admin_web_app/Runner_webapp
+cd ~/iot_node_backend_web_app_source/admin_web_app/Runner_webapp
 sudo nano .env
 ```
 Inside the `.env` file, past the parameters.
@@ -617,7 +621,7 @@ PORT=5000
 
 ## 6- Run the project with pm2
 ```
-cd ~/iot_node_backend_web_app/admin_web_app/Runner_webapp
+cd ~/iot_node_backend_web_app_source/admin_web_app/Runner_webapp
 pm2 start main.js --name "Admin Web App"
 ```
 ## 7- Running the project in developer mode
@@ -644,7 +648,7 @@ To update both the backend and frontend applications, simply run the \`update.sh
    Before running the update script for the first time, ensure it has executable permissions by running the following command in the terminal:
 
    ```
-   cd ~/iot_node_backend_web_app/
+   cd ~/iot_node_backend_web_app_source/
    chmod +x update.sh
    ```
 
@@ -652,7 +656,7 @@ To update both the backend and frontend applications, simply run the \`update.sh
    After setting the permissions, update the applications automatically by running:
 
    ```
-   cd ~/iot_node_backend_web_app/
+   cd ~/iot_node_backend_web_app_source/
    ./update.sh
    ```
 
