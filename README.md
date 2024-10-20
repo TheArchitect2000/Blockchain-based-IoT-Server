@@ -446,7 +446,7 @@ sudo ufw allow 4000
 
 # How to Install Admin WebApp
 ## 1- Prepare app configuration
--  In project root folder, create `.env` file and edit parameters based on your node URL info
+In project root folder, create `.env` file and edit parameters based on your node URL info
 ```
 cd ~/iot_node_backend_web_app_source/admin_web_app/Source_webapp
 sudo nano .env
@@ -458,7 +458,7 @@ Inside the `.env` file, past the parameters.
 VITE_URL='https://panel.YOUR_DOMAIN.COM/app/'
 VITE_NODE_NAME = 'your.node.name'
 ```
--  In Runner_webapp folder, create `.env` file and edit parameters based on your node URL info
+In Runner_webapp folder, create `.env` file and edit parameters based on your node URL info
 ```
 cd ~/iot_node_backend_web_app_source/admin_web_app/Runner_webapp
 sudo nano .env
