@@ -473,6 +473,34 @@ Allow Admin Web App to connect to the server through port 5000
 sudo ufw allow 5000
 ```
 -------------------------------------------------------------------------------------------------
+# Building and Running
+
+To automate the setup and build processes for both the backend and frontend applications, run the \`initial_setup.sh\` script located in the root directory of the project.
+
+### Steps:
+1. **Set the appropriate permissions** (one-time step):
+   Before running the setup script for the first time, ensure it has executable permissions by running the following command in the terminal:
+
+   ```
+   cd ~/your_project_directory/
+   chmod +x initial_setup.sh
+   ```
+
+2. **Run the setup script**:
+   After setting the permissions, execute the setup script to build the applications and create PM2 services:
+
+   ```
+   cd ~/your_project_directory/
+   ./initial_setup.sh
+   ```
+
+This script will handle building both the backend and frontend applications and configuring PM2 services automatically.
+
+### Subsequent Updates
+After the initial setup, you only need to run the update process to keep the applications up to date. Please refer to the \`Update Process\` section for instructions on how to do this.
+
+
+-------------------------------------------------------------------------------------------------
 
 # Update Process
 
