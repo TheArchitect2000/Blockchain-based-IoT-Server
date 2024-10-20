@@ -524,6 +524,3 @@ To update both the backend and frontend applications, simply run the \`update.sh
    ```
 
 This script will handle pulling the latest changes, rebuilding the apps, and restarting services automatically.
-
-
--------------------------------------------------------------------------------------------------
