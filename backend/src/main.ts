@@ -13,8 +13,8 @@ async function bootstrap() {
   // const app = await NestFactory.create(AppModule);
 
   const httpsOptions = {
-    key: readFileSync('/etc/nginx/ssl/privkey.pem'),
-    cert: readFileSync('/etc/nginx/ssl/fullchain.pem'),
+    key: readFileSync('/etc/nginx/ssl/private.key'),
+    cert: readFileSync('/etc/nginx/ssl/fullchain.crt'),
   };
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
