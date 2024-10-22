@@ -54,13 +54,13 @@ else
     exit 1
 fi
 
-# Run build for web_app Runner_webapp
-echo "Building Runner_webapp for web_app..."
+
+echo "Installing new packages for web_app/Runner_webapp..."
 cd ../Runner_webapp || { echo "Error: Failed to navigate to Runner_webapp directory."; exit 1; }
-if npm run build; then
-    echo "Runner_webapp for web_app built successfully."
+if npm install; then
+    echo "Packages of Runner_webapp for web_app installed successfully."
 else
-    echo "Error: Runner_webapp build failed."
+    echo "Error: Runner_webapp package installation failed."
     exit 1
 fi
 
@@ -99,13 +99,13 @@ else
     exit 1
 fi
 
-# Run build for admin_web_app Runner_webapp
-echo "Building Runner_webapp for admin_web_app..."
+
+echo "Installing new packages for admin_web_app/Runner_webapp..."
 cd ../Runner_webapp || { echo "Error: Failed to navigate to Runner_webapp directory."; exit 1; }
-if npm run build; then
-    echo "Runner_webapp for admin_web_app built successfully."
+if npm install; then
+    echo "Packages of Runner_webapp for admin_web_app installed successfully."
 else
-    echo "Error: Runner_webapp build failed."
+    echo "Error: Runner_webapp package installation failed."
     exit 1
 fi
 

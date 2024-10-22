@@ -108,3 +108,7 @@ else
     echo "Error: Runner_webapp package installation failed."
     exit 1
 fi
+
+pm2 restart all;
+
+echo "Services restarted and Node updated successfully."
