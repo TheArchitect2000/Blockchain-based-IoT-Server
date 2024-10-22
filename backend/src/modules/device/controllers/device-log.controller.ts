@@ -385,6 +385,10 @@ export class DeviceLogController {
     @Query('daysBefore') daysBefore: number,
     @Request() request?,
   ) {
+
+
+    const isSharedWithUser = await this.deviceService.isDeviceEncryptedSharedWithUser(deviceEncryptedId, request.user.userId)
+
     const isAdmin = await this.isAdmin(request.user.userId);
     // if storX saving is not working check this section
     if (request) {
@@ -394,7 +398,7 @@ export class DeviceLogController {
           fieldName,
           daysBefore,
           request.user.userId,
-          isAdmin,
+          isSharedWithUser == true && true || isAdmin,
         )
         .then((data) => {
           this.result = data;

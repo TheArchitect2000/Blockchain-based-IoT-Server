@@ -47,7 +47,11 @@ export class DeviceService {
     private readonly installedService?: InstalledServiceService,
     @Inject(forwardRef(() => ContractService))
     private readonly contractService?: ContractService,
-  ) {}
+  ) {
+    setTimeout(() => {
+      this.getSharedDevicesWithUserId('66e2aa7dd4353572bf58dcf9');
+    }, 4000);
+  }
 
   async generatePassword(len) {
     return randompassword.randomPassword({
@@ -487,7 +491,7 @@ export class DeviceService {
         foundDevice.userId != userId &&
         isAdmin == false
       ) {
-        let errorMessage = 'Access Denied!';
+        let errorMessage = 'Access Denied.';
         this.result = {
           message: errorMessage,
           success: false,
@@ -569,7 +573,7 @@ export class DeviceService {
         foundDevice.userId != userId &&
         isAdmin == false
       ) {
-        let errorMessage = 'Access Denied!';
+        let errorMessage = 'Access Denied.';
         this.result = {
           message: errorMessage,
           success: false,
@@ -733,7 +737,7 @@ export class DeviceService {
       foundDevices.userId != userId &&
       isAdmin == false
     ) {
-      let errorMessage = 'Access Denied!';
+      let errorMessage = 'Access Denied.';
       this.result = {
         message: errorMessage,
         success: false,
@@ -824,7 +828,7 @@ export class DeviceService {
         foundDevice.userId != userId &&
         isAdmin == false
       ) {
-        let errorMessage = 'Access Denied!';
+        let errorMessage = 'Access Denied.';
         this.result = {
           message: errorMessage,
           success: false,
@@ -892,9 +896,108 @@ export class DeviceService {
   async localShareDeviceWithUserId(
     deviceId: string,
     userId: string,
+    ownerId: string,
     isAdmin = false,
   ) {
     const foundDevices = await this.deviceRepository.getDeviceById(deviceId);
+
+    if (foundDevices == null) {
+      let errorMessage = 'Device not found.';
+      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+    }
+
+    if (String(foundDevices.userId) === String(userId)) {
+      let errorMessage = `Local device sharing with yourself is not allowed.`;
+      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+    }
+
+    if (
+      ownerId.length > 0 &&
+      foundDevices &&
+      foundDevices != undefined &&
+      String(foundDevices.userId) !== String(ownerId) &&
+      isAdmin == false
+    ) {
+      let errorMessage = 'Access Denied.';
+      throw new GeneralException(ErrorTypeEnum.FORBIDDEN, errorMessage);
+    }
+
+    const checkExist = await this.deviceRepository.isDeviceSharedWithUser(
+      deviceId,
+      userId,
+    );
+
+    if (checkExist == true) {
+      let errorMessage = 'This device is already shared with the user.';
+      throw new GeneralException(ErrorTypeEnum.CONFLICT, errorMessage);
+    }
+
+    const result = await this.deviceRepository.localShareDeviceWithId(
+      deviceId,
+      userId,
+    );
+
+    return result;
+  }
+
+  async localUnshareDeviceWithUserId(
+    deviceId: string,
+    userId: string,
+    ownerId: string,
+    isAdmin = false,
+  ) {
+    const foundDevices = await this.deviceRepository.getDeviceById(deviceId);
+
+    if (foundDevices == null) {
+      let errorMessage = 'Device not found.';
+      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+    }
+
+    if (String(foundDevices.userId) === String(userId)) {
+      let errorMessage = `Local device sharing with yourself is not allowed.`;
+      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+    }
+
+    if (
+      ownerId.length > 0 &&
+      foundDevices &&
+      foundDevices != undefined &&
+      String(foundDevices.userId) !== String(ownerId) &&
+      isAdmin == false
+    ) {
+      let errorMessage = 'Access Denied.';
+      throw new GeneralException(ErrorTypeEnum.FORBIDDEN, errorMessage);
+    }
+
+    const checkExist = await this.deviceRepository.isDeviceSharedWithUser(
+      deviceId,
+      userId,
+    );
+
+    if (checkExist == false) {
+      let errorMessage = 'The device is not shared with this user.';
+      throw new GeneralException(ErrorTypeEnum.CONFLICT, errorMessage);
+    }
+
+    const result = await this.deviceRepository.localUnshareDeviceWithId(
+      deviceId,
+      userId,
+    );
+
+    return result;
+  }
+
+  async getSharedUsersWithDeviceId(
+    deviceId: string,
+    userId: string,
+    isAdmin = false,
+  ) {
+    const foundDevices = await this.deviceRepository.getDeviceById(deviceId);
+
+    if (foundDevices == null) {
+      let errorMessage = 'Device not found.';
+      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+    }
 
     if (
       userId.length > 0 &&
@@ -903,20 +1006,43 @@ export class DeviceService {
       String(foundDevices.userId) !== String(userId) &&
       isAdmin == false
     ) {
-      let errorMessage = 'Access Denied!';
+      let errorMessage = 'Access Denied.';
       throw new GeneralException(ErrorTypeEnum.FORBIDDEN, errorMessage);
     }
 
-    const checkExist = await this.deviceRepository.isDeviceSharedWithUser(deviceId, userId)
+    const result = await this.deviceRepository.getLocalSharedUsersWithDeviceId(
+      deviceId,
+    );
 
-    if (checkExist == true) {
-      let errorMessage = 'This device is already shared with this user!';
-      throw new GeneralException(ErrorTypeEnum.CONFLICT, errorMessage);
-    }
+    return result.sharedWith;
+  }
 
-    const result = await this.deviceRepository.localShareDeviceWithId(deviceId, userId)
+  async getSharedDevicesWithUserId(userId: string) {
+    const result = await this.deviceRepository.getDevicesLocalSharedWithUserId(
+      userId,
+    );
 
-    return result
+    return result;
+  }
 
+  async isDeviceSharedWithUser(deviceId: string, userId: string) {
+    const checkExist = await this.deviceRepository.isDeviceSharedWithUser(
+      deviceId,
+      userId,
+    );
+    return checkExist;
+  }
+
+  async isDeviceEncryptedSharedWithUser(
+    deviceEncryptedId: string,
+    userId: string,
+  ) {
+    const deviceData = await this.getDeviceInfoByEncryptedId(deviceEncryptedId);
+
+    const checkExist = await this.deviceRepository.isDeviceSharedWithUser(
+      deviceData._id,
+      userId,
+    );
+    return checkExist;
   }
 }

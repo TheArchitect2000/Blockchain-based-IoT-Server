@@ -1,12 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { MongoClient, ObjectID } from 'mongodb';
-import { Types } from 'mongoose';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { DeviceModel } from '../models/device.model';
 import { deviceSchema } from '../schemas/device.schema';
 import { userSchema } from 'src/modules/user/schemas/user.schema';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class DeviceRepository {
@@ -265,15 +264,27 @@ export class DeviceRepository {
       .populate({
         path: 'sharedWith',
         model: 'user',
-        select: this.getUserKeys(),
+        select: 'firstName lastName email avatar',
       })
       .select('sharedWith');
   }
 
+  async getDevicesLocalSharedWithUserId(userId: string) {
+    const userObjectId = new Types.ObjectId(userId);
+
+    return await this.deviceModel
+      .find({
+        sharedWith: { $elemMatch: { $eq: userObjectId } },
+      })
+      .select(this.getDeviceKeys());
+  }
+
   async isDeviceSharedWithUser(deviceId: string, userId: string) {
+    const userObjectId = new Types.ObjectId(userId);
+
     const result = await this.deviceModel.findOne({
       _id: deviceId,
-      sharedWith: { $elemMatch: { $eq: userId } }, // Checks if userId exists in sharedWith
+      sharedWith: { $elemMatch: { $eq: userObjectId } }, // Checks if userId exists in sharedWith
     });
 
     return !!result; // Returns true if found, false otherwise

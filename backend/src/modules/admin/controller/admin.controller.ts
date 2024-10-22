@@ -8,14 +8,4 @@ import { AdminService } from '../services/admin.service';
 export class AdminController {
   constructor(private readonly adminService?: AdminService) {}
 
-  @Get('v1/admin/node-servers')
-  @HttpCode(201)
-  @ApiOperation({
-    summary: 'getting node servers.',
-    description: 'This api is returning node servers.',
-  })
-  async getNodeServers(@Request() request) {
-    const nodeServers = JSON.parse(process.env.NODE_SERVERS);
-    return nodeServers;
-  }
 }

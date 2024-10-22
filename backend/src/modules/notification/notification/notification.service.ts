@@ -144,7 +144,7 @@ export class NotificationService {
       notifData.userId != userId &&
       isAdmin == false
     ) {
-      const errorMessage = 'Access Denied!';
+      const errorMessage = 'Access Denied.';
       return {
         message: errorMessage,
         success: false,

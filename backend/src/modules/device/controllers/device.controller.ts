@@ -31,6 +31,7 @@ import { renameDeviceDto } from '../data-transfer-objects/rename-device.dto';
 import { DeviceService } from '../services/device.service';
 import { EditDeviceDto } from '../data-transfer-objects/edit-device.dto';
 import { UserService } from 'src/modules/user/services/user/user.service';
+import { LocalShareDto } from '../data-transfer-objects/local-share-dto';
 
 @ApiTags('Manage Devices')
 @Controller('app')
@@ -129,8 +130,8 @@ export class DeviceController {
         this.result = data;
       })
       .catch((error) => {
-        console.log("Error is:", error);
-        
+        console.log('Error is:', error);
+
         let errorMessage = 'Some errors occurred while editing the device!';
         throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
@@ -521,5 +522,140 @@ export class DeviceController {
       });
 
     return this.result;
+  }
+
+  @Patch('v1/device/local-share')
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Local share device.',
+    description: 'This API will locally share a device with user',
+  })
+  async localShareDevice(@Body() body: LocalShareDto, @Request() request) {
+    console.log('We are in localShareDevice controller');
+
+    if (
+      body.deviceId === null ||
+      body.deviceId === undefined ||
+      body.deviceId === '' ||
+      Types.ObjectId.isValid(String(body.deviceId)) === false
+    ) {
+      let errorMessage = 'Device id is not valid!';
+      throw new GeneralException(
+        ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+        errorMessage,
+      );
+    }
+
+    const userEmail = await this.userService.findAUserByEmail(body.userEmail);
+
+    if (userEmail == null) {
+      let errorMessage = 'User not found!';
+      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+    }
+
+    const isAdmin = await this.isAdmin(request.user.userId);
+
+    return await this.deviceService.localShareDeviceWithUserId(
+      body.deviceId,
+      userEmail._id,
+      request.user.userId,
+      isAdmin,
+    );
+  }
+
+  @Patch('v1/device/local-unshare')
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Local unshare device.',
+    description: 'This API will locally unshare a device with user',
+  })
+  async localUnshareDevice(@Body() body: LocalShareDto, @Request() request) {
+    console.log('We are in localUnshareDevice controller');
+
+    if (
+      body.deviceId === null ||
+      body.deviceId === undefined ||
+      body.deviceId === '' ||
+      Types.ObjectId.isValid(String(body.deviceId)) === false
+    ) {
+      let errorMessage = 'Device id is not valid!';
+      throw new GeneralException(
+        ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+        errorMessage,
+      );
+    }
+
+    const userEmail = await this.userService.findAUserByEmail(body.userEmail);
+
+    if (userEmail == null) {
+      let errorMessage = 'User not found!';
+      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+    }
+
+    const isAdmin = await this.isAdmin(request.user.userId);
+
+    return await this.deviceService.localUnshareDeviceWithUserId(
+      body.deviceId,
+      userEmail._id,
+      request.user.userId,
+      isAdmin,
+    );
+  }
+
+  @Get('v1/device/:deviceId/local-share/users')
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Device local shared users.',
+    description:
+      'This API will return all users that the given device is sharing with.',
+  })
+  async getUsersDeviceSharingWith(
+    @Param('deviceId') deviceId: string,
+    @Request() request,
+  ) {
+    console.log('We are in getUsersDeviceSharingWith controller');
+
+    if (
+      deviceId === null ||
+      deviceId === undefined ||
+      deviceId === '' ||
+      Types.ObjectId.isValid(String(deviceId)) === false
+    ) {
+      let errorMessage = 'Device id is not valid!';
+      throw new GeneralException(
+        ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+        errorMessage,
+      );
+    }
+    const isAdmin = await this.isAdmin(request.user.userId);
+
+    return await this.deviceService.getSharedUsersWithDeviceId(
+      deviceId,
+      request.user.userId,
+      isAdmin,
+    );
+  }
+
+  @Get('v1/device/get-my-local-shared-devices')
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Shared devices with user.',
+    description:
+      'This API will return all devices that are sharing with a user.',
+  })
+  async getAllDevicesSharingWithUser(
+    @Request() request,
+  ) {
+    console.log('We are in getAllDevicesSharingWithUser controller');
+
+    return await this.deviceService.getSharedDevicesWithUserId(request.user.userId);
   }
 }

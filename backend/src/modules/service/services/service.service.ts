@@ -44,11 +44,9 @@ export class ServiceService {
     const exist = await this.getServiceByNodeIdAnd_id(
       body?.nodeId,
       body?.nodeServiceId,
-    )
+    );
 
-    if (
-      (exist == null || exist == undefined || exist == '')
-    ) {
+    if (exist == null || exist == undefined || exist == '') {
       let insertedService = await this.serviceRepository.insertService(
         newService,
       );
@@ -93,7 +91,7 @@ export class ServiceService {
         foundService.userId.toString() !== userId.toString() &&
         isAdmin == false
       ) {
-        let errorMessage = 'Access Denied!';
+        let errorMessage = 'Access Denied.';
         this.result = {
           message: errorMessage,
           success: false,
@@ -196,10 +194,9 @@ export class ServiceService {
       foundService.published = true;
       foundService.publishRejected = false;
       foundService.publishRequested = false;
-      
-      foundService.nodeId = String(process.env.NODE_ID),
 
-      foundService.updatedBy = userId;
+      (foundService.nodeId = String(process.env.NODE_ID)),
+        (foundService.updatedBy = userId);
       foundService.updatedAt = new Date();
     }
 
@@ -461,7 +458,7 @@ export class ServiceService {
       foundService.userId != userId &&
       isAdmin == false
     ) {
-      let errorMessage = 'Access Denied!';
+      let errorMessage = 'Access Denied.';
       this.result = {
         message: errorMessage,
         success: false,
@@ -694,7 +691,7 @@ export class ServiceService {
         foundService.userId.toString() !== userId.toString() &&
         isAdmin == false
       ) {
-        let errorMessage = 'Access Denied!';
+        let errorMessage = 'Access Denied.';
         this.result = {
           message: errorMessage,
           success: false,

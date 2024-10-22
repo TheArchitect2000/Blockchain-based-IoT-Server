@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import { Document } from 'mongoose';
 
 export interface Device extends Document {
@@ -12,7 +13,7 @@ export interface Device extends Document {
   hardwareVersion: number;
   firmwareVersion: number;
   parameters: Array<string>;
-  sharedWith: Array<string>;
+  sharedWith: Array<Types.ObjectId>;
   isShared: boolean;
   costOfUse: number;
   location: string;

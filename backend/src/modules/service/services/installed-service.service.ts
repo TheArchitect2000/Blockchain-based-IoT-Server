@@ -77,7 +77,7 @@ export class InstalledServiceService {
         foundInstalledService.userId.toString() !== userId.toString() &&
         isAdmin == false
       ) {
-        let errorMessage = 'Access Denied!';
+        let errorMessage = 'Access Denied.';
         this.result = {
           message: errorMessage,
           success: false,
@@ -223,7 +223,7 @@ export class InstalledServiceService {
       ) &&
       isAdmin == false
     ) {
-      let errorMessage = 'Access Denied!';
+      let errorMessage = 'Access Denied.';
       this.result = {
         message: errorMessage,
         success: false,
@@ -310,7 +310,7 @@ export class InstalledServiceService {
         foundInstalledService.userId.toString() !== userId.toString() &&
         isAdmin == false
       ) {
-        let errorMessage = 'Access Denied!';
+        let errorMessage = 'Access Denied.';
         this.result = {
           message: errorMessage,
           success: false,
