@@ -1,20 +1,21 @@
 import { DeviceData, useGetDevices } from '@/utils/hooks/useGetDevices'
 import MapLocation from './componetns/MapLocation'
 import { DoubleSidedImage, Loading } from '@/components/shared'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import DeviceSpecifics from './componetns/DeviceSpecifics'
 import UserInfo from './componetns/UserInfo'
 import { useEffect, useState } from 'react'
 import {
     apiGetDeviceLogByEncryptedIdAndNumberOfDays,
     apiGetDevices,
+    apiGetSharedWithMeDevices,
 } from '@/services/DeviceApi'
 import {
     apiGetCurUserProfile,
     apiGetUserProfileByUserId,
 } from '@/services/UserApi'
 import Chart from '@/views/account/Settings/components/ReChart'
-import { Card, DatePicker } from '@/components/ui'
+import { Button, Card, DatePicker } from '@/components/ui'
 import { useAppSelector } from '@/store'
 import { convertToTimeZone } from '@/views/account/Settings/components/TimezoneSelector'
 import Table2D from '@/views/account/Settings/components/Table2D'
@@ -64,24 +65,41 @@ function DeviceDetails() {
     const [profileData, setProfileData] = useState('') as any
     const [logLoading, setLogLoading] = useState(false) as any
     const [chartData, setChartData] = useState([]) as any
-    const [tablesData, setTablesData] = useState([]) as any
+    const [noProfile, setNoProfile] = useState<boolean>(false)
     const { _id: userId } = useAppSelector((state) => state.auth.user)
     const { deviceId } = useParams()
+    const navigate = useNavigate()
 
     useEffect(() => {
         async function fetchUsers() {
-            const response = await apiGetDevices(userId || '')
-            const data = response.data as any
-            const deviceData = data.data.filter(
-                (device: any) => device._id === deviceId
-            )[0] as DeviceData
-            setData(deviceData)
-            const resData = (await apiGetUserProfileByUserId(
-                userId || ''
-            )) as any
-            setProfileData(resData.data.data)
+            setNoProfile(false)
+            try {
+                const response = (await apiGetDevices(userId || '')) as any
+                const sharedWithMe = (await apiGetSharedWithMeDevices()) as any
+                const data = [...response.data.data, ...sharedWithMe.data.data]
+                const deviceData = data.filter(
+                    (device: any) => device._id === deviceId
+                )[0] as DeviceData
+
+                const isNoProfile = [...sharedWithMe.data.data].find(
+                    (device: any) => device._id === deviceId
+                )
+
+                if (isNoProfile) {
+                    setNoProfile(true)
+                }
+
+                setData(deviceData)
+                const resData = (await apiGetUserProfileByUserId(
+                    userId || ''
+                )) as any
+                setProfileData(resData.data.data)
+                await changeLogDatas(0, deviceData, resData.data.data)
+            } catch (error) {
+                setNoProfile(true)
+            }
+
             setLoading(false)
-            await changeLogDatas(0, deviceData, resData.data.data)
         }
         fetchUsers()
     }, [])
@@ -194,11 +212,25 @@ function DeviceDetails() {
                 {/* <div className="card card-border">
                     <MapLocation />
                 </div>  */}
+                <Button
+                    onClick={() => {
+                        navigate('/devices/my-devices')
+                    }}
+                    className="w-fit"
+                >
+                    Back
+                </Button>
                 <div className="grid grid-cols-2 gap-4 mt-8">
-                    <div className="card w-full card-border col-span-1">
-                        <UserInfo profileData={profileData} />
-                    </div>
-                    <div className="card card-border col-span-1">
+                    {noProfile == false && (
+                        <div className="card w-full card-border col-span-1">
+                            <UserInfo profileData={profileData} />
+                        </div>
+                    )}
+                    <div
+                        className={`card card-border col-span-${
+                            noProfile ? 2 : 1
+                        }`}
+                    >
                         <DeviceSpecifics data={data} />
                     </div>
                 </div>
@@ -225,9 +257,9 @@ function DeviceDetails() {
                 </Card>
 
                 {logLoading == false &&
-                    (chartData?.door.length !== 0 ||
-                        chartData?.motion.length !== 0 ||
-                        chartData?.button.length !== 0) && (
+                    ((chartData?.door?.length || 0) !== 0 ||
+                        (chartData?.motion?.length || 0) !== 0 ||
+                        (chartData?.button?.length || 0) !== 0) && (
                         <Card
                             bodyClass="flex h-full justify-center px-5 gap-5 py-10"
                             className="w-full min-h-[65dvh] mt-10 card card-border"

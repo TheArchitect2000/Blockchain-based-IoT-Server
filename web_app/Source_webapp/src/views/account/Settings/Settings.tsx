@@ -6,26 +6,6 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import isEmpty from 'lodash/isEmpty'
 import { apiGetAccountSettingData } from '@/services/AccountServices'
 
-type AccountSetting = {
-    profile: {
-        name: string
-        email: string
-        title: string
-        avatar: string
-        timeZone: string
-        lang: string
-        syncData: boolean
-    }
-    loginHistory: {
-        type: string
-        deviceName: string
-        time: number
-        location: string
-    }[]
-}
-
-type GetAccountSettingData = AccountSetting
-
 const Profile = lazy(() => import('./components/Profile/Profile'))
 const Address = lazy(() => import('./components/Address'))
 const Password = lazy(() => import('./components/Password'))
@@ -43,24 +23,29 @@ const settingsMenu: Record<
         label: string
         path: string
         className?: string
+        element: any
     }
 > = {
-    profile: { label: 'Profile', path: 'profile' },
-    wallet: { label: 'Wallet', path: 'wallet' },
-    address: { label: 'Address', path: 'address' },
+    profile: { label: 'Profile', path: 'profile', element: <Profile /> },
+    wallet: { label: 'Wallet', path: 'wallet', element: <Wallet /> },
+    address: { label: 'Address', path: 'address', element: <Address /> },
     /* verify: { label: 'Verify', path: 'verify' }, */
-    subscriptions: { label: 'Subscriptions', path: 'subscriptions' },
-    storx: { label: 'StorX', path: 'storx' },
-    password: { label: 'Password', path: 'password' },
+    subscriptions: {
+        label: 'Subscriptions',
+        path: 'subscriptions',
+        element: <Subscriptions />,
+    },
+    storx: { label: 'StorX', path: 'storx', element: <StorX /> },
+    password: { label: 'Password', path: 'password', element: <Password /> },
     deleteaccount: {
         label: 'Delete Account',
         path: 'deleteaccount',
+        element: <DeleteAccount />,
     },
 }
 
 const Settings = () => {
     const [currentTab, setCurrentTab] = useState('profile')
-    const [data, setData] = useState<Partial<AccountSetting>>({})
 
     const navigate = useNavigate()
 
@@ -77,17 +62,8 @@ const Settings = () => {
         navigate(`/account/settings/${val}`)
     }
 
-    const fetchData = async () => {
-        const response = await apiGetAccountSettingData<GetAccountSettingData>()
-        setData(response.data)
-    }
-
     useEffect(() => {
         setCurrentTab(path)
-        if (isEmpty(data)) {
-            fetchData()
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return (
@@ -111,16 +87,12 @@ const Settings = () => {
                     </TabList>
                 </Tabs>
                 <div className="px-4 py-6">
-                    <Suspense fallback={<></>}>
-                        {currentTab === 'profile' && (
-                            <Profile data={data.profile as any} />
-                        )}
-                        {currentTab === 'password' && <Password />}
-                        {currentTab === 'subscriptions' && <Subscriptions />}
-                        {currentTab === 'storx' && <StorX />}
-                        {currentTab === 'address' && <Address />}
-                        {currentTab === 'wallet' && <Wallet />}
-                        {currentTab === 'deleteaccount' && <DeleteAccount />}
+                    <Suspense fallback={<div>loading...</div>}>
+                        {Object.keys(settingsMenu).map((key) => {
+                            if (settingsMenu[key].path === currentTab) {
+                                return settingsMenu[key].element
+                            }
+                        })}
                         {/* {currentTab === 'verify' && <Verify />} */}
                     </Suspense>
                 </div>

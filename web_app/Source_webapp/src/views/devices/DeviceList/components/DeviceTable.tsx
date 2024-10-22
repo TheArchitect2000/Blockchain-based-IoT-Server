@@ -7,97 +7,107 @@ import {
     useReactTable,
 } from '@tanstack/react-table'
 import type { ColumnDef, ColumnSort } from '@tanstack/react-table'
-import { DeviceData, useGetDevices } from '@/utils/hooks/useGetDevices'
-import Avatar from '@/components/ui/Avatar'
-import { HiOutlineEye, HiOutlinePencil, HiOutlineTrash } from 'react-icons/hi'
-import { FiPackage } from 'react-icons/fi'
+import { DeviceData } from '@/utils/hooks/useGetDevices'
 import {
-    getProducts,
-    setTableData,
-    setSelectedProduct,
-    toggleDeleteConfirmation,
-    useAppDispatch,
-    useAppSelector,
-} from '../store'
+    HiOutlineEye,
+    HiOutlinePencil,
+    HiOutlineTrash,
+    HiShare,
+    HiUserGroup,
+} from 'react-icons/hi'
 import useThemeClass from '@/utils/hooks/useThemeClass'
 import { useNavigate } from 'react-router-dom'
-import ProductDeleteConfirmation from './ProductDeleteConfirmation'
 import {
     apiDeleteDeviceById,
     apiGetDevices,
+    apiGetLocalShareUsersWithDeviceId,
+    apiLocalShareDeviceWithUserId,
     apiRenameDevice,
 } from '@/services/DeviceApi'
 import { DoubleSidedImage, Loading } from '@/components/shared'
-import { Button, Dialog, Input, Notification, toast } from '@/components/ui'
-
-const ProductColumn = ({ row }: { row: DeviceData }) => {
-    const avatar = <Avatar icon={<FiPackage />} />
-
-    return (
-        <div className="flex items-center">
-            {avatar}
-            <span className={`ml-2 rtl:mr-2 font-semibold`}>
-                {row.deviceName}
-            </span>
-        </div>
-    )
-}
+import { Notification, toast } from '@/components/ui'
+import { useAppSelector } from '@/store'
+import { apiCheckEmailExist } from '@/services/AuthService'
+import { validateEmail } from '@/views/account/Settings/components/Profile/Profile'
+import RenameDeviceDialog from './dialogs/RenameDeviceDialog'
+import ShareDeviceDialog from './dialogs/ShareDeviceDialog'
+import DeleteDeviceDialog from './dialogs/DeleteDeviceDialog'
+import { DeviceActionColumn, DeviceProductColumn } from './table/Action'
+import SharedUsersDialog from './dialogs/SharedListDialog'
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
-const DeviceTable = ({ refreshPage }: { refreshPage: Function }) => {
+const DeviceTable = ({
+    refreshPage,
+    sharedDevice,
+}: {
+    refreshPage: Function
+    sharedDevice?: Array<DeviceData>
+}) => {
     const [sorting, setSorting] = useState<ColumnSort[]>([])
     const [data, setData] = useState<DeviceData[]>([])
-    const [loading, setLoading] = useState(true)
-    const { _id: userId } = useAppSelector((state) => state.auth.user)
-    const [deleteDialog, setDeleteDialog] = useState(false)
-    const [renameDialog, setRenameDialog] = useState(false)
-    const [newDeviceName, setNewDeviceName] = useState('')
+    const [loading, setLoading] = useState<boolean>(true)
+    const [apiLoading, setApiLoading] = useState<boolean>(false)
+    const [deleteDialog, setDeleteDialog] = useState<boolean>(false)
+    const [renameDialog, setRenameDialog] = useState<boolean>(false)
+    const [shareDialog, setShareDialog] = useState<boolean>(false)
+    const [sharedUsersDialog, setSharedUsersDialog] = useState<boolean>(false)
+    const [userIsExist, setUserIsExist] = useState<boolean>(false)
+    const [shareUserEmail, setShareUserEmail] = useState<string>('')
+    const [newDeviceName, setNewDeviceName] = useState<string>('')
     const [deviceData, setDeviceData] = useState<DeviceData | null>(null)
+    const [refreshActionColumnsData, setRefreshActionColumnsData] =
+        useState<number>(0)
+    const [sharedLoading, setSharedLoading] = useState<boolean>(false)
+    const [devicesAreShared, setDevicesAreShared] = useState<{}>()
 
-    const ActionColumn = ({ row }: { row: DeviceData }) => {
-        const dispatch = useAppDispatch()
-        const { textTheme } = useThemeClass()
-        const navigate = useNavigate()
-
-        const onEdit = () => {
-            setDeviceData(row)
-            setNewDeviceName(row?.deviceName || '')
-            setRenameDialog(true)
-        }
-
-        const onView = () => {
-            navigate(`/devices/${row._id}`)
-        }
-
-        const onDelete = () => {
-            setDeviceData(row)
-            setDeleteDialog(true)
-        }
-
-        return (
-            <div className="flex justify-end text-lg">
-                <span
-                    className={`cursor-pointer p-2 hover:${textTheme}`}
-                    onClick={onEdit}
-                >
-                    <HiOutlinePencil />
-                </span>
-                <span
-                    className="cursor-pointer p-2 hover:${textTheme}"
-                    onClick={onView}
-                >
-                    <HiOutlineEye />
-                </span>
-                <span
-                    className="cursor-pointer p-2 hover:text-red-500"
-                    onClick={onDelete}
-                >
-                    <HiOutlineTrash />
-                </span>
-            </div>
-        )
+    function refreshActionsData() {
+        setRefreshActionColumnsData(refreshActionColumnsData + 1)
     }
+
+    async function fetchActionsData() {
+        if (data.length == 0) {
+            setLoading(false)
+            return false
+        }
+        setSharedLoading(true)
+        for (const element of data) {
+            try {
+                const res = (await apiGetLocalShareUsersWithDeviceId(
+                    element._id
+                )) as any
+                if (res.data.data.length > 0) {
+                    setDevicesAreShared({
+                        ...devicesAreShared,
+                        [element._id]: true,
+                    })
+                } else {
+                    setDevicesAreShared({
+                        ...devicesAreShared,
+                        [element._id]: false,
+                    })
+                }
+            } catch (error: any) {
+                toast.push(
+                    <Notification
+                        title={error.response.data.message}
+                        type="danger"
+                    />,
+                    {
+                        placement: 'top-center',
+                    }
+                )
+            }
+        }
+        setLoading(false)
+        setSharedLoading(false)
+    }
+
+    useEffect(() => {
+        fetchActionsData()
+    }, [refreshActionColumnsData])
+
+    const { _id: userId } = useAppSelector((state) => state.auth.user)
 
     async function handleDeviceRename() {
         if (newDeviceName.length === 0) {
@@ -177,9 +187,15 @@ const DeviceTable = ({ refreshPage }: { refreshPage: Function }) => {
 
     useEffect(() => {
         async function getDevices() {
+            setLoading(true)
+            if (sharedDevice) {
+                setData(sharedDevice)
+                setLoading(false)
+                return false
+            }
             const res = (await apiGetDevices(userId || '')) as any
-            setLoading(false)
-            setData(res?.data.data!)
+            setData(res?.data.data)
+            refreshActionsData()
         }
         getDevices()
     }, [])
@@ -192,7 +208,7 @@ const DeviceTable = ({ refreshPage }: { refreshPage: Function }) => {
             accessorKey: 'deviceName',
             cell: (props) => {
                 const row = props.row.original
-                return <ProductColumn row={row} />
+                return <DeviceProductColumn row={row} />
             },
         },
         {
@@ -240,7 +256,26 @@ const DeviceTable = ({ refreshPage }: { refreshPage: Function }) => {
         {
             header: '',
             id: 'action',
-            cell: (props) => <ActionColumn row={props.row.original} />,
+            cell: (props) => {
+                return (
+                    <DeviceActionColumn
+                        sharedLoading={sharedLoading}
+                        isShared={
+                            (devicesAreShared &&
+                                devicesAreShared[props.row.original._id]) ||
+                            false
+                        }
+                        setSharedUsersDialog={setSharedUsersDialog}
+                        setDeleteDialog={setDeleteDialog}
+                        setDeviceData={setDeviceData}
+                        setNewDeviceName={setNewDeviceName}
+                        setRenameDialog={setRenameDialog}
+                        setShareDialog={setShareDialog}
+                        sharedDevice={sharedDevice}
+                        row={props.row.original}
+                    />
+                )
+            },
         },
     ]
 
@@ -255,80 +290,127 @@ const DeviceTable = ({ refreshPage }: { refreshPage: Function }) => {
         getSortedRowModel: getSortedRowModel(),
     })
 
+    async function handleCheckUserExist() {
+        if (!validateEmail(shareUserEmail) || shareUserEmail.length == 0) {
+            return toast.push(
+                <Notification title={'Email is not valid!'} type="danger" />,
+                {
+                    placement: 'top-center',
+                }
+            )
+        }
+        setApiLoading(true)
+        let existRes: any = false
+        try {
+            existRes = (await apiCheckEmailExist(shareUserEmail)) as any
+            setUserIsExist(true)
+            toast.push(
+                <Notification
+                    duration={10000}
+                    title={
+                        'User found. Press "Share" to share the device locally with this user.'
+                    }
+                    type="info"
+                />,
+                {
+                    placement: 'top-center',
+                }
+            )
+        } catch (errors) {
+            setUserIsExist(false)
+            toast.push(
+                <Notification title={'User not found.'} type="danger" />,
+                {
+                    placement: 'top-center',
+                }
+            )
+        }
+        setApiLoading(false)
+    }
+
+    async function handleLocalShareDevice() {
+        setApiLoading(true)
+        try {
+            const res = await apiLocalShareDeviceWithUserId(
+                String(deviceData?._id),
+                shareUserEmail
+            )
+
+            toast.push(
+                <Notification
+                    title={`'${deviceData?.deviceName}' device successfully shared with '${shareUserEmail}'`}
+                    type="success"
+                />,
+                {
+                    placement: 'top-center',
+                }
+            )
+            refreshActionsData()
+            setApiLoading(false)
+            closeShareDialog()
+        } catch (error: any) {
+            setApiLoading(false)
+            setUserIsExist(false)
+            return toast.push(
+                <Notification
+                    title={error.response.data.message}
+                    type="danger"
+                />,
+                {
+                    placement: 'top-center',
+                }
+            )
+        }
+    }
+
+    function closeShareDialog() {
+        refreshActionsData()
+        setShareDialog(false)
+        setUserIsExist(false)
+        setShareUserEmail('')
+    }
+
     return (
         <>
-            <Dialog
-                overlayClassName={'flex items-center'}
+            <SharedUsersDialog
+                isOpen={sharedUsersDialog}
+                onClose={() => {
+                    refreshActionsData()
+                    setSharedUsersDialog(false)
+                }}
+                deviceId={String(deviceData?._id)}
+                setSharedUsersDialog={setSharedUsersDialog}
+                sharedUsersDialog={sharedUsersDialog}
+            />
+
+            <RenameDeviceDialog
                 isOpen={renameDialog}
-                closable={false}
-                contentClassName="!w-1/3 flex flex-col gap-6"
                 onClose={() => setRenameDialog(false)}
-            >
-                <h3>Rename Device</h3>
-                <p className="text-center text-[1.4rem]">
-                    Enter a new name for the '{deviceData?.deviceName}' device.
-                </p>
-                <Input
-                    value={newDeviceName}
-                    onChange={(e) => setNewDeviceName(e.target.value)}
-                    placeholder="Device name..."
-                />
-                <div className="flex w-2/3 mx-auto justify-between">
-                    <Button
-                        onClick={() => {
-                            handleDeviceRename()
-                        }}
-                        loading={loading}
-                        variant="solid"
-                        color="green"
-                    >
-                        Rename
-                    </Button>
-                    <Button
-                        onClick={() => setRenameDialog(false)}
-                        variant="default"
-                        loading={loading}
-                    >
-                        Cancel
-                    </Button>
-                </div>
-            </Dialog>
+                onRename={handleDeviceRename}
+                loading={loading}
+                deviceName={newDeviceName}
+                setNewDeviceName={setNewDeviceName}
+            />
 
-            <Dialog
-                overlayClassName={'flex items-center'}
+            <ShareDeviceDialog
+                isOpen={shareDialog}
+                onClose={closeShareDialog}
+                onCheckUser={handleCheckUserExist}
+                onShare={handleLocalShareDevice}
+                userIsExist={userIsExist}
+                loading={apiLoading}
+                deviceName={String(deviceData?.deviceName)}
+                userEmail={shareUserEmail}
+                setUserEmail={setShareUserEmail}
+            />
+
+            <DeleteDeviceDialog
                 isOpen={deleteDialog}
-                closable={false}
-                contentClassName="!w-1/3"
                 onClose={() => setDeleteDialog(false)}
-            >
-                <h3 className="mb-8">Delete Device</h3>
-                <p className="text-left text-[1.4rem] mb-8">
-                    Are you sure you want to delete the
-                    "{deviceData?.deviceName}" device?
-                    <p className="text-red-400 text-left mt-2 text-[0.9rem]">
-                        *This action cannot be undone. and you will need to
-                        re-add the device using the mobile app.
-                    </p>
-                </p>
+                onDelete={handleDeleteDevice}
+                deviceName={String(deviceData?.deviceName)}
+            />
 
-                <div className="flex w-2/3 mx-auto justify-between">
-                    <Button
-                        onClick={() => {
-                            handleDeleteDevice()
-                        }}
-                        variant="solid"
-                        color="red"
-                    >
-                        Delete
-                    </Button>
-                    <Button
-                        onClick={() => setDeleteDialog(false)}
-                        variant="default"
-                    >
-                        Cancel
-                    </Button>
-                </div>
-            </Dialog>
             {(loading === false && (
                 <Table>
                     <THead>
@@ -393,54 +475,59 @@ const DeviceTable = ({ refreshPage }: { refreshPage: Function }) => {
                     </TBody>
                 </Table>
             )) || (
-                <div className="w-full h-full flex justify-center items-center">
+                <div className="w-full h-[50dvh] flex justify-center items-center">
                     <Loading loading={true} />
                 </div>
             )}
 
             {loading === false && data.length === 0 && (
-                <section className="w-full h-[75dvh] flex flex-col gap-2 items-center justify-center">
+                <section className="w-full h-[55dvh] flex flex-col gap-2 items-center justify-center">
                     <DoubleSidedImage
                         className="w-2/12 max-w-[250px]"
                         src="/img/others/img-2.png"
                         darkModeSrc="/img/others/img-2-dark.png"
                         alt="No product found!"
                     />
-                    <h3>Device not found!</h3>
-                    <p>
-                        To add your device to this account, please use the
-                        FidesInnova mobile app.
-                    </p>
-                    <a
-                        href="https://play.google.com/store/apps/details?id=io.fidesinnova.front"
-                        target="_blank"
-                    >
-                        <img
-                            loading="lazy"
-                            decoding="async"
-                            width="150"
-                            src="https://fidesinnova.io/wp-content/uploads/2024/06/gplay-button.png"
-                            className="attachment-large size-large wp-image-18033"
-                            alt="FidesInnova google play pic"
-                        />
-                    </a>
-                    <a
-                        href="https://apps.apple.com/ca/app/fidesinnova/id6477492757"
-                        target="_blank"
-                    >
-                        <img
-                            loading="lazy"
-                            decoding="async"
-                            width="150"
-                            src="https://fidesinnova.io/wp-content/uploads/2024/06/appstore-button.png"
-                            className="attachment-large size-large wp-image-18034"
-                            alt="FidesInnova appstore pic"
-                        />{' '}
-                    </a>
+                    <h3>
+                        {(sharedDevice && 'No shared devices were found.') ||
+                            'Device not found!'}
+                    </h3>
+                    {!sharedDevice && (
+                        <>
+                            <p>
+                                To add your device to this account, please use
+                                the FidesInnova mobile app.
+                            </p>
+                            <a
+                                href="https://play.google.com/store/apps/details?id=io.fidesinnova.front"
+                                target="_blank"
+                            >
+                                <img
+                                    loading="lazy"
+                                    decoding="async"
+                                    width="150"
+                                    src="https://fidesinnova.io/wp-content/uploads/2024/06/gplay-button.png"
+                                    className="attachment-large size-large wp-image-18033"
+                                    alt="FidesInnova google play pic"
+                                />
+                            </a>
+                            <a
+                                href="https://apps.apple.com/ca/app/fidesinnova/id6477492757"
+                                target="_blank"
+                            >
+                                <img
+                                    loading="lazy"
+                                    decoding="async"
+                                    width="150"
+                                    src="https://fidesinnova.io/wp-content/uploads/2024/06/appstore-button.png"
+                                    className="attachment-large size-large wp-image-18034"
+                                    alt="FidesInnova appstore pic"
+                                />{' '}
+                            </a>
+                        </>
+                    )}
                 </section>
             )}
-
-            <ProductDeleteConfirmation />
         </>
     )
 }

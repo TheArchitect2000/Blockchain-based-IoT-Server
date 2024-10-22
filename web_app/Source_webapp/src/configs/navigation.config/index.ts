@@ -18,7 +18,7 @@ const navigationConfig: NavigationTree[] = [
     },
     {
         key: 'devices',
-        path: '/devices',
+        path: '/devices/my-devices',
         title: 'Device List',
         translateKey: 'Device List',
         icon: 'list',

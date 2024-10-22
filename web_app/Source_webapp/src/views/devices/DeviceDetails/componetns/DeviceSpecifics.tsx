@@ -12,7 +12,7 @@ const DeviceField = ({
     value: string | number
 }) => {
     return (
-        <div className='flex flex-col justify-end'>
+        <div className="flex flex-col justify-end">
             <span>{title}</span>
             <p className="text-gray-700 dark:text-gray-200 font-semibold">
                 {value}

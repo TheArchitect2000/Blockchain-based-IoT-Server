@@ -13,13 +13,13 @@ export const protectedRoutes = [
     },
     {
         key: 'devices',
-        path: '/devices',
+        path: '/devices/:tab',
         component: lazy(() => import('@/views/devices/DeviceList')),
         authority: [],
     },
     {
         key: 'device details',
-        path: '/devices/:deviceId',
+        path: '/devices/details/:deviceId',
         component: lazy(() => import('@/views/devices/DeviceDetails') as any),
         authority: [],
     },
@@ -71,7 +71,7 @@ export const protectedRoutes = [
         component: lazy(() => import('@/views/building/pages/createedit')),
         authority: [],
     },
-        {
+    {
         key: 'buildings.see',
         path: '/buildings/details/:id',
         component: lazy(() => import('@/views/building/pages/details')),

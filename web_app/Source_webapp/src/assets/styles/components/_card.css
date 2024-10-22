@@ -3,7 +3,7 @@
 }
 
 .card-border {
-  @apply border border-gray-200 dark:border-gray-600;
+  @apply border bg-transparent border-gray-200 dark:border-gray-600;
 }
 
 .card-shadow {

@@ -20,7 +20,7 @@ export default function Chart({
 }) {
     return (
         <ResponsiveContainer width={'100%'} height={400}>
-            {data.length === 0 && loading == false && (
+            {data?.length === 0 && loading == false && (
                 <h1
                     style={{
                         display: 'flex',
@@ -34,7 +34,7 @@ export default function Chart({
                     Data not found
                 </h1>
             )}
-            {data.length > 0 && loading == false && (
+            {data?.length > 0 && loading == false && (
                 <LineChart
                     data={data}
                     margin={{

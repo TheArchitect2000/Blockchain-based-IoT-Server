@@ -53,3 +53,47 @@ export async function apiGetDeviceLogByEncryptedIdAndNumberOfDays<T>(
         method: 'get',
     })
 }
+
+export async function apiGetSharedWithMeDevices<T>() {
+    return ApiService.fetchData<T>({
+        url: `${import.meta.env.VITE_URL}v1/device/get-my-local-shared-devices`,
+        method: 'get',
+    })
+}
+
+export async function apiLocalShareDeviceWithUserId<T>(
+    deviceId: string,
+    userEmail: string
+) {
+    return ApiService.fetchData<T>({
+        url: `${import.meta.env.VITE_URL}v1/device/local-share`,
+        method: 'patch',
+        data: {
+            deviceId,
+            userEmail,
+        },
+    })
+}
+
+export async function apiLocalUnshareDeviceWithUserId<T>(
+    deviceId: string,
+    userEmail: string
+) {
+    return ApiService.fetchData<T>({
+        url: `${import.meta.env.VITE_URL}v1/device/local-unshare`,
+        method: 'patch',
+        data: {
+            deviceId,
+            userEmail,
+        },
+    })
+}
+
+export async function apiGetLocalShareUsersWithDeviceId<T>(deviceId: string) {
+    return ApiService.fetchData<T>({
+        url: `${
+            import.meta.env.VITE_URL
+        }v1/device/${deviceId}/local-share/users`,
+        method: 'get',
+    })
+}
