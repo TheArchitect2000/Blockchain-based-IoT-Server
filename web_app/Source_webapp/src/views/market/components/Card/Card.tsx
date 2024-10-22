@@ -6,7 +6,6 @@ import ImageWithFallBack from '@/utils/components/ImageWithFallBack'
 import { Button, Dialog, Dropdown, Notification, toast } from '@/components/ui'
 import { useEffect, useRef, useState } from 'react'
 import { apiGetAllSharedDevices, apiGetDevices } from '@/services/DeviceApi'
-import { useAppSelector } from '@/views/devices/DeviceList/store'
 import { DeviceData } from '@/utils/hooks/useGetDevices'
 import {
     apiGetAllInstalledServices,
@@ -17,6 +16,7 @@ import { ServiceData } from '@/utils/hooks/useGetServices'
 import { useNavigate } from 'react-router-dom'
 import { SyntaxHighlighter } from '@/components/shared'
 import CardBlockly from './blockly'
+import { useAppSelector } from '@/store'
 
 const ServiceCard = ({
     sharedDevices,
