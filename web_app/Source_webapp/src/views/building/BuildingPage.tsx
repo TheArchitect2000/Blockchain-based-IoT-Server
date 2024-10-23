@@ -157,7 +157,7 @@ export default function BuildingPage() {
                                         variant="solid"
                                         onClick={() => {
                                             navigateTo(
-                                                `/buildings/${build._id}?view=${true}`
+                                                `/buildings/details/${build._id}?view=${true}` //    /buildings/${build._id}?view=${true}
                                             )
                                         }}
                                     >

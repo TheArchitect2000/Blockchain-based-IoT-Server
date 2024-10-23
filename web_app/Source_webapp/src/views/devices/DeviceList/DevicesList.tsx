@@ -20,7 +20,7 @@ const ProductList = () => {
         element: ReactNode
     }> = [
         {
-            label: 'My Devices',
+            label: 'All Devices',
             path: 'my-devices',
             element: <DeviceTable refreshPage={refresh} />,
         },

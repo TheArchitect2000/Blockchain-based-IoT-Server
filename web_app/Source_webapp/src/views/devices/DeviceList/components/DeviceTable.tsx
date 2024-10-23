@@ -71,21 +71,16 @@ const DeviceTable = ({
             return false
         }
         setSharedLoading(true)
+        let tempData: any = {}
         for (const element of data) {
             try {
                 const res = (await apiGetLocalShareUsersWithDeviceId(
                     element._id
                 )) as any
                 if (res.data.data.length > 0) {
-                    setDevicesAreShared({
-                        ...devicesAreShared,
-                        [element._id]: true,
-                    })
+                    tempData[element._id] = true
                 } else {
-                    setDevicesAreShared({
-                        ...devicesAreShared,
-                        [element._id]: false,
-                    })
+                    tempData[element._id] = false
                 }
             } catch (error: any) {
                 toast.push(
@@ -99,6 +94,9 @@ const DeviceTable = ({
                 )
             }
         }
+        setDevicesAreShared({
+            ...tempData,
+        })
         setLoading(false)
         setSharedLoading(false)
     }
