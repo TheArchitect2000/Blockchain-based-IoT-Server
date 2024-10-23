@@ -77,7 +77,7 @@ After running the command, enter your web app and admin web app domains separate
 test.com admin.test.com
 ```
 
-- After creating certificates, copy \`fullchain.pem\` and \`privkey.pem\` files into \`/etc/nginx/ssl\`.
+- After creating certificates, copy `fullchain.pem` and `privkey.pem` files into `/etc/nginx/ssl`.
 - Required commands for SSL by Certbot:
   - Check the expiration date of your SSL certificates:
   ```
@@ -408,6 +408,22 @@ During the installation process in the mobile app, the following devices will be
 * `title:` The name of the device as it will appear in the mobile app's device installation list.
 * `type:` The device type, which is used by the node supervisor to categorize the devices.
 
+### How to run the setup script
+
+If the `src/data` directory or the `devices.json` file does not exist in the project (due to being in `.gitignore`), you can run a provided bash script to create them automatically.
+
+#### To run the script:
+
+1. Navigate to the `backend` directory where the script is located.
+2. Run the following commands:
+   ```bash
+   chmod +x setup_devices.sh  # Makes the script executable
+   ./setup_devices.sh         # Runs the script
+   ```
+
+The script will create the `src/data` directory and the `devices.json` file (if they don't exist) and fill the file with the default device data provided above.
+
+
 -------------------------------------------------------------------------------------------------
 
 # How to Install WebApp
@@ -475,7 +491,7 @@ sudo ufw allow 5000
 -------------------------------------------------------------------------------------------------
 # Building and Running
 
-To automate the setup and build processes for both the backend and frontend applications, run the \`initial_setup.sh\` script located in the root directory of the project.
+To automate the setup and build processes for both the backend and frontend applications, run the `initial_setup.sh` script located in the root directory of the project.
 
 ### Steps:
 1. **Set the appropriate permissions** (one-time step):
@@ -497,14 +513,14 @@ To automate the setup and build processes for both the backend and frontend appl
 This script will handle building both the backend and frontend applications and configuring PM2 services automatically.
 
 ## Subsequent Updates
-After the initial setup, you only need to run the update process to keep the applications up to date. Please refer to the \`Update Process\` section for instructions on how to do this.
+After the initial setup, you only need to run the update process to keep the applications up to date. Please refer to the `Update Process` section for instructions on how to do this.
 
 
 -------------------------------------------------------------------------------------------------
 
 # Update Process
 
-To update both the backend and frontend applications, simply run the \`update.sh\` script located in the root directory of the project. 
+To update both the backend and frontend applications, simply run the `update.sh` script located in the root directory of the project. 
 
 ### Steps:
 1. **Set the appropriate permissions** (one-time step):
