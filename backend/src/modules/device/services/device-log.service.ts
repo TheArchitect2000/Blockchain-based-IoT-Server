@@ -191,6 +191,61 @@ export class DeviceLogService {
         return foundActivities; */
   }
 
+  async getLastLocalDevicesLogByUserIdAndFieldName(userId, fieldName) {
+    let foundDevices: any = null;
+    let foundActivities: any = [];
+
+    await this.deviceService
+      .getSharedDevicesWithUserId(userId)
+      .then((data) => {
+        foundDevices = data;
+      })
+      .catch((error) => {
+        let errorMessage =
+          'Some errors occurred while fetching installed devices profiles!';
+
+        throw new GeneralException(
+          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+          errorMessage,
+        );
+      });
+
+    for (const element of foundDevices) {
+      let foundDeviceLog;
+      await this.getDeviceLogByEncryptedDeviceIdAndFieldName(
+        element.deviceEncryptedId,
+        fieldName,
+      )
+        .then((data) => {
+          if (data !== null) {
+            foundDeviceLog = data;
+
+            element.payloadsSent = foundDeviceLog.length;
+            foundActivities.push(foundDeviceLog);
+          }
+        })
+        .catch((error) => {
+          let errorMessage =
+            'Some errors occurred while finding logs for installed active devices!';
+          throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        });
+    }
+    return foundActivities;
+
+    /* let query = {
+            "deviceEncryptedId": deviceEncryptedId,
+        }
+        query[fieldName] = { $exists: true };
+
+        console.log(query);
+
+        foundActivities = await this.deviceLogRepository.getDeviceLogByEncryptedDeviceIdAndFieldName(query);
+
+        console.log(foundActivities);        
+
+        return foundActivities; */
+  }
+
   async getDeviceLogByEncryptedDeviceIdAndFieldNameAndDate(
     deviceEncryptedId,
     fieldName,

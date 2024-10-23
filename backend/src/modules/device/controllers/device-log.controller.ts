@@ -249,6 +249,45 @@ export class DeviceLogController {
     return this.result;
   }
 
+  @Get('v1/device-log/get-last-my-local-devices-log-by-field-name')
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Gets last devices log by user id and field name.',
+    description:
+      "This api requires an user id and field name. (Default field name is 'data')",
+  })
+  @ApiQuery({
+    name: 'fieldName',
+    type: String,
+    required: true,
+    description: 'Field Name',
+  })
+  async getLastMyLocalDevicesLogByUserIdAndFieldName(
+    @Query('fieldName') fieldName: string,
+    @Request() request,
+  ) {
+    const userId = request.user.userId;
+
+    await this.deviceLogService
+      .getLastLocalDevicesLogByUserIdAndFieldName(userId, fieldName)
+      .then((data) => {
+        this.result = data;
+      })
+      .catch((error) => {
+        let errorMessage =
+          'Some errors occurred while fetching last local devices log!';
+
+        throw new GeneralException(
+          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+          errorMessage,
+        );
+      });
+
+    return this.result;
+  }
+
   @Get(
     'v1/device-log/get-device-log-by-encrypted-deviceid-and-field-name-and-date',
   )
@@ -385,9 +424,11 @@ export class DeviceLogController {
     @Query('daysBefore') daysBefore: number,
     @Request() request?,
   ) {
-
-
-    const isSharedWithUser = await this.deviceService.isDeviceEncryptedSharedWithUser(deviceEncryptedId, request.user.userId)
+    const isSharedWithUser =
+      await this.deviceService.isDeviceEncryptedSharedWithUser(
+        deviceEncryptedId,
+        request.user.userId,
+      );
 
     const isAdmin = await this.isAdmin(request.user.userId);
     // if storX saving is not working check this section
@@ -398,7 +439,7 @@ export class DeviceLogController {
           fieldName,
           daysBefore,
           request.user.userId,
-          isSharedWithUser == true && true || isAdmin,
+          (isSharedWithUser == true && true) || isAdmin,
         )
         .then((data) => {
           this.result = data;

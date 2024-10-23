@@ -48,9 +48,6 @@ export class DeviceService {
     @Inject(forwardRef(() => ContractService))
     private readonly contractService?: ContractService,
   ) {
-    setTimeout(() => {
-      this.getSharedDevicesWithUserId('66e2aa7dd4353572bf58dcf9');
-    }, 4000);
   }
 
   async generatePassword(len) {
@@ -168,17 +165,13 @@ export class DeviceService {
 
     //console.log('Found devices are: ', foundDevices);
 
-    const updatedDevices = await Promise.all(
-      foundDevices.map(async (item: any) => {
-        const imageUrl = await this.appService.getDeviceUrlByType(
-          item.deviceType.toString(),
-        );
-        return {
-          ...item._doc,
-          image: imageUrl.toString() as string,
-        };
-      }),
-    );
+    const updatedDevices = foundDevices.map((item: any) => {
+      const imageUrl = this.appService.getDeviceUrlByType(item.deviceType.toString());
+      return {
+        ...item._doc,
+        image: imageUrl.toString() as string,
+      };
+    });
 
     return updatedDevices;
   }
@@ -1022,7 +1015,15 @@ export class DeviceService {
       userId,
     );
 
-    return result;
+    const updatedDevices = result.map((item: any) => {
+      const imageUrl = this.appService.getDeviceUrlByType(item.deviceType.toString());
+      return {
+        ...item._doc,
+        image: imageUrl.toString() as string,
+      };
+    });
+
+    return updatedDevices;
   }
 
   async isDeviceSharedWithUser(deviceId: string, userId: string) {

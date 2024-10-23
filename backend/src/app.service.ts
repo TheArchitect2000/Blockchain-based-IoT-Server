@@ -73,23 +73,20 @@ export class AppService {
     this.loadDeviceList();
   }
 
-  async getDeviceUrlByType(deviceType) {
-    const filePath = path.join(__dirname, '..', 'src/data', 'devices.json');
-
-    try {
-      const data = await fs.promises.readFile(filePath, 'utf-8');
-      const devices = JSON.parse(data);
-
-      const device = devices.find((d) => d.type === deviceType);
-      if (device) {
-        return `${process.env.HOST_PROTOCOL}${process.env.HOST_NAME_OR_IP}/${process.env.HOST_SUB_DIRECTORY}/uploads/devices/${device.fileName}`;
-      } else {
-        console.log(`Device type "${deviceType}" not found.`);
-        return null;
-      }
-    } catch (error) {
-      console.error(`Error reading ${filePath}: ${error.message}`);
+  getDeviceUrlByType(deviceType: string) {
+    if (!this.deviceList || this.deviceList.length === 0) {
+      console.log('Device list is empty or not loaded.');
+      return null;
+    }
+  
+    const device = this.deviceList.find((d) => d.type === deviceType);
+  
+    if (device) {
+      return `${process.env.HOST_PROTOCOL}${process.env.HOST_NAME_OR_IP}/${process.env.HOST_SUB_DIRECTORY}/uploads/devices/${device.fileName}`;
+    } else {
+      console.log(`Device type "${deviceType}" not found.`);
       return null;
     }
   }
+  
 }
