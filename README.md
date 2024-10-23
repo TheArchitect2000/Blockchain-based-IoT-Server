@@ -408,20 +408,9 @@ During the installation process in the mobile app, the following devices will be
 * `title:` The name of the device as it will appear in the mobile app's device installation list.
 * `type:` The device type, which is used by the node supervisor to categorize the devices.
 
-### How to run the setup script
+## Device Manager
 
-If the `src/data` directory or the `devices.json` file does not exist in the project (due to being in `.gitignore`), you can run a provided bash script to create them automatically.
-
-#### To run the script:
-
-1. Navigate to the `backend` directory where the script is located.
-2. Run the following commands:
-   ```bash
-   chmod +x setup_devices.sh  # Makes the script executable
-   ./setup_devices.sh         # Runs the script
-   ```
-
-The script will create the `src/data` directory and the `devices.json` file (if they don't exist) and fill the file with the default device data provided above.
+This project allows you to manage a list of devices, stored in `src/data/devices.json`. Once the backend is up and running, the devices file is automatically created, and you can freely edit it to manage your device data.
 
 
 -------------------------------------------------------------------------------------------------
