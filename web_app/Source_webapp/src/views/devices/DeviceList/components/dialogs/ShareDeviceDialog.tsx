@@ -32,7 +32,7 @@ const ShareDeviceDialog: React.FC<ShareDeviceDialogProps> = ({
             onClose={onClose}
         >
             <h3>Local Share Device</h3>
-            <p className="text-left text-[1.4rem]">
+            <p className="text-left text-[1.1rem]">
                 {userIsExist
                     ? 'By locally sharing the device with this user, you are granting access to view your device logs and details. Please ensure you trust this user before proceeding.'
                     : `Enter the email of the user you want to share the '${deviceName}' device with locally.`}

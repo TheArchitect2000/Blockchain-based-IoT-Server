@@ -94,7 +94,7 @@ function DeviceDetails() {
                     userId || ''
                 )) as any
                 setProfileData(resData.data.data)
-                await changeLogDatas(0, deviceData, resData.data.data)
+                changeLogDatas(0, deviceData, resData.data.data)
             } catch (error) {
                 setNoProfile(true)
             }

@@ -15,7 +15,21 @@ import {
 import { useNavigate } from 'react-router-dom'
 
 export const DeviceProductColumn = ({ row }: { row: DeviceData }) => {
-    const avatar = <Avatar icon={<FiPackage />} />
+    const avatar = (
+        <Avatar
+            imgClass="!object-contain p-1"
+            className="!w-[60px] !h-[60px] overflow-hidden border-2 border-white dark:border-gray-800 shadow-lg"
+            size={60}
+            shape="circle"
+            src={row.image}
+        >
+            {!row.image && (
+                <span className="text-3xl">
+                    <FiPackage />
+                </span>
+            )}
+        </Avatar>
+    )
 
     return (
         <div className="flex items-center">

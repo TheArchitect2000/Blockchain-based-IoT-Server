@@ -6,6 +6,7 @@ import type { ReactNode } from 'react'
 
 export interface AvatarProps extends CommonProps {
     alt?: string
+    imgClass?: string
     icon?: ReactNode
     onClick?: () => void
     size?: 'lg' | 'md' | 'sm' | number
@@ -17,6 +18,7 @@ export interface AvatarProps extends CommonProps {
 const Avatar = forwardRef<HTMLSpanElement, AvatarProps>((props, ref) => {
     const {
         alt,
+        imgClass,
         className,
         icon,
         shape = 'rounded',
@@ -75,7 +77,7 @@ const Avatar = forwardRef<HTMLSpanElement, AvatarProps>((props, ref) => {
     if (src) {
         children = (
             <img
-                className={`avatar-img avatar-${shape}`}
+                className={`avatar-img ${imgClass} avatar-${shape}`}
                 src={src}
                 srcSet={srcSet}
                 alt={alt}

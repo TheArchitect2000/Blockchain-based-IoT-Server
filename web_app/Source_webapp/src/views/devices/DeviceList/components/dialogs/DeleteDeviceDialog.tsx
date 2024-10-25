@@ -22,9 +22,9 @@ const DeleteDeviceDialog: React.FC<DeleteDeviceDialogProps> = ({
             onClose={onClose}
         >
             <h3 className="mb-8">Delete Device</h3>
-            <p className="text-left text-[1.4rem] mb-8">
+            <p className="text-left text-[1.1rem] mb-8">
                 Are you sure you want to delete the "{deviceName}" device?
-                <p className="text-red-400 text-left mt-2 text-[0.9rem]">
+                <p className="text-red-400 text-left mt-1 text-[0.9rem]">
                     *This action cannot be undone. You will need to re-add the device using the mobile app.
                 </p>
             </p>

@@ -14,6 +14,7 @@ type ApiResponse = {
 
 // Define the type for each device data item
 export type DeviceData = {
+    image?: string
     location: Location
     nodeId: string
     geometry: Geometry

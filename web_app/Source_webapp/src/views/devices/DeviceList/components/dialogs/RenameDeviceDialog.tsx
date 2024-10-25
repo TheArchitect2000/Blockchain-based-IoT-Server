@@ -26,7 +26,7 @@ const RenameDeviceDialog: React.FC<RenameDeviceDialogProps> = ({
             onClose={onClose}
         >
             <h3>Rename Device</h3>
-            <p className="text-center text-[1.4rem]">
+            <p className="text-center text-[1.1rem]">
                 Enter a new name for the '{deviceName}' device.
             </p>
             <Input

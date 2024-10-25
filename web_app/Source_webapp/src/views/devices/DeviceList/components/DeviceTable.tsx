@@ -59,7 +59,7 @@ const DeviceTable = ({
     const [refreshActionColumnsData, setRefreshActionColumnsData] =
         useState<number>(0)
     const [sharedLoading, setSharedLoading] = useState<boolean>(false)
-    const [devicesAreShared, setDevicesAreShared] = useState<{}>()
+    const [devicesAreShared, setDevicesAreShared] = useState<{}>({})
 
     function refreshActionsData() {
         setRefreshActionColumnsData(refreshActionColumnsData + 1)

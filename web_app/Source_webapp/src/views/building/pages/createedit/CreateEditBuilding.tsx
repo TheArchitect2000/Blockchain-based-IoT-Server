@@ -17,9 +17,15 @@ import {
     apiEditBuildingByBuildId,
     apiGetBuildingByBuildId,
 } from '@/services/UserApi'
-import { apiGetAllSharedDevices, apiGetDevices } from '@/services/DeviceApi'
+import {
+    apiGetAllSharedDevices,
+    apiGetDevices,
+    apiGetSharedWithMeDevices,
+} from '@/services/DeviceApi'
+import Tabs from '@/components/custom/Tab'
 
 interface DeviceData {
+    isLocal: boolean
     deviceEncryptedId: string
     deviceName: string
     deviceType: string
@@ -387,22 +393,40 @@ export function CreateEditBuilding() {
             try {
                 let sharedDevices = (await apiGetAllSharedDevices()) as any
                 const deviceRes = (await apiGetDevices(userId || '')) as any
+                const myLocalDevices =
+                    (await apiGetSharedWithMeDevices()) as any
 
                 // Extract _id values from deviceRes
-                const _ids = new Set(
+                const deviceRes_ids = new Set(
                     deviceRes.data.data.map((device: any) => device._id)
+                )
+
+                // Extract _id values from deviceRes
+                const sharedDevices_ids = new Set(
+                    sharedDevices.data.data.map((device: any) => device._id)
                 )
 
                 // Filter sharedDevices to exclude devices that are already in deviceRes
                 const filteredSharedDevices = sharedDevices.data.data.filter(
-                    (device: any) => !_ids.has(device._id)
+                    (device: any) => !deviceRes_ids.has(device._id)
                 )
 
-                //console.log('deviceRes', deviceRes.data.data)
-                //console.log('filteredSharedDevices', filteredSharedDevices)
+                // Filter sharedDevices to exclude devices that are already in deviceRes
+                const filteredmyLocalDevices = myLocalDevices.data.data.filter(
+                    (device: any) => !sharedDevices_ids.has(device._id)
+                )
+
+                const updatedFilteredmyLocalDevices =
+                    filteredmyLocalDevices.map((item: any) => {
+                        return { ...item, isLocal: true }
+                    })
 
                 // Combine the filtered sharedDevices with deviceRes
-                setMyDevices([...deviceRes.data.data, ...filteredSharedDevices])
+                setMyDevices([
+                    ...deviceRes.data.data,
+                    ...filteredSharedDevices,
+                    ...updatedFilteredmyLocalDevices,
+                ])
             } catch (error) {
                 navigateTo('/buildings')
             }
@@ -962,7 +986,7 @@ export function CreateEditBuilding() {
                                                             )
                                                         }
                                                         menuClass="max-h-[250px] overflow-auto"
-                                                        placement="middle-start-top"
+                                                        placement="bottom-end"
                                                         activeKey={
                                                             buildData.details[
                                                                 `floor_${selectedFloor}`
@@ -970,38 +994,153 @@ export function CreateEditBuilding() {
                                                                 ?.device || ''
                                                         }
                                                     >
+                                                        <Tabs
+                                                            tabs={[
+                                                                {
+                                                                    label: 'My Devices',
+                                                                    content: (
+                                                                        <>
+                                                                            {getAvailableDevices(
+                                                                                buildData
+                                                                                    .details[
+                                                                                    `floor_${selectedFloor}`
+                                                                                ]
+                                                                                    ?.units[
+                                                                                    unitKey
+                                                                                ]
+                                                                                    ?.device
+                                                                            )
+                                                                                .filter(
+                                                                                    (
+                                                                                        device
+                                                                                    ) =>
+                                                                                        !device.nodeDeviceId &&
+                                                                                        !device.isLocal
+                                                                                )
+                                                                                .map(
+                                                                                    (
+                                                                                        device
+                                                                                    ) => (
+                                                                                        <Dropdown.Item
+                                                                                            eventKey={
+                                                                                                device._id
+                                                                                            }
+                                                                                            key={
+                                                                                                device._id
+                                                                                            }
+                                                                                        >
+                                                                                            {
+                                                                                                device.deviceName
+                                                                                            }
+                                                                                        </Dropdown.Item>
+                                                                                    )
+                                                                                )}
+                                                                        </>
+                                                                    ),
+                                                                },
+                                                                {
+                                                                    label: 'Global Devices',
+                                                                    content: (
+                                                                        <>
+                                                                            {getAvailableDevices(
+                                                                                buildData
+                                                                                    .details[
+                                                                                    `floor_${selectedFloor}`
+                                                                                ]
+                                                                                    ?.units[
+                                                                                    unitKey
+                                                                                ]
+                                                                                    ?.device
+                                                                            )
+                                                                                .filter(
+                                                                                    (
+                                                                                        device
+                                                                                    ) =>
+                                                                                        device.nodeDeviceId &&
+                                                                                        !device.isLocal
+                                                                                )
+                                                                                .map(
+                                                                                    (
+                                                                                        device
+                                                                                    ) => (
+                                                                                        <Dropdown.Item
+                                                                                            eventKey={
+                                                                                                device._id
+                                                                                            }
+                                                                                            key={
+                                                                                                device._id
+                                                                                            }
+                                                                                        >
+                                                                                            {
+                                                                                                device.deviceName
+                                                                                            }{' '}
+                                                                                            {`(IoT Server: ${
+                                                                                                device.nodeId.split(
+                                                                                                    '.'
+                                                                                                )[0]
+                                                                                            })`}
+                                                                                        </Dropdown.Item>
+                                                                                    )
+                                                                                )}
+                                                                        </>
+                                                                    ),
+                                                                },
+                                                                {
+                                                                    label: 'Local Devices',
+                                                                    content: (
+                                                                        <>
+                                                                            {getAvailableDevices(
+                                                                                buildData
+                                                                                    .details[
+                                                                                    `floor_${selectedFloor}`
+                                                                                ]
+                                                                                    ?.units[
+                                                                                    unitKey
+                                                                                ]
+                                                                                    ?.device
+                                                                            )
+                                                                                .filter(
+                                                                                    (
+                                                                                        device
+                                                                                    ) =>
+                                                                                        device.isLocal ==
+                                                                                        true
+                                                                                )
+                                                                                .map(
+                                                                                    (
+                                                                                        device
+                                                                                    ) => (
+                                                                                        <Dropdown.Item
+                                                                                            eventKey={
+                                                                                                device._id
+                                                                                            }
+                                                                                            key={
+                                                                                                device._id
+                                                                                            }
+                                                                                        >
+                                                                                            {
+                                                                                                device.deviceName
+                                                                                            }{' '}
+                                                                                            {`(IoT Server: ${
+                                                                                                device.nodeId.split(
+                                                                                                    '.'
+                                                                                                )[0]
+                                                                                            })`}
+                                                                                        </Dropdown.Item>
+                                                                                    )
+                                                                                )}
+                                                                        </>
+                                                                    ),
+                                                                },
+                                                            ]}
+                                                        />
+
                                                         {/* Unselect Option */}
                                                         <Dropdown.Item eventKey="">
                                                             Unselect Device
                                                         </Dropdown.Item>
 
                                                         {/* Available Devices */}
-                                                        {getAvailableDevices(
-                                                            buildData.details[
-                                                                `floor_${selectedFloor}`
-                                                            ]?.units[unitKey]
-                                                                ?.device
-                                                        ).map((device) => (
-                                                            <Dropdown.Item
-                                                                eventKey={
-                                                                    device._id
-                                                                }
-                                                                key={device._id}
-                                                            >
-                                                                {
-                                                                    device.deviceName
-                                                                }{' '}
-                                                                (
-                                                                {(device.nodeDeviceId &&
-                                                                    ` IoT Server: ${
-                                                                        device.nodeId.split(
-                                                                            '.'
-                                                                        )[0]
-                                                                    } `) ||
-                                                                    ` Your Device `}
-                                                                )
-                                                            </Dropdown.Item>
-                                                        ))}
                                                     </Dropdown>
                                                 </div>
                                             </>

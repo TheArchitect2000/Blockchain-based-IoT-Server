@@ -130,7 +130,7 @@ const ServiceCard = ({
                     onClick={() => setDeleteModal(true)}
                     loading={deleteLoading}
                 >
-                    delete
+                    Delete
                 </Button>
             </div>
             <Button
@@ -140,7 +140,7 @@ const ServiceCard = ({
                 onClick={() => setModalIsOpen(true)}
                 loading={deleteLoading}
             >
-                publish
+                Publish
             </Button>
         </div>
     )
@@ -158,7 +158,7 @@ const ServiceCard = ({
     if (serviceData.publishRequested === true) {
         servicePublishInfo = {
             color: 'yellow',
-            text: 'Is processing for service market',
+            text: 'Pending review for publication',
         }
     } else if (serviceData.published === true) {
         servicePublishInfo = {

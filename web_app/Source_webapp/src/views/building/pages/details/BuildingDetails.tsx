@@ -68,19 +68,20 @@ export default function BuildingDetails() {
     return (
         <main className="flex flex-col gap-8 w-full">
             <h3>"{buildData?.name}" building details</h3>
-            <section className="w-full border">
-                {floorEntries?.map(([floorKey, floor]: any) => {
+            <section className="w-full border overflow-x-auto">
+                {floorEntries?.map(([floorKey, floor]: any, floorIndex) => {
                     const unitKeys = Object.keys(floor.units)
 
                     return (
-                        <div key={floorKey} className="flex border w-full">
-                            <div className="flex flex-col py-6 gap-2 justify-center items-center w-3/12 border">
-                                <h4>{utils.formatBuildingStrings(floorKey)}</h4>
-                                <p>
-                                    Name: <strong>{floor.name}</strong>
-                                </p>
+                        <div key={floorKey} className="flex w-full">
+                            <div
+                                className={`flex justify-center items-center w-[100px] border flex-shrink-0`}
+                            >
+                                <h4 className="text-[1.1rem]">
+                                    {utils.formatBuildingStrings(floorKey)}
+                                </h4>
                             </div>
-                            <div className="flex flex-wrap w-9/12 border">
+                            <div className="flex w-full">
                                 {unitKeys?.map((unitKey, index) => {
                                     const unit = floor.units[unitKey]
                                     const device = devicesData.find(
@@ -92,9 +93,9 @@ export default function BuildingDetails() {
                                     return (
                                         <div
                                             key={index}
-                                            className="flex flex-col p-6 gap-2 flex-1 min-w-[250px] items-center justify-center border"
+                                            className={`flex flex-col items-center justify-center p-3 w-[150px] border flex-shrink-0`}
                                         >
-                                            <h4>
+                                            <h4 className="text-[1.1rem]">
                                                 {`${
                                                     utils.sliceBuildingStrings(
                                                         unitKey
@@ -113,17 +114,7 @@ export default function BuildingDetails() {
                                                     )
                                                 }`}
                                             </h4>
-                                            <p>
-                                                Name:{' '}
-                                                <strong>{unit.name}</strong>
-                                            </p>
-                                            <p>
-                                                Device:{' '}
-                                                <strong>
-                                                    {device?.deviceName ||
-                                                        'Not Selected'}
-                                                </strong>
-                                            </p>
+                                            <p>Data not received</p>
                                         </div>
                                     )
                                 })}
