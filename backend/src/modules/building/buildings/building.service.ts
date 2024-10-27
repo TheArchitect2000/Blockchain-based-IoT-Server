@@ -148,4 +148,13 @@ export class BuildingService {
     }
     return this.buildingRepository.editBuildingById(buildId, data);
   }
+
+  async deleteDeviceIdFromAllBuildings(deviceId: string) {
+    return this.buildingRepository.deleteDeviceIdFromAllBuildings(deviceId);
+  }
+
+  async deleteDeviceIdFromBuildingsByUserId(deviceId: string, userId: string) {
+    console.log("Gholllllllllllll 111111111111111111111")
+    return this.buildingRepository.deleteDeviceIdFromBuildingsByUserId(deviceId, userId);
+  }
 }

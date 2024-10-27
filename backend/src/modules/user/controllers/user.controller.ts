@@ -118,6 +118,8 @@ export class UserController {
     summary: 'Send otp code to user by email for Signup.',
     description: 'This api requires a user email and password.',
   })
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   async sendOTPCodeForSignupByEmail(
     @Body() body: signupByEmailDto,
     @Request() request,
@@ -134,6 +136,8 @@ export class UserController {
     summary: 'Send otp code to user by email for reset password.',
     description: 'This api requires a user email.',
   })
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   async sendOTPCodeForResetPasswordByEmail(
     @Body() body: changePasswordByEmailDto,
     @Request() request,
@@ -147,11 +151,13 @@ export class UserController {
     summary: 'Send otp code to user by email for verify email.',
     description: 'This api requires a user email.',
   })
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   async sendOTPCodeForVerifyEmail(
     @Body() body: verifyEmailDto,
     @Request() request,
   ) {
-    return await this.userService.sendOTPCodeForVrifyEmail(body);
+    return await this.userService.sendOTPCodeForVrifyEmail(request.user.email);
   }
 
   @Get('v1/user/verify-otp-code-sent-by-email-for-signup')
@@ -694,10 +700,14 @@ export class UserController {
     }
 
     const isAdmin = await this.isAdmin(request.user.userId);
-    
-    const isDeviceAdmin = await this.isDeviceAdmin(request.user.userId)
 
-    if (isAdmin === false && isDeviceAdmin === false && request.user.userId !== userId) {
+    const isDeviceAdmin = await this.isDeviceAdmin(request.user.userId);
+
+    if (
+      isAdmin === false &&
+      isDeviceAdmin === false &&
+      request.user.userId !== userId
+    ) {
       throw new GeneralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied');
     }
 
@@ -1139,6 +1149,7 @@ export class UserController {
     const res = await this.userService.generateAndSaveChangeEmailToken({
       userId: request.user.userId,
       newEmail: body.newEmail,
+      nowEmail: request.user.email,
     });
 
     return res;

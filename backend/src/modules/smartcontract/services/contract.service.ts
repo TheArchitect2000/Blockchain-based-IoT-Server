@@ -198,8 +198,6 @@ export class ContractService {
       );
     }
 
-    this.lastRequestTime[walletAddress] = currentTime;
-
     const balance = await this.getWalletBalance(walletAddress);
 
     if (balance < this.faucetAmount) {
@@ -219,6 +217,9 @@ export class ContractService {
         });
 
         await tx.wait();
+
+        this.lastRequestTime[walletAddress] = currentTime;
+        
       } catch (error) {
         throw new GeneralException(
           ErrorTypeEnum.NOT_FOUND,

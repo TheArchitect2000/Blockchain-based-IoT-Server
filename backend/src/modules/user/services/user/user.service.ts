@@ -86,6 +86,15 @@ export class UserService {
   async generateAndSaveChangeEmailToken(data) {
     console.log('data.newEmail:', String(data.newEmail));
 
+    const isEmailVerified: boolean = await this.checkUserEmailVerified(data.nowEmail);
+
+    if (isEmailVerified == false) {
+      throw new GeneralException(
+        ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+        'First you have to verify your current email.',
+      );
+    }
+
     if (this.validateEmail(String(data.newEmail)) == false) {
       throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
@@ -93,14 +102,16 @@ export class UserService {
       );
     }
 
-    const isExist = await this.checkUserEmailIsExist(data.newEmail);
+    try {
+      const isExist = await this.checkUserEmailIsExist(data.newEmail);
 
-    if (isExist == true) {
-      throw new GeneralException(
-        ErrorTypeEnum.CONFLICT,
-        'User with this email already exist.',
-      );
-    }
+      if (isExist == true) {
+        throw new GeneralException(
+          ErrorTypeEnum.CONFLICT,
+          'User with this email already exist.',
+        );
+      }
+    } catch (error) {}
 
     const requestedBefore = await this.userRepository.getChangeEmailWithUserId(
       data.userId,
@@ -147,13 +158,17 @@ export class UserService {
     }
 
     if (this.result) {
-      const userExist = await this.checkUserEmailIsExist(this.result.newEmail);
-      if (userExist) {
-        throw new GeneralException(
-          ErrorTypeEnum.CONFLICT,
-          'User with this email already exist.',
+      try {
+        const userExist = await this.checkUserEmailIsExist(
+          this.result.newEmail,
         );
-      }
+        if (userExist) {
+          throw new GeneralException(
+            ErrorTypeEnum.CONFLICT,
+            'User with this email already exist.',
+          );
+        }
+      } catch (error) {}
 
       await this.userRepository.changeUserEmail(
         this.result.userId,
@@ -240,11 +255,11 @@ export class UserService {
     }
   }
 
-  async sendOTPCodeForVrifyEmail(body) {
+  async sendOTPCodeForVrifyEmail(userEmail: string) {
     console.log('We are in sendOTPCodeForVrifyEmail service ');
 
     this.otp = await this.otpService.findOTPByEmail(
-      body.email,
+      userEmail,
       OTPTypeEnum.Verify,
     );
 
@@ -253,7 +268,7 @@ export class UserService {
       new Date(this.otp[this.otp.length - 1].expiryDate).getTime() <
         new Date().getTime()
     ) {
-      await this.otpService.insertEmailOTP(OTPTypeEnum.Verify, body.email);
+      await this.otpService.insertEmailOTP(OTPTypeEnum.Verify, userEmail);
     } else {
       throw new GeneralException(
         ErrorTypeEnum.CONFLICT,
@@ -261,7 +276,7 @@ export class UserService {
       );
     }
 
-    await this.findAUserByEmail(body.email);
+    await this.findAUserByEmail(userEmail);
 
     console.log('this.user', this.user);
 
@@ -631,6 +646,13 @@ export class UserService {
       populateCondition,
       selectCondition,
     ));
+  }
+
+  async checkUserEmailVerified(email: string): Promise<boolean> {
+    return (
+      (this.user = await this.userRepository.checkUserEmailVerified(email)) ??
+      false
+    );
   }
 
   async findAUserByMobile(

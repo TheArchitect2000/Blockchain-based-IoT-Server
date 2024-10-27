@@ -232,7 +232,7 @@ export class DeviceLogController {
     }
 
     await this.deviceLogService
-      .getLastDevicesLogByUserIdAndFieldName(userId, fieldName)
+      .getLastDevicesLogByUserIdAndFieldName(userId)
       .then((data) => {
         this.result = data;
       })
@@ -271,7 +271,7 @@ export class DeviceLogController {
     const userId = request.user.userId;
 
     await this.deviceLogService
-      .getLastLocalDevicesLogByUserIdAndFieldName(userId, fieldName)
+      .getLastLocalDevicesLogByUserIdAndFieldName(userId)
       .then((data) => {
         this.result = data;
       })
@@ -363,7 +363,6 @@ export class DeviceLogController {
     await this.deviceLogService
       .getDeviceLogByEncryptedDeviceIdAndFieldNameAndDate(
         deviceEncryptedId,
-        fieldName,
         startYear,
         startMonth,
         startDay,
@@ -436,7 +435,6 @@ export class DeviceLogController {
       await this.deviceLogService
         .getDeviceLogByEncryptedDeviceIdAndFieldNameAndNumberOfDaysBefore(
           deviceEncryptedId,
-          fieldName,
           daysBefore,
           request.user.userId,
           (isSharedWithUser == true && true) || isAdmin,
@@ -457,7 +455,6 @@ export class DeviceLogController {
       await this.deviceLogService
         .getDeviceLogByEncryptedDeviceIdAndFieldNameAndNumberOfDaysBefore(
           deviceEncryptedId,
-          fieldName,
           daysBefore,
         )
         .then((data) => {

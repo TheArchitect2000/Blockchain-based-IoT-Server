@@ -4,6 +4,7 @@ import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { BuildingModel } from './building.model';
 import { BuildingSchema } from './building.schema';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class BuildingRepository {
@@ -94,4 +95,96 @@ export class BuildingRepository {
       .populate([])
       .select(this.getBuildingKeys());
   }
+
+  async deleteDeviceIdFromAllBuildings(deviceId: string) {
+    return await this.buildingModel.updateMany({ details: { $exists: true } }, [
+      {
+        $set: {
+          details: {
+            $function: {
+              body: function (details, deviceId) {
+                const traverseFloors = (floor) => {
+                  for (const unit in floor.units) {
+                    if (floor.units[unit].device === deviceId) {
+                      floor.units[unit].device = '';
+                    }
+                  }
+                };
+
+                for (const floor in details) {
+                  traverseFloors(details[floor]);
+                }
+                return details;
+              },
+              args: ['$details', deviceId],
+              lang: 'js',
+            },
+          },
+        },
+      },
+    ]);
+  }
+
+  /* async deleteDeviceIdFromBuildingsByUserId(deviceId: string, userId: string) {
+    console.log("Gholllllllllllll 2222222222222222222222222222:", userId)
+    const createdBy = new Types.ObjectId(userId);
+
+    this.buildingModel.updateMany(
+      {
+        createdBy: createdBy,
+        details: { $exists: true },
+      },
+      [
+        {
+          $set: {
+            details: {
+              $function: {
+                body: function (details, deviceId) {
+                  const traverseFloors = (floor) => {
+                    for (const unit in floor.units) {
+                      if (floor.units[unit].device === deviceId) {
+                        floor.units[unit].device = '';
+                      }
+                    }
+                  };
+
+                  for (const floor in details) {
+                    traverseFloors(details[floor]);
+                  }
+                  return details;
+                },
+                args: ['$details', deviceId],
+                lang: 'js',
+              },
+            },
+          },
+        },
+      ],
+    );
+  } */
+
+    async deleteDeviceIdFromBuildingsByUserId(deviceId: string, userId: string) {
+      console.log("Deleting device ID for user:", userId);
+      const createdBy = new Types.ObjectId(userId);
+  
+      // Fetch documents to update
+      const buildings = await this.buildingModel.find({ createdBy: createdBy, details: { $exists: true } });
+  
+      // Iterate and update each building's details in-memory
+      for (const building of buildings) {
+          for (const floorKey in building.details) {
+              const floor = building.details[floorKey];
+  
+              // Iterate over each unit in the floor
+              for (const unitKey in floor.units) {
+                  if (floor.units[unitKey].device === deviceId) {
+                      floor.units[unitKey].device = ''; // Set device ID to an empty string
+                  }
+              }
+          }
+          // Save the modified building document
+          await building.save();
+      }
+  }
+
 }

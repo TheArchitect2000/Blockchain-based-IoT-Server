@@ -336,7 +336,6 @@ export class InstalledServiceService {
     );
 
     if (messageToOwner && messageToOwner.length > 0) {
-      console.log('Messageeeee sendedddddddd');
       this.notificationService.addNotificationForUserById(
         {
           message: messageToOwner,

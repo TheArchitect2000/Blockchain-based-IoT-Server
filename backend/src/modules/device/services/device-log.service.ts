@@ -99,7 +99,6 @@ export class DeviceLogService {
 
   async getDeviceLogByEncryptedDeviceIdAndFieldName(
     deviceEncryptedId,
-    fieldName,
     userId = '',
     isAdmin = false,
     onlyPublished = false,
@@ -118,13 +117,12 @@ export class DeviceLogService {
 
     let query: any = {
       deviceEncryptedId: deviceEncryptedId,
+      data: { $exists: true },
     };
 
     if (onlyPublished) {
       query.event = 'published';
     }
-
-    query[fieldName] = { $exists: true };
 
     foundActivities =
       await this.deviceLogRepository.getDeviceLogByEncryptedDeviceIdAndFieldName(
@@ -136,7 +134,7 @@ export class DeviceLogService {
     }
   }
 
-  async getLastDevicesLogByUserIdAndFieldName(userId, fieldName) {
+  async getLastDevicesLogByUserIdAndFieldName(userId) {
     let foundDevices: any = null;
     let foundActivities: any = [];
 
@@ -159,7 +157,6 @@ export class DeviceLogService {
       let foundDeviceLog;
       await this.getDeviceLogByEncryptedDeviceIdAndFieldName(
         element.deviceEncryptedId,
-        fieldName,
       )
         .then((data) => {
           if (data !== null) {
@@ -176,22 +173,9 @@ export class DeviceLogService {
         });
     }
     return foundActivities;
-
-    /* let query = {
-            "deviceEncryptedId": deviceEncryptedId,
-        }
-        query[fieldName] = { $exists: true };
-
-        console.log(query);
-
-        foundActivities = await this.deviceLogRepository.getDeviceLogByEncryptedDeviceIdAndFieldName(query);
-
-        console.log(foundActivities);        
-
-        return foundActivities; */
   }
 
-  async getLastLocalDevicesLogByUserIdAndFieldName(userId, fieldName) {
+  async getLastLocalDevicesLogByUserIdAndFieldName(userId) {
     let foundDevices: any = null;
     let foundActivities: any = [];
 
@@ -214,7 +198,7 @@ export class DeviceLogService {
       let foundDeviceLog;
       await this.getDeviceLogByEncryptedDeviceIdAndFieldName(
         element.deviceEncryptedId,
-        fieldName,
+        
       )
         .then((data) => {
           if (data !== null) {
@@ -231,24 +215,10 @@ export class DeviceLogService {
         });
     }
     return foundActivities;
-
-    /* let query = {
-            "deviceEncryptedId": deviceEncryptedId,
-        }
-        query[fieldName] = { $exists: true };
-
-        console.log(query);
-
-        foundActivities = await this.deviceLogRepository.getDeviceLogByEncryptedDeviceIdAndFieldName(query);
-
-        console.log(foundActivities);        
-
-        return foundActivities; */
   }
 
   async getDeviceLogByEncryptedDeviceIdAndFieldNameAndDate(
     deviceEncryptedId,
-    fieldName,
     startYear,
     startMonth,
     startDay,
@@ -272,12 +242,12 @@ export class DeviceLogService {
 
     let query = {
       deviceEncryptedId: deviceEncryptedId,
+      data: { $exists: true },
       insertDate: {
         $gte: new Date(startYear, startMonth - 1, startDay),
         $lt: new Date(endYear, endMonth - 1, endDay),
       },
     };
-    query[fieldName] = { $exists: true };
 
     foundDeviceLogs = await this.deviceLogRepository.getDeviceLogs(query);
 
@@ -288,7 +258,6 @@ export class DeviceLogService {
 
   async getDeviceLogByEncryptedDeviceIdAndFieldNameAndNumberOfDaysBefore(
     deviceEncryptedId,
-    fieldName,
     daysBefore,
     userId = '',
     isAdmin = false,
@@ -320,12 +289,12 @@ export class DeviceLogService {
 
     let query = {
       deviceEncryptedId: deviceEncryptedId,
+      data: { $exists: true },
       insertDate: {
         $gte: startDate,
         $lt: endDate,
       },
     };
-    query[fieldName] = { $exists: true };
 
     foundDeviceLogs = await this.deviceLogRepository.getDeviceLogs(query);
 

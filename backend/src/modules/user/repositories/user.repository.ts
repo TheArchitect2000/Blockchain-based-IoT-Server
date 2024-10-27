@@ -42,7 +42,7 @@ export class UserRepository {
       .populate([])
       .select(this.getChangeEmailKeys());
   }
-  
+
   async getChangeEmailWithUserId(userId: string) {
     return await this.changeEmailTokenModel
       .findOne({ userId: userId })
@@ -126,7 +126,7 @@ export class UserRepository {
 
   async changeUserEmail(userId, newEmail) {
     await this.userModel
-      .updateOne({ _id: userId }, { $set: {email: newEmail} })
+      .updateOne({ _id: userId }, { $set: { email: newEmail } })
       .then((data) => {
         this.result = data;
       })
@@ -240,6 +240,22 @@ export class UserRepository {
       })
       .catch((error) => {
         const errorMessage = 'Some errors occurred while finding a user!';
+        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+      });
+
+    return this.result;
+  }
+
+  async checkUserEmailVerified(userEmail: string) {
+    await this.userModel
+      .find({ email: userEmail })
+      .where({ verificationStatus: 'verified' })
+      .then((data) => {
+        this.result = data;
+      })
+      .catch((error) => {
+        const errorMessage =
+          'Some errors occurred while checking user email verification!';
         throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 

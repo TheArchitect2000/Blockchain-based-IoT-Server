@@ -93,17 +93,14 @@ export class DeviceRepository {
 
   async getDevicesByUserId(
     userId,
-    whereCondition,
-    populateCondition,
-    selectCondition,
   ) {
     console.log('we are in getDevicesByUserId repository!');
 
     return await this.deviceModel
       .find({ userId: userId })
-      .where(whereCondition)
-      .populate(populateCondition)
-      .select(selectCondition);
+      .where({ isDeleted: false })
+      .populate([])
+      .select(this.getDeviceKeys());
   }
 
   async findDeviceByMac(
@@ -289,4 +286,6 @@ export class DeviceRepository {
 
     return !!result; // Returns true if found, false otherwise
   }
+
+  
 }

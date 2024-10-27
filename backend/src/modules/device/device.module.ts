@@ -18,6 +18,7 @@ import { ServiceModule } from '../service/service.module';
 import { VirtualMachineModule } from '../virtual-machine/virtual-machine.module';
 import { ContractModule } from '../smartcontract/contract.module';
 import { AppModule } from 'src/app.module';
+import { BuildingModule } from '../building/building.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { AppModule } from 'src/app.module';
     forwardRef(() => VirtualMachineModule),
     forwardRef(() => ContractModule),
     forwardRef(() => AppModule),
+    forwardRef(() => BuildingModule),
   ],
   providers: [
     DeviceService,

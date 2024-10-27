@@ -11,6 +11,7 @@ import { NotificationService } from 'src/modules/notification/notification/notif
 import { InstalledServiceService } from 'src/modules/service/services/installed-service.service';
 import { ContractService } from 'src/modules/smartcontract/services/contract.service';
 import { AppService } from 'src/app.service';
+import { BuildingService } from 'src/modules/building/buildings/building.service';
 
 // Nodejs encryption with CTR
 let crypto = require('crypto');
@@ -41,14 +42,14 @@ export class DeviceService {
     private readonly deviceLogService?: DeviceLogService,
     private readonly deviceRepository?: DeviceRepository,
     private readonly notificationService?: NotificationService,
+    private readonly buildingService?: BuildingService,
     @Inject(forwardRef(() => AppService))
     private readonly appService?: AppService,
     @Inject(forwardRef(() => InstalledServiceService))
     private readonly installedService?: InstalledServiceService,
     @Inject(forwardRef(() => ContractService))
     private readonly contractService?: ContractService,
-  ) {
-  }
+  ) {}
 
   async generatePassword(len) {
     return randompassword.randomPassword({
@@ -146,27 +147,20 @@ export class DeviceService {
   }
 
   async getDevicesByUserId(userId) {
-    let whereCondition = { isDeleted: false };
-    let populateCondition = [];
-    let selectCondition =
-      'isDeleted userId deviceName deviceType mac deviceEncryptedId hardwareVersion firmwareVersion parameters isShared costOfUse location geometry insertedBy insertDate updatedBy updateDate';
     let foundDevices: any = null;
 
     console.log('we are in getDeviceByUserId service!');
 
-    foundDevices = await this.deviceRepository.getDevicesByUserId(
-      userId,
-      whereCondition,
-      populateCondition,
-      selectCondition,
-    );
+    foundDevices = await this.deviceRepository.getDevicesByUserId(userId);
 
     decodeDeviceEncryptedIds(foundDevices);
 
     //console.log('Found devices are: ', foundDevices);
 
     const updatedDevices = foundDevices.map((item: any) => {
-      const imageUrl = this.appService.getDeviceUrlByType(item.deviceType.toString());
+      const imageUrl = this.appService.getDeviceUrlByType(
+        item.deviceType.toString(),
+      );
       return {
         ...item._doc,
         image: imageUrl.toString() as string,
@@ -177,22 +171,13 @@ export class DeviceService {
   }
 
   async getDevicesWithEncryptedDeviceIdByUserId(userId) {
-    let whereCondition = { isDeleted: false };
-    let populateCondition = [];
-    let selectCondition =
-      'isDeleted userId deviceName deviceEncryptedId deviceType mac hardwareVersion firmwareVersion parameters isShared costOfUse location geometry insertedBy insertDate updatedBy updateDate';
     let foundDevices: any = null;
     let foundDevicesWithEncryptedDeviceId = [];
     let encryptedDeviceId;
 
     console.log('we are in getDeviceByUserId service!');
 
-    foundDevices = await this.deviceRepository.getDevicesByUserId(
-      userId,
-      whereCondition,
-      populateCondition,
-      selectCondition,
-    );
+    foundDevices = await this.deviceRepository.getDevicesByUserId(userId);
 
     //console.log('Found devices are: ', foundDevices);
 
@@ -524,6 +509,7 @@ export class DeviceService {
           );
         }
         if (body.isShared == false && foundDevice.isShared == true) {
+          this.buildingService.deleteDeviceIdFromAllBuildings(newData._id);
           this.contractService.removeSharedDevice(
             process.env.NODE_ID,
             String(newData._id),
@@ -623,7 +609,6 @@ export class DeviceService {
         const res =
           await this.deviceLogService.getDeviceLogByEncryptedDeviceIdAndFieldName(
             device.deviceEncryptedId,
-            'a',
             '',
             true,
             true,
@@ -773,7 +758,7 @@ export class DeviceService {
         insService._id,
         '',
         true,
-        `Installed service with name "${insService.installedServiceName}" has been delete beacuse device is't avalable anymore`,
+        `Installed service with name "${insService.installedServiceName}" has been delete because device isn't available anymore`,
       );
     });
 
@@ -781,6 +766,7 @@ export class DeviceService {
       .deleteDeviceByNodeIdAndDeviceId(nodeId, deviceId)
       .then((data) => {
         this.result = data;
+        this.buildingService.deleteDeviceIdFromAllBuildings(deviceId);
       })
       .catch((error) => {
         let errorMessage =
@@ -812,30 +798,32 @@ export class DeviceService {
         throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
-    // if(foundDevice && foundDevice !== undefined && foundDevice.deletable){
-    if (foundDevice && foundDevice !== undefined) {
-      if (
-        userId.length > 0 &&
-        foundDevice &&
-        foundDevice != undefined &&
-        foundDevice.userId != userId &&
-        isAdmin == false
-      ) {
-        let errorMessage = 'Access Denied.';
-        this.result = {
-          message: errorMessage,
-          success: false,
-          date: new Date(),
-        };
-        return this.result;
-      }
-
-      foundDevice.isDeleted = true;
-      foundDevice.RemoveTime = new Date();
-      foundDevice.updatedAt = new Date();
+    if (
+      userId.length > 0 &&
+      foundDevice &&
+      foundDevice != undefined &&
+      foundDevice.userId != userId &&
+      isAdmin == false
+    ) {
+      let errorMessage = 'Access Denied.';
+      this.result = {
+        message: errorMessage,
+        success: false,
+        date: new Date(),
+      };
+      return this.result;
     }
 
     console.log('Updated found device for deletion is: ', foundDevice);
+
+    this.contractService.removeSharedDevice(
+      process.env.NODE_ID,
+      String(foundDevice._id),
+    );
+
+    this.buildingService.deleteDeviceIdFromAllBuildings(
+      String(foundDevice._id),
+    );
 
     const installedServices =
       await this.installedService.getInstalledServicesByDeviceEncryptedId(
@@ -847,7 +835,7 @@ export class DeviceService {
         insService._id,
         userId,
         false,
-        `Installed service with name "${insService.installedServiceName}" has been delete beacuse device is't avalable anymore`,
+        `Installed service with name "${insService.installedServiceName}" has been delete because device isn't available anymore`,
       );
     });
 
@@ -868,7 +856,36 @@ export class DeviceService {
     return this.result;
   }
 
-  async deleteAllUserDevicesPermanently(userId) {
+  async deleteAllUserDevicesPermanently(userId: string) {
+    const devices = await this.deviceRepository.getDevicesByUserId(userId);
+
+    for (const element of devices) {
+      this.contractService.removeSharedDevice(
+        process.env.NODE_ID,
+        String(element._id),
+      );
+
+      this.buildingService.deleteDeviceIdFromAllBuildings(
+        String(element._id),
+      );
+
+      const installedServices =
+        await this.installedService.getInstalledServicesByDeviceEncryptedId(
+          element.deviceEncryptedId,
+        );
+
+      await Promise.all(
+        installedServices.map(async (insService) => {
+          await this.installedService.deleteInstalledServiceByInstalledServiceId(
+            insService._id,
+            userId,
+            false,
+            `Installed service with name "${insService.installedServiceName}" has been deleted because the device is no longer available`,
+          );
+        }),
+      );
+    }
+
     await this.deviceRepository
       .deleteAllUserDevicesPermanently(userId)
       .then((data) => {
@@ -977,6 +994,8 @@ export class DeviceService {
       userId,
     );
 
+    this.buildingService.deleteDeviceIdFromBuildingsByUserId(deviceId, userId);
+
     return result;
   }
 
@@ -1016,7 +1035,9 @@ export class DeviceService {
     );
 
     const updatedDevices = result.map((item: any) => {
-      const imageUrl = this.appService.getDeviceUrlByType(item.deviceType.toString());
+      const imageUrl = this.appService.getDeviceUrlByType(
+        item.deviceType.toString(),
+      );
       return {
         ...item._doc,
         image: imageUrl.toString() as string,

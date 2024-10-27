@@ -11,7 +11,7 @@ import { UserModule } from '../user/user.module';
   imports: [
     MongooseModule.forFeature(buildingFeature),
     forwardRef(() => UserModule),
-    UtilityModule,
+    forwardRef(() => UtilityModule),
   ],
   controllers: [BuildingController],
   providers: [BuildingService, BuildingRepository],
