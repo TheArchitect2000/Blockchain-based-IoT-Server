@@ -17,6 +17,11 @@ export default function CardBlockly({ xml }: { xml: string }) {
                 trashcan: true,
                 media: `${import.meta.env.VITE_URL}uploads/`,
                 readOnly: true,
+                move: {
+                    drag: true,
+                    scrollbars: true,
+                    wheel: true,
+                },
             }}
         />
     )

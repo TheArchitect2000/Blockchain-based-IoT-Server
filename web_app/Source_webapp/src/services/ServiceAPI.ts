@@ -28,10 +28,15 @@ export async function apiGetServiceByServiceId<T>(serviceId: string) {
 }
 
 export async function apiGetAllPublishedServices<T>() {
-    return ApiService.fetchData<T>({
-        url: import.meta.env.VITE_URL + 'v1/service/get-all-published-services',
-        method: 'get',
-    })
+    return ApiService.fetchData<T>(
+        {
+            url:
+                import.meta.env.VITE_URL +
+                'v1/service/get-all-published-services',
+            method: 'get',
+        },
+        5 * 60 * 1000
+    )
 }
 
 export async function apiSendServicePublishRequest<T>(serviceId: string) {

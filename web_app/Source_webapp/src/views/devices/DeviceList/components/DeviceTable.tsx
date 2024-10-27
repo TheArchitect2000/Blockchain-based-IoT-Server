@@ -23,6 +23,7 @@ import {
     apiGetLocalShareUsersWithDeviceId,
     apiLocalShareDeviceWithUserId,
     apiRenameDevice,
+    apiUnshareDevice,
 } from '@/services/DeviceApi'
 import { DoubleSidedImage, Loading } from '@/components/shared'
 import { Notification, toast } from '@/components/ui'
@@ -30,27 +31,47 @@ import { useAppSelector } from '@/store'
 import { apiCheckEmailExist } from '@/services/AuthService'
 import { validateEmail } from '@/views/account/Settings/components/Profile/Profile'
 import RenameDeviceDialog from './dialogs/RenameDeviceDialog'
-import ShareDeviceDialog from './dialogs/ShareDeviceDialog'
 import DeleteDeviceDialog from './dialogs/DeleteDeviceDialog'
 import { DeviceActionColumn, DeviceProductColumn } from './table/Action'
 import SharedUsersDialog from './dialogs/SharedListDialog'
+import GlobalUnshareDeviceDialog from './dialogs/GlobalUnshareDeviceDialog'
+import LocalShareDeviceDialog from './dialogs/LocalShareDeviceDialog'
+import SelectShareDeviceDialog from './dialogs/ShareDeviceDialog'
+import GlobalShareDeviceDialog from './dialogs/GlobalShareDevice/GlobalShareDeviceDialog'
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
+export interface DeviceListOptionsInterface {
+    share?: boolean
+    edit?: boolean
+    view?: boolean
+    delete?: boolean
+    sharedUsers?: boolean
+    unshare?: boolean
+}
+
 const DeviceTable = ({
+    type,
+    deviceList,
+    options,
     refreshPage,
-    sharedDevice,
 }: {
+    type: string
+    deviceList?: Array<DeviceData>
+    options: DeviceListOptionsInterface
     refreshPage: Function
-    sharedDevice?: Array<DeviceData>
 }) => {
     const [sorting, setSorting] = useState<ColumnSort[]>([])
     const [data, setData] = useState<DeviceData[]>([])
     const [loading, setLoading] = useState<boolean>(true)
     const [apiLoading, setApiLoading] = useState<boolean>(false)
     const [deleteDialog, setDeleteDialog] = useState<boolean>(false)
+    const [selectShareDialog, setSelectShareDialog] = useState<boolean>(false)
+    const [globalShareDialog, setGlobalShareDialog] = useState<boolean>(false)
+    const [globalUnshareDialog, setGlobalUnshareDialog] =
+        useState<boolean>(false)
     const [renameDialog, setRenameDialog] = useState<boolean>(false)
-    const [shareDialog, setShareDialog] = useState<boolean>(false)
+    const [localShareDialog, setLocalShareDialog] = useState<boolean>(false)
     const [sharedUsersDialog, setSharedUsersDialog] = useState<boolean>(false)
     const [userIsExist, setUserIsExist] = useState<boolean>(false)
     const [shareUserEmail, setShareUserEmail] = useState<string>('')
@@ -64,6 +85,13 @@ const DeviceTable = ({
     function refreshActionsData() {
         setRefreshActionColumnsData(refreshActionColumnsData + 1)
     }
+
+    useEffect(() => {
+        if (deviceList) {
+            setData(deviceList)
+        }
+        refreshActionsData()
+    }, [])
 
     async function fetchActionsData() {
         if (data.length == 0) {
@@ -83,15 +111,7 @@ const DeviceTable = ({
                     tempData[element._id] = false
                 }
             } catch (error: any) {
-                toast.push(
-                    <Notification
-                        title={error.response.data.message}
-                        type="danger"
-                    />,
-                    {
-                        placement: 'top-center',
-                    }
-                )
+                console.error(error.response.data.message)
             }
         }
         setDevicesAreShared({
@@ -155,7 +175,9 @@ const DeviceTable = ({
     }
 
     async function handleDeleteDevice() {
+        setApiLoading(true)
         const res = (await apiDeleteDeviceById(deviceData?._id || '')) as any
+        setApiLoading(false)
         setDeleteDialog(false)
         setTimeout(() => {
             refreshPage()
@@ -183,20 +205,39 @@ const DeviceTable = ({
         }
     }
 
-    useEffect(() => {
-        async function getDevices() {
-            setLoading(true)
-            if (sharedDevice) {
-                setData(sharedDevice)
-                setLoading(false)
-                return false
-            }
-            const res = (await apiGetDevices(userId || '')) as any
-            setData(res?.data.data)
-            refreshActionsData()
+    async function handleGlobalUnshareDevice() {
+        setApiLoading(true)
+        try {
+            const res = (await apiUnshareDevice(deviceData?._id || '')) as any
+            setGlobalUnshareDialog(false)
+            setApiLoading(false)
+            toast.push(
+                <Notification
+                    title={'Device unshared successfully'}
+                    type="success"
+                />,
+                {
+                    placement: 'top-center',
+                }
+            )
+        } catch (error) {
+            setGlobalUnshareDialog(false)
+            setApiLoading(false)
+            toast.push(
+                <Notification
+                    title={'Error while unsharing device'}
+                    type="danger"
+                />,
+                {
+                    placement: 'top-center',
+                }
+            )
         }
-        getDevices()
-    }, [])
+
+        setTimeout(() => {
+            refreshPage()
+        }, 1000)
+    }
 
     //eslint-disable-next-line
     //const data = devices?.data.data!
@@ -257,19 +298,15 @@ const DeviceTable = ({
             cell: (props) => {
                 return (
                     <DeviceActionColumn
+                        setUnshareDeviceDialog={setGlobalUnshareDialog}
                         sharedLoading={sharedLoading}
-                        isShared={
-                            (devicesAreShared &&
-                                devicesAreShared[props.row.original._id]) ||
-                            false
-                        }
                         setSharedUsersDialog={setSharedUsersDialog}
                         setDeleteDialog={setDeleteDialog}
                         setDeviceData={setDeviceData}
                         setNewDeviceName={setNewDeviceName}
                         setRenameDialog={setRenameDialog}
-                        setShareDialog={setShareDialog}
-                        sharedDevice={sharedDevice}
+                        setSelectShareDialog={setSelectShareDialog}
+                        options={options}
                         row={props.row.original}
                     />
                 )
@@ -363,7 +400,7 @@ const DeviceTable = ({
 
     function closeShareDialog() {
         refreshActionsData()
-        setShareDialog(false)
+        setLocalShareDialog(false)
         setUserIsExist(false)
         setShareUserEmail('')
     }
@@ -390,8 +427,8 @@ const DeviceTable = ({
                 setNewDeviceName={setNewDeviceName}
             />
 
-            <ShareDeviceDialog
-                isOpen={shareDialog}
+            <LocalShareDeviceDialog
+                isOpen={localShareDialog}
                 onClose={closeShareDialog}
                 onCheckUser={handleCheckUserExist}
                 onShare={handleLocalShareDevice}
@@ -403,10 +440,35 @@ const DeviceTable = ({
             />
 
             <DeleteDeviceDialog
+                loading={apiLoading}
                 isOpen={deleteDialog}
                 onClose={() => setDeleteDialog(false)}
                 onDelete={handleDeleteDevice}
                 deviceName={String(deviceData?.deviceName)}
+            />
+
+            <GlobalUnshareDeviceDialog
+                loading={apiLoading}
+                isOpen={globalUnshareDialog}
+                onClose={() => setGlobalUnshareDialog(false)}
+                onUnshare={handleGlobalUnshareDevice}
+                deviceName={String(deviceData?.deviceName)}
+            />
+
+            <GlobalShareDeviceDialog
+                deviceId={String(deviceData?._id)}
+                isOpen={globalShareDialog}
+                onClose={() => setGlobalShareDialog(false)}
+                refreshPage={refreshPage}
+            />
+
+            <SelectShareDeviceDialog
+                loading={apiLoading}
+                isOpen={selectShareDialog}
+                onClose={() => setSelectShareDialog(false)}
+                setGlobalShareDialog={setGlobalShareDialog}
+                setLocalShareDialog={setLocalShareDialog}
+                deviceData={deviceData}
             />
 
             {(loading === false && (
@@ -486,11 +548,9 @@ const DeviceTable = ({
                         darkModeSrc="/img/others/img-2-dark.png"
                         alt="No product found!"
                     />
-                    <h3>
-                        {(sharedDevice && 'No shared devices were found.') ||
-                            'Device not found!'}
-                    </h3>
-                    {!sharedDevice && (
+                    {type !== 'all' && <h3>No {type} devices were found.</h3>}
+
+                    {type === 'all' && (
                         <>
                             <p>
                                 To add your device to this account, please use

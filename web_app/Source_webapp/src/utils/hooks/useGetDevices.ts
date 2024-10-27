@@ -26,6 +26,7 @@ export type DeviceData = {
     deviceEncryptedId: string
     hardwareVersion: number
     firmwareVersion: number
+    sharedWith: Array<string>
     parameters: DeviceParameter[]
     isShared: boolean
     costOfUse: number
@@ -53,27 +54,30 @@ type DeviceParameter = {
     unit: string | number // Unit can be a string or a number based on your data
 }
 
-import { useState } from 'react';
+import { useState } from 'react'
 
 export function useGetDevices() {
     const { _id: userId } = useAppSelector((state) => state.auth.user)
-    const [timestamp, setTimestamp] = useState(Date.now()); // Initialize with current timestamp
+    const [timestamp, setTimestamp] = useState(Date.now()) // Initialize with current timestamp
 
-    const { data: devices, status, refetch } = useQuery({
+    const {
+        data: devices,
+        status,
+        refetch,
+    } = useQuery({
         queryKey: ['devices', userId, timestamp], // Add timestamp to queryKey
         queryFn: () => apiGetDevices<ApiResponse>(userId!),
         staleTime: 0, // Immediately stale
-    });
+    })
 
     // Function to refresh data and update the timestamp
     const refresh = () => {
-        setTimestamp(Date.now()); // Update timestamp to force refetch
-        refetch(); // Optionally call refetch
+        setTimestamp(Date.now()) // Update timestamp to force refetch
+        refetch() // Optionally call refetch
     }
 
     return { devices, status, refresh }
 }
-
 
 export function useGetSharedDevices() {
     const { _id: userId } = useAppSelector((state) => state.auth.user)

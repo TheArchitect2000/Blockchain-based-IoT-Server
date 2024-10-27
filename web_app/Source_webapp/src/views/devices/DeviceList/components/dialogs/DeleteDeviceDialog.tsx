@@ -1,10 +1,11 @@
 import { Dialog, Button } from '@/components/ui'
 
 interface DeleteDeviceDialogProps {
-    isOpen: boolean;
-    onClose: () => void;
-    onDelete: () => void;
-    deviceName: string;
+    loading: boolean
+    isOpen: boolean
+    onClose: () => void
+    onDelete: () => void
+    deviceName: string
 }
 
 const DeleteDeviceDialog: React.FC<DeleteDeviceDialogProps> = ({
@@ -12,6 +13,7 @@ const DeleteDeviceDialog: React.FC<DeleteDeviceDialogProps> = ({
     onClose,
     onDelete,
     deviceName,
+    loading,
 }) => {
     return (
         <Dialog
@@ -25,15 +27,21 @@ const DeleteDeviceDialog: React.FC<DeleteDeviceDialogProps> = ({
             <p className="text-left text-[1.1rem] mb-8">
                 Are you sure you want to delete the "{deviceName}" device?
                 <p className="text-red-400 text-left mt-1 text-[0.9rem]">
-                    *This action cannot be undone. You will need to re-add the device using the mobile app.
+                    *This action cannot be undone. You will need to re-add the
+                    device using the mobile app.
                 </p>
             </p>
 
             <div className="flex w-2/3 mx-auto justify-between">
-                <Button onClick={onDelete} variant="solid" color="red">
+                <Button
+                    loading={loading}
+                    onClick={onDelete}
+                    variant="solid"
+                    color="red"
+                >
                     Delete
                 </Button>
-                <Button onClick={onClose} variant="default">
+                <Button loading={loading} onClick={onClose} variant="default">
                     Cancel
                 </Button>
             </div>

@@ -29,11 +29,25 @@ export async function apiRenameDevice<T>(deviceId: string, deviceName: string) {
     })
 }
 
-export async function apiGetAllSharedDevices<T>() {
+export async function apiEditDevice<T>(deviceId: string, data: Object) {
     return ApiService.fetchData<T>({
-        url: `${import.meta.env.VITE_URL}v1/device/get-all-shared-devices`,
-        method: 'get',
+        url: `${import.meta.env.VITE_URL}v1/device/edit`,
+        method: 'patch',
+        data: {
+            deviceId: deviceId,
+            ...data,
+        },
     })
+}
+
+export async function apiGetAllSharedDevices<T>() {
+    return ApiService.fetchData<T>(
+        {
+            url: `${import.meta.env.VITE_URL}v1/device/get-all-shared-devices`,
+            method: 'get',
+        },
+        2 * 60 * 1000
+    )
 }
 
 export async function apiGetDeviceLogByEncryptedIdAndNumberOfDays<T>(
@@ -95,5 +109,16 @@ export async function apiGetLocalShareUsersWithDeviceId<T>(deviceId: string) {
             import.meta.env.VITE_URL
         }v1/device/${deviceId}/local-share/users`,
         method: 'get',
+    })
+}
+
+export async function apiUnshareDevice<T>(deviceId: string) {
+    return ApiService.fetchData<T>({
+        url: `${import.meta.env.VITE_URL}v1/device/edit`,
+        method: 'patch',
+        data: {
+            deviceId: deviceId,
+            isShared: false,
+        },
     })
 }

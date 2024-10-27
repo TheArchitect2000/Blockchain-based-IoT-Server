@@ -13,6 +13,7 @@ import {
     HiUserGroup,
 } from 'react-icons/hi'
 import { useNavigate } from 'react-router-dom'
+import { DeviceListOptionsInterface } from '../DeviceTable'
 
 export const DeviceProductColumn = ({ row }: { row: DeviceData }) => {
     const avatar = (
@@ -43,15 +44,15 @@ export const DeviceProductColumn = ({ row }: { row: DeviceData }) => {
 
 interface DeviceActionColumnProps {
     row: DeviceData
-    sharedDevice?: Array<DeviceData>
     setDeviceData: (value: DeviceData) => void
     setNewDeviceName: (value: string) => void
     setRenameDialog: (value: boolean) => void
     setDeleteDialog: (value: boolean) => void
-    setShareDialog: (value: boolean) => void
+    setSelectShareDialog: (value: boolean) => void
+    setUnshareDeviceDialog: (value: boolean) => void
     setSharedUsersDialog: (value: boolean) => void
     sharedLoading: boolean
-    isShared: boolean
+    options: DeviceListOptionsInterface
 }
 
 export const DeviceActionColumn: React.FC<DeviceActionColumnProps> = ({
@@ -60,11 +61,11 @@ export const DeviceActionColumn: React.FC<DeviceActionColumnProps> = ({
     setNewDeviceName,
     setRenameDialog,
     setDeleteDialog,
-    setShareDialog,
+    setSelectShareDialog,
     setSharedUsersDialog,
-    sharedDevice,
+    setUnshareDeviceDialog,
     sharedLoading,
-    isShared,
+    options,
 }) => {
     const { textTheme } = useThemeClass()
     const navigate = useNavigate()
@@ -86,7 +87,7 @@ export const DeviceActionColumn: React.FC<DeviceActionColumnProps> = ({
 
     const onShare = () => {
         setDeviceData(row)
-        setShareDialog(true)
+        setSelectShareDialog(true)
     }
 
     const onSharedUsers = () => {
@@ -94,9 +95,14 @@ export const DeviceActionColumn: React.FC<DeviceActionColumnProps> = ({
         setSharedUsersDialog(true)
     }
 
+    const onGlobalUnshareDevice = () => {
+        setDeviceData(row)
+        setUnshareDeviceDialog(true)
+    }
+
     return (
         <div className="flex justify-end text-lg">
-            {sharedLoading == false && isShared == true && !sharedDevice && (
+            {sharedLoading == false && options.sharedUsers && (
                 <span
                     className={`cursor-pointer p-2 hover:text-yellow-500`}
                     onClick={onSharedUsers}
@@ -104,12 +110,12 @@ export const DeviceActionColumn: React.FC<DeviceActionColumnProps> = ({
                     <HiUserGroup />
                 </span>
             )}
-            {sharedLoading == true && !sharedDevice && (
+            {sharedLoading == true && options.sharedUsers && (
                 <span className={`cursor-pointer p-2 hover:text-yellow-500`}>
                     <Loading size={20} loading={true} />
                 </span>
             )}
-            {!sharedDevice && (
+            {options.share && (
                 <span
                     className="cursor-pointer p-2 hover:text-green-500"
                     onClick={onShare}
@@ -117,7 +123,7 @@ export const DeviceActionColumn: React.FC<DeviceActionColumnProps> = ({
                     <HiShare />
                 </span>
             )}
-            {!sharedDevice && (
+            {options.edit && (
                 <span
                     className={`cursor-pointer p-2 hover:${textTheme}`}
                     onClick={onEdit}
@@ -125,18 +131,31 @@ export const DeviceActionColumn: React.FC<DeviceActionColumnProps> = ({
                     <HiOutlinePencil />
                 </span>
             )}
-            <span
-                className={`cursor-pointer p-2 hover:text-white`}
-                onClick={onView}
-            >
-                <HiOutlineEye />
-            </span>
-            {!sharedDevice && (
+            {options.view && (
+                <span
+                    className={`cursor-pointer p-2 hover:text-white`}
+                    onClick={onView}
+                >
+                    <HiOutlineEye />
+                </span>
+            )}
+            {options.delete && (
                 <span
                     className="cursor-pointer p-2 hover:text-red-500"
                     onClick={onDelete}
                 >
                     <HiOutlineTrash />
+                </span>
+            )}
+            {options.unshare && (
+                <span
+                    className="relative cursor-pointer p-2 hover:text-white"
+                    onClick={onGlobalUnshareDevice}
+                >
+                    <HiShare />
+                    <p className="absolute text-red-500 text-[1.4rem] top-[-6px] left-[7px]">
+                        __
+                    </p>
                 </span>
             )}
         </div>

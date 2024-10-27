@@ -75,7 +75,7 @@
         "react-tooltip": "^5.11.1",
         "recharts": "^2.12.7",
         "redux-persist": "^6.0.0",
-        "sass": "^1.77.2",
+        "sass": "^1.80.4",
         "scss": "^0.2.4",
         "twin.macro": "^3.3.0",
         "typescript": "^5.5.4",

@@ -43,6 +43,7 @@ import {
     apiEditUserProfile,
     apiGetCurUserProfile,
     apiRequestChangeEmail,
+    apiRequestVerifyEmail,
     apiVerifyChangeEmailWithToken,
 } from '@/services/UserApi'
 import { useEffect, useState } from 'react'
@@ -129,6 +130,8 @@ const Profile = ({}: ProfileProps) => {
     const [inputs, setInputs] = useState<string[]>(Array(5).fill(''))
     const [selectImageModal, setSelectImageModal] = useState(false)
     const [selectedTimeZone, setSelectedTimeZone] = useState<any>()
+    const [seconds, setSeconds] = useState(0)
+    const [canRequest, setCanRequest] = useState(false)
     const [phoneNumber, setPhoneNumber] = useState<{
         phoneNumber: string
         countryCode: SingleValue<Country>
@@ -139,6 +142,48 @@ const Profile = ({}: ProfileProps) => {
     const dispatch = useAppDispatch()
 
     const { signOut } = useAuth()
+
+    useEffect(() => {
+        if (seconds > 0) {
+            const timer = setInterval(() => {
+                setSeconds((prev) => prev - 1)
+            }, 1000)
+            return () => clearInterval(timer)
+        } else {
+            setCanRequest(true)
+        }
+    }, [seconds])
+
+    async function requestVerifyAccount() {
+        setApiLoading(true)
+        try {
+            const res = await apiRequestVerifyEmail(apiData?.email || '')
+            setApiLoading(false)
+            if (res) {
+                toast.push(
+                    <Notification
+                        title="The verification link has been successfully sent to your
+                        email"
+                        type="success"
+                    />,
+                    {
+                        placement: 'top-center',
+                    }
+                )
+            }
+        } catch (error: any) {
+            setApiLoading(false)
+            toast.push(
+                <Notification
+                    title={error.response.data.message}
+                    type="danger"
+                />,
+                {
+                    placement: 'top-center',
+                }
+            )
+        }
+    }
 
     useEffect(() => {
         async function fetchData() {
@@ -276,6 +321,8 @@ const Profile = ({}: ProfileProps) => {
             const res = await apiRequestChangeEmail(newMail)
             setApiLoading(false)
             setChangeEmailStep('token')
+            setSeconds(120)
+            setCanRequest(false)
             toast.push(
                 <Notification
                     title={
@@ -383,7 +430,10 @@ const Profile = ({}: ProfileProps) => {
                             contentClassName="w-1/3 h-1/3"
                             closable={!apiLoading}
                         >
-                            <h4 className="mb-8">Change Email</h4>
+                            <h3 className="mb-8">
+                                Change Email{' '}
+                                {changeEmailStep === 'token' && 'Verification'}
+                            </h3>
                             {changeEmailStep === '' && (
                                 <section className="flex flex-col w-full gap-4">
                                     <div className="flex w-full gap-4 items-center">
@@ -409,12 +459,17 @@ const Profile = ({}: ProfileProps) => {
                                 </section>
                             )}
                             {changeEmailStep === 'token' && (
-                                <div className="flex flex-col gap-8">
-                                    <h3 className="text-start">
-                                        Please enter the verification code sent
-                                        to your email in the fields below.
-                                    </h3>
-                                    <section className="flex w-full items-center justify-center gap-12 mb-4">
+                                <div className="flex flex-col gap-3">
+                                    <p>
+                                        We've sent a 5-digit code to your email.
+                                        Please check your inbox (and spam
+                                        folder, just in case!) and enter the
+                                        code to continue. If you don’t receive
+                                        the email shortly, you can request a new
+                                        code.
+                                    </p>
+
+                                    <section className="flex w-full items-center justify-center gap-12 mt-4 mb-4">
                                         {inputs.map((value, index) => (
                                             <Input
                                                 key={index}
@@ -433,6 +488,27 @@ const Profile = ({}: ProfileProps) => {
                                             />
                                         ))}
                                     </section>
+
+                                    <p
+                                        onClick={() => {
+                                            if (
+                                                canRequest &&
+                                                apiLoading == false
+                                            ) {
+                                                handleRequestChangeEmail()
+                                            }
+                                        }}
+                                        className={`${
+                                            canRequest &&
+                                            'cursor-pointer hover:underline'
+                                        } ${
+                                            apiLoading && 'text-gray-700'
+                                        } w-fit`}
+                                    >
+                                        {canRequest
+                                            ? 'You can request a new code now!'
+                                            : `You can request a new code in ${seconds} seconds.`}
+                                    </p>
                                 </div>
                             )}
                             {changeEmailStep === 'finish' && (
@@ -504,13 +580,27 @@ const Profile = ({}: ProfileProps) => {
                                             }
                                             disabled={true}
                                         />
-                                        <Button
-                                            onClick={() => setEmailModal(true)}
-                                            type="button"
-                                            variant="default"
-                                        >
-                                            Change
-                                        </Button>
+                                        {(apiData.verificationStatus ==
+                                            'verified' && (
+                                            <Button
+                                                onClick={() =>
+                                                    setEmailModal(true)
+                                                }
+                                                type="button"
+                                                variant="default"
+                                            >
+                                                Change
+                                            </Button>
+                                        )) || (
+                                            <Button
+                                                onClick={requestVerifyAccount}
+                                                type="button"
+                                                variant="solid"
+                                                loading={apiLoading}
+                                            >
+                                                Verify
+                                            </Button>
+                                        )}
                                     </section>
                                 </FormRow>
                                 <FormRow
@@ -526,22 +616,6 @@ const Profile = ({}: ProfileProps) => {
                                         prefix={<HiPhone className="text-xl" />}
                                     />
                                 </FormRow>
-                                {/* <FormRow
-                                    name="walletAddress"
-                                    label="Wallet Address"
-                                    {...validatorProps}
-                                >
-                                    <Field
-                                        type="text"
-                                        autoComplete="off"
-                                        name="walletAddress"
-                                        placeholder="wallet address"
-                                        component={Input}
-                                        prefix={
-                                            <HiCurrencyDollar className="text-xl" />
-                                        }
-                                    />
-                                </FormRow> */}
                                 <FormRow
                                     name="timeZone"
                                     label="Time Zone"
@@ -706,61 +780,6 @@ const Profile = ({}: ProfileProps) => {
                                 <Loading loading={true} />
                             </div>
                         )}
-
-                        {/* <FormRow
-                            name="lang"
-                            label="Language"
-                            {...validatorProps}
-                        >
-                            <Field name="lang">
-                                {({ field, form }: FieldProps) => (
-                                    <Select<LanguageOption>
-                                        field={field}
-                                        form={form}
-                                        options={langOptions}
-                                        components={{
-                                            Option: CustomSelectOption,
-                                            Control: CustomControl,
-                                        }}
-                                        value={langOptions.filter(
-                                            (option) =>
-                                                option.value === values?.lang
-                                        )}
-                                        onChange={(option) =>
-                                            form.setFieldValue(
-                                                field.name,
-                                                option?.value
-                                            )
-                                        }
-                                    />
-                                )}
-                            </Field>
-                        </FormRow> */}
-                        {/* <FormRow
-                                name="title"
-                                label="Title"
-                                {...validatorProps}
-                                border={false}
-                            >
-                                <Field
-                                    type="text"
-                                    autoComplete="off"
-                                    name="title"
-                                    placeholder="Title"
-                                    component={Input}
-                                    prefix={
-                                        <HiOutlineBriefcase className="text-xl" />
-                                    }
-                                />
-                            </FormRow> */}
-                        {/* <FormRow
-                                name="syncData"
-                                label="Sync Data"
-                                {...validatorProps}
-                                border={false}
-                            >
-                                <Field name="syncData" component={Switcher} />
-                            </FormRow> */}
                     </Form>
                 )
             }}

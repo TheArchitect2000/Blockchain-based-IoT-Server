@@ -5,13 +5,27 @@ import { Loading } from '@/components/shared'
 import { Tabs } from '@/components/ui'
 import { ReactNode, useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { apiGetSharedWithMeDevices } from '@/services/DeviceApi'
+import { apiGetDevices, apiGetSharedWithMeDevices } from '@/services/DeviceApi'
+import { useAppSelector } from '@/store'
 const { TabNav, TabList } = Tabs
 
 const ProductList = () => {
+    const [refreshData, setRefreshData] = useState<number>(0)
+    const [refreshComponents, setRefreshComponents] = useState<number>(0)
     const [sharedData, setSharedData] = useState<Array<DeviceData>>([])
-    const { status, refresh } = useGetDevices()
-    const loading = status !== 'success'
+    const [allDevices, setAllDevices] = useState<Array<DeviceData>>([])
+    const [apiLoading, setApiLoading] = useState<boolean>(true)
+    const { _id: userId } = useAppSelector((state) => state.auth.user)
+    const navigate = useNavigate()
+    const location = useLocation()
+
+    function refreshPage() {
+        setRefreshData(refreshData + 1)
+    }
+
+    function refreshDeviceComponents() {
+        setRefreshComponents(refreshComponents + 1)
+    }
 
     const deviceMenu: Array<{
         label: string
@@ -22,22 +36,67 @@ const ProductList = () => {
         {
             label: 'All Devices',
             path: 'my-devices',
-            element: <DeviceTable refreshPage={refresh} />,
+            element: (
+                <DeviceTable
+                    key={`all-${refreshComponents}`}
+                    type="all"
+                    options={{
+                        view: true,
+                        share: true,
+                        delete: true,
+                        edit: true,
+                    }}
+                    deviceList={allDevices}
+                    refreshPage={refreshPage}
+                />
+            ),
+        },
+        {
+            label: 'Local Device Sharing',
+            path: 'local-share-devices',
+            element: (
+                <DeviceTable
+                    key={`local-share-${refreshComponents}`}
+                    type="local share"
+                    options={{ sharedUsers: true }}
+                    deviceList={allDevices.filter(
+                        (item) => item.sharedWith.length > 0
+                    )}
+                    refreshPage={refreshPage}
+                />
+            ),
+        },
+        {
+            label: 'Global Device Sharing',
+            path: 'global-share-devices',
+            element: (
+                <DeviceTable
+                    key={`global-share-${refreshComponents}`}
+                    type="global share"
+                    options={{ unshare: true }}
+                    deviceList={allDevices.filter(
+                        (item) => item.isShared == true
+                    )}
+                    refreshPage={refreshPage}
+                />
+            ),
         },
         {
             label: 'Shared With Me',
             path: 'shared-devices',
             element: (
-                <DeviceTable sharedDevice={sharedData} refreshPage={refresh} />
+                <DeviceTable
+                    key={`share-${refreshComponents}`}
+                    type="share"
+                    options={{ view: true }}
+                    deviceList={sharedData}
+                    refreshPage={refreshPage}
+                />
             ),
         },
     ]
 
     const [currentTab, setCurrentTab] = useState(deviceMenu[0].path)
-    const [refreshData, setRefreshData] = useState<number>(0)
-
-    const navigate = useNavigate()
-    const location = useLocation()
 
     const path = location.pathname.substring(
         location.pathname.lastIndexOf('/') + 1
@@ -46,46 +105,60 @@ const ProductList = () => {
     const onTabChange = (val: string) => {
         setCurrentTab(val)
         navigate(`/devices/${val}`)
-        setRefreshData(refreshData + 1)
     }
 
     async function fetchData() {
-        const res = (await apiGetSharedWithMeDevices()) as any
-        setSharedData(res.data.data)
+        setApiLoading(true)
+        const sharedDevices = (await apiGetSharedWithMeDevices()) as any
+        setSharedData(sharedDevices.data.data)
+        const allDevices = (await apiGetDevices(String(userId))) as any
+        setAllDevices(allDevices.data.data)
+        setApiLoading(false)
+        setCurrentTab(path)
+        refreshDeviceComponents()
     }
 
     useEffect(() => {
         fetchData()
-        setCurrentTab(path)
     }, [refreshData])
-
-    if (loading) return <Loading loading={loading} />
 
     return (
         <main className="flex flex-col gap-4 h-full">
             <h3>Device List</h3>
             <AdaptableCard className="h-full p-6">
-                <Tabs value={currentTab} onChange={(val) => onTabChange(val)}>
-                    <TabList>
-                        {deviceMenu.map((menuItem, index) => (
-                            <TabNav
-                                className={menuItem.className || ''}
-                                key={index}
-                                value={menuItem.path}
-                            >
-                                {menuItem.label}
-                            </TabNav>
-                        ))}
-                    </TabList>
-                </Tabs>
-                {deviceMenu.map((menuItem, index) => {
-                    if (currentTab == menuItem.path)
-                        return (
-                            <div className="w-full h-full pt-4">
-                                {menuItem.element}
-                            </div>
-                        )
-                })}
+                {apiLoading && (
+                    <div className="w-full h-[60dvh] flex items-center justify-center">
+                        <Loading loading={true} />
+                    </div>
+                )}
+                {!apiLoading && (
+                    <Tabs
+                        value={currentTab}
+                        onChange={(val) => onTabChange(val)}
+                    >
+                        <TabList>
+                            {deviceMenu.map((menuItem, index) => (
+                                <TabNav
+                                    className={menuItem.className || ''}
+                                    key={index}
+                                    value={menuItem.path}
+                                >
+                                    {menuItem.label}
+                                </TabNav>
+                            ))}
+                        </TabList>
+                    </Tabs>
+                )}
+                {!apiLoading &&
+                    deviceMenu.map((menuItem, index) => {
+                        if (currentTab == menuItem.path) {
+                            return (
+                                <div className="w-full h-full pt-4">
+                                    {menuItem.element}
+                                </div>
+                            )
+                        }
+                    })}
             </AdaptableCard>
         </main>
     )
