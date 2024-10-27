@@ -57,10 +57,11 @@ const Verify = () => {
                 queryClient.invalidateQueries(['walletBalance'])
             }, 1000)
             toast.push(
-                <Notification title="Success" type="success">
-                    Tokens from the faucet have been successfully deposited into
-                    your wallet!
-                </Notification>,
+                <Notification
+                    title="Tokens from the faucet have been successfully deposited into
+                    your wallet!"
+                    type="success"
+                />,
                 {
                     placement: 'top-center',
                 }
@@ -69,13 +70,9 @@ const Verify = () => {
             setRequestLoading(false)
             toast.push(
                 <Notification
-                    title="Error while requesting faucet"
+                    title={error.response.data.message}
                     type="danger"
-                    duration={10000}
-                >
-                    Your wallet address is invalid, you may need to wait 24
-                    hours, or your balance might already be 5 or more tokens !
-                </Notification>,
+                />,
                 {
                     placement: 'top-center',
                 }
