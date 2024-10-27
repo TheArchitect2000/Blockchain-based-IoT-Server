@@ -509,7 +509,7 @@ export class DeviceService {
           );
         }
         if (body.isShared == false && foundDevice.isShared == true) {
-          this.buildingService.deleteDeviceIdFromAllBuildings(newData._id);
+          this.buildingService.deleteDeviceIdFromAllBuildings(newData.deviceEncryptedId);
           this.contractService.removeSharedDevice(
             process.env.NODE_ID,
             String(newData._id),
@@ -766,7 +766,7 @@ export class DeviceService {
       .deleteDeviceByNodeIdAndDeviceId(nodeId, deviceId)
       .then((data) => {
         this.result = data;
-        this.buildingService.deleteDeviceIdFromAllBuildings(deviceId);
+        this.buildingService.deleteDeviceIdFromAllBuildings(deviceEncryptedId);
       })
       .catch((error) => {
         let errorMessage =
@@ -822,7 +822,7 @@ export class DeviceService {
     );
 
     this.buildingService.deleteDeviceIdFromAllBuildings(
-      String(foundDevice._id),
+      String(foundDevice.deviceEncryptedId),
     );
 
     const installedServices =
@@ -866,7 +866,7 @@ export class DeviceService {
       );
 
       this.buildingService.deleteDeviceIdFromAllBuildings(
-        String(element._id),
+        String(element.deviceEncryptedId),
       );
 
       const installedServices =
@@ -994,7 +994,7 @@ export class DeviceService {
       userId,
     );
 
-    this.buildingService.deleteDeviceIdFromBuildingsByUserId(deviceId, userId);
+    this.buildingService.deleteDeviceIdFromBuildingsByUserId(String(foundDevices.deviceEncryptedId), userId);
 
     return result;
   }

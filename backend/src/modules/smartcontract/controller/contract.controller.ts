@@ -97,10 +97,16 @@ export class contractController {
     description:
       'This api will store the user commitment file in smart contract.',
   })
-  async removeCommitment(@Body() body: removeCommitmentDto, @Request() request) {
+  async removeCommitment(
+    @Body() body: removeCommitmentDto,
+    @Request() request,
+  ) {
     console.log('We are in Remove Commitment section', body);
 
-    return this.contractService.removeCommitment(body.commitmentId, body.nodeId);
+    return this.contractService.removeCommitment(
+      body.commitmentId,
+      body.nodeId,
+    );
   }
 
   @Get('/get-wallet-balance')

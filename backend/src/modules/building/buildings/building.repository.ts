@@ -97,94 +97,73 @@ export class BuildingRepository {
   }
 
   async deleteDeviceIdFromAllBuildings(deviceId: string) {
-    return await this.buildingModel.updateMany({ details: { $exists: true } }, [
-      {
-        $set: {
-          details: {
-            $function: {
-              body: function (details, deviceId) {
-                const traverseFloors = (floor) => {
-                  for (const unit in floor.units) {
-                    if (floor.units[unit].device === deviceId) {
-                      floor.units[unit].device = '';
-                    }
-                  }
-                };
+    const buildings = await this.buildingModel.find({
+      details: { $exists: true },
+    });
 
-                for (const floor in details) {
-                  traverseFloors(details[floor]);
-                }
-                return details;
-              },
-              args: ['$details', deviceId],
-              lang: 'js',
-            },
-          },
-        },
-      },
-    ]);
+    for (const building of buildings) {
+      let modified = false;
+
+      for (const floorKey in building.details) {
+        const floor = building.details[floorKey];
+
+        for (const unitKey in floor.units) {
+          if (floor.units[unitKey].device === deviceId) {
+            floor.units[unitKey].device = '';
+            modified = true;
+          }
+        }
+      }
+
+      if (modified) {
+        // Mark details as modified
+        building.markModified('details');
+
+        // Save the modified building document
+        await building.save();
+      }
+    }
   }
 
-  /* async deleteDeviceIdFromBuildingsByUserId(deviceId: string, userId: string) {
-    console.log("Gholllllllllllll 2222222222222222222222222222:", userId)
+  async deleteDeviceIdFromBuildingsByUserId(deviceId: string, userId: string) {
     const createdBy = new Types.ObjectId(userId);
 
-    this.buildingModel.updateMany(
-      {
-        createdBy: createdBy,
-        details: { $exists: true },
-      },
-      [
-        {
-          $set: {
-            details: {
-              $function: {
-                body: function (details, deviceId) {
-                  const traverseFloors = (floor) => {
-                    for (const unit in floor.units) {
-                      if (floor.units[unit].device === deviceId) {
-                        floor.units[unit].device = '';
-                      }
-                    }
-                  };
+    // Check if buildings exist for the given user
+    const buildingsExist = await this.buildingModel.exists({
+      createdBy: createdBy,
+      details: { $exists: true },
+    });
+    if (!buildingsExist) {
+      console.log(`No buildings found for user: ${userId}`);
+      return;
+    }
 
-                  for (const floor in details) {
-                    traverseFloors(details[floor]);
-                  }
-                  return details;
-                },
-                args: ['$details', deviceId],
-                lang: 'js',
-              },
-            },
-          },
-        },
-      ],
-    );
-  } */
+    const buildings = await this.buildingModel.find({
+      createdBy: createdBy,
+      details: { $exists: true },
+    });
 
-    async deleteDeviceIdFromBuildingsByUserId(deviceId: string, userId: string) {
-      console.log("Deleting device ID for user:", userId);
-      const createdBy = new Types.ObjectId(userId);
-  
-      // Fetch documents to update
-      const buildings = await this.buildingModel.find({ createdBy: createdBy, details: { $exists: true } });
-  
-      // Iterate and update each building's details in-memory
-      for (const building of buildings) {
-          for (const floorKey in building.details) {
-              const floor = building.details[floorKey];
-  
-              // Iterate over each unit in the floor
-              for (const unitKey in floor.units) {
-                  if (floor.units[unitKey].device === deviceId) {
-                      floor.units[unitKey].device = ''; // Set device ID to an empty string
-                  }
-              }
+    for (const building of buildings) {
+      let modified = false;
+
+      for (const floorKey in building.details) {
+        const floor = building.details[floorKey];
+
+        for (const unitKey in floor.units) {
+          if (floor.units[unitKey].device === deviceId) {
+            floor.units[unitKey].device = '';
+            modified = true;
           }
-          // Save the modified building document
-          await building.save();
+        }
       }
-  }
 
+      if (modified) {
+        // Mark details as modified
+        building.markModified('details');
+
+        // Save the modified building document
+        await building.save();
+      }
+    }
+  }
 }
