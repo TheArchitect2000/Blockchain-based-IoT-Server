@@ -25,7 +25,9 @@ import {
 import Tabs from '@/components/custom/Tab'
 
 interface DeviceData {
+    myDevice: boolean
     isLocal: boolean
+    isShared: boolean
     deviceEncryptedId: string
     deviceName: string
     deviceType: string
@@ -387,9 +389,53 @@ export function CreateEditBuilding() {
         return 'Select Device'
     }
 
+    function findDeviceById(id: string): any | undefined {
+        return myDevices.find(
+            (device) => device._id === id || device.nodeDeviceId === id
+        )
+    }
+
+    function revertBuildDataDevices(buildData: any, myDevices: any) {
+        function replaceEncryptedId(data: any) {
+            if (data && typeof data === 'object') {
+                // Debugging: log data at each level
+                console.log('Inspecting data:', data)
+
+                console.log('Gool:', myDevices)
+
+                // Check if the current object has a 'device' property
+                if (data.device) {
+                    const foundDevice = myDevices.find(
+                        (device: any) =>
+                            device.deviceEncryptedId === data.device
+                    )
+                    if (foundDevice) {
+                        data.device = foundDevice._id
+                        console.log(
+                            `Replaced deviceEncryptedId with _id for: ${data.device}`
+                        )
+                    }
+                }
+
+                // Recursively check each property in the current object
+                for (const key in data) {
+                    if (data.hasOwnProperty(key)) {
+                        replaceEncryptedId(data[key])
+                    }
+                }
+            }
+            return data
+        }
+
+        // Create a deep copy to avoid mutating the original data directly
+        const updatedData = JSON.parse(JSON.stringify(buildData))
+        return replaceEncryptedId(updatedData)
+    }
+
     useEffect(() => {
         dispatch(setSideNavCollapse(true))
         async function fetchData() {
+            let functionLocalMyDevices = undefined
             try {
                 let sharedDevices = (await apiGetAllSharedDevices()) as any
                 const deviceRes = (await apiGetDevices(userId || '')) as any
@@ -402,24 +448,39 @@ export function CreateEditBuilding() {
                 )
 
                 // Extract _id values from deviceRes
-                const sharedDevices_ids = new Set(
-                    sharedDevices.data.data.map((device: any) => device._id)
+                const localDevices_ids = new Set(
+                    myLocalDevices.data.data.map((device: any) => device._id)
                 )
 
                 // Filter sharedDevices to exclude devices that are already in deviceRes
-                const filteredSharedDevices = sharedDevices.data.data.filter(
-                    (device: any) => !deviceRes_ids.has(device._id)
-                )
-
-                // Filter sharedDevices to exclude devices that are already in deviceRes
-                const filteredmyLocalDevices = myLocalDevices.data.data.filter(
-                    (device: any) => !sharedDevices_ids.has(device._id)
-                )
+                const filteredSharedDevices = sharedDevices.data.data
+                    .filter(
+                        (device: any) =>
+                            !deviceRes_ids.has(device.nodeDeviceId) &&
+                            !deviceRes_ids.has(device._id) &&
+                            !localDevices_ids.has(device.nodeDeviceId) &&
+                            !localDevices_ids.has(device._id)
+                    )
+                    .map((item: any) => {
+                        return { ...item, isShared: true }
+                    })
 
                 const updatedFilteredmyLocalDevices =
-                    filteredmyLocalDevices.map((item: any) => {
+                    myLocalDevices.data.data.map((item: any) => {
                         return { ...item, isLocal: true }
                     })
+
+                const updatedFilteredMyDevices = deviceRes.data.data.map(
+                    (item: any) => {
+                        return { ...item, myDevice: true }
+                    }
+                )
+
+                functionLocalMyDevices = [
+                    ...updatedFilteredMyDevices,
+                    ...filteredSharedDevices,
+                    ...updatedFilteredmyLocalDevices,
+                ]
 
                 // Combine the filtered sharedDevices with deviceRes
                 setMyDevices([
@@ -453,17 +514,23 @@ export function CreateEditBuilding() {
                                 ]
                             )
                         )
-                        setBuildData({
-                            name: resData.name,
-                            details: updatedDetails,
-                            _id: resData._id,
-                        })
 
-                        saveAllLastData({
-                            name: resData.name,
-                            details: updatedDetails,
-                            _id: resData._id,
-                        })
+                        setTimeout(() => {
+                            const updatedBuildData = revertBuildDataDevices(
+                                {
+                                    name: resData.name,
+                                    details: updatedDetails,
+                                    _id: resData._id,
+                                },
+                                functionLocalMyDevices
+                            )
+
+                            console.log('Ghol Gholian:', updatedBuildData)
+
+                            setBuildData(updatedBuildData)
+
+                            saveAllLastData(updatedBuildData)
+                        }, 1000)
 
                         setTimeout(() => {
                             if (scrollToPilotRef.current) {
@@ -482,7 +549,7 @@ export function CreateEditBuilding() {
             }
         }
         fetchData()
-    }, [type, navigateTo])
+    }, [navigateTo])
 
     useEffect(() => {
         const newCorridor = Math.ceil(getTotalUnits(selectedFloor) / 4) - 1
@@ -544,6 +611,32 @@ export function CreateEditBuilding() {
         setBuildData({ ...buildData, name: e.target.value })
     }
 
+    function updateBuildDataDevices(buildData: any): any {
+        // Helper function to search and replace the device ID
+        function replaceDeviceId(data: any): any {
+            if (data && typeof data === 'object') {
+                // If data has a device field, attempt to replace it
+                if (data.device) {
+                    const foundDevice = findDeviceById(data.device)
+                    if (foundDevice) {
+                        data.device = foundDevice.deviceEncryptedId
+                    }
+                }
+                // Recursively process all nested objects
+                for (const key in data) {
+                    if (data.hasOwnProperty(key)) {
+                        replaceDeviceId(data[key])
+                    }
+                }
+            }
+            return data
+        }
+
+        // Create a deep copy to avoid mutating the original state directly
+        const updatedData = JSON.parse(JSON.stringify(buildData))
+        return replaceDeviceId(updatedData)
+    }
+
     const handleDeviceSelect = (
         floorKey: string,
         unitKey: string,
@@ -595,12 +688,17 @@ export function CreateEditBuilding() {
     async function handleSubmit() {
         setApiLoading(true)
 
+        const updatedBuildData = updateBuildDataDevices(buildData)
+
         try {
             let res
             if (editing) {
-                res = await apiEditBuildingByBuildId(buildData._id, buildData)
+                res = await apiEditBuildingByBuildId(
+                    updatedBuildData._id,
+                    updatedBuildData
+                )
             } else {
-                res = await apiCreateNewBuilding(buildData)
+                res = await apiCreateNewBuilding(updatedBuildData)
             }
 
             toast.push(
@@ -1014,8 +1112,8 @@ export function CreateEditBuilding() {
                                                                                     (
                                                                                         device
                                                                                     ) =>
-                                                                                        !device.nodeDeviceId &&
-                                                                                        !device.isLocal
+                                                                                        device.myDevice ===
+                                                                                        true
                                                                                 )
                                                                                 .map(
                                                                                     (
@@ -1056,7 +1154,8 @@ export function CreateEditBuilding() {
                                                                                     (
                                                                                         device
                                                                                     ) =>
-                                                                                        device.nodeDeviceId &&
+                                                                                        device.isShared ==
+                                                                                            true &&
                                                                                         !device.isLocal
                                                                                 )
                                                                                 .map(
