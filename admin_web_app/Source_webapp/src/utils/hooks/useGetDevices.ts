@@ -21,6 +21,21 @@ export type UserData = {
     mobile: string
     _id: string
     creationDate: string
+    tel: {
+        phoneNumber: string
+        countryCode: {
+            label: string
+            value: string
+        }
+    }
+    address: {
+        line_1: string
+        line_2: string
+        country: string
+        city: string
+        state: string
+        zipCode: string
+    }
 }
 
 export type RequestData = {
