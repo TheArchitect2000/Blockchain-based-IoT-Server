@@ -13,7 +13,7 @@ export default function UserDetails() {
     async function fetchData() {
         setApiLoading(true)
         try {
-            const res = await apiGetUserProfileByUserId(String(userId))
+            const res = (await apiGetUserProfileByUserId(String(userId))) as any
             setUserData(res.data.data)
         } catch (error: any) {
             toast.push(
