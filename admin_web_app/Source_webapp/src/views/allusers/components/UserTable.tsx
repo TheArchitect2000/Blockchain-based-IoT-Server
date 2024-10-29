@@ -16,8 +16,11 @@ import {
 import { Loading } from '@/components/shared'
 import DownloadCSVButton from '@/views/account/Settings/components/DownloadCsv'
 import { Avatar, Button, Dialog, Notification, toast } from '@/components/ui'
-import { HiTrash, HiUser } from 'react-icons/hi'
+import { HiEye, HiTrash, HiUser } from 'react-icons/hi'
 import PaginatedList from '@/views/market/components/PaginationList'
+import { transformCsvData } from '@/utils/functions/FilterUsersCsvData'
+import useThemeClass from '@/utils/hooks/useThemeClass'
+import { useNavigate } from 'react-router-dom'
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
@@ -57,6 +60,10 @@ const UsersTable: React.FC<UsersTableProps> = ({ setCount }) => {
     const [deleteDialog, setDeleteDialog] = useState(false)
     const [deleteData, setDeleteData] = useState<any>({})
 
+    const { textTheme } = useThemeClass()
+
+    const navigateTo = useNavigate()
+
     const ActionColumn = ({ row }: { row: any }) => {
         async function handleDeleteDevice() {
             const res = (await apiDeleteUserById(deleteData._id)) as any
@@ -88,13 +95,15 @@ const UsersTable: React.FC<UsersTableProps> = ({ setCount }) => {
         return (
             <div className="flex justify-end text-lg">
                 <Dialog
+                    overlayClassName="flex items-center justify-center"
                     isOpen={deleteDialog}
+                    closable={false}
                     onClose={() => setDeleteDialog(false)}
                 >
-                    <h3 className="mb-8">Delete Device</h3>
+                    <h3 className="mb-8">Delete User</h3>
                     <p className="text-center text-[1.1rem] mb-6">
-                        Are you sure about deleting '{deleteData.email}' device
-                        ?
+                        Are you sure about deleting '{deleteData.email}'
+                        account?
                     </p>
                     <div className="flex w-2/3 mx-auto justify-between">
                         <Button
@@ -106,21 +115,23 @@ const UsersTable: React.FC<UsersTableProps> = ({ setCount }) => {
                         </Button>
                         <Button
                             onClick={() => setDeleteDialog(false)}
-                            variant="solid"
-                            color="green"
+                            variant="default"
                         >
                             Cancel
                         </Button>
                     </div>
                 </Dialog>
                 <span
-                    className="cursor-pointer p-2 hover:${textTheme}"
+                    className={`cursor-pointer p-2 hover:text-red-500`}
                     onClick={() => {
                         setDeleteData(row)
                         setDeleteDialog(true)
                     }}
                 >
                     <HiTrash />
+                </span>
+                <span onClick={() => navigateTo(`/users/${row._id}`)} className={`cursor-pointer p-2 hover:${textTheme}`}>
+                    <HiEye />
                 </span>
             </div>
         )
@@ -184,14 +195,6 @@ const UsersTable: React.FC<UsersTableProps> = ({ setCount }) => {
 
     const columns: ColumnDef<UserData>[] = [
         {
-            header: '_id',
-            accessorKey: '_id',
-            cell: (props) => {
-                const row = props.row.original
-                return <span>{row._id}</span>
-            },
-        },
-        {
             header: 'profile',
             accessorKey: 'profile',
             cell: (props) => {
@@ -218,6 +221,14 @@ const UsersTable: React.FC<UsersTableProps> = ({ setCount }) => {
             cell: (props) => {
                 const row = props.row.original
                 return <span>{row.email}</span>
+            },
+        },
+        {
+            header: '_id',
+            accessorKey: '_id',
+            cell: (props) => {
+                const row = props.row.original
+                return <span>{row._id}</span>
             },
         },
         {
@@ -304,7 +315,7 @@ const UsersTable: React.FC<UsersTableProps> = ({ setCount }) => {
                     <DownloadCSVButton
                         disabled={loading}
                         fileName="Users"
-                        data={filteredData}
+                        data={transformCsvData(filteredData)}
                     />
                 </div>
             </div>
