@@ -269,12 +269,12 @@ git clone https://github.com/FidesInnova/iot_node_backend_web_app_source_source.
 
 ## 7- Prepare app host configuration
 -  In project root folder, create `.env` file and edit parameters based on your node URL info
--  Note that your domain must be "panel.NODE_ID". This domain provides access to the node's control and monitoring panel (e.g., "panel.zksensor.tech").
 ```
 cd ~/iot_node_backend_web_app_source/backend
 sudo nano .env
 ```
-Inside the `.env` file, past the parameters.
+- Inside the `.env` file, past the parameters.
+- Note that your domain must be "panel.NODE_ID". This domain provides access to the node's control and monitoring panel (e.g., "panel.zksensor.tech").
 ```
 NODE_ID = "yournode.url" # Set this with your node URL (e.g., "zksensor.tech")
 PORT = 5000
