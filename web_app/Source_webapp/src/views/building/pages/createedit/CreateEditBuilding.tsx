@@ -482,12 +482,7 @@ export function CreateEditBuilding() {
                     ...updatedFilteredmyLocalDevices,
                 ]
 
-                // Combine the filtered sharedDevices with deviceRes
-                setMyDevices([
-                    ...deviceRes.data.data,
-                    ...filteredSharedDevices,
-                    ...updatedFilteredmyLocalDevices,
-                ])
+                setMyDevices([...functionLocalMyDevices])
             } catch (error) {
                 navigateTo('/buildings')
             }
@@ -1136,7 +1131,7 @@ export function CreateEditBuilding() {
                                                                         </>
                                                                     ),
                                                                 },
-                                                                {
+                                                                /* {
                                                                     label: 'Global Devices',
                                                                     content: (
                                                                         <>
@@ -1183,9 +1178,9 @@ export function CreateEditBuilding() {
                                                                                 )}
                                                                         </>
                                                                     ),
-                                                                },
+                                                                }, */
                                                                 {
-                                                                    label: 'Local Devices',
+                                                                    label: 'Shared With Me',
                                                                     content: (
                                                                         <>
                                                                             {getAvailableDevices(

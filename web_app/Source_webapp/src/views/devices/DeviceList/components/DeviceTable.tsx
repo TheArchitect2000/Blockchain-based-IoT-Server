@@ -209,8 +209,6 @@ const DeviceTable = ({
         setApiLoading(true)
         try {
             const res = (await apiUnshareDevice(deviceData?._id || '')) as any
-            setGlobalUnshareDialog(false)
-            setApiLoading(false)
             toast.push(
                 <Notification
                     title={'Device unshared successfully'}
@@ -220,6 +218,11 @@ const DeviceTable = ({
                     placement: 'top-center',
                 }
             )
+            setTimeout(() => {
+                refreshPage()
+                setGlobalUnshareDialog(false)
+                setApiLoading(false)
+            }, 1000)
         } catch (error) {
             setGlobalUnshareDialog(false)
             setApiLoading(false)
@@ -234,9 +237,7 @@ const DeviceTable = ({
             )
         }
 
-        setTimeout(() => {
-            refreshPage()
-        }, 1000)
+        
     }
 
     //eslint-disable-next-line
@@ -380,6 +381,7 @@ const DeviceTable = ({
                     placement: 'top-center',
                 }
             )
+            refreshPage()
             refreshActionsData()
             setApiLoading(false)
             closeShareDialog()
@@ -416,6 +418,7 @@ const DeviceTable = ({
                 deviceId={String(deviceData?._id)}
                 setSharedUsersDialog={setSharedUsersDialog}
                 sharedUsersDialog={sharedUsersDialog}
+                refreshPage={refreshPage}
             />
 
             <RenameDeviceDialog

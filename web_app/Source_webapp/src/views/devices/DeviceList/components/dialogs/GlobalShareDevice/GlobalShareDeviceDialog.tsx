@@ -10,6 +10,8 @@ import { Dialog, Button, Input, toast, Notification } from '@/components/ui'
 import { useState } from 'react'
 import { BsTextWrap } from 'react-icons/bs'
 import { apiEditDevice, apiRenameDevice } from '@/services/DeviceApi'
+import MarkerCluster from '@/components/map/MarkerCluster'
+import GlobalMapMarker from './MapMarker'
 
 // Helper Component to Locate User Position
 const LocateUserButton = ({
@@ -176,7 +178,7 @@ const GlobalShareDeviceDialog: React.FC<GlobalShareDeviceDialogProps> = ({
                     style={{ height: '100%', width: '100%' }}
                 >
                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                    {location && <Marker position={location} />}
+                    {location && <GlobalMapMarker positions={location} />}
                     {!apiLoading && (
                         <LocateUserButton setLocation={setLocation} />
                     )}

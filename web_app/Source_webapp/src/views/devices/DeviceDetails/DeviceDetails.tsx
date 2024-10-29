@@ -1,7 +1,7 @@
 import { DeviceData, useGetDevices } from '@/utils/hooks/useGetDevices'
 import MapLocation from './componetns/MapLocation'
 import { DoubleSidedImage, Loading } from '@/components/shared'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import DeviceSpecifics from './componetns/DeviceSpecifics'
 import UserInfo from './componetns/UserInfo'
 import { useEffect, useState } from 'react'
@@ -69,6 +69,22 @@ function DeviceDetails() {
     const { _id: userId } = useAppSelector((state) => state.auth.user)
     const { deviceId } = useParams()
     const navigate = useNavigate()
+    const location = useLocation()
+    const searchParams = new URLSearchParams(location.search)
+
+    // State to hold the building ID
+    const [buildId, setBuildId] = useState<string | null>(
+        searchParams.get('buildingId')
+    )
+
+    useEffect(() => {
+        // Clear URL parameters after capturing buildId
+        if (buildId) {
+            setTimeout(() => {
+                navigate(location.pathname, { replace: true })
+            }, 0)
+        }
+    }, [buildId, location.pathname, navigate])
 
     useEffect(() => {
         async function fetchUsers() {
@@ -206,18 +222,21 @@ function DeviceDetails() {
         changeLogDatas(daysDifference)
     }
 
+    function handleBackBt() {
+        if (buildId) {
+            navigate(`/buildings/details/${buildId}`)
+        } else {
+            navigate('/devices/my-devices')
+        }
+    }
+
     if (loading === false && data)
         return (
             <div className="flex flex-col w-full">
                 {/* <div className="card card-border">
                     <MapLocation />
                 </div>  */}
-                <Button
-                    onClick={() => {
-                        navigate('/devices/my-devices')
-                    }}
-                    className="w-fit"
-                >
+                <Button onClick={handleBackBt} className="w-fit">
                     Back
                 </Button>
                 <div className="grid grid-cols-2 gap-4 mt-8">

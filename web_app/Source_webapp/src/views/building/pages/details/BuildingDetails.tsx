@@ -4,9 +4,14 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import utils from '../../scripts/utils'
 import { HiUser } from 'react-icons/hi'
-import { apiGetDevices } from '@/services/DeviceApi'
+import {
+    apiGetDevices,
+    apiGetLocalShareUsersWithDeviceId,
+    apiGetSharedWithMeDevices,
+} from '@/services/DeviceApi'
 import { useAppSelector } from '@/store'
 import { DeviceData } from '@/utils/hooks/useGetDevices'
+import useThemeClass from '@/utils/hooks/useThemeClass'
 
 export default function BuildingDetails() {
     const { id } = useParams<{ id: string }>()
@@ -16,6 +21,8 @@ export default function BuildingDetails() {
     const navigateTo = useNavigate()
     const { _id: userId } = useAppSelector((state) => state.auth.user)
 
+    const themeColor = useAppSelector((state) => state.theme.themeColor)
+
     useEffect(() => {
         async function fetchData() {
             setLoading(true)
@@ -23,8 +30,13 @@ export default function BuildingDetails() {
                 const buildingRes = (await apiGetBuildingByBuildId(
                     id || ''
                 )) as any
+                const localDevicesRes =
+                    (await apiGetSharedWithMeDevices()) as any
                 const deviceRes = (await apiGetDevices(userId || '')) as any
-                const deviceResData = deviceRes.data.data as Array<DeviceData>
+                const deviceResData = [
+                    ...deviceRes.data.data,
+                    ...localDevicesRes.data.data,
+                ] as Array<DeviceData>
                 const buildingResData = buildingRes.data.data
                 setLoading(false)
                 if (buildingResData) {
@@ -75,7 +87,7 @@ export default function BuildingDetails() {
                     return (
                         <div key={floorKey} className="flex w-full">
                             <div
-                                className={`flex justify-center items-center w-[100px] border flex-shrink-0`}
+                                className={`flex justify-center items-center bg-${themeColor}-400 bg-opacity-40 w-[100px] border flex-shrink-0`}
                             >
                                 <h4 className="text-[1.1rem]">
                                     {utils.formatBuildingStrings(floorKey)}
@@ -93,7 +105,14 @@ export default function BuildingDetails() {
                                     return (
                                         <div
                                             key={index}
-                                            className={`flex flex-col items-center justify-center p-3 w-[150px] border flex-shrink-0`}
+                                            onClick={() => {
+                                                if (device?._id) {
+                                                    navigateTo(
+                                                        `/devices/details/${device._id}?buildingId=${id}`
+                                                    )
+                                                }
+                                            }}
+                                            className={`flex flex-col items-start justify-center hover:cursor-pointer hover:bg-gray-700 bg-opacity-30 p-3 w-[175px] border flex-shrink-0`}
                                         >
                                             <h4 className="text-[1.1rem]">
                                                 {`${
@@ -114,6 +133,13 @@ export default function BuildingDetails() {
                                                     )
                                                 }`}
                                             </h4>
+
+                                            <p>
+                                                {(unit.device &&
+                                                    device?.deviceName) ||
+                                                    'Device not selected'}
+                                                :
+                                            </p>
                                             <p>Data not received</p>
                                         </div>
                                     )

@@ -20,6 +20,7 @@ interface ShareDeviceDialogProps {
     deviceId: string
     onClose: () => void
     setSharedUsersDialog: (value: boolean) => void
+    refreshPage: Function
     sharedUsersDialog: boolean
 }
 
@@ -29,6 +30,7 @@ const SharedUsersDialog: React.FC<ShareDeviceDialogProps> = ({
     setSharedUsersDialog,
     sharedUsersDialog,
     deviceId,
+    refreshPage
 }) => {
     const [sharedUsers, setSharedUsers] = useState<
         Array<{
@@ -130,6 +132,7 @@ const SharedUsersDialog: React.FC<ShareDeviceDialogProps> = ({
                     placement: 'top-center',
                 }
             )
+            refreshPage()
             refreshUsersData()
         } catch (error: any) {
             setApiLoading(false)
