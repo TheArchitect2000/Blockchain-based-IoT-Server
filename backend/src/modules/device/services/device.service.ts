@@ -602,7 +602,7 @@ export class DeviceService {
 
     decodeDeviceEncryptedIds(foundDevices);
 
-    const logPromises = foundDevices.map(async (device) => {
+    /* const logPromises = foundDevices.map(async (device) => {
       try {
         console.log('Device encrypt isssss:', device.deviceEncryptedId);
 
@@ -623,9 +623,9 @@ export class DeviceService {
           error,
         );
       }
-    });
+    }); */
 
-    await Promise.all(logPromises);
+    //await Promise.all(logPromises);
 
     foundDevices.forEach((element) => {
       response.push({
@@ -635,7 +635,6 @@ export class DeviceService {
         nodeDeviceId: element.nodeDeviceId,
         deviceType: element.deviceType,
         mac: element.mac,
-        lastLog: element.lastLog,
         deviceEncryptedId: element.deviceEncryptedId,
         hardwareVersion: element.hardwareVersion,
         firmwareVersion: element.firmwareVersion,
@@ -693,10 +692,6 @@ export class DeviceService {
   }
 
   async getDeviceInfoByEncryptedId(encryptId, userId = '', isAdmin = false) {
-    let whereCondition = { isDeleted: false };
-    let populateCondition = [];
-    let selectCondition =
-      '_id deviceName userId deviceType mac deviceEncryptedId hardwareVersion firmwareVersion parameters isShared location geometry insertedBy insertDate isDeletable isDeleted deletedBy deleteDate deletionReason updatedBy updateDate';
     let foundDevices: any = null;
     let response = {};
 
@@ -724,7 +719,7 @@ export class DeviceService {
       return this.result;
     }
 
-    response = {
+    /* response = {
       _id: foundDevices._id,
       deviceName: foundDevices.deviceName,
       deviceType: foundDevices.deviceType,
@@ -736,11 +731,11 @@ export class DeviceService {
       isShared: foundDevices.isShared,
       location: foundDevices.location,
       geometry: foundDevices.geometry,
-    };
+    }; */
 
     //console.log('response are: ', response);
 
-    return response;
+    return foundDevices;
   }
 
   async deleteOtherNodeDeviceByNodeIdAndDeviceId(

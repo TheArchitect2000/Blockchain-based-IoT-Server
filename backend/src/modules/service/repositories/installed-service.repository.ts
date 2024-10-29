@@ -4,6 +4,7 @@ import { Types } from 'mongoose';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { InstalledServiceModel } from '../models/installed-service.model';
+import { installedServiceSchema } from '../schemas/installed-service.schema';
 
 @Injectable()
 export class InstalledServiceRepository {
@@ -13,6 +14,10 @@ export class InstalledServiceRepository {
     @InjectModel('installed-service')
     private readonly installedServiceModel?: InstalledServiceModel,
   ) {}
+
+  getInstalledServicesKeys(): string {
+    return Object.keys(installedServiceSchema.paths).join(' ');
+  }
 
   async insertInstalledService(data) {
     await this.installedServiceModel
@@ -108,9 +113,9 @@ export class InstalledServiceRepository {
 
     let res = await this.installedServiceModel
       .find()
-      .where(whereCondition)
-      .populate(populateCondition)
-      .select(selectCondition);
+      .where({ isDeleted: false })
+      .populate([])
+      .select(this.getInstalledServicesKeys());
 
     console.log('rese is: ', res);
 

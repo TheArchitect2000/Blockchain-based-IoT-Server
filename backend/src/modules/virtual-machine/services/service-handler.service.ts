@@ -5,6 +5,7 @@ import { MailService } from 'src/modules/utility/services/mail.service';
 import { UserService } from 'src/modules/user/services/user/user.service';
 import { DeviceService } from 'src/modules/device/services/device.service';
 import { InstalledServiceService } from 'src/modules/service/services/installed-service.service';
+import { insertInstalledServiceDto } from 'src/modules/service/data-transfer-objects/insert-installed-service.dto';
 
 @Injectable()
 export class VirtualMachineHandlerService {
@@ -43,6 +44,28 @@ export class VirtualMachineHandlerService {
     if (isExist == true) {
       console.log('Vm with this installedServiceId is created before !');
       return false;
+    }
+
+    let nodeMqttAddress = '';
+
+    let deviceInfo;
+
+    if (
+      body.nodeId &&
+      body.nodeId != undefined &&
+      String(body.nodeId) != 'undefined'
+    ) {
+      deviceInfo = String(body.nodeId);
+    } else {
+      deviceInfo = await this.deviceService.getDeviceInfoByEncryptedId(
+        String(body.deviceMap.MULTI_SENSOR_1),
+      );
+    }
+
+    if (String(deviceInfo.nodeId) == 'developer.fidesinnova.io') {
+      nodeMqttAddress = `${deviceInfo.nodeId}`;
+    } else {
+      nodeMqttAddress = `panel.${deviceInfo.nodeId}`;
     }
 
     let userCode = body.code.toString();
@@ -105,8 +128,11 @@ export class VirtualMachineHandlerService {
               return obj;
             }
     
-                const connectUrl = "mqtts://${process.env.HOST_NAME_OR_IP}:8883";
+                const connectUrl = "mqtts://${nodeMqttAddress}:8883";
     
+                
+                console.log("connectUrl is:", connectUrl)
+
                 // Create a shared buffer with 2048 bytes
                 const sharedBuffer = new SharedArrayBuffer(2048);
                 const view = new DataView(sharedBuffer);
