@@ -158,11 +158,17 @@ export class VirtualMachineHandlerService {
                             ...data.data, 
                             mac: deviceInfos.mac,
                             type: deviceInfos.deviceType,
-                            name: deviceInfos.deviceName,
                         };
             
-                        data.data = uppercaseKeys(data.data);
+                        
                         data.data = lowercaseStrings(data.data);
+
+                        data.data = {
+                            ...data.data, 
+                            name: deviceInfos.deviceName,
+                        }; // Because of the device name to don't be lowercase*
+
+                        data.data = uppercaseKeys(data.data); // uppercasing all the keys, also NAME*
 
                         console.log("The data is:", data);
                     } else {

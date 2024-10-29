@@ -118,8 +118,6 @@ export class UserController {
     summary: 'Send otp code to user by email for Signup.',
     description: 'This api requires a user email and password.',
   })
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   async sendOTPCodeForSignupByEmail(
     @Body() body: signupByEmailDto,
     @Request() request,
@@ -136,8 +134,6 @@ export class UserController {
     summary: 'Send otp code to user by email for reset password.',
     description: 'This api requires a user email.',
   })
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   async sendOTPCodeForResetPasswordByEmail(
     @Body() body: changePasswordByEmailDto,
     @Request() request,
@@ -786,7 +782,7 @@ export class UserController {
     const emails = process.env.SUPER_ADMIN_EMAILS;
 
     if (!emails.includes(request.user.email.toString())) {
-      throw new GeneralException(ErrorTypeEnum.UNAUTHORIZED, 'Access Denied !');
+      throw new GeneralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied !');
     }
 
     return await this.userService.makeUserAdmin(body.userEmail, body.roleNames);
