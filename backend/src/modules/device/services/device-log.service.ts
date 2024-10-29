@@ -103,6 +103,9 @@ export class DeviceLogService {
     isAdmin = false,
     onlyPublished = false,
   ) {
+
+    //this.deviceService.checkDeviceIsExist()
+
     const foundDevices = (await this.deviceService.getDeviceInfoByEncryptedId(
       deviceEncryptedId,
       userId,
