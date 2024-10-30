@@ -3,7 +3,7 @@ import { apiGetInstalledServices } from '@/services/ServiceAPI'
 import { useAppSelector } from '@/store'
 import { DoubleSidedImage, Loading } from '@/components/shared'
 import ServiceCard from '@/views/demo/component'
-import { apiGetDevices } from '@/services/DeviceApi'
+import { apiGetAllSharedDevices, apiGetDevices } from '@/services/DeviceApi'
 import { Button } from '@/components/ui'
 import { useNavigate } from 'react-router-dom'
 import CardHolder from '@/components/ui/CardHolder'
@@ -27,11 +27,15 @@ const CollapseMenuItemView1: React.FC = () => {
                     userId || ''
                 ) // Fetch installed services
                 let data = response.data // Extract data from AxiosResponse
-                const deviceRes = (await apiGetDevices(userId || '')) as any
+                const myRes = (await apiGetDevices(userId || '')) as any
+                const sharedRes = (await apiGetAllSharedDevices()) as any
+                const deviceRes = [...myRes.data.data, ...sharedRes.data.data]
+
+                console.log('Gholi:', sharedRes)
 
                 setInstalledServices(
                     data.data.map((element: any) => {
-                        deviceRes.data.data.forEach((device: any) => {
+                        deviceRes.forEach((device: any) => {
                             if (
                                 element &&
                                 element.deviceMap &&
@@ -62,8 +66,9 @@ const CollapseMenuItemView1: React.FC = () => {
 
             <CardHolder>
                 {loading === false &&
-                    installedServices?.map((service) => (
+                    installedServices?.map((service, index) => (
                         <ServiceCard
+                            key={index}
                             serviceId={service._id}
                             className="mt-8 mx-auto"
                             name={service.installedServiceName}
