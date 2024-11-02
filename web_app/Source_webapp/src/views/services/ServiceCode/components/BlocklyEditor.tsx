@@ -9,250 +9,11 @@ import { Button, Checkbox, Notification, toast } from '@/components/ui'
 import { useNavigate, useParams } from 'react-router-dom'
 import { apiEditService, apiGetServiceByServiceId } from '@/services/ServiceAPI'
 import { useAppSelector } from '@/store'
-import { SyntaxHighlighter } from '@/components/shared'
-
-export const toolbox = {
-    kind: 'categoryToolbox',
-    contents: [
-        {
-            kind: 'category',
-            name: 'Control',
-            colour: '120', // 0 < Color < 360
-            contents: [
-                {
-                    kind: 'block',
-                    type: 'controls_if',
-                },
-                {
-                    kind: 'block',
-                    type: 'procedures_defnoreturn',
-                },
-                {
-                    kind: 'block',
-                    type: 'controls_ifelse',
-                },
-                {
-                    kind: 'block',
-                    type: 'controls_whileUntil',
-                },
-                {
-                    kind: 'block',
-                    type: 'controls_repeat_ext',
-                    inputs: {
-                        TIMES: {
-                            shadow: {
-                                type: 'math_number',
-                                fields: {
-                                    NUM: 10,
-                                },
-                            },
-                        },
-                    },
-                },
-                {
-                    kind: 'block',
-                    type: 'controls_for',
-                },
-            ],
-        },
-        {
-            kind: 'category',
-            name: 'Logic',
-            colour: '210',
-            contents: [
-                {
-                    kind: 'block',
-                    type: 'logic_compare',
-                },
-                {
-                    kind: 'block',
-                    type: 'logic_operation',
-                },
-                {
-                    kind: 'block',
-                    type: 'logic_boolean',
-                },
-                {
-                    kind: 'block',
-                    type: 'logic_negate',
-                },
-                {
-                    kind: 'block',
-                    type: 'logic_null',
-                    disabled: 'true',
-                },
-                {
-                    kind: 'block',
-                    type: 'logic_ternary',
-                },
-            ],
-        },
-        {
-            kind: 'category',
-            name: 'Variables',
-            colour: '10',
-            custom: 'VARIABLE',
-        },
-        {
-            kind: 'category',
-            name: 'Text',
-            colour: '40',
-            contents: [
-                {
-                    kind: 'block',
-                    type: 'custom_text',
-                },
-                {
-                    kind: 'block',
-                    type: 'text_print',
-                },
-                {
-                    kind: 'block',
-                    type: 'to_string',
-                },
-            ],
-        },
-        {
-            kind: 'category',
-            name: 'Math',
-            colour: '300',
-            contents: [
-                {
-                    kind: 'block',
-                    type: 'math_number',
-                    fields: {
-                        NUM: 123,
-                    },
-                },
-                {
-                    kind: 'block',
-                    type: 'math_arithmetic',
-                },
-                {
-                    kind: 'block',
-                    type: 'math_single',
-                },
-                {
-                    kind: 'block',
-                    type: 'to_number',
-                },
-            ],
-        },
-        {
-            kind: 'category',
-            name: 'Devices',
-            colour: '180',
-            contents: [
-                {
-                    kind: 'block',
-                    type: 'customized_device_info',
-                },
-                {
-                    kind: 'block',
-                    type: 'customized_multi_sensor_temperature_humidity',
-                },
-                {
-                    kind: 'block',
-                    type: 'customized_multi_sensor_door',
-                },
-                {
-                    kind: 'block',
-                    type: 'door_options',
-                },
-                {
-                    kind: 'block',
-                    type: 'customized_multi_sensor_motion',
-                },
-                {
-                    kind: 'block',
-                    type: 'movement_options',
-                },
-                {
-                    kind: 'block',
-                    type: 'customized_multi_sensor_button',
-                },
-                {
-                    kind: 'block',
-                    type: 'button_options',
-                },
-                {
-                    kind: 'block',
-                    type: 'customized_air_quality_sensor',
-                },
-                {
-                    kind: 'block',
-                    type: 'customized_noise_sensor',
-                },
-                {
-                    kind: 'block',
-                    type: 'customized_concrete_sensor_temperature_strength',
-                },
-                {
-                    kind: 'block',
-                    type: 'customized_gas_sensor',
-                },
-                {
-                    kind: 'block',
-                    type: 'customized_car_sensor',
-                },
-                {
-                    kind: 'block',
-                    type: 'customized_thermometer_hygrometer',
-                },
-                {
-                    kind: 'block',
-                    type: 'customized_door_sensor',
-                },
-                {
-                    kind: 'block',
-                    type: 'customized_motion_detector',
-                },
-                {
-                    kind: 'block',
-                    type: 'customized_smart_button',
-                },
-            ],
-        },
-        {
-            kind: 'category',
-            name: 'Messages',
-            colour: '250',
-            contents: [
-                {
-                    kind: 'block',
-                    type: 'customized_send_email',
-                },
-                {
-                    kind: 'block',
-                    type: 'customized_send_notification',
-                },
-            ],
-        },
-        {
-            kind: 'category',
-            name: 'Wait',
-            colour: '450',
-            contents: [
-                {
-                    kind: 'block',
-                    type: 'wait_sec',
-                },
-                {
-                    kind: 'block',
-                    type: 'wait_min',
-                },
-                {
-                    kind: 'block',
-                    type: 'wait_hour',
-                },
-                {
-                    kind: 'block',
-                    type: 'wait_day',
-                },
-            ],
-        },
-    ],
-}
+import { Loading, SyntaxHighlighter } from '@/components/shared'
+import { apiGetNodeDevices } from '@/services/DeviceApi'
+import { ToolboxDefinition } from 'blockly/core/utils/toolbox'
+// @ts-ignore
+import { blocklyToolBox } from './customBlocks/custom_Blocks'
 
 const validateBlocklyXml = (xmlString: string): boolean => {
     try {
@@ -273,6 +34,14 @@ const validateBlocklyXml = (xmlString: string): boolean => {
     }
 }
 
+type NodeDevices = {
+    fileName: string
+    title: string
+    type: string
+    url: string
+    parameters: Array<string>
+}
+
 export default function BlocklyEditor() {
     const [showCode, setShowCode] = useState(false)
     const [xml, setXml] = useState<string>()
@@ -281,6 +50,9 @@ export default function BlocklyEditor() {
     const [data, setData] = useState({})
     const [loading, setLoading] = useState(true)
     const [isSaving, setIsSaving] = useState(false)
+    const [deviceTypes, setDeviceTypes] = useState<{}>({})
+    const [devices, setDevices] = useState<Array<NodeDevices>>([])
+    const [theToolBox, setTheToolBox] = useState<ToolboxDefinition>()
     const navigate = useNavigate()
 
     const { _id: userId } = useAppSelector((state) => state.auth.user)
@@ -313,43 +85,45 @@ export default function BlocklyEditor() {
         }
     }
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const datas = (await apiGetServiceByServiceId(
-                    serviceId || ''
-                )) as any
+    const fetchData = async () => {
+        try {
+            const datas = (await apiGetServiceByServiceId(
+                serviceId || ''
+            )) as any
 
-                const result = datas?.data?.data
+            const response = (await apiGetNodeDevices()) as any
 
-                if (result.userId != userId) {
-                    return navigate('/services')
-                }
+            setDevices(response.data.data)
 
-                if (result) {
-                    setData({
-                        serviceId: serviceId,
-                        serviceName: result.serviceName,
-                        serviceType: result.serviceType,
-                        description: result.description,
-                        devices: 'MULTI_SENSOR_1',
-                        serviceImage: result.serviceImage,
-                        status: result.status,
-                    })
+            fetchAndDefineBlocks(response.data.data)
 
-                    if (result.blocklyJson) {
-                        setXml(
-                            result.blocklyJson.toString().replace(/^"|"$/g, "'")
-                        )
-                    }
+            const result = datas?.data?.data
 
-                    setLoading(false)
-                }
-            } catch (error) {
-                console.error('Error fetching data:', error)
+            if (result.userId != userId) {
+                return navigate('/services')
             }
-        }
 
+            if (result) {
+                setData({
+                    serviceId: serviceId,
+                    serviceName: result.serviceName,
+                    serviceType: result.serviceType,
+                    description: result.description,
+                    devices: 'MULTI_SENSOR_1',
+                    serviceImage: result.serviceImage,
+                    status: result.status,
+                })
+
+                if (result.blocklyJson) {
+                    setXml(result.blocklyJson.toString().replace(/^"|"$/g, "'"))
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error)
+        }
+    }
+
+    useEffect(() => {
         fetchData()
     }, [serviceId])
 
@@ -400,7 +174,6 @@ export default function BlocklyEditor() {
         try {
             const pastedXml = await navigator.clipboard.readText() // Get the clipboard content as text
             if (validateBlocklyXml(pastedXml)) {
-                console.log(pastedXml)
                 const parser = new DOMParser()
                 const xmlDoc = parser.parseFromString(pastedXml, 'text/xml')
                 const workspace = Blockly.getMainWorkspace() // Get the current workspace
@@ -417,32 +190,369 @@ export default function BlocklyEditor() {
         }
     }
 
+    async function fetchAndDefineBlocks(stateDevices: Array<NodeDevices>) {
+        let localDeviceTypes: any = {}
+        try {
+            /* stateDevices.forEach((device: any) => {
+                const blockType = `device_${device.type}`
+                if (!device.title || !device.url) {
+                    console.warn(
+                        `Ignoring device with missing title or url:`,
+                        device
+                    )
+                    return // Skip this device if title or url is missing
+                }
+
+                if (!Blockly.Blocks[blockType]) {
+                    Blockly.Blocks[blockType] = {
+                        init: function () {
+                            this.appendDummyInput()
+                                .appendField(
+                                    new Blockly.FieldImage(
+                                        device.url,
+                                        30,
+                                        30,
+                                        '*'
+                                    )
+                                )
+                                .appendField(
+                                    new Blockly.FieldLabel(device.title),
+                                    'DEVICE_TITLE'
+                                )
+                            this.setOutput(true, 'Device')
+                            this.setColour(180)
+                            this.setTooltip('')
+                            this.setHelpUrl('')
+                        },
+                    }
+
+                    javascriptGenerator.forBlock[blockType] = function (block) {
+                        const deviceTitle = `"${device.title}"`
+                        return [deviceTitle, javascriptGenerator.ORDER_ATOMIC]
+                    }
+                }
+            }) */
+
+            if (!Blockly.Blocks['listen_for_device_payload']) {
+                Blockly.Blocks['listen_for_device_payload'] = {
+                    init: function () {
+                        // Create a dummy input to hold the fixed part of the text
+                        this.appendDummyInput().appendField('Wait for device ') // Fixed text before input
+
+                        // Add the value input for the device payload
+                        this.appendValueInput('DEVICE_PAYLOAD').setCheck(
+                            'DevicePayload'
+                        ) // Accepts only 'DevicePayload' type
+
+                        // Append the rest of the fixed text
+                        this.appendDummyInput().appendField(' payload') // Fixed text after input
+
+                        this.setColour(180)
+                        this.setTooltip('Wait for a device payload')
+                        this.setHelpUrl('')
+                    },
+                }
+
+                javascriptGenerator.forBlock['listen_for_device_payload'] =
+                    function (block: any) {
+                        // Get the target block connected to the 'DEVICE_PAYLOAD' input
+                        const devicePayloadBlock =
+                            block.getInputTargetBlock('DEVICE_PAYLOAD')
+
+                        // Initialize the selected parameter
+                        let selectedParameter = ''
+
+                        // Check if the target block is valid and get the desired field value
+                        if (devicePayloadBlock) {
+                            selectedParameter =
+                                devicePayloadBlock.getFieldValue(
+                                    'DEVICE_VAR'
+                                ) || ''
+                        }
+
+                        // Generate the code using the retrieved parameter
+                        const code = `waitForDevicePayload(${
+                            selectedParameter ? `${selectedParameter}` : 'null'
+                        })`
+
+                        // Return the generated code as a string, ensuring it is a valid statement
+                        return code // Changed this line to return a string instead of an array
+                    }
+            }
+
+            /* const deviceBlocks = stateDevices
+                .filter((device) => device.title && device.url)
+                .map((device: NodeDevices) => ({
+                    kind: 'block',
+                    type: `device_${device.type}`,
+                    fields: {
+                        title: device.title,
+                        url: device.url,
+                    },
+                })) */
+
+            Blockly.Blocks['manage_device_variable'] = {
+                init: function () {
+                    this.appendDummyInput()
+                        .appendField('Create Device')
+                        .appendField(
+                            new Blockly.FieldDropdown(
+                                this.getDeviceOptions.bind(this),
+                                this.handleDeviceSelection.bind(this)
+                            ),
+                            'DEVICE_VAR'
+                        )
+                        .appendField('With Type')
+                        .appendField(
+                            new Blockly.FieldDropdown(
+                                stateDevices.map((device) => [
+                                    device.type,
+                                    device.type,
+                                ])
+                            ),
+                            'DEVICE_TYPE'
+                        )
+                    this.setColour(180)
+                    this.setTooltip(
+                        'Manage devices: Create or select an existing device.'
+                    )
+                    this.setHelpUrl('')
+                },
+
+                getDeviceOptions: function () {
+                    const workspace = this.workspace
+                    const deviceOptions = workspace
+                        .getVariablesOfType('Device')
+                        .map((deviceVar: any) => [
+                            deviceVar.name,
+                            deviceVar.name,
+                        ])
+                    deviceOptions.push(['Create Device...', 'CREATE_NEW'])
+                    return deviceOptions
+                },
+
+                handleDeviceSelection: function (newValue: any) {
+                    if (newValue === 'CREATE_NEW') {
+                        const deviceName = prompt('Enter new device name:')
+                        if (deviceName) {
+                            const rightName = deviceName
+                                .replace(/[^a-zA-Z0-9_]/g, '')
+                                .replace(/^[0-9]+/, '')
+                            // Add the new device name as a variable of type 'Device'
+                            this.workspace.createVariable(
+                                `device_${rightName}`,
+                                'Device'
+                            )
+                            // Refresh the dropdown to show the newly added device
+                            this.getField('DEVICE_VAR').setValue(
+                                `device_${rightName}`
+                            )
+                        }
+                    }
+                },
+            }
+
+            javascriptGenerator.forBlock['manage_device_variable'] = function (
+                block: any
+            ) {
+                const deviceType = block.getFieldValue('DEVICE_TYPE')
+                const variableName = block.getFieldValue('DEVICE_VAR') || ''
+                if (variableName) {
+                    setTimeout(
+                        // Delay the update to avoid immediate re-render loop
+                        () => {
+                            setDeviceTypes((prevDeviceTypes) => ({
+                                ...prevDeviceTypes,
+                                [variableName]: deviceType,
+                            }))
+                            localDeviceTypes[variableName] = deviceType
+                        },
+
+                        0
+                    )
+
+                    return `let ${variableName}; // Type Is: ${deviceType}\n`
+                } else {
+                    console.warn('Device variable name is missing.')
+                    return ''
+                }
+            }
+
+            Blockly.Blocks['manage_device_data'] = {
+                init: function () {
+                    this.appendValueInput('DEVICE_INPUT')
+                        .appendField('Get')
+                        .appendField(
+                            new Blockly.FieldDropdown(
+                                this.getDeviceOptions.bind(this)
+                            ),
+                            'DEVICE_VAR'
+                        )
+                        .appendField('Data')
+                        .appendField(
+                            new Blockly.FieldDropdown(
+                                this.getDropdownOptions.bind(this)
+                            ),
+                            'DEVICE_DATA'
+                        )
+                    this.setOutput(true)
+                    this.setColour(180)
+                    this.setTooltip(
+                        'Manage devices: Create or select an existing device.'
+                    )
+                    this.setHelpUrl('')
+                },
+
+                getDeviceOptions: function () {
+                    const workspace = this.workspace
+                    const deviceOptions = workspace
+                        .getVariablesOfType('Device')
+                        .map((deviceVar: any) => [
+                            deviceVar.name,
+                            deviceVar.name,
+                        ])
+                    deviceOptions.push(['Device Not Selected', ''])
+                    return deviceOptions
+                },
+
+                getDropdownOptions: function () {
+                    const deviceInput = this.getFieldValue('DEVICE_VAR')
+                    if (deviceInput === '') {
+                        // If "Device Not Selected" is chosen, return "Device Not Selected" for the data dropdown as well.
+                        return [['Device Not Selected', '']]
+                    }
+
+                    const device = stateDevices.find(
+                        (dev) => dev.type === localDeviceTypes[deviceInput]
+                    )
+
+                    return device && device.parameters
+                        ? device.parameters.map((param) => [param, param])
+                        : [['No Parameters', '']]
+                },
+            }
+
+            javascriptGenerator.forBlock['manage_device_data'] = function (
+                block: any
+            ) {
+                const deviceName = block.getFieldValue('DEVICE_VAR')
+                const deviceParam = block.getFieldValue('DEVICE_DATA') || ''
+                let code = ''
+                if (deviceParam && deviceName) {
+                    code = `${deviceName}.${String(deviceParam).toUpperCase()}`
+                } else {
+                    console.warn('Device variable name is missing.')
+                    code = ''
+                }
+                return [code, javascriptGenerator.ORDER_FUNCTION_CALL]
+            }
+
+            Blockly.Blocks['device_payload'] = {
+                init: function () {
+                    this.appendValueInput('DEVICE_INPUT').appendField(
+                        new Blockly.FieldDropdown(
+                            this.getDeviceOptions.bind(this)
+                        ),
+                        'DEVICE_VAR'
+                    )
+
+                    this.setOutput(true, 'DevicePayload')
+                    this.setColour(180)
+                    this.setTooltip(
+                        'Manage devices: Create or select an existing device.'
+                    )
+                    this.setHelpUrl('')
+                },
+
+                getDeviceOptions: function () {
+                    const workspace = this.workspace
+                    const deviceOptions = workspace
+                        .getVariablesOfType('Device')
+                        .map((deviceVar: any) => [
+                            deviceVar.name,
+                            deviceVar.name,
+                        ])
+                    deviceOptions.push(['Device Not Selected', ''])
+                    return deviceOptions
+                },
+            }
+
+            javascriptGenerator.forBlock['device_payload'] = function (
+                block: any
+            ) {
+                const deviceName = block.getFieldValue('DEVICE_VAR')
+
+                let code = ''
+                if (deviceName) {
+                    code = `${deviceName}`
+                } else {
+                    console.warn('Device variable name is missing.')
+                    code = ''
+                }
+                return [code, javascriptGenerator.ORDER_FUNCTION_CALL]
+            }
+
+            const dynamicToolbox = {
+                kind: blocklyToolBox.kind,
+                contents: [
+                    ...blocklyToolBox.contents,
+                    {
+                        kind: 'category',
+                        name: 'Server Devices',
+                        colour: '180',
+                        contents: [
+                            //...deviceBlocks,
+                            { kind: 'block', type: 'manage_device_variable' },
+                            { kind: 'block', type: 'manage_device_data' },
+                            { kind: 'block', type: 'device_payload' },
+                        ],
+                    },
+                ],
+            }
+
+            setTheToolBox(dynamicToolbox)
+            setLoading(false)
+        } catch (error) {
+            console.error('Error fetching devices:', error)
+        }
+    }
+
     return (
         <>
+            <h3>{JSON.stringify(deviceTypes)}</h3>
+            {loading == true && (
+                <div className="w-full !h-[78vh] flex items-center justify-center">
+                    {' '}
+                    <Loading loading={true} />
+                </div>
+            )}
             {!loading && (
                 <div className="grid grid-cols-3">
-                    <BlocklyWorkspace
-                        className={`h-[30rem] ${
-                            (showCode == true && 'col-span-2') || 'col-span-3'
-                        }`}
-                        toolboxConfiguration={toolbox} // this must be a JSON toolbox definition
-                        initialXml={xml}
-                        onXmlChange={setXml as any}
-                        workspaceConfiguration={{
-                            grid: {
-                                spacing: 20,
-                                length: 3,
-                                colour: '#ccc',
-                                snap: true,
-                            },
-                            trashcan: true,
-                            media: `${import.meta.env.VITE_URL}uploads/`,
-                        }}
-                        onWorkspaceChange={workspaceDidChange}
-                    />
+                    {devices.length > 0 && (
+                        <BlocklyWorkspace
+                            className={`h-[78vh] ${
+                                (showCode == true && 'col-span-2') ||
+                                'col-span-3'
+                            }`}
+                            toolboxConfiguration={theToolBox} // this must be a JSON toolbox definition
+                            initialXml={xml}
+                            onXmlChange={setXml as any}
+                            workspaceConfiguration={{
+                                grid: {
+                                    spacing: 20,
+                                    length: 3,
+                                    colour: '#ccc',
+                                    snap: true,
+                                },
+                                trashcan: true,
+                                media: `${import.meta.env.VITE_URL}uploads/`,
+                            }}
+                            onWorkspaceChange={workspaceDidChange}
+                        />
+                    )}
                     {showCode && (
                         <SyntaxHighlighter
-                            className="!h-full !max-h-[57.5vh] !m-0"
+                            className="!h-full !max-h-[78vh] !h-[78vh] !m-0"
                             language="javascript"
                         >
                             {code || ''}

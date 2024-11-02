@@ -9,6 +9,15 @@ export async function apiGetDevices<T>(userId: string) {
     })
 }
 
+export async function apiGetNodeDevices<T>() {
+    return ApiService.fetchData<T>({
+        url: `${
+            import.meta.env.VITE_URL
+        }v1/devices`,
+        method: 'get',
+    })
+}
+
 export async function apiDeleteDeviceById<T>(deviceId: string) {
     return ApiService.fetchData<T>({
         url: `${
