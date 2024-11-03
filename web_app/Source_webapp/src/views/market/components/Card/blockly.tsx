@@ -1,11 +1,12 @@
-import { toolbox } from '@/views/services/ServiceCode/components/BlocklyEditor'
+
+import { blocklyToolBox } from '@/views/services/ServiceCode/components/customBlocks/custom_Blocks'
 import { BlocklyWorkspace } from 'react-blockly'
 
 export default function CardBlockly({ xml }: { xml: string }) {
     return (
         <BlocklyWorkspace
             className={`h-[30rem]`} // you can use whatever classes are appropriate for your app's CSS
-            toolboxConfiguration={toolbox} // this must be a JSON toolbox definition
+            toolboxConfiguration={blocklyToolBox} // this must be a JSON toolbox definition
             initialXml={xml}
             workspaceConfiguration={{
                 grid: {

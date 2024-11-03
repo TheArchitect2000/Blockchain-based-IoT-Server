@@ -16,7 +16,7 @@ export const blocklyToolBox = {
                 },
                 {
                     kind: 'block',
-                    type: 'procedures_defnoreturn',
+                    type: 'run_function_with_payload',
                 },
                 {
                     kind: 'block',
@@ -136,38 +136,6 @@ export const blocklyToolBox = {
             contents: [
                 {
                     kind: 'block',
-                    type: 'customized_device_info',
-                },
-                {
-                    kind: 'block',
-                    type: 'customized_multi_sensor_temperature_humidity',
-                },
-                {
-                    kind: 'block',
-                    type: 'customized_multi_sensor_door',
-                },
-                {
-                    kind: 'block',
-                    type: 'door_options',
-                },
-                {
-                    kind: 'block',
-                    type: 'customized_multi_sensor_motion',
-                },
-                {
-                    kind: 'block',
-                    type: 'movement_options',
-                },
-                {
-                    kind: 'block',
-                    type: 'customized_multi_sensor_button',
-                },
-                {
-                    kind: 'block',
-                    type: 'button_options',
-                },
-                {
-                    kind: 'block',
                     type: 'customized_air_quality_sensor',
                 },
                 {
@@ -185,22 +153,6 @@ export const blocklyToolBox = {
                 {
                     kind: 'block',
                     type: 'customized_car_sensor',
-                },
-                {
-                    kind: 'block',
-                    type: 'customized_thermometer_hygrometer',
-                },
-                {
-                    kind: 'block',
-                    type: 'customized_door_sensor',
-                },
-                {
-                    kind: 'block',
-                    type: 'customized_motion_detector',
-                },
-                {
-                    kind: 'block',
-                    type: 'customized_smart_button',
                 },
             ],
         },
@@ -1080,7 +1032,7 @@ javascriptGenerator.forBlock['customized_send_notification'] = function (
             'message',
             javascriptGenerator.ORDER_NONE
         ) || `""`
-    return `customizedMessage.sendNotification({ title: ${input_title}, message: ${input_message} });`
+    return `customizedMessage.sendNotification({ title: ${input_title}, message: ${input_message} });\n`
 }
 
 javascriptGenerator['customized_send_email'] = function (block: any) {
@@ -1329,4 +1281,48 @@ javascriptGenerator.forBlock['button_options'] = function (block: any) {
         ) || ''
     var code = '"' + dropdown_value + '"' + (value ? ` + ${value}` : '')
     return [code, javascriptGenerator.ORDER_FUNCTION_CALL]
+}
+
+Blockly.Blocks['run_function_with_payload'] = {
+    init: function () {
+        this.jsonInit({
+            type: 'run_function_with_payload',
+            message0: 'Run Function With Payload %1 %2',
+            args0: [
+                {
+                    type: 'input_value',
+                    name: 'DEVICE_PAYLOAD',
+                    check: 'DevicePayload', // Ensures it only accepts 'DevicePayload' type blocks
+                },
+                {
+                    type: 'input_statement',
+                    name: 'FUNCTION_CONTENT', // Allows passing other blocks inside
+                },
+            ],
+            inputsInline: false,
+            colour: 290,
+            tooltip: 'Runs a function with DevicePayload input',
+            helpUrl: 'https://example.com', // Replace with your help URL
+        })
+    },
+}
+
+javascriptGenerator.forBlock['run_function_with_payload'] = function (
+    block: any
+) {
+    // Fetch 'DEVICE_PAYLOAD' input, defaulting to empty string if not connected
+    var devicePayload =
+        javascriptGenerator.valueToCode(
+            block,
+            'DEVICE_PAYLOAD',
+            javascriptGenerator.ORDER_ATOMIC
+        ) || '""'
+
+    // Fetch statements from 'FUNCTION_CONTENT', defaulting to empty string if not connected
+    var statements =
+        javascriptGenerator.statementToCode(block, 'FUNCTION_CONTENT') || ''
+
+    // Generate JavaScript code for the block
+    var code = `runFunctionWithPayload(${devicePayload}) {\n${statements}\n}`
+    return code
 }

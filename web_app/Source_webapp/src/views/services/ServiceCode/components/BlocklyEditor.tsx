@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { BlocklyWorkspace } from 'react-blockly'
 import { javascriptGenerator } from 'blockly/javascript'
 import { Xml } from 'blockly/core'
@@ -54,7 +54,7 @@ export default function BlocklyEditor() {
     const [devices, setDevices] = useState<Array<NodeDevices>>([])
     const [theToolBox, setTheToolBox] = useState<ToolboxDefinition>()
     const navigate = useNavigate()
-
+    const workspaceRef = useRef<any>(null) // Reference to the Blockly workspace
     const { _id: userId } = useAppSelector((state) => state.auth.user)
 
     async function saveEditService() {
@@ -92,20 +92,20 @@ export default function BlocklyEditor() {
             )) as any
 
             const response = (await apiGetNodeDevices()) as any
-
             setDevices(response.data.data)
 
-            fetchAndDefineBlocks(response.data.data)
+            // Define blocks for devices before loading XML
+            defineBlocklyCustomBlocks(response.data.data)
 
             const result = datas?.data?.data
 
-            if (result.userId != userId) {
+            if (result.userId !== userId) {
                 return navigate('/services')
             }
 
             if (result) {
                 setData({
-                    serviceId: serviceId,
+                    serviceId,
                     serviceName: result.serviceName,
                     serviceType: result.serviceType,
                     description: result.description,
@@ -115,7 +115,93 @@ export default function BlocklyEditor() {
                 })
 
                 if (result.blocklyJson) {
-                    setXml(result.blocklyJson.toString().replace(/^"|"$/g, "'"))
+                    const xmlText = result.blocklyJson
+                        .toString()
+                        .replace(/^"|"$/g, '')
+                    setXml(xmlText)
+
+                    try {
+                        if (result.blocklyJson && workspaceRef.current) {
+                            try {
+                                const xml = Blockly.utils.xml.textToDom(xmlText)
+
+                                workspaceRef.current.clear() // Clear the workspace
+
+                                const parser = new DOMParser()
+                                const xmlDoc = parser.parseFromString(
+                                    xmlText,
+                                    'application/xml'
+                                )
+
+                                // Check for parsing errors
+                                const parserError =
+                                    xmlDoc.getElementsByTagName('parsererror')
+                                if (parserError.length) {
+                                    throw new Error(
+                                        'Error parsing XML: ' +
+                                            parserError[0].textContent
+                                    )
+                                }
+
+                                const manageDeviceVariableBlocks =
+                                    xmlDoc.getElementsByTagName('block')
+                                const deviceVariables: any = {}
+
+                                for (let block of manageDeviceVariableBlocks) {
+                                    if (
+                                        block.getAttribute('type') ===
+                                        'manage_device_variable'
+                                    ) {
+                                        const deviceVar =
+                                            block.getElementsByTagName(
+                                                'field'
+                                            )[0]?.textContent // DEVICE_VAR
+                                        const deviceType =
+                                            block.getElementsByTagName(
+                                                'field'
+                                            )[1]?.textContent // DEVICE_TYPE
+
+                                        if (deviceVar && deviceType) {
+                                            deviceVariables[deviceVar] =
+                                                deviceType
+                                        }
+                                    }
+                                }
+
+                                Object.keys(deviceVariables).forEach(
+                                    (deviceName) => {
+                                        let existingVar =
+                                            workspaceRef.current.getVariable(
+                                                deviceName
+                                            )
+                                        if (!existingVar) {
+                                            workspaceRef.current.createVariable(
+                                                deviceName,
+                                                'Device',
+                                                ''
+                                            )
+                                        }
+                                    }
+                                )
+
+                                setDeviceTypes(deviceVariables)
+
+                                defineBlocklyCustomBlocks(
+                                    response.data.data,
+                                    deviceVariables
+                                )
+
+                                Blockly.Xml.domToWorkspace(
+                                    xml,
+                                    workspaceRef.current
+                                )
+                            } catch (xmlError) {
+                                console.error('Invalid XML format:', xmlError)
+                            }
+                        }
+                    } catch (xmlError) {
+                        console.error('Invalid XML format:', xmlError)
+                    }
                 }
             }
         } catch (error) {
@@ -190,49 +276,12 @@ export default function BlocklyEditor() {
         }
     }
 
-    async function fetchAndDefineBlocks(stateDevices: Array<NodeDevices>) {
-        let localDeviceTypes: any = {}
+    function defineBlocklyCustomBlocks(
+        stateDevices: Array<NodeDevices>,
+        setLocalDeviceTypes?: any
+    ) {
+        let localDeviceTypes: any = setLocalDeviceTypes || {}
         try {
-            /* stateDevices.forEach((device: any) => {
-                const blockType = `device_${device.type}`
-                if (!device.title || !device.url) {
-                    console.warn(
-                        `Ignoring device with missing title or url:`,
-                        device
-                    )
-                    return // Skip this device if title or url is missing
-                }
-
-                if (!Blockly.Blocks[blockType]) {
-                    Blockly.Blocks[blockType] = {
-                        init: function () {
-                            this.appendDummyInput()
-                                .appendField(
-                                    new Blockly.FieldImage(
-                                        device.url,
-                                        30,
-                                        30,
-                                        '*'
-                                    )
-                                )
-                                .appendField(
-                                    new Blockly.FieldLabel(device.title),
-                                    'DEVICE_TITLE'
-                                )
-                            this.setOutput(true, 'Device')
-                            this.setColour(180)
-                            this.setTooltip('')
-                            this.setHelpUrl('')
-                        },
-                    }
-
-                    javascriptGenerator.forBlock[blockType] = function (block) {
-                        const deviceTitle = `"${device.title}"`
-                        return [deviceTitle, javascriptGenerator.ORDER_ATOMIC]
-                    }
-                }
-            }) */
-
             if (!Blockly.Blocks['listen_for_device_payload']) {
                 Blockly.Blocks['listen_for_device_payload'] = {
                     init: function () {
@@ -250,6 +299,8 @@ export default function BlocklyEditor() {
                         this.setColour(180)
                         this.setTooltip('Wait for a device payload')
                         this.setHelpUrl('')
+                        this.setPreviousStatement(true)
+                        this.setNextStatement(true)
                     },
                 }
 
@@ -273,23 +324,12 @@ export default function BlocklyEditor() {
                         // Generate the code using the retrieved parameter
                         const code = `waitForDevicePayload(${
                             selectedParameter ? `${selectedParameter}` : 'null'
-                        })`
+                        })\n`
 
                         // Return the generated code as a string, ensuring it is a valid statement
                         return code // Changed this line to return a string instead of an array
                     }
             }
-
-            /* const deviceBlocks = stateDevices
-                .filter((device) => device.title && device.url)
-                .map((device: NodeDevices) => ({
-                    kind: 'block',
-                    type: `device_${device.type}`,
-                    fields: {
-                        title: device.title,
-                        url: device.url,
-                    },
-                })) */
 
             Blockly.Blocks['manage_device_variable'] = {
                 init: function () {
@@ -314,9 +354,13 @@ export default function BlocklyEditor() {
                         )
                     this.setColour(180)
                     this.setTooltip(
-                        'Manage devices: Create or select an existing device.'
+                        'Manage devices: Create, select, or delete a device.'
                     )
                     this.setHelpUrl('')
+                },
+
+                deviceDeleteOptions: function () {
+                    return [['Delete Variable', 'DELETE_VAR']]
                 },
 
                 getDeviceOptions: function () {
@@ -348,6 +392,24 @@ export default function BlocklyEditor() {
                                 `device_${rightName}`
                             )
                         }
+                    } else if (newValue === 'DELETE_VAR') {
+                        alert('Maghol')
+                        /* const variableName =
+                            block.getFieldValue('DEVICE_VAR') || ''
+                        const deleteOption =
+                            block.getFieldValue('DELETE_OPTION')
+
+                        // Handle deletion of the variable
+                        if (deleteOption === 'DELETE_VAR' && variableName) {
+                            const variable =
+                                block.workspace.getVariable(variableName)
+                            if (variable) {
+                                block.workspace.deleteVariable(variable) // Use the correct method to delete the variable
+                                return '' // Return empty string since the variable is deleted
+                            } else {
+                                console.warn('Variable not found for deletion.')
+                            }
+                        } */
                     }
                 },
             }
@@ -357,19 +419,15 @@ export default function BlocklyEditor() {
             ) {
                 const deviceType = block.getFieldValue('DEVICE_TYPE')
                 const variableName = block.getFieldValue('DEVICE_VAR') || ''
-                if (variableName) {
-                    setTimeout(
-                        // Delay the update to avoid immediate re-render loop
-                        () => {
-                            setDeviceTypes((prevDeviceTypes) => ({
-                                ...prevDeviceTypes,
-                                [variableName]: deviceType,
-                            }))
-                            localDeviceTypes[variableName] = deviceType
-                        },
 
-                        0
-                    )
+                if (variableName) {
+                    setTimeout(() => {
+                        setDeviceTypes((prevDeviceTypes) => ({
+                            ...prevDeviceTypes,
+                            [variableName]: deviceType,
+                        }))
+                        localDeviceTypes[variableName] = deviceType
+                    }, 0)
 
                     return `let ${variableName}; // Type Is: ${deviceType}\n`
                 } else {
@@ -418,17 +476,25 @@ export default function BlocklyEditor() {
                 getDropdownOptions: function () {
                     const deviceInput = this.getFieldValue('DEVICE_VAR')
                     if (deviceInput === '') {
-                        // If "Device Not Selected" is chosen, return "Device Not Selected" for the data dropdown as well.
                         return [['Device Not Selected', '']]
                     }
-
                     const device = stateDevices.find(
                         (dev) => dev.type === localDeviceTypes[deviceInput]
                     )
 
-                    return device && device.parameters
-                        ? device.parameters.map((param) => [param, param])
-                        : [['No Parameters', '']]
+                    const options = [
+                        ['Name', 'name'],
+                        ['Mac', 'mac'],
+                    ]
+
+                    if (device && device.parameters) {
+                        const parameterOptions = device.parameters.map(
+                            (param: any) => [param.label, param.label]
+                        )
+                        return options.concat(parameterOptions)
+                    }
+
+                    return [['No Parameters', '']]
                 },
             }
 
@@ -492,6 +558,62 @@ export default function BlocklyEditor() {
                 return [code, javascriptGenerator.ORDER_FUNCTION_CALL]
             }
 
+            stateDevices.forEach((devices: any) => {
+                devices.parameters.forEach((device: any) => {
+                    if (
+                        Array.isArray(device.value) &&
+                        device.value?.length > 0
+                    ) {
+                        const blockName = `device_${device.label.replace(
+                            /[^a-zA-Z0-9_]/g,
+                            ''
+                        )}`
+
+                        console.log('Block Name:', blockName)
+
+                        // Define block if it doesn't already exist
+                        if (!Blockly.Blocks[blockName]) {
+                            Blockly.Blocks[blockName] = {
+                                init: function () {
+                                    this.appendDummyInput()
+                                        .appendField(device.label)
+                                        .appendField(
+                                            new Blockly.FieldDropdown(
+                                                device.value.map(
+                                                    (child: any) => [
+                                                        child,
+                                                        String(
+                                                            child
+                                                        ).toUpperCase(),
+                                                    ]
+                                                )
+                                            ),
+                                            'DROPDOWN_OPTION'
+                                        )
+                                    this.setOutput(true)
+                                    this.setColour(180)
+                                    this.setTooltip(`Block for ${device.label}`)
+                                },
+                            }
+
+                            javascriptGenerator.forBlock[blockName] = function (
+                                block: any
+                            ) {
+                                const selectedOption =
+                                    block.getFieldValue('DROPDOWN_OPTION')
+                                let code = `"${selectedOption}"`
+                                return [
+                                    code,
+                                    javascriptGenerator.ORDER_FUNCTION_CALL,
+                                ]
+                            }
+                        }
+                    }
+                })
+            })
+
+            let parameterBlockCreated: any = {}
+
             const dynamicToolbox = {
                 kind: blocklyToolBox.kind,
                 contents: [
@@ -501,10 +623,46 @@ export default function BlocklyEditor() {
                         name: 'Server Devices',
                         colour: '180',
                         contents: [
-                            //...deviceBlocks,
                             { kind: 'block', type: 'manage_device_variable' },
                             { kind: 'block', type: 'manage_device_data' },
                             { kind: 'block', type: 'device_payload' },
+                            ...stateDevices
+                                .flatMap(
+                                    (device: any) =>
+                                        Array.isArray(device.parameters) // Check if parameters is an array
+                                            ? device.parameters
+                                                  .filter(
+                                                      (param: any) =>
+                                                          Array.isArray(
+                                                              param.value
+                                                          ) &&
+                                                          param.value.length > 0
+                                                  )
+                                                  .map((param: any) => {
+                                                      const deviceBlockName = `device_${param.label.replace(
+                                                          /[^a-zA-Z0-9_]/g,
+                                                          ''
+                                                      )}`
+
+                                                      // Check if block is already created
+                                                      if (
+                                                          !parameterBlockCreated[
+                                                              deviceBlockName
+                                                          ]
+                                                      ) {
+                                                          parameterBlockCreated[
+                                                              deviceBlockName
+                                                          ] = true
+                                                          return {
+                                                              kind: 'block',
+                                                              type: deviceBlockName,
+                                                          }
+                                                      }
+                                                      return null // Return null to filter out any undefined values
+                                                  })
+                                            : [] // Return an empty array if parameters is not an array
+                                )
+                                .filter(Boolean), // Filter out any null values
                         ],
                     },
                 ],
@@ -519,7 +677,7 @@ export default function BlocklyEditor() {
 
     return (
         <>
-            <h3>{JSON.stringify(deviceTypes)}</h3>
+            {/* <h3>{JSON.stringify(deviceTypes)}</h3> */}
             {loading == true && (
                 <div className="w-full !h-[78vh] flex items-center justify-center">
                     {' '}
@@ -534,9 +692,8 @@ export default function BlocklyEditor() {
                                 (showCode == true && 'col-span-2') ||
                                 'col-span-3'
                             }`}
-                            toolboxConfiguration={theToolBox} // this must be a JSON toolbox definition
-                            initialXml={xml}
-                            onXmlChange={setXml as any}
+                            toolboxConfiguration={theToolBox}
+                            onXmlChange={setXml}
                             workspaceConfiguration={{
                                 grid: {
                                     spacing: 20,
@@ -547,7 +704,10 @@ export default function BlocklyEditor() {
                                 trashcan: true,
                                 media: `${import.meta.env.VITE_URL}uploads/`,
                             }}
-                            onWorkspaceChange={workspaceDidChange}
+                            onWorkspaceChange={(workspace) => {
+                                workspaceRef.current = workspace // Set the workspace instance
+                                workspaceDidChange(workspace) // Call your existing handler
+                            }}
                         />
                     )}
                     {showCode && (
