@@ -30,9 +30,6 @@ const CollapseMenuItemView1: React.FC = () => {
                 const myRes = (await apiGetDevices(userId || '')) as any
                 const sharedRes = (await apiGetAllSharedDevices()) as any
                 const deviceRes = [...myRes.data.data, ...sharedRes.data.data]
-
-                console.log('Gholi:', sharedRes)
-
                 setInstalledServices(
                     data.data.map((element: any) => {
                         deviceRes.forEach((device: any) => {

@@ -15,7 +15,7 @@ export type ServiceData = {
     description: string
     serviceType: string
     status: string | null
-    devices: string[]
+    devices: []
     numberOfInstallations: number
     installationPrice: number
     runningPrice: number

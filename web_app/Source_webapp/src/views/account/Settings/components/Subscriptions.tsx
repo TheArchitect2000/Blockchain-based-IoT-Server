@@ -22,8 +22,7 @@ const SubscriptionComponent = ({
     onSubscribeChange: Function
     loadingState: any
 }) => {
-    console.log("Ghol:", subscription);
-    
+
     return (
         <div className="flex items-center gap-4 w-full p-4 border rounded-xl">
             <h5 className="text-[1.25rem]">{title}:</h5>

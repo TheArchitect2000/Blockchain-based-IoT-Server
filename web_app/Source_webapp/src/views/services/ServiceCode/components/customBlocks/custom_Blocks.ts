@@ -70,7 +70,6 @@ export const blocklyToolBox = {
                 {
                     kind: 'block',
                     type: 'logic_null',
-                    disabled: 'true',
                 },
                 {
                     kind: 'block',
@@ -176,7 +175,7 @@ export const blocklyToolBox = {
             name: 'Wait',
             colour: '450',
             contents: [
-                { kind: 'block', type: 'listen_for_device_payload' },
+                //{ kind: 'block', type: 'listen_for_device_payload' },
                 {
                     kind: 'block',
                     type: 'wait_sec',
@@ -1083,9 +1082,7 @@ javascriptGenerator.forBlock['wait_sec'] = function (
     generator: any
 ) {
     var seconds = block.getFieldValue('seconds')
-    return `var waitTill = new Date(new Date().getTime() + ${
-        seconds * 1000
-    }); while(waitTill > new Date()){};`
+    return `await waitTill(${seconds * 1000}); // ${seconds} seconds \n`
 }
 
 javascriptGenerator.forBlock['wait_min'] = function (
@@ -1093,9 +1090,7 @@ javascriptGenerator.forBlock['wait_min'] = function (
     generator: any
 ) {
     var min = block.getFieldValue('minutes')
-    return `var waitTill = new Date(new Date().getTime() + ${
-        min * 60 * 1000
-    }); while(waitTill > new Date()){};`
+    return `await waitTill(${min * 60 * 1000}); // ${min} minutes \n`
 }
 
 javascriptGenerator.forBlock['wait_hour'] = function (
@@ -1103,9 +1098,7 @@ javascriptGenerator.forBlock['wait_hour'] = function (
     generator: any
 ) {
     var hour = block.getFieldValue('hours')
-    return `var waitTill = new Date(new Date().getTime() + ${
-        hour * 60 * 60 * 1000
-    }); while(waitTill > new Date()){};`
+    return `await waitTill(${hour * 60 * 60 * 1000}); // ${hour} hours \n`
 }
 
 javascriptGenerator.forBlock['wait_day'] = function (
@@ -1113,9 +1106,7 @@ javascriptGenerator.forBlock['wait_day'] = function (
     generator: any
 ) {
     var day = block.getFieldValue('days')
-    return `var waitTill = new Date(new Date().getTime() + ${
-        day * 24 * 60 * 60 * 1000
-    }); while(waitTill > new Date()){};`
+    return `await waitTill(${day * 24 * 60 * 60 * 1000}); // ${day} days \n`
 }
 
 Blockly.Blocks['to_string'] = {
@@ -1311,18 +1302,25 @@ javascriptGenerator.forBlock['run_function_with_payload'] = function (
     block: any
 ) {
     // Fetch 'DEVICE_PAYLOAD' input, defaulting to empty string if not connected
-    var devicePayload =
+    let devicePayload =
         javascriptGenerator.valueToCode(
             block,
             'DEVICE_PAYLOAD',
             javascriptGenerator.ORDER_ATOMIC
-        ) || '""'
+        ) || ''
+
+    let editedDevicePayload = devicePayload.replace(/^\((.*)\)$/, '$1')
+
+    editedDevicePayload =
+        editedDevicePayload.charAt(0).toUpperCase() +
+        editedDevicePayload.slice(1)
 
     // Fetch statements from 'FUNCTION_CONTENT', defaulting to empty string if not connected
     var statements =
         javascriptGenerator.statementToCode(block, 'FUNCTION_CONTENT') || ''
 
     // Generate JavaScript code for the block
-    var code = `runFunctionWithPayload(${devicePayload}) {\n${statements}\n}`
+
+    var code = `\nfunctions["runFunctionWithPayload${editedDevicePayload}"] = () => {// This function will run each time a payload is received from ${devicePayload} \n${statements}\n}`
     return code
 }

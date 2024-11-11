@@ -17,6 +17,7 @@ export type DeviceData = {
     image?: string
     location: Location
     nodeId: string
+    nodeDeviceId: string
     geometry: Geometry
     _id: string
     userId: string
