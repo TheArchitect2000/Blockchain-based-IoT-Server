@@ -2,6 +2,201 @@ import * as Blockly from 'blockly/core'
 import 'blockly/javascript'
 import { javascriptGenerator } from 'blockly/javascript'
 
+export const blocklyToolBox = {
+    kind: 'categoryToolbox',
+    contents: [
+        {
+            kind: 'category',
+            name: 'Control',
+            colour: '120', // 0 < Color < 360
+            contents: [
+                {
+                    kind: 'block',
+                    type: 'controls_if',
+                },
+                {
+                    kind: 'block',
+                    type: 'run_function_with_payload',
+                },
+                {
+                    kind: 'block',
+                    type: 'controls_ifelse',
+                },
+                {
+                    kind: 'block',
+                    type: 'controls_whileUntil',
+                },
+                {
+                    kind: 'block',
+                    type: 'controls_repeat_ext',
+                    inputs: {
+                        TIMES: {
+                            shadow: {
+                                type: 'math_number',
+                                fields: {
+                                    NUM: 10,
+                                },
+                            },
+                        },
+                    },
+                },
+                {
+                    kind: 'block',
+                    type: 'controls_for',
+                },
+            ],
+        },
+        {
+            kind: 'category',
+            name: 'Logic',
+            colour: '210',
+            contents: [
+                {
+                    kind: 'block',
+                    type: 'logic_compare',
+                },
+                {
+                    kind: 'block',
+                    type: 'logic_operation',
+                },
+                {
+                    kind: 'block',
+                    type: 'logic_boolean',
+                },
+                {
+                    kind: 'block',
+                    type: 'logic_negate',
+                },
+                {
+                    kind: 'block',
+                    type: 'logic_null',
+                },
+                {
+                    kind: 'block',
+                    type: 'logic_ternary',
+                },
+            ],
+        },
+        {
+            kind: 'category',
+            name: 'Variables',
+            colour: '10',
+            custom: 'VARIABLE',
+        },
+        {
+            kind: 'category',
+            name: 'Text',
+            colour: '40',
+            contents: [
+                {
+                    kind: 'block',
+                    type: 'custom_text',
+                },
+                {
+                    kind: 'block',
+                    type: 'text_print',
+                },
+                {
+                    kind: 'block',
+                    type: 'to_string',
+                },
+            ],
+        },
+        {
+            kind: 'category',
+            name: 'Math',
+            colour: '300',
+            contents: [
+                {
+                    kind: 'block',
+                    type: 'math_number',
+                    fields: {
+                        NUM: 123,
+                    },
+                },
+                {
+                    kind: 'block',
+                    type: 'math_arithmetic',
+                },
+                {
+                    kind: 'block',
+                    type: 'math_single',
+                },
+                {
+                    kind: 'block',
+                    type: 'to_number',
+                },
+            ],
+        },
+        {
+            kind: 'category',
+            name: 'Devices',
+            colour: '180',
+            contents: [
+                {
+                    kind: 'block',
+                    type: 'customized_air_quality_sensor',
+                },
+                {
+                    kind: 'block',
+                    type: 'customized_noise_sensor',
+                },
+                {
+                    kind: 'block',
+                    type: 'customized_concrete_sensor_temperature_strength',
+                },
+                {
+                    kind: 'block',
+                    type: 'customized_gas_sensor',
+                },
+                {
+                    kind: 'block',
+                    type: 'customized_car_sensor',
+                },
+            ],
+        },
+        {
+            kind: 'category',
+            name: 'Messages',
+            colour: '250',
+            contents: [
+                {
+                    kind: 'block',
+                    type: 'customized_send_email',
+                },
+                {
+                    kind: 'block',
+                    type: 'customized_send_notification',
+                },
+            ],
+        },
+        {
+            kind: 'category',
+            name: 'Wait',
+            colour: '450',
+            contents: [
+                //{ kind: 'block', type: 'listen_for_device_payload' },
+                {
+                    kind: 'block',
+                    type: 'wait_sec',
+                },
+                {
+                    kind: 'block',
+                    type: 'wait_min',
+                },
+                {
+                    kind: 'block',
+                    type: 'wait_hour',
+                },
+                {
+                    kind: 'block',
+                    type: 'wait_day',
+                },
+            ],
+        },
+    ],
+}
+
 Blockly.Blocks['customized_multi_sensor_door'] = {
     init: function () {
         this.jsonInit({
@@ -479,9 +674,7 @@ Blockly.Blocks['customized_air_quality_sensor'] = {
                 {
                     type: 'field_dropdown',
                     name: 'sensor',
-                    options: [
-                        ['aqi', 'AQI'],
-                    ],
+                    options: [['aqi', 'AQI']],
                 },
                 {
                     type: 'input_value',
@@ -522,9 +715,7 @@ Blockly.Blocks['customized_noise_sensor'] = {
                 {
                     type: 'field_dropdown',
                     name: 'sensor',
-                    options: [
-                        ['noise meter', 'NOISE_METER'],
-                    ],
+                    options: [['noise meter', 'NOISE_METER']],
                 },
                 {
                     type: 'input_value',
@@ -787,108 +978,6 @@ Blockly.Blocks['wait_day'] = {
     },
 }
 
-/* javascriptGenerator.forBlock['customized_multi_sensor_temperature_humidity'] =
-    function (block, generator) {
-        var dropdownDevice = block.getFieldValue('device')
-        var dropdownSensor = block.getFieldValue('sensor')
-
-        const code = `${dropdownDevice}.${dropdownSensor}`
-        return [code, generator.ORDER_NONE]
-    }
-
-javascriptGenerator.forBlock['customized_multi_sensor_door'] = function (
-    block,
-    generator
-) {
-    const dropdownDevice = block.getFieldValue('device')
-    const dropdownSensor = block.getFieldValue('sensor')
-
-    const code = `${dropdownDevice}.${dropdownSensor}`
-    return [code, generator.ORDER_NONE]
-}
-
-// Generator for customized_multi_sensor_motion
-javascriptGenerator.forBlock['customized_multi_sensor_motion'] = function (
-    block,
-    generator
-) {
-    const dropdownDevice = block.getFieldValue('device')
-    const dropdownSensor = block.getFieldValue('sensor')
-
-    const code = `${dropdownDevice}.${dropdownSensor}`
-    return [code, generator.ORDER_NONE]
-}
-
-// Generator for customized_multi_sensor_button
-javascriptGenerator.forBlock['customized_multi_sensor_button'] = function (
-    block,
-    generator
-) {
-    const dropdownDevice = block.getFieldValue('device')
-    const dropdownSensor = block.getFieldValue('sensor')
-
-    const code = `${dropdownDevice}.BUTTON == '${dropdownSensor}'`
-    return [code, generator.ORDER_NONE]
-}
-
-// Generator for customized_thermometer_hygrometer
-javascriptGenerator.forBlock['customized_thermometer_hygrometer'] = function (
-    block,
-    generator
-) {
-    const dropdownDevice = block.getFieldValue('device')
-    const dropdownSensor = block.getFieldValue('sensor')
-
-    const code = `${dropdownDevice}.${dropdownSensor}`
-    return [code, generator.ORDER_NONE]
-}
-
-javascriptGenerator.forBlock['customized_device_info'] = function (
-    block,
-    generator
-) {
-    const dropdownDevice = block.getFieldValue('device')
-    const dropdownSensor = block.getFieldValue('sensor')
-
-    const code = `${dropdownDevice}.${dropdownSensor}`
-    return [code, generator.ORDER_NONE]
-}
-
-javascriptGenerator.forBlock['customized_door_sensor'] = function (
-    block,
-    generator
-) {
-    const dropdownDevice = block.getFieldValue('device')
-    const dropdownSensor = block.getFieldValue('sensor')
-
-    const code = `${dropdownDevice}.${dropdownSensor}`
-    return [code, generator.ORDER_NONE]
-}
-
-// Generator for customized_motion_detector
-javascriptGenerator.forBlock['customized_motion_detector'] = function (
-    block,
-    generator
-) {
-    const dropdownDevice = block.getFieldValue('device')
-    const dropdownSensor = block.getFieldValue('sensor')
-
-    const code = `${dropdownDevice}.${dropdownSensor}`
-    return [code, generator.ORDER_NONE]
-}
-
-// Generator for customized_smart_button
-javascriptGenerator.forBlock['customized_smart_button'] = function (
-    block,
-    generator
-) {
-    const dropdownDevice = block.getFieldValue('device')
-    const dropdownSensor = block.getFieldValue('sensor')
-
-    const code = `${dropdownDevice}.${dropdownSensor}`
-    return [code, generator.ORDER_NONE]
-} */
-
 const deviceBlocks = [
     'customized_multi_sensor_door',
     'customized_multi_sensor_motion',
@@ -907,7 +996,10 @@ const deviceBlocks = [
 ]
 
 deviceBlocks.forEach((blockName) => {
-    javascriptGenerator.forBlock[blockName] = function (block, generator) {
+    javascriptGenerator.forBlock[blockName] = function (
+        block: any,
+        generator: any
+    ) {
         const dropdownDevice = block.getFieldValue('device')
         const dropdownSensor = block.getFieldValue('sensor')
         var inputBlock = javascriptGenerator.valueToCode(
@@ -924,8 +1016,8 @@ deviceBlocks.forEach((blockName) => {
 
 // Generator for customized_send_notification
 javascriptGenerator.forBlock['customized_send_notification'] = function (
-    block,
-    generator
+    block: any,
+    generator: any
 ) {
     var input_title =
         javascriptGenerator.valueToCode(
@@ -939,10 +1031,10 @@ javascriptGenerator.forBlock['customized_send_notification'] = function (
             'message',
             javascriptGenerator.ORDER_NONE
         ) || `""`
-    return `customizedMessage.sendNotification({ title: ${input_title}, message: ${input_message} });`
+    return `customizedMessage.sendNotification({ title: ${input_title}, message: ${input_message} });\n`
 }
 
-javascriptGenerator['customized_send_email'] = function (block) {
+javascriptGenerator['customized_send_email'] = function (block: any) {
     var input_subject =
         javascriptGenerator.valueToCode(
             block,
@@ -972,7 +1064,7 @@ Blockly.Blocks['custom_text'] = {
     },
 }
 
-javascriptGenerator['custom_text'] = function (block) {
+javascriptGenerator['custom_text'] = function (block: any) {
     var code = "'" + block.getFieldValue('TEXT') + "'"
     var additionalText = javascriptGenerator.valueToCode(
         block,
@@ -985,32 +1077,36 @@ javascriptGenerator['custom_text'] = function (block) {
     return [code, javascriptGenerator.ORDER_NONE]
 }
 
-javascriptGenerator.forBlock['wait_sec'] = function (block, generator) {
+javascriptGenerator.forBlock['wait_sec'] = function (
+    block: any,
+    generator: any
+) {
     var seconds = block.getFieldValue('seconds')
-    return `var waitTill = new Date(new Date().getTime() + ${
-        seconds * 1000
-    }); while(waitTill > new Date()){};`
+    return `await waitTill(${seconds * 1000}); // ${seconds} seconds \n`
 }
 
-javascriptGenerator.forBlock['wait_min'] = function (block, generator) {
+javascriptGenerator.forBlock['wait_min'] = function (
+    block: any,
+    generator: any
+) {
     var min = block.getFieldValue('minutes')
-    return `var waitTill = new Date(new Date().getTime() + ${
-        min * 60 * 1000
-    }); while(waitTill > new Date()){};`
+    return `await waitTill(${min * 60 * 1000}); // ${min} minutes \n`
 }
 
-javascriptGenerator.forBlock['wait_hour'] = function (block, generator) {
+javascriptGenerator.forBlock['wait_hour'] = function (
+    block: any,
+    generator: any
+) {
     var hour = block.getFieldValue('hours')
-    return `var waitTill = new Date(new Date().getTime() + ${
-        hour * 60 * 60 * 1000
-    }); while(waitTill > new Date()){};`
+    return `await waitTill(${hour * 60 * 60 * 1000}); // ${hour} hours \n`
 }
 
-javascriptGenerator.forBlock['wait_day'] = function (block, generator) {
+javascriptGenerator.forBlock['wait_day'] = function (
+    block: any,
+    generator: any
+) {
     var day = block.getFieldValue('days')
-    return `var waitTill = new Date(new Date().getTime() + ${
-        day * 24 * 60 * 60 * 1000
-    }); while(waitTill > new Date()){};`
+    return `await waitTill(${day * 24 * 60 * 60 * 1000}); // ${day} days \n`
 }
 
 Blockly.Blocks['to_string'] = {
@@ -1023,7 +1119,7 @@ Blockly.Blocks['to_string'] = {
     },
 }
 
-javascriptGenerator.forBlock['to_string'] = function (block) {
+javascriptGenerator.forBlock['to_string'] = function (block: any) {
     var value =
         javascriptGenerator.valueToCode(
             block,
@@ -1044,7 +1140,7 @@ Blockly.Blocks['to_number'] = {
     },
 }
 
-javascriptGenerator.forBlock['to_number'] = function (block) {
+javascriptGenerator.forBlock['to_number'] = function (block: any) {
     var value =
         javascriptGenerator.valueToCode(
             block,
@@ -1084,7 +1180,7 @@ Blockly.Blocks['door_options'] = {
     },
 }
 
-javascriptGenerator.forBlock['door_options'] = function (block) {
+javascriptGenerator.forBlock['door_options'] = function (block: any) {
     var dropdown_value = block.getFieldValue('DROPDOWN')
     var value =
         javascriptGenerator.valueToCode(
@@ -1125,7 +1221,7 @@ Blockly.Blocks['movement_options'] = {
     },
 }
 
-javascriptGenerator.forBlock['movement_options'] = function (block) {
+javascriptGenerator.forBlock['movement_options'] = function (block: any) {
     var dropdown_value = block.getFieldValue('DROPDOWN')
     var value =
         javascriptGenerator.valueToCode(
@@ -1166,7 +1262,7 @@ Blockly.Blocks['button_options'] = {
     },
 }
 
-javascriptGenerator.forBlock['button_options'] = function (block) {
+javascriptGenerator.forBlock['button_options'] = function (block: any) {
     var dropdown_value = block.getFieldValue('DROPDOWN')
     var value =
         javascriptGenerator.valueToCode(
@@ -1176,4 +1272,55 @@ javascriptGenerator.forBlock['button_options'] = function (block) {
         ) || ''
     var code = '"' + dropdown_value + '"' + (value ? ` + ${value}` : '')
     return [code, javascriptGenerator.ORDER_FUNCTION_CALL]
+}
+
+Blockly.Blocks['run_function_with_payload'] = {
+    init: function () {
+        this.jsonInit({
+            type: 'run_function_with_payload',
+            message0: 'Run Function With Payload %1 %2',
+            args0: [
+                {
+                    type: 'input_value',
+                    name: 'DEVICE_PAYLOAD',
+                    check: 'DevicePayload', // Ensures it only accepts 'DevicePayload' type blocks
+                },
+                {
+                    type: 'input_statement',
+                    name: 'FUNCTION_CONTENT', // Allows passing other blocks inside
+                },
+            ],
+            inputsInline: false,
+            colour: 290,
+            tooltip: 'Runs a function with DevicePayload input',
+            helpUrl: 'https://example.com', // Replace with your help URL
+        })
+    },
+}
+
+javascriptGenerator.forBlock['run_function_with_payload'] = function (
+    block: any
+) {
+    // Fetch 'DEVICE_PAYLOAD' input, defaulting to empty string if not connected
+    let devicePayload =
+        javascriptGenerator.valueToCode(
+            block,
+            'DEVICE_PAYLOAD',
+            javascriptGenerator.ORDER_ATOMIC
+        ) || ''
+
+    let editedDevicePayload = devicePayload.replace(/^\((.*)\)$/, '$1')
+
+    editedDevicePayload =
+        editedDevicePayload.charAt(0).toUpperCase() +
+        editedDevicePayload.slice(1)
+
+    // Fetch statements from 'FUNCTION_CONTENT', defaulting to empty string if not connected
+    var statements =
+        javascriptGenerator.statementToCode(block, 'FUNCTION_CONTENT') || ''
+
+    // Generate JavaScript code for the block
+
+    var code = `\nfunctions["runFunctionWithPayload${editedDevicePayload}"] = () => {// This function will run each time a payload is received from ${devicePayload} \n${statements}\n}`
+    return code
 }

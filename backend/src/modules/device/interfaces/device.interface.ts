@@ -2,6 +2,7 @@ import { Types } from 'mongoose';
 import { Document } from 'mongoose';
 
 export interface Device extends Document {
+  nodeMqttAddress?: string
   userId: string;
   nodeId: string;
   nodeDeviceId: string;

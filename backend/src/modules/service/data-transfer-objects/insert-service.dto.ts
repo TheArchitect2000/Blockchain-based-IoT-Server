@@ -70,5 +70,5 @@ export class insertServiceDto {
       'devices must be array of device blockly names.  e.g. multi_sensor_1',
   })
   @ApiProperty({ required: false })
-  devices: string[];
+  devices: [];
 }

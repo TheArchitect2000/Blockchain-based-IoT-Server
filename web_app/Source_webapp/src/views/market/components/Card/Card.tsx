@@ -4,7 +4,7 @@ import { BsCoin } from 'react-icons/bs'
 import './style.css'
 import ImageWithFallBack from '@/utils/components/ImageWithFallBack'
 import { Button, Dialog, Dropdown, Notification, toast } from '@/components/ui'
-import { useEffect, useRef, useState } from 'react'
+import React, { MutableRefObject, useEffect, useRef, useState } from 'react'
 import { apiGetAllSharedDevices, apiGetDevices } from '@/services/DeviceApi'
 import { DeviceData } from '@/utils/hooks/useGetDevices'
 import {
@@ -17,6 +17,7 @@ import { useNavigate } from 'react-router-dom'
 import { SyntaxHighlighter } from '@/components/shared'
 import CardBlockly from './blockly'
 import { useAppSelector } from '@/store'
+import Tabs from '@/components/custom/Tab'
 
 const ServiceCard = ({
     sharedDevices,
@@ -35,15 +36,95 @@ const ServiceCard = ({
     const [installLoading, setInstallLoading] = useState(false)
     const [codeModal, setCodeModal] = useState(false)
     const [blocklyModal, setBlocklyModal] = useState(false)
-    const [deviceOwner, setDeviceOwner] = useState('')
-    const [selectedDevice, setSelectedDevice] = useState({
-        name: '',
-        mac: '',
-        encryptedId: '',
-    })
-    const devicesRef = useRef<any>()
+    const [deviceListIsOpen, setDeviceListIsOpen] = useState<string>('')
+    const [selectedDevices, setSelectedDevices] = useState<
+        Record<string, string>
+    >({})
+    const [deviceRefs, setDeviceRefs] = useState<{
+        [key: string]: MutableRefObject<any>
+    }>({})
     const { _id: userId } = useAppSelector((state) => state.auth.user)
     const navigateTo = useNavigate()
+
+    function getSelectedDevicesObjectWithEncryptedId(): Record<string, string> {
+        const transformedObject: any = {}
+        Object.keys(selectedDevices).forEach((key: string) => {
+            const theDevice = getDeviceInfoWithDeviceId(selectedDevices[key])
+            transformedObject[key] = theDevice?.deviceEncryptedId
+        })
+
+        return transformedObject
+    }
+
+    function getSelectedDevicesEncryptedId(): Array<string | undefined> {
+        const transformedObject = Object.keys(selectedDevices).map(
+            (key: string) =>
+                getDeviceInfoWithDeviceId(selectedDevices[key])
+                    ?.deviceEncryptedId
+        )
+        return transformedObject
+    }
+
+    function selectedDevicesCount(): number {
+        let count = 0
+        Object.values(selectedDevices).forEach((value: string) => {
+            if (value.length > 0) {
+                count++
+            }
+        })
+
+        return count
+    }
+
+    function getDeviceInfoWithDeviceId(deviceId: string): DeviceData | null {
+        const allDevices = [...sharedDevices, ...myDevices]
+        const selectedDevice = allDevices.filter(
+            (device: DeviceData) =>
+                String(device._id) === deviceId ||
+                device.nodeDeviceId === deviceId
+        )
+        return selectedDevice.length > 0 ? selectedDevice[0] : null
+    }
+
+    function getSelectedDeviceName(deviceName: string) {
+        const allDevices = [...sharedDevices, ...myDevices]
+
+        const selectedDevice = allDevices.filter(
+            (device: DeviceData) =>
+                String(device._id) === selectedDevices[deviceName] ||
+                String(device.nodeDeviceId) === selectedDevices[deviceName]
+        )
+        return selectedDevice.length > 0
+            ? selectedDevice[0].deviceName
+            : 'Select'
+    }
+
+    function getAvailableDevices(type: 'shared' | 'my', nowDevice: string) {
+        const selecteId = selectedDevices[nowDevice]
+        let deviceList: Array<DeviceData>
+        if (type == 'my') {
+            deviceList = myDevices
+        } else {
+            deviceList = sharedDevices
+        }
+
+        const filteredDevices = Object.values(selectedDevices).filter(
+            (value: string) => value !== selecteId
+        )
+
+        filteredDevices.map((value: string) => {
+            deviceList = deviceList.filter(
+                (device) =>
+                    device.nodeDeviceId !== value && device._id !== value
+            )
+        })
+
+        return deviceList
+    }
+
+    function handleDeviceSelect(deviceName: string, deviceId: string) {
+        setSelectedDevices({ ...selectedDevices, [deviceName]: deviceId })
+    }
 
     const cardFooter = (
         <section className="flex flex-col w-full gap-3">
@@ -98,82 +179,24 @@ const ServiceCard = ({
         </div>
     )
 
-    function handleDeviceOwnerSelect(name: any) {
-        setDeviceOwner(name)
-    }
-
-    function DeviceItem({ data }: { data: DeviceData }) {
-        return (
-            <div
-                onClick={() => {
-                    setSelectedDevice({
-                        name: data.deviceName,
-                        mac: (data.mac && data.mac) || data.nodeId,
-                        encryptedId: data.deviceEncryptedId,
-                    })
-                    setDeviceModal(false)
-                }}
-                className="w-full text-center cursor-pointer py-1 hover:bg-[#374151] rounded-lg"
-            >
-                <p>
-                    {data.deviceName} ( {(data.mac && data.mac) || data.nodeId}{' '}
-                    )
-                </p>
-            </div>
-        )
-    }
+    useEffect(() => {
+        let theObject: { [key: string]: React.RefObject<any> } = {}
+        serviceData?.devices.forEach((device: any) => {
+            theObject[String(device?.name)] = React.createRef()
+        })
+        setDeviceRefs(theObject)
+    }, [serviceData])
 
     useEffect(() => {
         if (modalOpen == false) {
             setDeviceModal(false)
-            setDeviceOwner('')
-            setSelectedDevice({
-                name: '',
-                mac: '',
-                encryptedId: '',
-            })
+            setSelectedDevices({})
         }
     }, [modalOpen])
 
     async function handleInstallService() {
         try {
             setInstallLoading(true)
-            let isInstalled: boolean = false
-            const allRes = (await apiGetAllInstalledServices(
-                userId?.toString() || ''
-            )) as any
-
-            allRes?.data?.data.map((service: any, index: number) => {
-                if (
-                    service.serviceId == serviceData?._id &&
-                    service.insertedBy.toString() == userId?.toString() &&
-                    service.deviceMap?.MULTI_SENSOR_1.toString() ==
-                        selectedDevice?.encryptedId.toString()
-                ) {
-                    isInstalled = true
-                }
-            })
-
-            if (isInstalled == (true as any)) {
-                setDeviceModal(false)
-                setModalOpen(false)
-                setInstallModal(false)
-                setDeviceOwner('')
-                setSelectedDevice({
-                    name: '',
-                    mac: '',
-                    encryptedId: '',
-                })
-                return toast.push(
-                    <Notification
-                        title="This service is already installed for this device."
-                        type="danger"
-                    />,
-                    {
-                        placement: 'top-center',
-                    }
-                )
-            }
 
             const res = (await apiInstallNewService({
                 userId: userId,
@@ -183,7 +206,7 @@ const ServiceCard = ({
                 description: serviceData?.description,
                 code: serviceData?.code,
                 deviceMap: {
-                    MULTI_SENSOR_1: selectedDevice?.encryptedId || '',
+                    ...getSelectedDevicesObjectWithEncryptedId(),
                 },
             })) as any
 
@@ -214,12 +237,7 @@ const ServiceCard = ({
             setDeviceModal(false)
             setModalOpen(false)
             setInstallModal(false)
-            setDeviceOwner('')
-            setSelectedDevice({
-                name: '',
-                mac: '',
-                encryptedId: '',
-            })
+            setSelectedDevices({})
         } catch (error) {
             console.log('Error while installing service, error: ', error)
         }
@@ -234,7 +252,10 @@ const ServiceCard = ({
                 onClose={() => setBlocklyModal(false)}
             >
                 <h5>'{serviceData?.serviceName}' Blockly</h5>
-                <CardBlockly xml={serviceData?.blocklyJson || ''} />
+                <CardBlockly
+                    xmlText={serviceData?.blocklyJson || ''}
+                    devices={serviceData?.devices || ''}
+                />
                 <div className="flex justify-center gap-4">
                     <Button
                         variant="solid"
@@ -337,85 +358,148 @@ const ServiceCard = ({
                         <strong>Execution Price:</strong>{' '}
                         {serviceData?.installationPrice} FDS
                     </p>
-                    <p>
-                        <strong>-------------------------------------</strong>
-                    </p>
-                    <p className="flex items-center">
-                        <strong>Devices: </strong>&nbsp;&nbsp;
-                        {deviceOwner}
-                        &nbsp;&nbsp;
-                        <Button
-                            className="flex items-center justify-center"
-                            variant="solid"
-                            size="xs"
-                            onClick={() => {
-                                devicesRef?.current?.children[0]?.click()
-                            }}
-                        >
-                            <Dropdown
-                                trigger="click"
-                                onSelect={handleDeviceOwnerSelect}
-                                placement="middle-start-top"
-                                activeKey={deviceOwner}
-                                ref={devicesRef}
-                            >
-                                <Dropdown.Item eventKey="My Devices">
-                                    My Devices
-                                </Dropdown.Item>
-                                <Dropdown.Item eventKey="Shared Devices">
-                                    Shared Devices
-                                </Dropdown.Item>
-                            </Dropdown>
-                        </Button>
-                    </p>
-                    <p className="flex items-center">
-                        <strong>Device: </strong>&nbsp;&nbsp;
-                        {selectedDevice.name &&
-                            `${selectedDevice.name} ( ${selectedDevice.mac} )`}
-                        {!selectedDevice.name && (
-                            <Button
-                                className="flex items-center justify-center"
-                                variant="solid"
-                                size="xs"
-                                onClick={() => setDeviceModal(true)}
-                            >
-                                Select
-                            </Button>
+
+                    {serviceData?.devices &&
+                        serviceData?.devices.length > 0 &&
+                        serviceData?.devices.map(
+                            (device: { name: string; type: string }, index) => {
+                                return (
+                                    <div className="flex items-center gap-2">
+                                        <p>
+                                            Device {index + 1} (
+                                            <strong>
+                                                {device?.name?.replace(
+                                                    'device_',
+                                                    ''
+                                                )}
+                                            </strong>
+                                            ):
+                                        </p>
+                                        <Button
+                                            className="flex items-center !h-8"
+                                            size="sm"
+                                            onClick={() => {
+                                                const ref =
+                                                    deviceRefs[
+                                                        String(device?.name)
+                                                    ]
+                                                ref?.current?.children[0]?.click()
+                                            }}
+                                        >
+                                            {getSelectedDeviceName(
+                                                device?.name
+                                            )}
+                                            <Dropdown
+                                                ref={
+                                                    deviceRefs[
+                                                        String(device?.name)
+                                                    ]
+                                                }
+                                                trigger="click"
+                                                onSelect={(key) =>
+                                                    handleDeviceSelect(
+                                                        device.name,
+                                                        String(key)
+                                                    )
+                                                }
+                                                onOpen={() =>
+                                                    setDeviceListIsOpen(
+                                                        String(device?.name)
+                                                    )
+                                                }
+                                                onClose={() =>
+                                                    setDeviceListIsOpen('')
+                                                }
+                                                menuClass="max-h-[250px] overflow-auto"
+                                                placement="middle-start-bottom"
+                                                activeKey={
+                                                    selectedDevices[
+                                                        device?.name
+                                                    ]
+                                                }
+                                            >
+                                                <Tabs
+                                                    tabs={[
+                                                        {
+                                                            label: 'My Devices',
+                                                            content: (
+                                                                <>
+                                                                    {getAvailableDevices(
+                                                                        'my',
+                                                                        device?.name
+                                                                    ).map(
+                                                                        (
+                                                                            device,
+                                                                            index
+                                                                        ) => (
+                                                                            <Dropdown.Item
+                                                                                eventKey={
+                                                                                    device._id
+                                                                                }
+                                                                                key={
+                                                                                    index
+                                                                                }
+                                                                            >
+                                                                                {
+                                                                                    device.deviceName
+                                                                                }
+                                                                            </Dropdown.Item>
+                                                                        )
+                                                                    )}
+                                                                </>
+                                                            ),
+                                                        },
+                                                        {
+                                                            label: 'Global Devices',
+                                                            content: (
+                                                                <>
+                                                                    {getAvailableDevices(
+                                                                        'shared',
+                                                                        device?.name
+                                                                    ).map(
+                                                                        (
+                                                                            device,
+                                                                            index
+                                                                        ) => (
+                                                                            <Dropdown.Item
+                                                                                eventKey={
+                                                                                    device.nodeDeviceId
+                                                                                }
+                                                                                key={
+                                                                                    index
+                                                                                }
+                                                                            >
+                                                                                {
+                                                                                    device.deviceName
+                                                                                }{' '}
+                                                                                {`(IoT Server: ${
+                                                                                    device.nodeId.split(
+                                                                                        '.'
+                                                                                    )[0]
+                                                                                })`}
+                                                                            </Dropdown.Item>
+                                                                        )
+                                                                    )}
+                                                                </>
+                                                            ),
+                                                        },
+                                                    ]}
+                                                />
+
+                                                {/* Unselect Option */}
+                                                <Dropdown.Item eventKey="">
+                                                    Unselect Device
+                                                </Dropdown.Item>
+                                            </Dropdown>
+                                        </Button>
+                                    </div>
+                                )
+                            }
                         )}
-                        <Dialog
-                            isOpen={deviceModal}
-                            onClose={() => setDeviceModal(false)}
-                        >
-                            <h3 className="mb-8">{deviceOwner}</h3>
-                            {deviceOwner === 'My Devices' &&
-                                myDevices.length > 0 &&
-                                myDevices.map((item, index) => (
-                                    <DeviceItem data={item} key={index} />
-                                ))}
-                            {deviceOwner === 'My Devices' &&
-                                myDevices.length == 0 && (
-                                    <h5 className="text-center">
-                                        You don't have any devices
-                                    </h5>
-                                )}
-                            {deviceOwner === 'Shared Devices' &&
-                                sharedDevices.length > 0 &&
-                                sharedDevices.map((item, index) => (
-                                    <DeviceItem data={item} key={index} />
-                                ))}
-                            {deviceOwner === 'Shared Devices' &&
-                                sharedDevices.length == 0 && (
-                                    <h5 className="text-center">
-                                        No shared devices found !
-                                    </h5>
-                                )}
-                        </Dialog>
-                    </p>
-                    <p>
-                        <strong>-------------------------------------</strong>
-                    </p>
+
                     <div className="w-full gap-4 mt-2 flex justify-center">
-                        {selectedDevice.name && (
+                        {serviceData?.devices.length ==
+                            selectedDevicesCount() && (
                             <Button
                                 className=""
                                 variant="solid"
@@ -458,7 +542,8 @@ const ServiceCard = ({
                                 </Button>
                             </div>
                         </Dialog>
-                        {selectedDevice.name && (
+                        {serviceData?.devices.length ==
+                            selectedDevicesCount() && (
                             <Button
                                 className=""
                                 variant="solid"

@@ -520,8 +520,7 @@ export function CreateEditBuilding() {
                                 functionLocalMyDevices
                             )
 
-                            console.log('Ghol Gholian:', updatedBuildData)
-
+                        
                             setBuildData(updatedBuildData)
 
                             saveAllLastData(updatedBuildData)

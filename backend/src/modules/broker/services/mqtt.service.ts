@@ -323,9 +323,18 @@ export class MqttService implements OnModuleInit {
             });
 
           if (client.id !== parsedPayload.from) {
+
+            // last commented code
             console.log(
               '\x1b[33m \nWe are trying to republish node data... \x1b[0m',
             );
+
+            aedes.publish({
+              topic: parsedPayload.from,
+              payload: payload,
+            });
+
+
             /* aedes.publish(
                             {
                             //   cmd: 'publish',
@@ -336,10 +345,7 @@ export class MqttService implements OnModuleInit {
                             }
                         ) */
 
-            aedes.publish({
-              topic: parsedPayload.from,
-              payload: payload,
-            });
+            
 
             // await this.manageInstalledService(parsedPayload.from)
             // this.serviceHandlerService.runInstalledService(parsedPayload.from);

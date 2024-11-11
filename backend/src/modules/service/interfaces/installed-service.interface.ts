@@ -6,7 +6,7 @@ export interface InstalledService extends Document {
   installedServiceName: string;
   description: string;
   code: string;
-  deviceMap: string;
+  deviceMap: {};
   installedServiceImage: string;
   activationStatus: string;
   activationStatusChangeReason: string;
