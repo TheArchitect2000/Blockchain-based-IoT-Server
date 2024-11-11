@@ -57,11 +57,9 @@ export class insertInstalledServiceDto {
   @IsOptional()
   @MinLength(2, {
     message:
-      'deviceMap is optional and is required if service has blockly JSON.',
+      'deviceMap is not optional and it\'s required.',
   })
-  @IsJSON({ message: 'deviceMap must be string and in json format.' })
-  @ApiProperty({ required: false })
-  deviceMap: {
-    MULTI_SENSOR_1: string;
-  };
+  @IsJSON({ message: 'deviceMap must be Object and in json format.' })
+  @ApiProperty({ required: true })
+  deviceMap: {};
 }

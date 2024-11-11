@@ -37,17 +37,6 @@ const schema = new Schema({
     minlength: 1,
     required: false,
   },
-  /* devices: [{ 
-        type: Schema.Types.ObjectId, 
-        ref: 'device', 
-        required: false, 
-        default: null 
-    }], */
-  /* devices: { 
-        type: [], 
-        minlength: 1, 
-        required: false
-    }, */
   installedServiceImage: {
     type: String,
     default: null,

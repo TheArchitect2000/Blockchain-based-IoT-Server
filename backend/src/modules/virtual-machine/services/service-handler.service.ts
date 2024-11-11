@@ -6,6 +6,7 @@ import { UserService } from 'src/modules/user/services/user/user.service';
 import { DeviceService } from 'src/modules/device/services/device.service';
 import { InstalledServiceService } from 'src/modules/service/services/installed-service.service';
 import { insertInstalledServiceDto } from 'src/modules/service/data-transfer-objects/insert-installed-service.dto';
+import { Device } from 'src/modules/device/interfaces/device.interface';
 
 @Injectable()
 export class VirtualMachineHandlerService {
@@ -46,265 +47,436 @@ export class VirtualMachineHandlerService {
       return false;
     }
 
-    let nodeMqttAddress = '';
-
-    let deviceInfo;
-
-    if (
-      body.nodeId &&
-      body.nodeId != undefined &&
-      String(body.nodeId) != 'undefined'
-    ) {
-      deviceInfo = String(body.nodeId);
-    } else {
-      deviceInfo = await this.deviceService.getDeviceInfoByEncryptedId(
-        String(body.deviceMap.MULTI_SENSOR_1),
-      );
-    }
-
-    if (String(deviceInfo.nodeId) == 'developer.fidesinnova.io') {
-      nodeMqttAddress = `${deviceInfo.nodeId}`;
-    } else {
-      nodeMqttAddress = `panel.${deviceInfo.nodeId}`;
-    }
+    const localDeviceMap = body.deviceMap;
 
     let userCode = body.code.toString();
 
-    let serviceOutPut = userCode.toString().replaceAll(/\r?\n|\r/g, ' ');
-
-    let editedUserCodeOutput = serviceOutPut;
-
-    editedUserCodeOutput = editedUserCodeOutput.replaceAll(
-      'MULTI_SENSOR_1',
-      'data.data',
-    );
-
-    editedUserCodeOutput = editedUserCodeOutput.replaceAll(
-      `customizedMessage.sendMail`,
-      `sendMail`,
-    );
-
-    editedUserCodeOutput = editedUserCodeOutput.replaceAll(
+    // replacing custom functions with blockly functions
+    userCode = userCode.replaceAll(`customizedMessage.sendMail`, `sendMail`);
+    userCode = userCode.replaceAll(
       `customizedMessage.sendNotification`,
       `sendNotification`,
     );
 
+    // adding getNewData function into first line of all while and for loops ( for data refreshing every where )
+    userCode = userCode.replace(
+      /(for\s*\(.*?\)\s*\{)|(while\s*\(.*?\)\s*\{)/g,
+      (match) =>
+        `${match}\n    getNewData();var waitTill = new Date(new Date().getTime() + 200);while (waitTill > new Date()) {};`,
+    );
+
+    // replacing waitForDevicePayload with acctual backend codes
+    userCode = userCode.replace(
+      /await waitForDevicePayload\(([\w\d_]+)\);/g,
+      'while (getNewData("$1") == false) {parentPort.postMessage("Looping"); var waitTill = new Date(new Date().getTime() + 500);while (waitTill > new Date()) {}}; parentPort.postMessage("Device sended data and exited loop");',
+    );
+
+    // replacing blockly wait function with while loops
+    let waitCounter = 0;
+    userCode = userCode.replace(/await waitTill\((\w+)\);( ?\/\/.*)?/g, () => {
+      waitCounter++;
+      return `let waitTill_${waitCounter} = new Date(new Date().getTime() + $1);while (waitTill_${waitCounter} > new Date()) {}`;
+    });
+
+    const lines = userCode.split('\n');
+    const letLinesCode = lines
+      .filter((line) => line.startsWith('let '))
+      .join('\n');
+    const restOfCode = lines
+      .filter((line) => !line.startsWith('let '))
+      .join('\n');
+
     let userId = body.userId;
 
+    console.log(
+      '---------------------------------------------------------------------------',
+    );
+
+    console.log('1 code:', userCode);
+
+    console.log(
+      '---------------------------------------------------------------------------',
+    );
+
+    console.log('2 code:', letLinesCode);
+
+    console.log(
+      '---------------------------------------------------------------------------',
+    );
+
+    console.log('3 code:', restOfCode);
+
+    console.log(
+      '---------------------------------------------------------------------------',
+    );
+
     const code = `
-            const {
-                Worker,
-                isMainThread,
-                parentPort,
-                workerData,
-            } = require("worker_threads");
-    
-            const { TextEncoder, TextDecoder } = require('util');
-    
-            function uppercaseKeys(obj) {
-              return Object.keys(obj).reduce((result, key) => {
-                  result[key.toUpperCase()] = obj[key];
-                  return result;
-              }, {});
-            }
-    
-            function lowercaseStrings(obj) {
-              if (typeof obj !== 'object' || obj === null) {
-                return obj;
-              }
-              for (const key in obj) {
-                if (Object.prototype.hasOwnProperty.call(obj, key)) {
-                  const value = obj[key];
-                  // Check if the value is a string
-                  if (typeof value === 'string') {
-                    // Lowercase the string
-                    obj[key] = value.toLowerCase();
-                  } else if (typeof value === 'object') {
-                    // Recursively call lowercaseStrings if the value is an object
-                    lowercaseStrings(value);
-                  }
-                }
-              }
-              return obj;
-            }
-    
-                const connectUrl = "mqtts://${nodeMqttAddress}:8883";
-    
-                
-                console.log("connectUrl is:", connectUrl)
+    const {
+	Worker,
+	isMainThread,
+	parentPort,
+	workerData,
+} = require('worker_threads');
 
-                // Create a shared buffer with 2048 bytes
-                const sharedBuffer = new SharedArrayBuffer(2048);
-                const view = new DataView(sharedBuffer);
-    
-                let topic = "${body.deviceMap.MULTI_SENSOR_1}";
-                const client = mqtt.connect(connectUrl, {
-                    clean: true,
-                    connectTimeout: 4000,
-                    reconnectPeriod: 1000,
-                    protocolId: "MQIsdp",
-                    protocolVersion: 3,
-                });
-    
-                function terminateVm() {
-                  view.setUint8(1, 1);
-                  client.end(false, () => {
-                    console.log('Disconnected from MQTT broker');
-                  });
-                  return true;
-                }
-              
-                // Expose the function to the context
-                globalThis.terminateVm = terminateVm;
-    
-                client.on("connect", () => {
-                    client.subscribe(topic, (err) => {
-                        if (!err) {
-                            console.log("Connected To :", topic);
-                        } else {
-                            console.log("Error While Connecting To :", topic);
-                        }
-                    });
-                });
-    
-                async function getDeviceInfos(ecryptedId) {
-                  const respons = await deviceService.getDeviceInfoByEncryptedId(ecryptedId)
-                  return respons
-                }
-    
-                 client.on("message", async (topic, message) => {
-    
-                  let data = JSON.parse(message);
-    
-                  try {
-                    const deviceInfos = await getDeviceInfos(topic);
-    
-                    if (deviceInfos) {
-                        data.data = {
-                            ...data.data, 
-                            mac: deviceInfos.mac,
-                            type: deviceInfos.deviceType,
-                        };
-            
-                        
-                        data.data = lowercaseStrings(data.data);
+const { TextEncoder, TextDecoder } = require('util');
 
-                        data.data = {
-                            ...data.data, 
-                            name: deviceInfos.deviceName,
-                        }; // Because of the device name to don't be lowercase*
+function uppercaseKeys(obj) {
+	return Object.keys(obj).reduce((result, key) => {
+		result[key.toUpperCase()] = obj[key];
+		return result;
+	}, {});
+}
 
-                        data.data = uppercaseKeys(data.data); // uppercasing all the keys, also NAME*
+function lowercaseStrings(obj) {
+	if (typeof obj !== 'object' || obj === null) {
+		return obj;
+	}
+	for (const key in obj) {
+		if (Object.prototype.hasOwnProperty.call(obj, key)) {
+			const value = obj[key];
+			if (typeof value === 'string') {
+				obj[key] = value.toLowerCase();
+				lowercaseStrings(value);
+			}
+		}
+	}
+	return obj;
+}
 
-                        console.log("The data is:", data);
-                    } else {
-                        console.error("Device info not found for topic:", topic);
-                    }
-                  } catch (error) {
-                      console.error("Error fetching device info:", error);
-                  }
+let devicesInfo = {};
 
-                    // Clear the sharedBuffer before setting new data
-                    for (let i = 0; i < sharedBuffer.byteLength; i++) {
-                        view.setUint8(i, 0);
-                    }
-    
-                    // Encode the message and store it in sharedBuffer
-                    const encoder = new TextEncoder();
-                    const encodedMessage = encoder.encode(JSON.stringify(data));
-                    for (let i = 0; i < encodedMessage.length; i++) {
-                        view.setUint8(i + 2, encodedMessage[i]);  // Store starting from index 1
-                    }
-                    // Set the flag to true (1)
-                    view.setUint8(0, 1);
-                }); 
-    
-                console.log("Main thread: Starting workers...");
-    
-                const sendMail = async (email) => {
-                  let user = await userService.getUserProfileByIdFromUser('${userId}');
-                  let userEmail = user.email;
-                  return await mailService.sendEmailFromService(userEmail, email.body, email.subject);
-                }
-    
-                const sendNotification = async (notification) => {
-                  return await mailService.sendNotificationFromService('${userId}', notification.title, notification.message);
-                }
-    
-                const workerCode = \`
-    
-                const {
-                  Worker,
-                  isMainThread,
-                  parentPort,
-                  workerData,
-                } = require("worker_threads");
-      
-                const { TextEncoder, TextDecoder } = require('util');
-    
-                function mainFunction() {
-                  const sharedBuffer = workerData;
-                  const view = new DataView(sharedBuffer);
-                  const decoder = new TextDecoder();
-                  parentPort.postMessage("Loop Runed")
-    
-                  while (true) {
-                      const flag = view.getUint8(0);
-                      const terminate = view.getUint8(1);
-                      if (terminate === 1) {
-                        process.exit(0);
-                      }
-                      if (flag === 1) {
-                          // Reset the flag
-                          view.setUint8(0, 0);
-    
-                          // Extract and decode the message starting from index 1
-                          const bytes = new Uint8Array(sharedBuffer, 2, 2046);
-                          
-                          let message = decoder.decode(bytes).trim();
-                      
-                          // Log the exact content of the message
-                          console.log('Decoded message:', message);
-    
-                          // Clean up the message by removing any non-JSON residual characters
-                          const cleanMessage = message.replace(/[^\\x20-\\x7E]/g, '');
-    
-                          // Parse the JSON message
-    
-                          const sendMail = (obj) => {
-                            parentPort.postMessage(obj);
-                          };
-    
-                          const sendNotification = (obj) => {
-                            parentPort.postMessage(obj);
-                          };
-                          
-                          parentPort.postMessage("clean Message ISSSSSS: ");
-                          parentPort.postMessage(cleanMessage)
+async function getServiceDevicesData() {
+	devicesInfo = {};
 
-                          try {
-                            let data = JSON.parse(cleanMessage);
-                            parentPort.postMessage("Data Parsed");
-                            parentPort.postMessage(data);
-    
-                            ${editedUserCodeOutput}
-    
-                          } catch (e) {
-                              parentPort.postMessage('Failed to parse JSON: ');
-                              parentPort.postMessage(e);
-                          }
-    
-                      }
-    
-                      // Simulate a short delay
-                      var waitTill = new Date(new Date().getTime() + 100);
-                      while (waitTill > new Date()) {}
-                  }
-              }
-    
-              mainFunction();\`
-    
-                const vmWorker = new Worker(workerCode, { eval: true, workerData: sharedBuffer });
+	for (const [deviceName, deviceEncryptedId] of Object.entries(
+		localDeviceMap
+	)) {
+		devicesInfo[deviceName] =
+			await deviceService.getDeviceInfoByEncryptedId(
+				String(deviceEncryptedId)
+			);
+	}
+
+	Object.keys(devicesInfo).forEach((key) => {
+		const deviceData = devicesInfo[key];
+
+		let nodeMqttAddress = '';
+
+		if (String(deviceData.nodeId) == 'developer.fidesinnova.io') {
+			nodeMqttAddress = \`\${deviceData.nodeId}\`;
+		} else {
+			nodeMqttAddress = \`panel.\${deviceData.nodeId}\`;
+		}
+		devicesInfo[key].nodeMqttAddress = nodeMqttAddress;
+	});
+
+	console.log('All Device Data Refreshed From DB');
+}
+
+function getDeviceVariableWithEncryptedId(deviceEncryptedId) {
+	let findName = '';
+	for (const [deviceName, encryptedId] of Object.entries(localDeviceMap)) {
+		if (String(deviceEncryptedId) == String(encryptedId)) {
+			findName = deviceName;
+		}
+	}
+	return findName;
+}
+
+function getDeviceDataByEncryptedId(deviceEncryptedId) {
+	const deviceData = Object.keys(devicesInfo).find((key) => {
+		const deviceData = devicesInfo[key];
+		return (
+			String(deviceData.deviceEncryptedId) === String(deviceEncryptedId)
+		);
+	});
+
+	return devicesInfo[deviceData] || {};
+}
+
+const sharedBuffer = new SharedArrayBuffer(2048);
+const view = new DataView(sharedBuffer);
+
+let clients = [];
+
+function listenToAllDevices() {
+	Object.keys(devicesInfo).forEach((key) => {
+		const deviceData = devicesInfo[key];
+		const connectUrl = \`mqtts://\${deviceData.nodeMqttAddress}:8883\`;
+		let topic = \`\${deviceData.deviceEncryptedId}\`;
+		
+    const client = mqtt.connect(connectUrl, {
+			clean: true,
+			connectTimeout: 4000,
+			reconnectPeriod: 1000,
+			protocolId: 'MQIsdp',
+			protocolVersion: 3,
+		});
+
+    clients.push(client);
+
+
+		client.on('connect', () => {
+			client.subscribe(topic, (err) => {
+				if (!err) {
+					console.log('Connected To :', topic);
+				} else {
+					console.log('Error While Connecting To :', topic);
+				}
+			});
+		});
+		client.on('message', async (topic, message) => {
+			let data = JSON.parse(message);
+
+			try {
+				const deviceInfos = getDeviceDataByEncryptedId(data.from);
+
+        		console.log("Device Name:", deviceInfos.deviceName, ", Device Enc:", data.from)
+
+				if (deviceInfos) {
+
+          		data.variable = getDeviceVariableWithEncryptedId(data.from);
+
+				data.data = {
+					...data.data,
+					mac: deviceInfos.mac,
+					type: deviceInfos.deviceType,
+				};
+
+				if (data.data.proof) {
+					delete data.data.proof;
+					console.log('Proof Deleted');
+				}
+
+				data.data = lowercaseStrings(data.data);
+
+				data.data.name = deviceInfos.deviceName // Because of the device name to don't be lowercase*
+
+				data.data = uppercaseKeys(data.data); // uppercasing all the keys, also NAME*
+
+				console.log('The data is:', data);
+          
+				} else {
+					console.error('Device info not found for topic:', topic);
+				}
+			} catch (error) {
+				console.error('Error fetching device info:', error);
+			}
+
+			// Clear the sharedBuffer before setting new data
+			for (let i = 0; i < sharedBuffer.byteLength; i++) {
+				view.setUint8(i, 0);
+			}
+
+			// Encode the message and store it in sharedBuffer
+			const encoder = new TextEncoder();
+			const encodedMessage = encoder.encode(JSON.stringify(data));
+			for (let i = 0; i < encodedMessage.length; i++) {
+				view.setUint8(i + 2, encodedMessage[i]); // Store starting from index 1
+			}
+
+			console.log("Flag setted true")
+			// Set the flag to true (1)
+			view.setUint8(0, 1);
+		});
+	});
+}
+
+function terminateVm() {
+	view.setUint8(1, 1);
+	
+	clients.forEach((client) => {
+		client.end(false, () => {
+			console.log('Disconnected from MQTT broker');
+		});
+	});
+  
+	return true;
+}
+
+(async () => {
+	await getServiceDevicesData();
+	await listenToAllDevices();
+})();
+
+setTimeout(() => {
+	getServiceDevicesData();
+}, 10 * 60 * 1000);
+
+// Expose the function to the context
+globalThis.terminateVm = terminateVm;
+
+const sendMail = async (email) => {
+	let user = await userService.getUserProfileByIdFromUser('${userId}');
+	let userEmail = user.email;
+	return await mailService.sendEmailFromService(
+		userEmail,
+		email.body,
+		email.subject
+	);
+};
+
+const sendNotification = async (notification) => {
+	return await mailService.sendNotificationFromService(
+		'${userId}',
+		notification.title,
+		notification.message
+	);
+};
+
+
+console.log('Main thread: Starting workers...');
+
+
+    const workerCode = \`
+     const {
+	Worker,
+	isMainThread,
+	parentPort,
+	workerData,
+} = require('worker_threads');
+
+const { TextEncoder, TextDecoder } = require('util');
+
+let lastData = {};
+let functions = {};
+
+
+
+function getNewData(variable = "") {
+	const sharedBuffer = workerData;
+	const view = new DataView(sharedBuffer);
+	const decoder = new TextDecoder();
+	const flag = view.getUint8(0);
+	const terminate = view.getUint8(1);
+	if (terminate === 1) {
+		process.exit(0);
+	}
+
+	if (flag === 1) {
+
+		parentPort.postMessage("Data received from custom function")
+
+		view.setUint8(0, 0);
+
+		const bytes = new Uint8Array(sharedBuffer, 2, 2046);
+
+		let message = decoder.decode(bytes).trim();
+
+		const cleanMessage = message.replace(/[^\\x20-\\x7E]/g, '');
+
+		let data;
+
+		try {
+
+			data = JSON.parse(cleanMessage);
+
+    		lastData[String(data.variable)] = data.data
+
+			const deviceName = String(data.variable);
+			const capitalizedDeviceName = deviceName.charAt(0).toUpperCase() + deviceName.slice(1);
+			
+			const functionName = "runFunctionWithPayload" + capitalizedDeviceName;
+
+			if (typeof functions[functionName] === "function") {
+				functions[functionName]();
+			} else {
+				console.error("Function not found");
+			}
+
+		} catch (e) {
+			parentPort.postMessage('Failed to parse JSON');
+		}
+
+		const deviceVar = String(variable)
+
+		parentPort.postMessage("The variable is:")
+
+		parentPort.postMessage(deviceVar)
+
+		if ( deviceVar.length > 0 && deviceVar != String(data?.variable) ) {
+			parentPort.postMessage("getNewData returned falseeeeeeeeeeeeee")
+			return false
+		}
+		parentPort.postMessage("getNewData returned truuuuuuuuuuuuuuuuuuuuue")
+		return true
+	} else {
+		return false 
+	}
+}
+
+function mainFunction() {
+	const sharedBuffer = workerData;
+	const view = new DataView(sharedBuffer);
+	const decoder = new TextDecoder();
+	parentPort.postMessage('Loop Runed');
+  	
+	while (true) {
+		const flag = view.getUint8(0);
+		const terminate = view.getUint8(1);
+		if (terminate === 1) {
+			process.exit(0);
+		}
+
+		if (flag === 1) {
+			view.setUint8(0, 0);
+
+			const bytes = new Uint8Array(sharedBuffer, 2, 2046);
+
+			let message = decoder.decode(bytes).trim();
+
+			const cleanMessage = message.replace(/[^\\x20-\\x7E]/g, '');
+
+			const sendMail = (obj) => {
+				parentPort.postMessage(obj);
+			};
+
+			const sendNotification = (obj) => {
+				parentPort.postMessage(obj);
+			};
+
+			try {
+
+				let data = JSON.parse(cleanMessage);
+
+        		lastData[String(data.variable)] = data.data
+
+				${letLinesCode}
+
+				parentPort.postMessage('Log lastData:');
+				parentPort.postMessage(lastData);
+
+				${restOfCode}
+
+				const deviceName = String(data.variable);
+				const capitalizedDeviceName = deviceName.charAt(0).toUpperCase() + deviceName.slice(1);
+				
+				const functionName = "runFunctionWithPayload" + capitalizedDeviceName;
+
+				if (typeof functions[functionName] === "function") {
+					functions[functionName]();
+				} else {
+					console.error("Function not found");
+				}
+        
+			} catch (e) {
+				parentPort.postMessage('Error in user code: ');
+				parentPort.postMessage(e);
+			}
+		}
+
+		// Simulate a short delay
+		var waitTill = new Date(new Date().getTime() + 100);while (waitTill > new Date()) {};
+	}
+
+	
+}
+
+mainFunction();
+
+    \`
+
+    const vmWorker = new Worker(workerCode, { eval: true, workerData: sharedBuffer});
     
                 vmWorker.on('message', (msg) => {
                     if ( (typeof msg).toString() === "object" ) {
@@ -330,8 +502,7 @@ export class VirtualMachineHandlerService {
                 });
     
               console.log('vmWorker started successfully.');
-    
-        `;
+    `;
 
     // Create a script
     const script = new Script(code);
@@ -341,6 +512,7 @@ export class VirtualMachineHandlerService {
       console: console,
       require: require,
       mqtt: mqtt,
+      localDeviceMap: localDeviceMap,
       userService: this.userService,
       mailService: this.mailService,
       deviceService: this.deviceService,
@@ -350,6 +522,8 @@ export class VirtualMachineHandlerService {
       },
       TextEncoder: require('util').TextEncoder,
       TextDecoder: require('util').TextDecoder,
+      setTimeout: setTimeout,
+      setInterval: setInterval,
     });
 
     // Run the script in the context
@@ -422,3 +596,5 @@ export class VirtualMachineHandlerService {
     return this.allResults;
   }
 }
+
+
