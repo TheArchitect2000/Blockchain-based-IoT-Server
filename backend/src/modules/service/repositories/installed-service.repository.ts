@@ -40,6 +40,15 @@ export class InstalledServiceRepository {
     // return await this.installedServiceModel.create(data)
   }
 
+  async deleteInstalledServiceById(id) {
+    return await this.installedServiceModel.deleteOne({ _id: id });
+  }
+
+  async deleteInstalledServicesFromUserWithDeviceEncryptedId(userId: string, deviceEncryptedId: string) {
+    const theUserId = new Types.ObjectId(userId)
+    return await this.installedServiceModel.deleteMany({ userId: theUserId, deviceMap: { $in: [deviceEncryptedId] } });
+  }
+
   async editInstalledService(id, editedData) {
     await this.installedServiceModel
       .updateOne({ _id: id }, editedData)
@@ -98,7 +107,7 @@ export class InstalledServiceRepository {
     console.log('deviceEncryptedId is: ', deviceEncryptedId);
 
     return await this.installedServiceModel
-      .find({ 'deviceMap.MULTI_SENSOR_1': deviceEncryptedId })
+      .find({ deviceMap: { $in: [deviceEncryptedId] } })
       .where(whereCondition)
       .populate(populateCondition)
       .select(selectCondition);

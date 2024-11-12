@@ -989,6 +989,8 @@ export class DeviceService {
       userId,
     );
 
+    this.installedService.deleteServicesOfAnUserWithDeviceId(userId, String(foundDevices.deviceEncryptedId))
+
     this.buildingService.deleteDeviceIdFromBuildingsByUserId(String(foundDevices.deviceEncryptedId), userId);
 
     return result;

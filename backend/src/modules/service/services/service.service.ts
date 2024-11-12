@@ -207,7 +207,7 @@ export class ServiceService {
       .then((data) => {
         this.result = data;
         if (nodePublish == false) {
-          /* this.contractService.createService(
+          this.contractService.createService(
             String(process.env.NODE_ID),
             String(foundService._id),
             String(foundService.serviceName),
@@ -220,7 +220,7 @@ export class ServiceService {
             String(foundService.code),
             String(foundService.insertDate),
             String(new Date()),
-          ); */
+          );
         }
       })
       .catch((error) => {

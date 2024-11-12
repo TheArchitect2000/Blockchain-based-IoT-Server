@@ -275,6 +275,10 @@ export class InstalledServiceService {
     return response;
   }
 
+  async deleteServicesOfAnUserWithDeviceId(userId: string, deviceEncryptedId: string) {
+    return await this.installedServiceRepository.deleteInstalledServicesFromUserWithDeviceEncryptedId(userId, deviceEncryptedId)
+  }
+
   async deleteInstalledServiceByInstalledServiceId(
     installedServiceId,
     userId = '',
@@ -318,18 +322,7 @@ export class InstalledServiceService {
         };
         return this.result;
       }
-
-      foundInstalledService.isDeleted = true;
-      foundInstalledService.deletedBy = userId;
-      foundInstalledService.deleteDate = new Date();
-      foundInstalledService.updatedBy = userId;
-      foundInstalledService.updateDate = new Date();
     }
-
-    console.log(
-      'Updated found installed service for deletion is: ',
-      foundInstalledService,
-    );
 
     await this.virtualMachineHandlerService.deleteVirtualMachinByServiceId(
       installedServiceId,
@@ -345,21 +338,11 @@ export class InstalledServiceService {
         userId,
       );
     }
-    await this.installedServiceRepository
-      .editInstalledService(foundInstalledService._id, foundInstalledService)
-      .then((data) => {
-        this.result = data;
-      })
-      .catch((error) => {
-        let errorMessage =
-          'Some errors occurred while editing and deleting a installed service!';
-        throw new GeneralException(
-          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-          errorMessage,
-        );
-      });
+    await this.installedServiceRepository.deleteInstalledServiceById(
+      foundInstalledService._id,
+    );
 
-    return this.result;
+    return true
   }
 
   async deleteAllUserInstalledServicesPermanently(userId) {
