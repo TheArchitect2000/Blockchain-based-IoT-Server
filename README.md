@@ -384,35 +384,33 @@ RPC_URL = 'your-rpc-url'
 
 ## 8- Device Installation Data
 
-During the installation process in the mobile app, the following devices will be displayed based on the data provided in the `iot_node_backend_web_app_source/backend/src/data/devices.json` file. Each device is represented by an image and a title:
+During the installation process in the mobile app, the following devices will be displayed based on the data provided in the `iot_node_backend_web_app_source/backend/src/data/devices.json` file. Each device is represented by an image, a title, and various parameters.
 
+Each device in `devices.json` includes:
+- **fileName**: Refers to the image file that should be placed in the `/iot_node_backend_web_app_source/backend/uploads/device` directory. This image will be displayed in the mobile app (e.g., "ecard.png").
+- **title**: The display name for the device (e.g., "E-Card").
+- **type**: Device type identifier (e.g., "E-CARD").
+
+**Device Parameters**:
+Parameters specify data points each device supports. These parameters will be passed to the web app Blockly editor for creating new services. 
+
+- If a parameter’s `value` is an empty array `[]`, it indicates dynamic data input.
+- If `value` has specific options (e.g., `["Open", "Close"]`), it will show these options in the Blockly dropdown as predefined outputs.
+
+### Example of a Device
 ```json
-[
-  { 
-    "fileName": "ecard.png", 
-    "title": "E-Card", 
-    "type": "E-CARD" 
-  },
-  {
-    "fileName": "multisensor.png",
-    "title": "Multi Sensor",
-    "type": "MULTI_SENSOR"
-  },
-  {
-    "fileName": "motionsensor.png",
-    "title": "Motion Sensor",
-    "type": "MOTION_SENSOR"
-  }
-]
+{
+  "fileName": "multisensor.png",
+  "title": "Multi Sensor",
+  "type": "MULTI_SENSOR",
+  "parameters": [
+    { "label": "Temperature", "value": [] },            // dynamic input
+    { "label": "Button", "value": ["Pressed", "NOT Pressed"] } // predefined options
+  ]
+}
 ```
-* `fileName:` Refers to the image file that should be placed in the `/iot_node_backend_web_app_source/backend/uploads/device` directory. This image will be displayed in the mobile app.
-* `title:` The name of the device as it will appear in the mobile app's device installation list.
-* `type:` The device type, which is used by the node supervisor to categorize the devices.
 
-## Device Manager
-
-This project allows you to manage a list of devices, stored in `src/data/devices.json`. Once the backend is up and running, the devices file is automatically created, and you can freely edit it to manage your device data.
-
+This configuration ensures that each device and its parameters are accessible for service configuration within the Blockly environment.
 
 -------------------------------------------------------------------------------------------------
 
