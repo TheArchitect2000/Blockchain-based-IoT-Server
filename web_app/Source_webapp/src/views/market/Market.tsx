@@ -6,7 +6,7 @@ import { apiGetAllPublishedServices } from '@/services/ServiceAPI'
 import { Loading } from '@/components/shared'
 import { Button } from '@/components/ui'
 import { DeviceData } from '@/utils/hooks/useGetDevices'
-import { apiGetAllSharedDevices, apiGetDevices } from '@/services/DeviceApi'
+import { apiGetAllSharedDevices, apiGetDevices, apiGetSharedWithMeDevices } from '@/services/DeviceApi'
 import { useAppSelector } from '@/store'
 import CardHolder from '@/components/ui/CardHolder'
 
@@ -16,6 +16,7 @@ function Market() {
     const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
     const [myDevices, setMyDevices] = useState<DeviceData[]>([])
     const [sharedDevices, setSharedDevices] = useState<DeviceData[]>([])
+    const [localShareWithMe, setLocalShareWithMe] = useState<DeviceData[]>([])
 
     const { _id: userId } = useAppSelector((state) => state.auth.user)
 
@@ -27,6 +28,8 @@ function Market() {
             setMyDevices(myRes?.data.data!)
             const sharedRes = (await apiGetAllSharedDevices()) as any
             setSharedDevices(sharedRes?.data.data!)
+            const sharedWithMeRes = (await apiGetSharedWithMeDevices()) as any
+            setLocalShareWithMe(sharedWithMeRes?.data.data!)
             setLoading(false)
         }
         getDatas()
@@ -78,6 +81,7 @@ function Market() {
                 <CardHolder>
                     {sortedData.map((service: ServiceData) => (
                         <ServiceCard
+                            sharedWithMe={localShareWithMe}
                             sharedDevices={sharedDevices}
                             myDevices={myDevices}
                             key={service._id}

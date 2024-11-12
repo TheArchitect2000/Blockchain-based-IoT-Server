@@ -22,16 +22,18 @@ import Tabs from '@/components/custom/Tab'
 const ServiceCard = ({
     sharedDevices,
     myDevices,
+    sharedWithMe,
     className,
     serviceData,
 }: {
     sharedDevices: Array<DeviceData>
+    sharedWithMe: Array<DeviceData>
     myDevices: Array<DeviceData>
     className: string
     serviceData?: ServiceData
 }) => {
     const [modalOpen, setModalOpen] = useState(false)
-    const [deviceModal, setDeviceModal] = useState(false)
+    const [refreshTabs, setRefreshTabs] = useState<number>(0)
     const [installModal, setInstallModal] = useState(false)
     const [installLoading, setInstallLoading] = useState(false)
     const [codeModal, setCodeModal] = useState(false)
@@ -45,6 +47,10 @@ const ServiceCard = ({
     }>({})
     const { _id: userId } = useAppSelector((state) => state.auth.user)
     const navigateTo = useNavigate()
+
+    function refreshTheTabs() {
+        setRefreshTabs(refreshTabs + 1)
+    }
 
     function getSelectedDevicesObjectWithEncryptedId(): Record<string, string> {
         const transformedObject: any = {}
@@ -99,13 +105,53 @@ const ServiceCard = ({
             : 'Select'
     }
 
-    function getAvailableDevices(type: 'shared' | 'my', nowDevice: string) {
+    function getAvailableDevices(
+        type: 'shared' | 'my' | 'shared-with-me',
+        nowDevice: string,
+        deviceType: string
+    ) {
+        console.log('Ghol', deviceType)
+
         const selecteId = selectedDevices[nowDevice]
-        let deviceList: Array<DeviceData>
+        let deviceList: Array<DeviceData> = []
+
+        // Extract _id values from deviceRes
+        const deviceRes_ids = new Set(
+            myDevices.map((device: any) => device._id)
+        )
+
+        // Extract _id values from deviceRes
+        const localDevices_ids = new Set(
+            sharedWithMe.map((device: any) => device._id)
+        )
+
+        // Filter sharedDevices to exclude devices that are already in deviceRes
+        const filteredSharedDevices = sharedDevices
+            .filter(
+                (device: any) =>
+                    !deviceRes_ids.has(device.nodeDeviceId) &&
+                    !deviceRes_ids.has(device._id) &&
+                    !localDevices_ids.has(device.nodeDeviceId) &&
+                    !localDevices_ids.has(device._id)
+            )
+            .map((item: any) => {
+                return { ...item, isShared: true }
+            })
+
+        const updatedFilteredmyLocalDevices = sharedWithMe.map((item: any) => {
+            return { ...item, isLocal: true }
+        })
+
+        const updatedFilteredMyDevices = myDevices.map((item: any) => {
+            return { ...item, myDevice: true }
+        })
+
         if (type == 'my') {
-            deviceList = myDevices
-        } else {
-            deviceList = sharedDevices
+            deviceList = updatedFilteredMyDevices
+        } else if (type == 'shared') {
+            deviceList = filteredSharedDevices
+        } else if (type == 'shared-with-me') {
+            deviceList = updatedFilteredmyLocalDevices
         }
 
         const filteredDevices = Object.values(selectedDevices).filter(
@@ -113,11 +159,14 @@ const ServiceCard = ({
         )
 
         filteredDevices.map((value: string) => {
-            deviceList = deviceList.filter(
-                (device) =>
-                    device.nodeDeviceId !== value && device._id !== value
-            )
+            deviceList = deviceList.filter((device) => {
+                return device.nodeDeviceId !== value && device._id !== value
+            })
         })
+
+        deviceList = deviceList.filter(
+            (device) => String(device.deviceType) === deviceType
+        )
 
         return deviceList
     }
@@ -189,7 +238,6 @@ const ServiceCard = ({
 
     useEffect(() => {
         if (modalOpen == false) {
-            setDeviceModal(false)
             setSelectedDevices({})
         }
     }, [modalOpen])
@@ -234,7 +282,6 @@ const ServiceCard = ({
                     }
                 )
             }
-            setDeviceModal(false)
             setModalOpen(false)
             setInstallModal(false)
             setSelectedDevices({})
@@ -379,6 +426,7 @@ const ServiceCard = ({
                                             className="flex items-center !h-8"
                                             size="sm"
                                             onClick={() => {
+                                                refreshTheTabs()
                                                 const ref =
                                                     deviceRefs[
                                                         String(device?.name)
@@ -419,6 +467,7 @@ const ServiceCard = ({
                                                 }
                                             >
                                                 <Tabs
+                                                    key={`Tabs_${refreshTabs}`}
                                                     tabs={[
                                                         {
                                                             label: 'My Devices',
@@ -426,7 +475,8 @@ const ServiceCard = ({
                                                                 <>
                                                                     {getAvailableDevices(
                                                                         'my',
-                                                                        device?.name
+                                                                        device?.name,
+                                                                        device.type
                                                                     ).map(
                                                                         (
                                                                             device,
@@ -455,7 +505,43 @@ const ServiceCard = ({
                                                                 <>
                                                                     {getAvailableDevices(
                                                                         'shared',
-                                                                        device?.name
+                                                                        device?.name,
+                                                                        device.type
+                                                                    ).map(
+                                                                        (
+                                                                            device,
+                                                                            index
+                                                                        ) => (
+                                                                            <Dropdown.Item
+                                                                                eventKey={
+                                                                                    device.nodeDeviceId
+                                                                                }
+                                                                                key={
+                                                                                    index
+                                                                                }
+                                                                            >
+                                                                                {
+                                                                                    device.deviceName
+                                                                                }{' '}
+                                                                                {`(IoT Server: ${
+                                                                                    device.nodeId.split(
+                                                                                        '.'
+                                                                                    )[0]
+                                                                                })`}
+                                                                            </Dropdown.Item>
+                                                                        )
+                                                                    )}
+                                                                </>
+                                                            ),
+                                                        },
+                                                        {
+                                                            label: 'Shared With Me',
+                                                            content: (
+                                                                <>
+                                                                    {getAvailableDevices(
+                                                                        'shared-with-me',
+                                                                        device?.name,
+                                                                        device.type
                                                                     ).map(
                                                                         (
                                                                             device,
@@ -533,8 +619,7 @@ const ServiceCard = ({
                                 </Button>
                                 <Button
                                     className="px-6"
-                                    variant="solid"
-                                    color="red"
+                                    variant="default"
                                     size="sm"
                                     onClick={() => setInstallModal(false)}
                                 >
@@ -542,18 +627,6 @@ const ServiceCard = ({
                                 </Button>
                             </div>
                         </Dialog>
-                        {serviceData?.devices.length ==
-                            selectedDevicesCount() && (
-                            <Button
-                                className=""
-                                variant="solid"
-                                color="yellow"
-                                size="sm"
-                                onClick={() => setDeviceModal(true)}
-                            >
-                                Change Device
-                            </Button>
-                        )}
                     </div>
                 </section>
             </Dialog>
