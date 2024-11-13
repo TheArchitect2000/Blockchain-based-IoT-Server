@@ -412,6 +412,51 @@ Parameters specify data points each device supports. These parameters will be pa
 
 This configuration ensures that each device and its parameters are accessible for service configuration within the Blockly environment.
 
+### A full sample file has been executed (device.json)
+```json
+[
+  {
+    "fileName": "ecard.png",
+    "title": "E-Card",
+    "type": "E-CARD",
+    "parameters": [
+      { "label": "Temperature", "value": [] },
+      { "label": "Humidity", "value": [] },
+      { "label": "Button", "value": ["Pressed", "NOT Pressed"] }
+    ]
+  },
+  {
+    "fileName": "multisensor.png",
+    "title": "Multi Sensor",
+    "type": "MULTI_SENSOR",
+    "parameters": [
+      { "label": "Temperature", "value": [] },
+      { "label": "Humidity", "value": [] },
+      { "label": "Door", "value": ["Open", "Close"] },
+      { "label": "Movement", "value": ["Scanning...", "Detected"] },
+      { "label": "Button", "value": ["Pressed", "NOT Pressed"] }
+    ]
+  },
+  {
+    "fileName": "zk-multisensor.png",
+    "title": "ZK Multi Sensor",
+    "type": "ZK_MULTISENSOR",
+    "parameters": [
+      { "label": "Temperature", "value": [] },
+      { "label": "Humidity", "value": [] },
+      { "label": "Noise", "value": [] },
+      { "label": "Pressure", "value": [] },
+      { "label": "eCO2", "value": [] },
+      { "label": "TVOC", "value": [] },
+      { "label": "Door", "value": ["Open", "Close"] },
+      { "label": "Movement", "value": ["Scanning...", "Detected"] },
+      { "label": "Button", "value": ["Pressed", "NOT Pressed"] }
+    ]
+  }
+]
+
+```
+
 -------------------------------------------------------------------------------------------------
 
 # How to Install WebApp
