@@ -613,13 +613,15 @@ export default function BlocklyEditor() {
 
                                 setDeviceTypes(deviceVariables)
 
-                                defineBlocklyCustomBlocks(
-                                    response.data.data,
-                                    setDeviceTypes,
-                                    setTheToolBox,
-                                    setLoading,
-                                    deviceVariables
-                                )
+                                setTimeout(() => {
+                                    defineBlocklyCustomBlocks(
+                                        response.data.data,
+                                        setDeviceTypes,
+                                        setTheToolBox,
+                                        setLoading,
+                                        deviceVariables
+                                    )
+                                }, 500)
 
                                 Blockly.Xml.domToWorkspace(
                                     xml,
