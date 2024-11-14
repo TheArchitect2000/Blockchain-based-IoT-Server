@@ -550,8 +550,6 @@ export default function BlocklyEditor() {
                     try {
                         if (result.blocklyJson && workspaceRef.current) {
                             try {
-                                const xml = Blockly.utils.xml.textToDom(xmlText)
-
                                 workspaceRef.current.clear() // Clear the workspace
 
                                 const parser = new DOMParser()
@@ -734,7 +732,7 @@ export default function BlocklyEditor() {
                                     colour: '#ccc',
                                     snap: true,
                                 },
-                                disable: { isSaving },
+                                disable: isSaving,
                                 trashcan: true,
                                 media: `${import.meta.env.VITE_URL}uploads/`,
                             }}
