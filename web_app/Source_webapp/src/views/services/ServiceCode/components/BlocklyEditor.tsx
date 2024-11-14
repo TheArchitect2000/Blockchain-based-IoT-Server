@@ -310,7 +310,7 @@ export function defineBlocklyCustomBlocks(
         }
 
         stateDevices?.forEach((devices: any) => {
-            devices?.parameters.forEach((device: any) => {
+            devices?.parameters?.forEach((device: any) => {
                 if (Array.isArray(device.value) && device.value?.length > 0) {
                     const blockName = `device_${device.label.replace(
                         /[^a-zA-Z0-9_]/g,
