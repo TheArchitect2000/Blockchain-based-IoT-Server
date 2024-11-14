@@ -621,12 +621,12 @@ export default function BlocklyEditor() {
                                         setLoading,
                                         deviceVariables
                                     )
-                                }, 500)
 
-                                Blockly.Xml.domToWorkspace(
-                                    xml,
-                                    workspaceRef.current
-                                )
+                                    Blockly.Xml.domToWorkspace(
+                                        xmlDoc.documentElement,
+                                        workspaceRef.current
+                                    )
+                                }, 500)
                             } catch (xmlError) {
                                 console.error('Invalid XML format:', xmlError)
                             }
