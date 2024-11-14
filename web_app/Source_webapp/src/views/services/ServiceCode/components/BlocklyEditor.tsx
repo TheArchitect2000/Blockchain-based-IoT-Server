@@ -412,6 +412,7 @@ export function defineBlocklyCustomBlocks(
 
         if (setTheToolBox) {
             setTheToolBox(dynamicToolbox)
+            console.log("dynamicToolbox setted successfully")
         }
         if (setLoading) {
             setLoading(false)
@@ -743,6 +744,7 @@ export default function BlocklyEditor() {
                                 media: `${import.meta.env.VITE_URL}uploads/`,
                             }}
                             onWorkspaceChange={(workspace) => {
+                                console.log("workspaceRef.current setted successfully")
                                 workspaceRef.current = workspace // Set the workspace instance
                                 workspaceDidChange(workspace) // Call your existing handler
                             }}
