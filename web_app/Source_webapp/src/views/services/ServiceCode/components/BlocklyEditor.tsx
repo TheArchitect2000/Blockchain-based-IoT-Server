@@ -309,8 +309,8 @@ export function defineBlocklyCustomBlocks(
             return [code, javascriptGenerator.ORDER_FUNCTION_CALL]
         }
 
-        stateDevices.forEach((devices: any) => {
-            devices.parameters.forEach((device: any) => {
+        stateDevices?.forEach((devices: any) => {
+            devices?.parameters.forEach((device: any) => {
                 if (Array.isArray(device.value) && device.value?.length > 0) {
                     const blockName = `device_${device.label.replace(
                         /[^a-zA-Z0-9_]/g,
@@ -593,7 +593,7 @@ export default function BlocklyEditor() {
                                     }
                                 }
 
-                                Object.keys(deviceVariables).forEach(
+                                Object.keys(deviceVariables)?.forEach(
                                     (deviceName) => {
                                         let existingVar =
                                             workspaceRef.current.getVariable(
@@ -780,3 +780,5 @@ export default function BlocklyEditor() {
         </>
     )
 }
+
+
