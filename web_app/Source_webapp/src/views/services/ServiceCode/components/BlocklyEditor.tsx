@@ -547,6 +547,8 @@ export default function BlocklyEditor() {
                         .replace(/^"|"$/g, '')
                     setXml(xmlText)
 
+                    console.log("Testingggggggggggggg:", xmlText)
+
                     try {
                         if (result.blocklyJson && workspaceRef.current) {
                             try {
@@ -611,6 +613,8 @@ export default function BlocklyEditor() {
 
                                 setDeviceTypes(deviceVariables)
 
+                                console.log("Code Definessssssssss 111111111:", xmlText)
+
                                 setTimeout(() => {
                                     defineBlocklyCustomBlocks(
                                         response.data.data,
@@ -624,6 +628,8 @@ export default function BlocklyEditor() {
                                         xmlDoc.documentElement,
                                         workspaceRef.current
                                     )
+
+                                    console.log("Code Definessssssssss 222222222222:", xmlText)
                                 }, 500)
                             } catch (xmlError) {
                                 console.error('Invalid XML format:', xmlError)
