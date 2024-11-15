@@ -104,8 +104,10 @@ export async function defineBlocklyCustomBlocks(
                 this.appendDummyInput()
                     .appendField('Create Device')
                     .appendField(
-                        new Blockly.FieldDropdown([['Device1', 'Device1'], ['Device2', 'Device2']]),
-                        'DEVICE_VAR'
+                        new Blockly.FieldDropdown(
+                            this.getDeviceOptions.bind(this),
+                            this.handleDeviceSelection.bind(this)
+                        ),
                     )
                     .appendField('With Type')
                     .appendField(
