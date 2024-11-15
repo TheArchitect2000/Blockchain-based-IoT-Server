@@ -413,21 +413,14 @@ export async function defineBlocklyCustomBlocks(
 
         if (setTheToolBox) {
             setTheToolBox(dynamicToolbox)
-            console.log('dynamicToolbox setted successfully')
-        } else {
-            console.log('dynamicToolbox Not Foundedddd')
         }
 
         if (setLoading) {
             setLoading(false)
         }
 
-        console.log("wating")
-
         // Add a 500ms delay
         await new Promise((resolve) => setTimeout(resolve, 500))
-
-        console.log("wating finished")
 
         return dynamicToolbox
     } catch (error) {
@@ -488,10 +481,6 @@ export default function BlocklyEditor() {
             name: device,
             type: deviceTypes[device],
         }))
-
-        console.log('ghol:', maghol)
-
-        console.log('ghol 2:', getUsedDeviceTypesFromXml())
 
         const res = (await apiEditService({
             ...data,
@@ -559,8 +548,6 @@ export default function BlocklyEditor() {
                         .replace(/^"|"$/g, '')
                     setXml(xmlText)
 
-                    console.log('Testingggggggggggggg:', xmlText)
-
                     try {
                         if (result.blocklyJson && workspaceRef.current) {
                             try {
@@ -625,11 +612,6 @@ export default function BlocklyEditor() {
 
                                 setDeviceTypes(deviceVariables)
 
-                                console.log(
-                                    'Code Definessssssssss 111111111:',
-                                    xmlText
-                                )
-
                                 await defineBlocklyCustomBlocks(
                                     response.data.data,
                                     setDeviceTypes,
@@ -639,13 +621,8 @@ export default function BlocklyEditor() {
                                 )
 
                                 Blockly.Xml.domToWorkspace(
-                                    xmlDoc.documentElement,
+                                    xml,
                                     workspaceRef.current
-                                )
-
-                                console.log(
-                                    'Code Definessssssssss 222222222222:',
-                                    xmlText
                                 )
                             } catch (xmlError) {
                                 console.error('Invalid XML format:', xmlError)
@@ -759,9 +736,6 @@ export default function BlocklyEditor() {
                                 media: `${import.meta.env.VITE_URL}uploads/`,
                             }}
                             onWorkspaceChange={(workspace) => {
-                                console.log(
-                                    'workspaceRef.current setted successfully'
-                                )
                                 workspaceRef.current = workspace // Set the workspace instance
                                 workspaceDidChange(workspace) // Call your existing handler
                             }}
