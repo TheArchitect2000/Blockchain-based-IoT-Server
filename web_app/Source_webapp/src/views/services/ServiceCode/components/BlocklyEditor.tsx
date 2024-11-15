@@ -735,7 +735,6 @@ export default function BlocklyEditor() {
                                 media: `${import.meta.env.VITE_URL}uploads/`,
                             }}
                             onWorkspaceChange={(workspace) => {
-                                console.log("workspaceRef.current Changed")
                                 workspaceRef.current = workspace // Set the workspace instance
                                 workspaceDidChange(workspace) // Call your existing handler
                             }}

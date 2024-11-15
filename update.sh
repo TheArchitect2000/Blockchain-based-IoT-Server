@@ -15,6 +15,8 @@ case $choice in
     echo "Updating Admin Web App..."
     # Navigate to admin_web_app/Source_webapp
     cd admin_web_app/Source_webapp || { echo "Error: Failed to navigate to admin_web_app directory."; exit 1; }
+    echo "Removing node_modules for admin_web_app..."
+    rm -rf node_modules
     echo "Installing new packages for admin_web_app via npm..."
     if npm install; then
         echo "Packages for admin_web_app installed successfully."
@@ -54,6 +56,8 @@ case $choice in
     echo "Updating Web App..."
     # Navigate to web_app/Source_webapp
     cd web_app/Source_webapp || { echo "Error: Failed to navigate to web_app directory."; exit 1; }
+    echo "Removing node_modules for web_app..."
+    rm -rf node_modules
     echo "Installing new packages for web_app via npm..."
     if npm install; then
         echo "Packages for web_app installed successfully."
@@ -93,6 +97,8 @@ case $choice in
     echo "Updating Backend..."
     # Navigate to the backend directory
     cd backend || { echo "Error: Failed to navigate to backend directory."; exit 1; }
+    echo "Removing node_modules for backend..."
+    rm -rf node_modules
     echo "Installing new packages for backend via npm..."
     if npm install; then
         echo "Packages for backend installed successfully."
