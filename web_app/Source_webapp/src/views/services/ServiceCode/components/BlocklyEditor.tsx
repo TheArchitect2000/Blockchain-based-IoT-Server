@@ -551,6 +551,8 @@ export default function BlocklyEditor() {
                     try {
                         if (result.blocklyJson && workspaceRef.current) {
                             try {
+
+                                const xml = Blockly.utils.xml.textToDom(xmlText)
                                 workspaceRef.current.clear() // Clear the workspace
 
                                 const parser = new DOMParser()
@@ -736,6 +738,7 @@ export default function BlocklyEditor() {
                                 media: `${import.meta.env.VITE_URL}uploads/`,
                             }}
                             onWorkspaceChange={(workspace) => {
+                                console.log("workspaceRef.current Changed")
                                 workspaceRef.current = workspace // Set the workspace instance
                                 workspaceDidChange(workspace) // Call your existing handler
                             }}
