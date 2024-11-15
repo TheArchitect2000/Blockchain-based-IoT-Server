@@ -104,10 +104,7 @@ export async function defineBlocklyCustomBlocks(
                 this.appendDummyInput()
                     .appendField('Create Device')
                     .appendField(
-                        new Blockly.FieldDropdown(
-                            this.getDeviceOptions.bind(this),
-                            this.handleDeviceSelection.bind(this)
-                        ),
+                        new Blockly.FieldDropdown([['Device1', 'Device1'], ['Device2', 'Device2']]),
                         'DEVICE_VAR'
                     )
                     .appendField('With Type')
@@ -132,47 +129,31 @@ export async function defineBlocklyCustomBlocks(
             },
 
             getDeviceOptions: function () {
-                if (this.cachedOptions && this.cachedWorkspace === this.workspace) {
-                    return this.cachedOptions; // Return cached options
-                }
-            
-                const workspace = this.workspace;
+                const workspace = this.workspace
                 const deviceOptions = workspace
                     .getVariablesOfType('Device')
-                    .map((deviceVar: any) => [deviceVar.name, deviceVar.name]);
-            
-                deviceOptions.push(['Create Device...', 'CREATE_NEW']);
-                this.cachedOptions = deviceOptions; // Cache the options
-                this.cachedWorkspace = workspace;
-                return deviceOptions;
+                    .map((deviceVar: any) => [deviceVar.name, deviceVar.name])
+                deviceOptions.push(['Create Device...', 'CREATE_NEW'])
+                return deviceOptions
             },
-            
 
-            handleDeviceSelection: function (newValue: string) {
+            handleDeviceSelection: function (newValue: any) {
                 if (newValue === 'CREATE_NEW') {
-                    const deviceName = prompt('Enter new device name:');
+                    const deviceName = prompt('Enter new device name:')
                     if (deviceName) {
                         const rightName = deviceName
                             .replace('-', '_')
                             .replace(/[^a-zA-Z0-9_]/g, '')
-                            .replace(/^[0-9]+/, '');
-            
-                        const alreadyExists = this.workspace
-                            .getVariablesOfType('Device')
-                            .some((varObj: any) => varObj.name === `device_${rightName}`);
-                        
-                        if (!alreadyExists) {
-                            this.workspace.createVariable(
-                                `device_${rightName}`,
-                                'Device'
-                            );
-                        }
-            
-                        // Update the dropdown value safely
-                        const dropdown = this.getField('DEVICE_VAR');
-                        if (dropdown.getValue() !== `device_${rightName}`) {
-                            dropdown.setValue(`device_${rightName}`);
-                        }
+                            .replace(/^[0-9]+/, '')
+                        // Add the new device name as a variable of type 'Device'
+                        this.workspace.createVariable(
+                            `device_${rightName}`,
+                            'Device'
+                        )
+                        // Refresh the dropdown to show the newly added device
+                        this.getField('DEVICE_VAR').setValue(
+                            `device_${rightName}`
+                        )
                     }
                 }
             },
