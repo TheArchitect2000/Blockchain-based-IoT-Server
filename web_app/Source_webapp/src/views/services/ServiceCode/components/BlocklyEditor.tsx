@@ -50,6 +50,7 @@ export function defineBlocklyCustomBlocks(
     setLocalDeviceTypes?: any
 ) {
     let localDeviceTypes: any = setLocalDeviceTypes || {}
+
     try {
         if (!Blockly.Blocks['listen_for_device_payload']) {
             Blockly.Blocks['listen_for_device_payload'] = {
@@ -413,7 +414,10 @@ export function defineBlocklyCustomBlocks(
         if (setTheToolBox) {
             setTheToolBox(dynamicToolbox)
             console.log("dynamicToolbox setted successfully")
+        } else {
+            console.log("dynamicToolbox Not Foundedddd")
         }
+
         if (setLoading) {
             setLoading(false)
         }
