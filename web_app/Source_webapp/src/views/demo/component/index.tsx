@@ -11,8 +11,7 @@ const ServiceCard = ({
     description,
     serviceImage,
     refresh,
-    deviceName,
-    deviceMac,
+    devices,
 }: {
     serviceImage: string
     serviceId: string
@@ -22,8 +21,7 @@ const ServiceCard = ({
     type: string
     description: string
     refresh: Function
-    deviceName: string
-    deviceMac: string
+    devices: Object
 }) => {
     const [loading, setLoading] = useState(false)
     const [deleteModal, setDeleteModal] = useState(false)
@@ -101,12 +99,23 @@ const ServiceCard = ({
             >
                 <span className="text-emerald-600 font-semibold">{type}</span>
                 <h4 className="font-bold my-3">{name}</h4>
-                <p>
-                    Device Name: <strong>{deviceName}</strong>
-                </p>
-                <p>
-                    Device Mac: <strong>{deviceMac}</strong>
-                </p>
+                {Object.values(devices).map((value: any, index: number) => (
+                    <div className="flex flex-col">
+                        <p>
+                            Device Name: <strong>{value.name}</strong>
+                        </p>
+                        <p>
+                            Device Mac: <strong>{value.mac}</strong>
+                        </p>
+                        {Object.values(devices).length > 1 &&
+                            index !== Object.values(devices).length - 1 && (
+                                <p className="my-1">
+                                    -------------------------
+                                </p>
+                            )}
+                    </div>
+                ))}
+
                 <div className="h-16 pt-4 line-clamp-4">{description}</div>
             </Card>
         </div>

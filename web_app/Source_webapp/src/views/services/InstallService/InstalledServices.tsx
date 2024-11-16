@@ -3,7 +3,11 @@ import { apiGetInstalledServices } from '@/services/ServiceAPI'
 import { useAppSelector } from '@/store'
 import { DoubleSidedImage, Loading } from '@/components/shared'
 import ServiceCard from '@/views/demo/component'
-import { apiGetAllSharedDevices, apiGetDevices } from '@/services/DeviceApi'
+import {
+    apiGetAllSharedDevices,
+    apiGetDevices,
+    apiGetSharedWithMeDevices,
+} from '@/services/DeviceApi'
 import { Button } from '@/components/ui'
 import { useNavigate } from 'react-router-dom'
 import CardHolder from '@/components/ui/CardHolder'
@@ -29,23 +33,46 @@ const CollapseMenuItemView1: React.FC = () => {
                 let data = response.data // Extract data from AxiosResponse
                 const myRes = (await apiGetDevices(userId || '')) as any
                 const sharedRes = (await apiGetAllSharedDevices()) as any
-                const deviceRes = [...myRes.data.data, ...sharedRes.data.data]
-                setInstalledServices(
-                    data.data.map((element: any) => {
-                        deviceRes.forEach((device: any) => {
-                            if (
-                                element &&
-                                element.deviceMap &&
-                                device.deviceEncryptedId ==
-                                    element.deviceMap.MULTI_SENSOR_1
-                            ) {
-                                element.deviceName = device.deviceName
-                                element.mac = device.mac
+                const localSharedRes =
+                    (await apiGetSharedWithMeDevices()) as any
+                const deviceRes = [
+                    ...myRes.data.data,
+                    ...sharedRes.data.data,
+                    ...localSharedRes.data.data,
+                ]
+
+                const filteredInstalledServices = data.data.map(
+                    (element: any) => {
+                        if (!element?.devices) {
+                            element.devices = {}
+                        }
+                        const installedServiceDevices = element.deviceMap
+
+                        Object.keys(installedServiceDevices).map(
+                            (key: string) => {
+                                deviceRes.forEach((device: any) => {
+                                    if (
+                                        element &&
+                                        element.deviceMap &&
+                                        device.deviceEncryptedId ==
+                                            installedServiceDevices[key]
+                                    ) {
+                                        element.devices[key] = {
+                                            name: device.deviceName,
+                                            mac: device.mac,
+                                            encryptedId:
+                                                device.deviceEncryptedId,
+                                        }
+                                    }
+                                })
                             }
-                        })
+                        )
+
                         return element
-                    })
-                ) // Update state with fetched services data
+                    }
+                )
+
+                setInstalledServices(filteredInstalledServices) // Update state with fetched services data
             } catch (error) {
                 console.error('Error fetching installed services:', error)
             }
@@ -73,8 +100,7 @@ const CollapseMenuItemView1: React.FC = () => {
                             type={service.activationStatus}
                             installationPrice={service.installationPrice}
                             serviceImage={service.installedServiceImage}
-                            deviceName={service.deviceName}
-                            deviceMac={service.mac}
+                            devices={service.devices}
                             refresh={refreshPage}
                         />
                     ))}
