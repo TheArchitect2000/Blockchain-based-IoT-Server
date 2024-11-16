@@ -50,7 +50,6 @@ export async function defineBlocklyCustomBlocks(
     setLocalDeviceTypes?: any
 ) {
     let localDeviceTypes: any = setLocalDeviceTypes || {}
-
     try {
         if (!Blockly.Blocks['listen_for_device_payload']) {
             Blockly.Blocks['listen_for_device_payload'] = {
@@ -108,6 +107,7 @@ export async function defineBlocklyCustomBlocks(
                             this.getDeviceOptions.bind(this),
                             this.handleDeviceSelection.bind(this)
                         ),
+                        'DEVICE_VAR'
                     )
                     .appendField('With Type')
                     .appendField(
@@ -413,12 +413,10 @@ export async function defineBlocklyCustomBlocks(
         if (setTheToolBox) {
             setTheToolBox(dynamicToolbox)
         }
-
         if (setLoading) {
             setLoading(false)
         }
 
-        // Add a 500ms delay
         await new Promise((resolve) => setTimeout(resolve, 500))
 
         return dynamicToolbox
@@ -480,6 +478,10 @@ export default function BlocklyEditor() {
             name: device,
             type: deviceTypes[device],
         }))
+
+        console.log('ghol:', maghol)
+
+        console.log('ghol 2:', getUsedDeviceTypesFromXml())
 
         const res = (await apiEditService({
             ...data,
@@ -550,8 +552,6 @@ export default function BlocklyEditor() {
                     try {
                         if (result.blocklyJson && workspaceRef.current) {
                             try {
-
-                                const xml = Blockly.utils.xml.textToDom(xmlText)
                                 workspaceRef.current.clear() // Clear the workspace
 
                                 const parser = new DOMParser()
@@ -622,7 +622,7 @@ export default function BlocklyEditor() {
                                 )
 
                                 Blockly.Xml.domToWorkspace(
-                                    xml,
+                                    xmlDoc.documentElement,
                                     workspaceRef.current
                                 )
                             } catch (xmlError) {
