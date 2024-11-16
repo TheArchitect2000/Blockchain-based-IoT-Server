@@ -301,7 +301,7 @@ export async function defineBlocklyCustomBlocks(
 
             let code = ''
             if (deviceName) {
-                code = `${deviceName}`
+                code = `lastData['${deviceName}']`
             } else {
                 console.warn('Device variable name is missing.')
                 code = ''
@@ -613,13 +613,13 @@ export default function BlocklyEditor() {
 
                                 setDeviceTypes(deviceVariables)
 
-                                await defineBlocklyCustomBlocks(
+                                /* await defineBlocklyCustomBlocks(
                                     response.data.data,
                                     setDeviceTypes,
                                     setTheToolBox,
                                     setLoading,
                                     deviceVariables
-                                )
+                                ) */
 
                                 Blockly.Xml.domToWorkspace(
                                     xmlDoc.documentElement,

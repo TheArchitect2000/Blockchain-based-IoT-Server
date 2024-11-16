@@ -53,6 +53,10 @@ export const blocklyToolBox = {
             contents: [
                 {
                     kind: 'block',
+                    type: 'check_device_payload',
+                },
+                {
+                    kind: 'block',
                     type: 'logic_compare',
                 },
                 {
@@ -1324,3 +1328,35 @@ javascriptGenerator.forBlock['run_function_with_payload'] = function (
     var code = `\nfunctions["runFunctionWithPayload${editedDevicePayload}"] = () => {// This function will run each time a payload is received from ${devicePayload} \n${statements}\n}`
     return code
 }
+
+
+Blockly.Blocks['check_device_payload'] = {
+    init: function () {
+        this.jsonInit({
+            type: 'check_device_payload',
+            message0: 'Check Device %1 Payload is Available',
+            args0: [
+                {
+                    type: 'input_value',
+                    name: 'DEVICE_PAYLOAD',
+                    check: 'DevicePayload', // Restrict input to 'DevicePayload' type
+                },
+            ],
+            output: 'Boolean', // Logic blocks return a Boolean output
+            colour: 210, // Logical block color
+            tooltip: 'Checks if the DevicePayload has any keys',
+            helpUrl: '', // Add help URL if needed
+        });
+    },
+};
+
+javascriptGenerator.forBlock['check_device_payload'] = function (block: any) {
+    const devicePayload = javascriptGenerator.valueToCode(
+        block,
+        'DEVICE_PAYLOAD',
+        javascriptGenerator.ORDER_ATOMIC
+    ) || '{}'; // Default to empty object if input is missing
+
+    const code = `Object.keys(${devicePayload} || {}).length > 0`;
+    return [code, javascriptGenerator.ORDER_FUNCTION_CALL];
+};
