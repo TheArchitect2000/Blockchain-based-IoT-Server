@@ -301,7 +301,7 @@ export async function defineBlocklyCustomBlocks(
 
             let code = ''
             if (deviceName) {
-                code = `lastData['${deviceName}']`
+                code = `${deviceName}`
             } else {
                 console.warn('Device variable name is missing.')
                 code = ''

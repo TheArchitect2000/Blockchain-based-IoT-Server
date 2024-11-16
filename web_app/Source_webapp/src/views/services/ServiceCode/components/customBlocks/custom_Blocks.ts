@@ -1329,7 +1329,6 @@ javascriptGenerator.forBlock['run_function_with_payload'] = function (
     return code
 }
 
-
 Blockly.Blocks['check_device_payload'] = {
     init: function () {
         this.jsonInit({
@@ -1346,17 +1345,20 @@ Blockly.Blocks['check_device_payload'] = {
             colour: 210, // Logical block color
             tooltip: 'Checks if the DevicePayload has any keys',
             helpUrl: '', // Add help URL if needed
-        });
+        })
     },
-};
+}
 
 javascriptGenerator.forBlock['check_device_payload'] = function (block: any) {
-    const devicePayload = javascriptGenerator.valueToCode(
-        block,
-        'DEVICE_PAYLOAD',
-        javascriptGenerator.ORDER_ATOMIC
-    ) || '{}'; // Default to empty object if input is missing
+    const devicePayload =
+        javascriptGenerator.valueToCode(
+            block,
+            'DEVICE_PAYLOAD',
+            javascriptGenerator.ORDER_ATOMIC
+        ) || '' // Default to empty object if input is missing
 
-    const code = `Object.keys(${devicePayload} || {}).length > 0`;
-    return [code, javascriptGenerator.ORDER_FUNCTION_CALL];
-};
+    const code = `Object.keys(lastData['${String(devicePayload)
+        .replace('(', '')
+        .replace(')', '')}'] || {}).length > 0`
+    return [code, javascriptGenerator.ORDER_FUNCTION_CALL]
+}
