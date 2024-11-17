@@ -53,6 +53,7 @@ export class VirtualMachineHandlerService {
 
     // replacing custom functions with blockly functions
     userCode = userCode.replaceAll(`customizedMessage.sendMail`, `sendMail`);
+
     userCode = userCode.replaceAll(
       `customizedMessage.sendNotification`,
       `sendNotification`,
@@ -73,10 +74,13 @@ export class VirtualMachineHandlerService {
 
     // replacing blockly wait function with while loops
     let waitCounter = 0;
-    userCode = userCode.replace(/await waitTill\((\w+)\);( ?\/\/.*)?/g, () => {
-      waitCounter++;
-      return `let waitTill_${waitCounter} = new Date(new Date().getTime() + $1);while (waitTill_${waitCounter} > new Date()) {}`;
-    });
+    userCode = userCode.replace(
+      /await waitTill\((\w+)\);( ?\/\/.*)?/g,
+      (match, group1) => {
+        waitCounter++;
+        return `let waitTill_${waitCounter} = new Date(new Date().getTime() + ${group1});while (waitTill_${waitCounter} > new Date()) {}`;
+      },
+    );
 
     const lines = userCode.split('\n');
     const letLinesCode = lines
@@ -596,5 +600,3 @@ mainFunction();
     return this.allResults;
   }
 }
-
-
