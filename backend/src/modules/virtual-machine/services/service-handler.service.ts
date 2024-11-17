@@ -258,7 +258,7 @@ function listenToAllDevices() {
 
 				data.data = uppercaseKeys(data.data); // uppercasing all the keys, also NAME*
 
-				console.log('The data is:', data);
+				//console.log('The data is:', data);
           
 				} else {
 					console.error('Device info not found for topic:', topic);
@@ -377,6 +377,9 @@ function getNewData(variable = "") {
 
     		lastData[String(data.variable)] = data.data
 
+			parentPort.postMessage('Log lastData:');
+			parentPort.postMessage(lastData);
+
 			const deviceName = String(data.variable);
 			const capitalizedDeviceName = deviceName.charAt(0).toUpperCase() + deviceName.slice(1);
 			
@@ -476,36 +479,37 @@ function mainFunction() {
 	
 }
 
-mainFunction();
+	mainFunction();
 
     \`
 
     const vmWorker = new Worker(workerCode, { eval: true, workerData: sharedBuffer});
     
-                vmWorker.on('message', (msg) => {
-                    if ( (typeof msg).toString() === "object" ) {
-                      if ( msg.subject ) {
-                        sendMail(msg)
-                      } else if ( msg.title ) {
-                        sendNotification(msg)
-                      }
-                    }
-                    console.log('Main thread: Received from worker: ', msg);
-                });
-    
-                vmWorker.on('error', (err) => {
-                  console.error('Worker encountered an error:', err);
-                });
-    
-                vmWorker.on('exit', (code) => {
-                    if (code !== 0) {
-                        console.error('Worker stopped with exit code', code);
-                    } else {
-                        console.log('Worker exited successfully.');
-                    }
-                });
-    
-              console.log('vmWorker started successfully.');
+     vmWorker.on('message', (msg) => {
+         if ( (typeof msg).toString() === "object" ) {
+           if ( msg.subject ) {
+             sendMail(msg)
+           } else if ( msg.title ) {
+             sendNotification(msg)
+           }
+         }
+         console.log('Main thread: Received from worker: ', msg);
+     });
+
+     vmWorker.on('error', (err) => {
+       console.error('Worker encountered an error:', err);
+     });
+
+     vmWorker.on('exit', (code) => {
+         if (code !== 0) {
+             console.error('Worker stopped with exit code', code);
+         } else {
+             console.log('Worker exited successfully.');
+         }
+     });
+
+    console.log('vmWorker started successfully.');
+
     `;
 
     // Create a script
