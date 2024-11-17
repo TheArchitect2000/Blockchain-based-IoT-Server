@@ -35,10 +35,43 @@ const CollapseMenuItemView1: React.FC = () => {
                 const sharedRes = (await apiGetAllSharedDevices()) as any
                 const localSharedRes =
                     (await apiGetSharedWithMeDevices()) as any
+
+                const deviceRes_ids = new Set(
+                    myRes.data.data.map((device: any) => device._id)
+                )
+
+                // Extract _id values from deviceRes
+                const localDevices_ids = new Set(
+                    localSharedRes.data.data.map((device: any) => device._id)
+                )
+
+                // Filter sharedDevices to exclude devices that are already in deviceRes
+                const filteredSharedDevices = sharedRes.data.data
+                    .filter(
+                        (device: any) =>
+                            !deviceRes_ids.has(device.nodeDeviceId) &&
+                            !deviceRes_ids.has(device._id) &&
+                            !localDevices_ids.has(device.nodeDeviceId) &&
+                            !localDevices_ids.has(device._id)
+                    )
+                    .map((item: any) => {
+                        return { ...item, isShared: true }
+                    })
+
+                const updatedFilteredmyLocalDevices = localSharedRes.data.data.map(
+                    (item: any) => {
+                        return { ...item, isLocal: true }
+                    }
+                )
+
+                const updatedFilteredMyDevices = myRes.data.data.map((item: any) => {
+                    return { ...item, myDevice: true }
+                })
+
                 const deviceRes = [
-                    ...myRes.data.data,
-                    ...sharedRes.data.data,
-                    ...localSharedRes.data.data,
+                    ...filteredSharedDevices,
+                    ...updatedFilteredmyLocalDevices,
+                    ...updatedFilteredMyDevices,
                 ]
 
                 const filteredInstalledServices = data.data.map(

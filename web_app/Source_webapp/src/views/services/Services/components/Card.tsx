@@ -251,8 +251,7 @@ const ServiceCard = ({
                     </Button>
                     <Button
                         className="px-6"
-                        variant="solid"
-                        color="green"
+                        variant="default"
                         size="sm"
                         onClick={() => setDeleteModal(false)}
                         loading={deleteLoading}
