@@ -519,7 +519,6 @@ export default function BlocklyEditor() {
             const response = (await apiGetNodeDevices()) as any
             setDevices(response.data.data)
 
-            // Define blocks for devices before loading XML
             await defineBlocklyCustomBlocks(
                 response.data.data,
                 setDeviceTypes,
@@ -613,13 +612,13 @@ export default function BlocklyEditor() {
 
                                 setDeviceTypes(deviceVariables)
 
-                                /* await defineBlocklyCustomBlocks(
+                                await defineBlocklyCustomBlocks(
                                     response.data.data,
                                     setDeviceTypes,
                                     setTheToolBox,
                                     setLoading,
                                     deviceVariables
-                                ) */
+                                )
 
                                 Blockly.Xml.domToWorkspace(
                                     xmlDoc.documentElement,
