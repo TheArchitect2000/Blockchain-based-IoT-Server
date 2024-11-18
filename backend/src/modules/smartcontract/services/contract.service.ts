@@ -94,13 +94,11 @@ export class ContractService {
         status: 'tested',
         blocklyJson: '',
         code: service[9],
-        devices: service[5],
+        devices: JSON.parse(service[5]),
         insertDate: service[10],
         updateDate: service[11],
         published: true,
       };
-
-      console.log("Maghollllllllllllll:", service);
       
 
       try {
