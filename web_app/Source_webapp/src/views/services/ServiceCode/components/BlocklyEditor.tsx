@@ -8,7 +8,7 @@ import './customBlocks/custom_Blocks'
 import { Button, Checkbox, Notification, toast } from '@/components/ui'
 import { useNavigate, useParams } from 'react-router-dom'
 import { apiEditService, apiGetServiceByServiceId } from '@/services/ServiceAPI'
-import { useAppSelector } from '@/store'
+import { setSideNavCollapse, useAppDispatch, useAppSelector } from '@/store'
 import { Loading, SyntaxHighlighter } from '@/components/shared'
 import { apiGetNodeDevices } from '@/services/DeviceApi'
 import { ToolboxDefinition } from 'blockly/core/utils/toolbox'
@@ -440,6 +440,8 @@ export default function BlocklyEditor() {
     const workspaceRef = useRef<any>(null) // Reference to the Blockly workspace
     const { _id: userId } = useAppSelector((state) => state.auth.user)
 
+    const dispatch = useAppDispatch()
+
     function getUsedDeviceTypesFromXml() {
         const parser = new DOMParser()
         const xmlDoc = parser.parseFromString(String(xml), 'application/xml')
@@ -639,6 +641,7 @@ export default function BlocklyEditor() {
     }
 
     useEffect(() => {
+        dispatch(setSideNavCollapse(true))
         fetchData()
     }, [serviceId])
 
@@ -707,7 +710,6 @@ export default function BlocklyEditor() {
 
     return (
         <>
-            {/* <h3>{JSON.stringify(deviceTypes)}</h3> */}
             {loading == true && (
                 <div className="w-full !h-[78vh] flex items-center justify-center">
                     {' '}
@@ -749,7 +751,11 @@ export default function BlocklyEditor() {
                             {code || ''}
                         </SyntaxHighlighter>
                     )}
-                    <div className="flex mt-5 gap-x-5 col-span-full items-center justify-center">
+                    <div
+                        className={`flex mt-5 gap-x-5 col-span-${
+                            showCode ? 2 : 'full'
+                        } items-center justify-center`}
+                    >
                         <div className="flex items-center">
                             <Checkbox
                                 id={'show-code'}
@@ -774,8 +780,33 @@ export default function BlocklyEditor() {
                             {isSaving ? 'Saving' : 'Save'}
                         </Button>
                     </div>
+                    <div
+                        className={`flex ${
+                            !showCode && 'hidden'
+                        } mt-5 gap-x-5 col-span-1 items-center justify-center`}
+                    >
+                        <Button
+                            onClick={() => {
+                                toast.push(
+                                    <Notification
+                                        title={'Js Code copied successfully'}
+                                        type="success"
+                                    />,
+                                    {
+                                        placement: 'top-center',
+                                    }
+                                )
+                                navigator.clipboard.writeText(code || '')
+                            }}
+                            variant="solid"
+                        >
+                            Copy Code
+                        </Button>
+                    </div>
                 </div>
             )}
         </>
     )
 }
+
+
