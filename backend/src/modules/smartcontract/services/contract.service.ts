@@ -100,6 +100,9 @@ export class ContractService {
         published: true,
       };
 
+      console.log("Maghollllllllllllll:", service);
+      
+
       try {
         const createService = await this.serviceService.insertService(
           newService,

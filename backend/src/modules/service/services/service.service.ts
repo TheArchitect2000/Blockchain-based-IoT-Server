@@ -207,6 +207,11 @@ export class ServiceService {
       .then((data) => {
         this.result = data;
         if (nodePublish == false) {
+
+          console.log("foundService.devices:", foundService.devices)
+          console.log("---------------------------------------------")
+          console.log("JSONNNNNN(foundService.devices):", JSON.stringify(foundService.devices))
+
           this.contractService.createService(
             String(process.env.NODE_ID),
             String(foundService._id),
