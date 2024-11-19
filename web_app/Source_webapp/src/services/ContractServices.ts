@@ -14,6 +14,22 @@ export async function apiRequestFaucet() {
     })
 }
 
+export async function apiZKPPublishProof(
+    deviceType: string,
+    proof: string,
+    data: Object
+) {
+    return ApiService.fetchData({
+        url: import.meta.env.VITE_URL + 'v1/contract/publish-proof',
+        method: 'post',
+        data: {
+            deviceType,
+            proof,
+            data,
+        },
+    })
+}
+
 export async function apiStoreCommitment(
     manufacturerName: string,
     deviceName: string,

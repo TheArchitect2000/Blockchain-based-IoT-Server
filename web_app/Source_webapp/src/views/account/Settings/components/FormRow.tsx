@@ -3,11 +3,20 @@ import { FormItem } from '@/components/ui/Form'
 import type { PropsWithChildren } from 'react'
 import type { FormikTouched, FormikErrors } from 'formik'
 
+// Update the name type to allow nested keys
+type NestedKeyOf<T> = T extends object
+    ? {
+          [K in keyof T]: T[K] extends object
+              ? `${string & K}.${NestedKeyOf<T[K]>}` | `${string & K}`
+              : `${string & K}`
+      }[keyof T]
+    : never
+
 type FormRow<T> = PropsWithChildren<{
     label: string
     errors: FormikErrors<T>
     touched: FormikTouched<T>
-    name: keyof T
+    name: NestedKeyOf<T> // Support nested keys
     border?: boolean
     alignCenter?: boolean
 }>

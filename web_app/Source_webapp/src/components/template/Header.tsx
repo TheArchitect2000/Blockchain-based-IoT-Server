@@ -22,15 +22,12 @@ import {
 import { PasswordInput } from '../shared'
 import './style.css'
 
-
 interface HeaderProps extends CommonProps {
     headerStart?: ReactNode
     headerEnd?: ReactNode
     headerMiddle?: ReactNode
     container?: boolean
 }
-
-
 
 const Header = (props: HeaderProps) => {
     const { headerStart, headerEnd, headerMiddle, className, container } = props
@@ -48,8 +45,6 @@ const Header = (props: HeaderProps) => {
     const onCreateNewService = () => {
         navigate(`/services/new`)
     }
-
-    
 
     const { themeBackground } = useConfig()
 
@@ -85,13 +80,10 @@ const Header = (props: HeaderProps) => {
             setConsoleDialog(false)
             if (dialogState == 'Smart Contract Console') {
                 navigate(`/remix?user=${username}&pass=${password}`)
-            } else if (dialogState == 'zkp Commitment Generator') {
-                window.open(
-                    'https://fidesinnova-1.gitbook.io/fidesinnova-docs/zero-knowledge-proof-zkp-scheme/2-commitment-phase',
-                    '_blank'
-                )
-            } else if (dialogState == 'zkp Commitment Publisher') {
+            } else if (dialogState == 'ZKP Commitment Publisher') {
                 navigate(`/commitment?user=${username}&pass=${password}`)
+            } else if (dialogState == 'ZKP Proof Publisher') {
+                navigate(`/proof-publisher?user=${username}&pass=${password}`)
             }
         } else {
             toast.push(
@@ -112,13 +104,13 @@ const Header = (props: HeaderProps) => {
     }
 
     function dropDownSelectHandler(eventKey: string) {
-        setDialogState(eventKey)
-        setConsoleDialog(true)
+        if (eventKey == 'ZKP Commitment Generator') {
+            window.open('https://github.com/FidesInnova/zkiot', '_blank')
+        } else {
+            setDialogState(eventKey)
+            setConsoleDialog(true)
+        }
     }
-
-    
-
-    
 
     return (
         <header
@@ -212,15 +204,21 @@ const Header = (props: HeaderProps) => {
                             </Dropdown.Item>
                             <Dropdown.Item
                                 className="flex justify-center advanced-drop-down-items"
-                                eventKey={'zkp Commitment Generator'}
+                                eventKey={'ZKP Commitment Generator'}
                             >
-                                zkp Commitment Generator
+                                ZKP Commitment Generator
                             </Dropdown.Item>
                             <Dropdown.Item
                                 className="flex justify-center advanced-drop-down-items"
-                                eventKey={'zkp Commitment Publisher'}
+                                eventKey={'ZKP Commitment Publisher'}
                             >
-                                zkp Commitment Publisher
+                                ZKP Commitment Publisher
+                            </Dropdown.Item>
+                            <Dropdown.Item
+                                className="flex justify-center advanced-drop-down-items"
+                                eventKey={'ZKP Proof Publisher'}
+                            >
+                                ZKP Proof Publisher
                             </Dropdown.Item>
                         </Dropdown>{' '}
                         <Button onClick={onCreateNewService} variant="solid">

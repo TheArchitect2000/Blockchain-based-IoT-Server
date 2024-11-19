@@ -225,7 +225,7 @@ export default function CommitmentPage() {
                     commitmentData: null,
                 }}
                 validationSchema={validationSchema}
-                onSubmit={(values, { setSubmitting }) => {
+                onSubmit={(values: any, { setSubmitting }) => {
                     onFormSubmit(values, setSubmitting)
                 }}
             >
@@ -242,7 +242,7 @@ export default function CommitmentPage() {
                     return (
                         <Form>
                             <FormContainer>
-                                <h3>Commitment publisher</h3>
+                                <h3>ZKP Commitment publisher</h3>
                                 <FormRow
                                     name="manufacturerName"
                                     label="IoT Manufacturer Name"
