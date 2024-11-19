@@ -26,6 +26,7 @@ import { GeneralException } from 'src/modules/utility/exceptions/general.excepti
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { JwtAuthGuard } from 'src/modules/authentication/guard/jwt-auth.guard';
 import {
+  publishProofDto,
   removeCommitmentDto,
   removeDeviceDto,
   removeServiceDto,
@@ -34,6 +35,7 @@ import {
 } from '../dto/contract-dto';
 import { ContractService } from '../services/contract.service';
 import { UserService } from 'src/modules/user/services/user/user.service';
+import mongoose from 'mongoose';
 
 @ApiTags('Smart Contract')
 @Controller('app/v1/contract')
@@ -205,6 +207,31 @@ export class contractController {
     }
 
     return this.contractService.requestFaucet(walletAddress);
+  }
+
+  @Post('/publish-proof')
+  @HttpCode(201)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Storing the commitment.',
+    description:
+      'This api will store the user commitment file in smart contract.',
+  })
+  async zkpPublishProof(@Body() body: publishProofDto, @Request() request) {
+    console.log('We are in zkpPublishProof section', body);
+
+    const objectId = String(new mongoose.Types.ObjectId());
+
+    return this.contractService.storeZKP(
+      process.env.NODE_ID,
+      objectId,
+      body.deviceType,
+      body.data.HV,
+      body.data.FV,
+      JSON.stringify(body.data),
+      JSON.stringify(body.proof),
+    );
   }
 
   /* @Get('/fetch-service')

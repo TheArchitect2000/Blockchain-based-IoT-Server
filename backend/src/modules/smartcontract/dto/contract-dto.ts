@@ -31,7 +31,7 @@ export class storeCommitmentDto {
   deviceName: string;
 
   @IsNotEmpty({ message: 'deviceType is required and must be entered.' })
-  @IsString({ message: 'deviceType must be string.' })  
+  @IsString({ message: 'deviceType must be string.' })
   @ApiProperty({ required: true })
   deviceType: string;
 
@@ -68,6 +68,23 @@ export class removeCommitmentDto {
   @IsString({ message: 'nodeId must be string.' })
   @ApiProperty({ required: true })
   nodeId: string;
+}
+
+export class publishProofDto {
+  @IsNotEmpty({ message: 'deviceType is required and must be entered.' })
+  @IsString({ message: 'deviceType must be string.' })
+  @ApiProperty({ required: true })
+  deviceType: string;
+
+  @IsNotEmpty({ message: 'proof is required and must be entered.' })
+  @IsString({ message: 'proof must be string.' })
+  @ApiProperty({ required: true })
+  proof: string;
+
+  @IsNotEmpty({ message: 'data is required and must be entered.' })
+  @IsString({ message: 'data must be string.' })
+  @ApiProperty({ required: true })
+  data: Record<string, string>;
 }
 
 export class walletBalanceDto {
