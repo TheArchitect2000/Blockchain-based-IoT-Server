@@ -6,11 +6,12 @@ const MQTTComponent: React.FC = () => {
     const [client, setClient] = useState<mqtt.MqttClient | null>(null);
     const [isConnecting, setIsConnecting] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [messages, setMessages] = useState<string[]>([]);
 
     const handleConnect = () => {
         setError(null);
         setIsConnecting(true);
-        
+
         const options = {
             connectTimeout: 4000,
             reconnectPeriod: 1000,
@@ -23,6 +24,7 @@ const MQTTComponent: React.FC = () => {
         newClient.on('connect', () => {
             console.log('Connected to MQTT broker');
             setIsConnecting(false);
+
             const topic = 'your/topic'; // Replace with your topic
             newClient.subscribe(topic, (err) => {
                 if (err) {
@@ -41,7 +43,9 @@ const MQTTComponent: React.FC = () => {
         });
 
         newClient.on('message', (topic, message) => {
-            console.log('Received Message:', topic, message.toString());
+            const msg = `${topic}: ${message.toString()}`;
+            console.log('Received Message:', msg);
+            setMessages((prev) => [...prev, msg]);
         });
 
         newClient.on('close', () => {
@@ -60,6 +64,15 @@ const MQTTComponent: React.FC = () => {
         setIsConnecting(false);
     };
 
+    useEffect(() => {
+        return () => {
+            if (client) {
+                client.end();
+                console.log('MQTT client disconnected');
+            }
+        };
+    }, [client]);
+
     return (
         <div>
             <input
@@ -69,13 +82,21 @@ const MQTTComponent: React.FC = () => {
                 placeholder="Enter MQTT URL"
                 disabled={isConnecting}
             />
-            <button onClick={handleConnect} disabled={isConnecting}>
+            <button onClick={handleConnect} disabled={isConnecting || !mqttUrl}>
                 {isConnecting ? 'Connecting...' : 'Connect'}
             </button>
             <button onClick={handleCancel} disabled={!isConnecting}>
                 Cancel
             </button>
             {error && <p style={{ color: 'red' }}>{error}</p>}
+            <div>
+                <h3>Messages:</h3>
+                <ul>
+                    {messages.map((msg, index) => (
+                        <li key={index}>{msg}</li>
+                    ))}
+                </ul>
+            </div>
         </div>
     );
 };
