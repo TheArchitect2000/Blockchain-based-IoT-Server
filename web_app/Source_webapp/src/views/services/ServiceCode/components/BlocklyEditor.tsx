@@ -362,7 +362,7 @@ export async function defineBlocklyCustomBlocks(
                 ...blocklyToolBox.contents,
                 {
                     kind: 'category',
-                    name: 'Server Devices',
+                    name: 'IoT Devices',
                     colour: '180',
                     contents: [
                         { kind: 'block', type: 'manage_device_variable' },

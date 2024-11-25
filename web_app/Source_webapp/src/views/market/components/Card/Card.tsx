@@ -371,7 +371,7 @@ const ServiceCard = ({
                 </Button>
             </Dialog>
             <Dialog isOpen={modalOpen} onClose={() => setModalOpen(false)}>
-                <h3 className="mb-8">Install Service</h3>
+                <h3 className="mb-8">Contract Install Service</h3>
                 <div className="flex mb-4 items-center justify-center">
                     <ImageWithFallBack
                         className="w-[300px] h-[175px] rounded-xl"
