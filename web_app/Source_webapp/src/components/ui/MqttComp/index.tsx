@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import mqtt from 'mqtt'
 
 const MQTTComponent: React.FC = () => {
-    const mqttUrl = 'wss://developer.fidesinnova.io:8883' // Static URL
+    const mqttUrl = 'wss://developer.fidesinnova.io:8081' // Static URL
     const [client, setClient] = useState<mqtt.MqttClient | null>(null)
     const [isConnecting, setIsConnecting] = useState(false)
     const [error, setError] = useState<string | null>(null)
