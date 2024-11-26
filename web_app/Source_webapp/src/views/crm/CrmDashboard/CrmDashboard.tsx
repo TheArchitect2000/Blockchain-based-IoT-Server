@@ -77,7 +77,7 @@ const CrmDashboard = () => {
     return (
         <div className="flex flex-col gap-4 h-full">
             <Loading loading={false}>
-                <MQTTComponent />
+                {/* <MQTTComponent /> */}
                 <Statistic />
 
                 <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
