@@ -66,15 +66,6 @@ async function bootstrap() {
     process.env.HOST_PORT,
   );
 
-  // Launching broker
-  // console.log('\x1B[33m \nLaunching broker... \x1B[0m');
-  // const broker = require('./modules/broker/server/mqtt-server');
-
-  // const tset = require('./modules/broker/server/test');
-  // const test = require('./modules/broker/server/test-class');
-  // test.startup();
-
-  // let testService: TestService = new TestService();
   let mqttLogService: MqttLogService = new MqttLogService();
   let testService: TestService = new TestService(mqttLogService);
   testService.printMsg();

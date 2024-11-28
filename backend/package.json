@@ -60,7 +60,9 @@
         "socket.io": "^4.7.5",
         "swagger-ui-express": "^4.4.0",
         "uuid": "^10.0.0",
-        "vm": "^0.1.0"
+        "vm": "^0.1.0",
+        "websocket-stream": "^5.5.2",
+        "ws": "^8.18.0"
     },
     "devDependencies": {
         "@nestjs/cli": "^10.4.5",

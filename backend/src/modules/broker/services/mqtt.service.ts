@@ -6,22 +6,7 @@ import { DeviceEventsEnum } from '../enums/device-events.enum';
 import { ContractService } from 'src/modules/smartcontract/services/contract.service';
 import { DeviceService } from 'src/modules/device/services/device.service';
 import { createServer } from 'tls';
-
-/**
-1883 : MQTT, unencrypted, unauthenticated
-1884 : MQTT, unencrypted, authenticated
-8883 : MQTT, encrypted, unauthenticated
-8884 : MQTT, encrypted, client certificate required
-8885 : MQTT, encrypted, authenticated
-8886 : MQTT, encrypted, unauthenticated
-8887 : MQTT, encrypted, server certificate deliberately expired
-8080 : MQTT over WebSockets, unencrypted, unauthenticated
-8081 : MQTT over WebSockets, encrypted, unauthenticated
-8090 : MQTT over WebSockets, unencrypted, authenticated
-8091 : MQTT over WebSockets, encrypted, authenticated
- */
-
-// let aedes = new Aedes();
+const wsStream = require('websocket-stream');
 
 const triggerData = {};
 
@@ -61,55 +46,29 @@ export class MqttService implements OnModuleInit {
     const mqttPorts = {
       mqtt: 1883, // TCP Port: 1883
       mqtts: 8883, // SSL/TLS Port: 8883
-      ws: 8080,
-      wss: 8081,
+      ws: 8080, // WebSocket unencrypted
+      wss: 8081, // WebSocket encrypted
     };
 
-    //   this.mqttLogService = new MqttLogService();
-    // await this.callLogService();
-
-    // const host = process.env.HOST_PROTOCOL + process.env.HOST_NAME_OR_IP;
-    const host = 'https://' + process.env.HOST_NAME_OR_IP;
-
-    // MQTT over TLS / MQTTS
-
-    const options = {
+    const tlsOptions = {
       key: fs.readFileSync('/etc/nginx/ssl/privkey.pem'),
       cert: fs.readFileSync('/etc/nginx/ssl/fullchain.pem'),
     };
 
-    const server = createServer(options, aedes.handle);
+    const tlsServer = createServer(tlsOptions, aedes.handle);
 
-    server.listen(mqttPorts.mqtts, function () {
+    tlsServer.listen(mqttPorts.mqtts, function () {
       console.log(
-        '\nMQTT server over TLS / MQTTS started and listening on port',
-        mqttPorts.mqtts,
-        '\n',
+        `MQTT over TLS / MQTTS started and listening on port ${mqttPorts.mqtts}`,
       );
-
-      // virtual machine creating all
-      //createAllMachines();
-
-      aedes.mq.emit({
-        topic: 'aedes/hello',
-        payload: "I'm broker " + aedes.id,
-        qos: 0,
-      });
     });
-    // MQTT over TCP
-    /* const server = require('net').createServer(aedes.handle);
-        server.listen(mqttPorts.mqtt, function () {
-        console.log('MQTT Broker started on port', mqttPorts.mqtt, '\n');
-        aedes.mq.emit({
-            topic: "aedes/hello",
-            payload: "I'm broker " + aedes.id,
-            qos: 0
-        });
-        }); */
 
-    aedes.mq.on('aedes/hello', (d, cb) => {
-      console.log(d, '\n');
-      cb();
+    const httpServer = require('https').createServer(tlsOptions);
+
+    wsStream.createServer({ server: httpServer }, aedes.handle);
+
+    httpServer.listen(mqttPorts.wss, function () {
+      console.log('websocket server listening on port ', mqttPorts.wss);
     });
 
     aedes.on('subscribe', async function (subscriptions, client) {
@@ -134,6 +93,8 @@ export class MqttService implements OnModuleInit {
       );
     });
 
+    const host = 'https://' + process.env.HOST_NAME_OR_IP;
+
     // fired when a client connects
     aedes.on('client', async function (client) {
       console.log(
@@ -143,15 +104,6 @@ export class MqttService implements OnModuleInit {
         'to broker',
         aedes.id,
       );
-
-      /* if (client) {
-                // await this.mqttLogService.logDeviceConnection(client.id, DeviceEventsEnum.CONNECTED)
-                // this.activityService.getDeviceActivityByEncryptedDeviceIdAndFieldName("QTA6NzY6NEU6NTc6MkI6NDg=", "Temperature")
-                await this.saveDeviceEvent(client.id, DeviceEventsEnum.CONNECTED);
-            } */
-
-      // axios.get('http://programming.cpvanda.com/app/v1/broker-mqtt-log/log-event')
-      // axios.get(host + '/app/v1/broker-mqtt-log/log-event')
 
       process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
       //const httpsAgent = new https.Agent({ rejectUnauthorized: false });
@@ -163,11 +115,11 @@ export class MqttService implements OnModuleInit {
 
         .then(function (response) {
           // handle success
-          console.log(response);
+          //console.log(response);
         })
         .catch(function (error) {
           // handle error
-          console.log(error);
+          //console.log(error);
         })
         .finally(function () {
           // always executed
@@ -254,6 +206,7 @@ export class MqttService implements OnModuleInit {
       if (packet && packet.payload) {
         console.log('publish packet:', packet.payload.toString());
       }
+
       if (client) {
         console.log('message from client', client.id);
 
@@ -323,7 +276,6 @@ export class MqttService implements OnModuleInit {
             });
 
           if (client.id !== parsedPayload.from) {
-
             // last commented code
             console.log(
               '\x1b[33m \nWe are trying to republish node data... \x1b[0m',
@@ -333,30 +285,6 @@ export class MqttService implements OnModuleInit {
               topic: parsedPayload.from,
               payload: payload,
             });
-
-
-            /* aedes.publish(
-                            {
-                            //   cmd: 'publish',
-                            //   qos: 0,
-                            //   retain: false,
-                              topic: parsedPayload.from,
-                              payload: Buffer.from(parsedPayload.toString())
-                            }
-                        ) */
-
-            
-
-            // await this.manageInstalledService(parsedPayload.from)
-            // this.serviceHandlerService.runInstalledService(parsedPayload.from);
-            /* await serviceHandler.runInstalledService(
-              parsedPayload.from,
-              parsedPayload,
-            ); */
-          } else {
-            // await this.manageInstalledService(client.id)
-            // this.serviceHandlerService.runInstalledService(client.id);
-            //await serviceHandler.runInstalledService(client.id, parsedPayload);
           }
         }
       }
@@ -365,10 +293,6 @@ export class MqttService implements OnModuleInit {
     aedes.on('subscribe', function (subscriptions, client) {
       if (client) {
         console.log('subscribe from client', subscriptions, client.id);
-        /* console.log("subscribe from client", subscriptions, client.id, client._parser.settings.password);
-                var password = client._parser.settings.password;
-                password = Buffer.from(password, 'base64').toString();
-                console.log('password is: ', password); */
       }
 
       axios
@@ -392,31 +316,5 @@ export class MqttService implements OnModuleInit {
     aedes.on('client', function (client) {
       console.log('new client', client.id);
     });
-  }
-
-  /* async saveDeviceEvent(client) {
-      await this.mqttLogService.logDeviceConnection(client.id, DeviceEventsEnum.CONNECTED);
-    } */
-
-  async callLogService() {
-    /* await this.mqttLogService.logDeviceConnection('QTA6NzY6NEU6NTc6MkI6NDg=', DeviceEventsEnum.CONNECTED)
-      .then((data) => {
-        log(data)
-      })
-      .catch((error)=>{
-          console.error(error);
-      }); */
-    /* let insertedDeviceLogEvent : any = null;
-        
-        insertedDeviceLogEvent = await this.deviceLogService.insertDeviceLogEvent('QTA6NzY6NEU6NTc6MkI6NDg=', DeviceEventsEnum.CONNECTED)
-        .then((data) => {
-            insertedDeviceLogEvent = data
-        })
-        .catch((error)=>{
-            console.error(error);
-            let errorMessage = 'Some errors occurred while inserting device log in mqtt log service!';
-            throw new GeneralException(ErrorTypeEnum.UNPROCESSABLE_ENTITY, errorMessage)
-        })
-        console.log("Device log inserted!") */
   }
 }
