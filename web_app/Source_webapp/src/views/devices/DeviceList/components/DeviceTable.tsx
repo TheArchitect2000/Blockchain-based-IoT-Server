@@ -55,11 +55,13 @@ const DeviceTable = ({
     deviceList,
     options,
     refreshPage,
+    payloads,
 }: {
     type: string
     deviceList?: Array<DeviceData>
     options: DeviceListOptionsInterface
     refreshPage: Function
+    payloads: Record<string, any>
 }) => {
     const [sorting, setSorting] = useState<ColumnSort[]>([])
     const [data, setData] = useState<DeviceData[]>([])
@@ -236,8 +238,6 @@ const DeviceTable = ({
                 }
             )
         }
-
-        
     }
 
     //eslint-disable-next-line
@@ -248,7 +248,12 @@ const DeviceTable = ({
             accessorKey: 'deviceName',
             cell: (props) => {
                 const row = props.row.original
-                return <DeviceProductColumn row={row} />
+                return (
+                    <DeviceProductColumn
+                        dataReceived={payloads[row.deviceEncryptedId]?.received}
+                        row={row}
+                    />
+                )
             },
         },
         {

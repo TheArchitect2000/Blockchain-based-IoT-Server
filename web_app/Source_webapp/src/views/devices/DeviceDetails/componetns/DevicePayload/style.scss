@@ -1,0 +1,33 @@
+.device-payload-holder {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 32px;
+
+    .item {
+        display: flex;
+        align-items: center;
+        border: 1.5px solid gray;
+        border-radius: 8px;
+        padding-block: 2px;
+        padding-inline: 10px;
+        gap: 8px;
+        transition: border-color 1s ease;
+
+        &.received {
+            border-color: #00ff00 !important;
+        }
+
+        p {
+            color: white;
+            font-size: 0.9rem;
+            font-weight: normal;
+        }
+
+        h1 {
+            color: #bbc2ce;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+    }
+}

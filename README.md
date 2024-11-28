@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="http://fidesonnova.io/" target="blank"><img src="https://fidesinnova.io/Download/logo/g-c-web-back.png" /></a>
+  <a href="https://fidesinnova.io/" target="blank"><img src="https://fidesinnova.io/Download/logo/g-c-web-back.png" /></a>
 </p>
 
 # Step-by-step Installation Instructions for IoT Node 
