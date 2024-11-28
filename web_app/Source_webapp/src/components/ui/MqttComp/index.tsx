@@ -1,73 +1,154 @@
-import React, { useEffect, useState } from 'react'
-import mqtt from 'mqtt'
+import { Loading } from '@/components/shared'
+import mqtt, { MqttClient } from 'mqtt'
+import { useState } from 'react'
+import { HiCheckCircle, HiQuestionMarkCircle, HiXCircle } from 'react-icons/hi'
 
-const MQTTComponent: React.FC = () => {
-    const mqttUrl = 'wss://developer.fidesinnova.io:8081' // Static URL
-    const [client, setClient] = useState<mqtt.MqttClient | null>(null)
-    const [isConnecting, setIsConnecting] = useState(false)
-    const [error, setError] = useState<string | null>(null)
+const clients: Record<string, MqttClient> = {}
 
-    const handleConnect = () => {
-        setError(null)
-        setIsConnecting(true)
-
-        const options = {
-            connectTimeout: 4000, // Timeout for the connection
-            reconnectPeriod: 1000, // Reconnect interval
-            clean: true, // Clean session
-            rejectUnauthorized: false,
-        }
-
-        const newClient = mqtt.connect(mqttUrl, options)
-
-        newClient.on('connect', () => {
-            console.log('Connected to MQTT broker')
-            setIsConnecting(false)
-        })
-
-        newClient.on('error', (err) => {
-            console.error('Connection error: ', err)
-            setError('Connection error, check URL or broker.')
-            setIsConnecting(false)
-            newClient.end()
-        })
-
-        newClient.on('close', () => {
-            console.log('Disconnected from MQTT broker')
-        })
-
-        setClient(newClient)
-    }
-
-    const handleCancel = () => {
-        if (client) {
-            client.end()
-            setClient(null)
-            console.log('Connection attempt canceled.')
-        }
-        setIsConnecting(false)
-    }
-
-    useEffect(() => {
-        return () => {
-            if (client) {
-                client.end()
-                console.log('MQTT client disconnected')
-            }
-        }
-    }, [client])
-
-    return (
-        <div>
-            <button onClick={handleConnect} disabled={isConnecting}>
-                {isConnecting ? 'Connecting...' : 'Connect'}
-            </button>
-            <button onClick={handleCancel} disabled={!isConnecting}>
-                Cancel
-            </button>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-        </div>
-    )
+function convertToWebSocketUrl(url: string): string {
+    const parsedUrl = new URL(url)
+    const host = parsedUrl.host
+    return `wss://${host}:8081`
 }
 
-export default MQTTComponent
+export const useMQTT = () => {
+    let messageHandlers: Record<
+        string,
+        Record<string, ((message: string) => void)[]>
+    > = {}
+    const [status, setStatus] = useState<JSX.Element | null>(null)
+
+    const statusIcon = {
+        error: <HiQuestionMarkCircle className="text-[1.2rem]" />,
+        connecting: <Loading size={20} loading={true} />,
+        connected: <HiCheckCircle className="text-[1.2rem] text-[#00ff00]" />,
+        subscribed: <HiCheckCircle className="text-[1.2rem]" />,
+        disconnected: <HiXCircle className="text-[1.2rem]" />,
+    }
+
+    const getOrCreateClient = (
+        mqttUrl = convertToWebSocketUrl(import.meta.env.VITE_URL),
+        autoReconnect: boolean = true
+    ): MqttClient => {
+        if (!clients[mqttUrl]) {
+            const options = {
+                connectTimeout: 4000,
+                reconnectPeriod: 1000,
+                clean: true,
+                reconnect: autoReconnect,
+            }
+
+            const client = mqtt.connect(mqttUrl, options)
+            clients[mqttUrl] = client
+
+            client.on('connect', () => {
+                console.log(`Connected to MQTT broker at ${mqttUrl}`)
+                updateStatus(mqttUrl, 'connected')
+            })
+
+            client.on('message', (topic, payload) => {
+                let message = payload.toString()
+                /* console.log(
+                    `Message from MQTT (${mqttUrl} - ${topic}):`,
+                    message
+                ) */
+                try {
+                    message = JSON.parse(message)
+                    if (messageHandlers[mqttUrl]?.[topic]) {
+                        messageHandlers[mqttUrl][topic].forEach((handler) =>
+                            handler(message)
+                        )
+                    }
+                } catch (error) {
+                    console.error(`Received payload is not JSON parsable`)
+                }
+            })
+
+            client.on('error', (err) => {
+                console.error(`Connection error (${mqttUrl}):`, err)
+                updateStatus(mqttUrl, 'error')
+                client.end()
+                delete clients[mqttUrl]
+            })
+
+            client.on('close', () => {
+                console.log(`Disconnected from MQTT broker at ${mqttUrl}`)
+                updateStatus(mqttUrl, 'disconnected')
+                delete clients[mqttUrl]
+            })
+
+            updateStatus(mqttUrl, 'connecting')
+        } else {
+            updateStatus(mqttUrl, 'connecting') // connected  ( connecting is for user knowledge)
+        }
+
+        return clients[mqttUrl]
+    }
+
+    const updateStatus = (mqttUrl: string, status: string) => {
+        setStatus(
+            <p className="flex gap-2 items-center text-[1.05rem]">
+                {status} {statusIcon[status]}
+            </p>
+        )
+        //console.log(`Status of ${mqttUrl}: ${status}`)
+    }
+
+    const subscribe = (
+        mqttUrl = convertToWebSocketUrl(import.meta.env.VITE_URL),
+        topic: string,
+        onMessage: (message: string) => void,
+        autoSubscribe: boolean = true
+    ) => {
+        const client = getOrCreateClient(mqttUrl)
+
+        if (!messageHandlers[mqttUrl]) {
+            messageHandlers[mqttUrl] = {}
+        }
+
+        if (!messageHandlers[mqttUrl][topic]) {
+            messageHandlers[mqttUrl][topic] = []
+
+            if (autoSubscribe) {
+                client.subscribe(topic, (err) => {
+                    if (err) {
+                        console.error(
+                            `Subscription error for topic "${topic}" at ${mqttUrl}:`,
+                            err
+                        )
+                        updateStatus(mqttUrl, 'error')
+                    } else {
+                        console.log(
+                            `Subscribed to topic: ${topic} at ${mqttUrl}`
+                        )
+                        updateStatus(mqttUrl, 'connected')
+                    }
+                })
+            }
+        }
+
+        messageHandlers[mqttUrl][topic].push(onMessage)
+
+        return () => {
+            // Unsubscribe the specific handler
+            messageHandlers[mqttUrl][topic] = messageHandlers[mqttUrl][
+                topic
+            ].filter((handler) => handler !== onMessage)
+            if (messageHandlers[mqttUrl][topic].length === 0) {
+                // Unsubscribe from the topic if no handlers are left
+                client.unsubscribe(topic)
+                delete messageHandlers[mqttUrl][topic]
+                console.log(`Unsubscribed from topic: ${topic} at ${mqttUrl}`)
+            }
+
+            // Clean up MQTT client if no topics are subscribed for this URL
+            if (Object.keys(messageHandlers[mqttUrl]).length === 0) {
+                client.end()
+                delete clients[mqttUrl]
+                delete messageHandlers[mqttUrl]
+            }
+        }
+    }
+
+    return { subscribe, status }
+}

@@ -15,11 +15,21 @@ import {
 import { useNavigate } from 'react-router-dom'
 import { DeviceListOptionsInterface } from '../DeviceTable'
 
-export const DeviceProductColumn = ({ row }: { row: DeviceData }) => {
+export const DeviceProductColumn = ({
+    row,
+    dataReceived,
+}: {
+    row: DeviceData
+    dataReceived: boolean
+}) => {
     const avatar = (
         <Avatar
             imgClass="!object-contain p-1"
-            className="!w-[60px] !h-[60px] overflow-hidden border-2 border-white dark:border-gray-800 shadow-lg"
+            className={`!w-[60px] !h-[60px] overflow-hidden border-2 shadow-lg`}
+            style={{
+                borderColor: dataReceived ? '#00ff00' : '#1f2937',
+                transition: 'all 1s ease',
+            }}
             size={60}
             shape="circle"
             src={row.image}

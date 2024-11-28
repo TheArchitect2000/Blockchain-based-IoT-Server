@@ -7,6 +7,7 @@ import { ReactNode, useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { apiGetDevices, apiGetSharedWithMeDevices } from '@/services/DeviceApi'
 import { useAppSelector } from '@/store'
+import { useMQTT } from '@/components/ui/MqttComp'
 const { TabNav, TabList } = Tabs
 
 const ProductList = () => {
@@ -18,6 +19,107 @@ const ProductList = () => {
     const { _id: userId } = useAppSelector((state) => state.auth.user)
     const navigate = useNavigate()
     const location = useLocation()
+    const [sharedDevicesData, setSharedDevicesData] = useState<
+        Record<string, any>
+    >({})
+    const [allDevicesData, setAllDevicesData] = useState<Record<string, any>>(
+        {}
+    )
+
+    const { status, subscribe } = useMQTT()
+
+    useEffect(() => {
+        const unsubscribeFunctions: (() => void)[] = []
+
+        sharedData.forEach((item) => {
+            if (item?.deviceEncryptedId) {
+                const unsubscribe = subscribe(
+                    undefined,
+                    item?.deviceEncryptedId,
+                    (message: any) => {
+                        let tempData = message.data
+                        delete tempData.HV
+                        delete tempData.FV
+                        if (tempData.proof) {
+                            delete tempData.proof
+                        }
+                        if (
+                            String(message.from) ===
+                            String(item.deviceEncryptedId)
+                        ) {
+                            console.log('Shared devices set')
+                            setSharedDevicesData((prevData) => ({
+                                ...prevData,
+                                [String(message.from)]: {
+                                    received: true,
+                                    data: { ...tempData },
+                                    date: new Date(),
+                                },
+                            }))
+                            setTimeout(() => {
+                                setSharedDevicesData((prevData) => ({
+                                    ...prevData,
+                                    [String(message.from)]: {
+                                        ...prevData[String(message.from)],
+                                        received: false,
+                                    },
+                                }))
+                            }, 2000)
+                        }
+                    },
+                    true
+                )
+                unsubscribeFunctions.push(unsubscribe)
+            }
+        })
+
+        allDevices.forEach((item) => {
+            if (item?.deviceEncryptedId) {
+                const unsubscribe = subscribe(
+                    undefined,
+                    item?.deviceEncryptedId,
+                    (message: any) => {
+                        let tempData = message.data
+                        delete tempData.HV
+                        delete tempData.FV
+                        if (tempData.proof) {
+                            delete tempData.proof
+                        }
+                        if (
+                            String(message.from) ===
+                            String(item.deviceEncryptedId)
+                        ) {
+                            console.log('All devices set')
+                            setAllDevicesData((pervData) => ({
+                                ...pervData,
+                                [String(message.from)]: {
+                                    received: true,
+                                    data: { ...tempData },
+                                    date: new Date(),
+                                },
+                            }))
+                            setTimeout(() => {
+                                setAllDevicesData((prevData) => ({
+                                    ...prevData,
+                                    [String(message.from)]: {
+                                        ...prevData[String(message.from)],
+                                        received: false,
+                                    },
+                                }))
+                            }, 2000)
+                        }
+                    },
+                    true
+                )
+                unsubscribeFunctions.push(unsubscribe)
+            }
+        })
+
+        // Cleanup function to unsubscribe all
+        return () => {
+            unsubscribeFunctions.forEach((unsubscribe) => unsubscribe())
+        }
+    }, [sharedData, allDevices])
 
     function refreshPage() {
         setRefreshData(refreshData + 1)
@@ -47,6 +149,7 @@ const ProductList = () => {
                         edit: true,
                     }}
                     deviceList={allDevices}
+                    payloads={allDevicesData}
                     refreshPage={refreshPage}
                 />
             ),
@@ -62,6 +165,7 @@ const ProductList = () => {
                     deviceList={allDevices.filter(
                         (item) => item.sharedWith.length > 0
                     )}
+                    payloads={allDevicesData}
                     refreshPage={refreshPage}
                 />
             ),
@@ -77,6 +181,7 @@ const ProductList = () => {
                     deviceList={allDevices.filter(
                         (item) => item.isShared == true
                     )}
+                    payloads={allDevicesData}
                     refreshPage={refreshPage}
                 />
             ),
@@ -90,6 +195,7 @@ const ProductList = () => {
                     type="share"
                     options={{ view: true }}
                     deviceList={sharedData}
+                    payloads={sharedDevicesData}
                     refreshPage={refreshPage}
                 />
             ),

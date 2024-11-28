@@ -11,9 +11,7 @@ export async function apiGetDevices<T>(userId: string) {
 
 export async function apiGetNodeDevices<T>() {
     return ApiService.fetchData<T>({
-        url: `${
-            import.meta.env.VITE_URL
-        }v1/devices`,
+        url: `${import.meta.env.VITE_URL}v1/devices`,
         method: 'get',
     })
 }
@@ -73,6 +71,20 @@ export async function apiGetDeviceLogByEncryptedIdAndNumberOfDays<T>(
         url: `${
             import.meta.env.VITE_URL
         }v1/device-log/get-device-log-by-encrypted-deviceid-and-field-name-and-number-of-days-before?${params.toString()}`,
+        method: 'get',
+    })
+}
+
+export async function apiGetLastDeviceLogByEncryptedId<T>(encryptedId: string) {
+    const params = new URLSearchParams({
+        deviceEncryptedId: encryptedId,
+        fieldName: 'data',
+    } as any)
+
+    return ApiService.fetchData<T>({
+        url: `${
+            import.meta.env.VITE_URL
+        }v1/device-log/get-last-device-log-by-encrypted-deviceid-and-field-name?${params.toString()}`,
         method: 'get',
     })
 }
