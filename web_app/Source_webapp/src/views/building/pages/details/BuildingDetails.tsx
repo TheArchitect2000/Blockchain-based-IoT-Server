@@ -1,28 +1,28 @@
 import { Loading } from '@/components/shared'
 import { apiGetBuildingByBuildId } from '@/services/UserApi'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import utils from '../../scripts/utils'
-import { HiUser } from 'react-icons/hi'
-import {
-    apiGetDevices,
-    apiGetLocalShareUsersWithDeviceId,
-    apiGetSharedWithMeDevices,
-} from '@/services/DeviceApi'
+import { apiGetDevices, apiGetSharedWithMeDevices } from '@/services/DeviceApi'
 import { useAppSelector } from '@/store'
 import { DeviceData } from '@/utils/hooks/useGetDevices'
-import useThemeClass from '@/utils/hooks/useThemeClass'
+import { useMQTT } from '@/components/ui/MqttComp'
+import './style.scss'
 
 export default function BuildingDetails() {
     const { id } = useParams<{ id: string }>()
     const [loading, setLoading] = useState(true)
     const [buildData, setBuildData] = useState<any>({})
     const [devicesData, setDevicesData] = useState<Array<DeviceData>>([])
+    const [devicePayloads, setDevicePayloads] = useState<Record<string, any>>(
+        {}
+    ) // Store payloads by device id
     const navigateTo = useNavigate()
     const { _id: userId } = useAppSelector((state) => state.auth.user)
-
+    const { subscribe } = useMQTT()
     const themeColor = useAppSelector((state) => state.theme.themeColor)
-
+    const timersRef = useRef<Record<string, NodeJS.Timeout>>({})
+    
     useEffect(() => {
         async function fetchData() {
             setLoading(true)
@@ -67,6 +67,94 @@ export default function BuildingDetails() {
         fetchData()
     }, [id, navigateTo])
 
+    function formatDataObject(obj: Record<string, any>): JSX.Element[] {
+        if (!obj || typeof obj.data !== 'object') return []
+        return Object.entries(obj.data).map(([key, value]) => (
+            <p key={key}>
+                <strong>{key}</strong> = {String(value)}
+            </p>
+        ))
+    }
+
+    const floorEntries = Object.entries(buildData?.details || {})
+        .sort()
+        .reverse()
+
+    useEffect(() => {
+        const unsubscribeFunctions: (() => void)[] = []
+
+        floorEntries?.forEach(([floorKey, floor]: any) => {
+            const unitKeys = Object.keys(floor.units)
+
+            unitKeys.forEach((unitKey) => {
+                const unit = floor.units[unitKey]
+                const device = devicesData.find(
+                    (device) =>
+                        device.deviceEncryptedId.toString() ===
+                        unit.device.toString()
+                )
+
+                if (device?.deviceEncryptedId) {
+                    const unsubscribe = subscribe(
+                        undefined,
+                        device.deviceEncryptedId,
+                        (message: any) => {
+                            let tempData = { ...message.data }
+                            delete tempData.HV
+                            delete tempData.FV
+                            if (tempData.proof) {
+                                delete tempData.proof
+                            }
+
+                            if (
+                                String(message.from) ===
+                                String(device.deviceEncryptedId)
+                            ) {
+                                console.log('Shared devices set')
+                                setDevicePayloads((prevData) => ({
+                                    ...prevData,
+                                    [String(message.from)]: {
+                                        received: true,
+                                        data: { ...tempData },
+                                        date: new Date(),
+                                    },
+                                }))
+
+                                if (timersRef.current[String(message.from)]) {
+                                    clearTimeout(
+                                        timersRef.current[String(message.from)]
+                                    )
+                                }
+
+                                timersRef.current[String(message.from)] =
+                                    setTimeout(() => {
+                                        setDevicePayloads((prevData) => ({
+                                            ...prevData,
+                                            [String(message.from)]: {
+                                                ...prevData[
+                                                    String(message.from)
+                                                ],
+                                                received: false,
+                                            },
+                                        }))
+                                        delete timersRef.current[
+                                            String(message.from)
+                                        ]
+                                    }, 1000)
+                            }
+                        },
+                        true
+                    )
+                    unsubscribeFunctions.push(unsubscribe)
+                }
+            })
+        })
+
+        return () => {
+            unsubscribeFunctions.forEach((unsubscribe) => unsubscribe())
+        }
+    }, [devicesData])
+
     if (loading === true) {
         return (
             <div className="w-full h-screen flex items-center justify-center">
@@ -74,8 +162,6 @@ export default function BuildingDetails() {
             </div>
         )
     }
-
-    const floorEntries = Object.entries(buildData.details).sort().reverse()
 
     return (
         <main className="flex flex-col gap-8 w-full">
@@ -101,6 +187,10 @@ export default function BuildingDetails() {
                                             device.deviceEncryptedId.toString() ===
                                             unit.device.toString()
                                     )
+                                    const payload =
+                                        devicePayloads[
+                                            String(device?.deviceEncryptedId)
+                                        ]
 
                                     return (
                                         <div
@@ -112,9 +202,12 @@ export default function BuildingDetails() {
                                                     )
                                                 }
                                             }}
-                                            className={`flex flex-col items-start justify-center hover:cursor-pointer hover:bg-gray-700 bg-opacity-30 p-3 w-[175px] border flex-shrink-0`}
+                                            className={`flex flex-col items-start animation-border ${
+                                                payload?.received &&
+                                                'border-[#00ff00]'
+                                            }  justify-start hover:cursor-pointer hover:bg-gray-700 border-[1.5px] bg-opacity-30 p-3 w-[175px] flex-shrink-0`}
                                         >
-                                            <h4 className="text-[1.1rem]">
+                                            <h4 className="text-[1.1rem] place-start">
                                                 {`${
                                                     utils.sliceBuildingStrings(
                                                         unitKey
@@ -134,13 +227,18 @@ export default function BuildingDetails() {
                                                 }`}
                                             </h4>
 
-                                            <p>
+                                            <p className="mb-4">
                                                 {(unit.device &&
                                                     device?.deviceName) ||
                                                     'Device not selected'}
                                                 :
                                             </p>
-                                            <p>Data not received</p>
+
+                                            <p>
+                                                {payload
+                                                    ? formatDataObject(payload)
+                                                    : 'Data not received'}
+                                            </p>
                                         </div>
                                     )
                                 })}
