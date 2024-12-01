@@ -365,7 +365,7 @@ export class ContractService {
           status: 'tested',
           blocklyJson: '',
           code: contractServices[9],
-          devices: contractServices[5],
+          devices: JSON.parse(contractServices[5]),
           insertDate: contractServices[10],
           updateDate: contractServices[11],
           published: true,
