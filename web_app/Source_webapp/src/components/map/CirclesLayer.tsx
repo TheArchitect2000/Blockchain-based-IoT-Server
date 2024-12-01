@@ -1,9 +1,11 @@
 import { useEffect } from 'react'
 import { useMap } from 'react-leaflet'
 import L from 'leaflet'
+import { DeviceData } from '@/utils/hooks/useGetDevices'
 
 interface CirclesLayerProps {
-    data: [number, number, number, number, string][]
+    data: Record<string, any>
+    devices: Array<DeviceData>
     type: 'temperature' | 'humidity'
 }
 
@@ -22,7 +24,7 @@ const getColorFromHumidity = (humidity: number) => {
     return '#00BFFF'
 }
 
-const CirclesLayer: React.FC<CirclesLayerProps> = ({ data, type }) => {
+const CirclesLayer: React.FC<CirclesLayerProps> = ({ devices, data, type }) => {
     const map = useMap()
 
     useEffect(() => {
@@ -31,20 +33,33 @@ const CirclesLayer: React.FC<CirclesLayerProps> = ({ data, type }) => {
                 ? getColorFromTemperature
                 : getColorFromHumidity
 
-        const elements = data?.map(([lat, lng, temp, humid]) => {
+        const elements = devices?.map((item) => {
+            let liveData: any = {}
+            if (data[String(item?.deviceEncryptedId)]) {
+                liveData = data[String(item?.deviceEncryptedId)]
+            }
+
             if (
-                (type === 'temperature' && temp !== null) ||
-                (type === 'humidity' && humid !== null)
+                Object.keys(liveData).length > 0 &&
+                (type === 'temperature' || type === 'humidity')
             ) {
+                const temp = liveData.data.Temperature
+                const humid = liveData.data.Humidity
                 const value = type === 'temperature' ? temp : humid
                 const text = type === 'temperature' ? `${temp}°C` : `${humid}%`
                 const color = getColor(value)
-                const circle = L.circle([lat, lng], {
-                    radius: 100,
-                    color: color,
-                    fillColor: color,
-                    fillOpacity: 0.5,
-                })
+                const circle = L.circle(
+                    [
+                        item.location.coordinates[0],
+                        item.location.coordinates[1],
+                    ],
+                    {
+                        radius: 100,
+                        color: color,
+                        fillColor: color,
+                        fillOpacity: 0.5,
+                    }
+                )
 
                 const icon = L.divIcon({
                     html: `<div style="text-align: center; color: black; font-weight: bold;">${text}</div>`,
@@ -56,9 +71,15 @@ const CirclesLayer: React.FC<CirclesLayerProps> = ({ data, type }) => {
                     className: '',
                 })
 
-                const marker = L.marker([lat, lng], {
-                    icon: emptyIcon,
-                }).bindTooltip(`${text}`, {
+                const marker = L.marker(
+                    [
+                        item.location.coordinates[0],
+                        item.location.coordinates[1],
+                    ],
+                    {
+                        icon: emptyIcon,
+                    }
+                ).bindTooltip(`${text}`, {
                     direction: 'top',
                     offset: L.point(0, -10),
                     permanent: false,

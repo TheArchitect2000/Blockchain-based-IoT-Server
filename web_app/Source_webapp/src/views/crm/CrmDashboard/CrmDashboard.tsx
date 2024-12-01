@@ -13,7 +13,7 @@ import EmailSent from './components/UserRatio'
 import Leads from './components/Leads'
 import ServiceTable from './components/ServiceTable'
 import MapComponent from '@/components/map/MapComponent'
-import { useGetSharedDevices } from '@/utils/hooks/useGetDevices'
+import { DeviceData, useGetSharedDevices } from '@/utils/hooks/useGetDevices'
 import { generateParisData } from '@/components/map/ParisDeviceGen'
 import { apiGetAllSharedDevices } from '@/services/DeviceApi'
 
@@ -40,33 +40,18 @@ const CrmDashboard = () => {
     }
 
     const [mapLoading, setMapLoading] = useState(true)
-    const [positions, setPositions] = useState<
-        [number, number, number, number, string][]
-    >([])
+    const [positions, setPositions] = useState<any>([])
 
     useEffect(() => {
         async function fetchDeviceDatas() {
             setMapLoading(true)
             const res = (await apiGetAllSharedDevices()) as any
             if (res?.data.data) {
-                const newPositions: [number, number, number, number, string][] =
-                    res.data.data
-                        .filter((item: any) => item.location.coordinates)
-                        .map(
-                            (item: any) =>
-                                [
-                                    ...item.location.coordinates,
-                                    (item.lastLog &&
-                                        item.lastLog?.data?.Temperature) ||
-                                        null,
-                                    (item.lastLog &&
-                                        item.lastLog?.data?.Humidity) ||
-                                        null,
-                                    String(item.nodeId),
-                                ] as [number, number, number, number, string]
-                        )
+                const newPositions: [any][] = res.data.data.filter(
+                    (item: any) => item.location.coordinates
+                )
 
-                setPositions([...newPositions, ...generateParisData(500, 500)])
+                setPositions(newPositions)
                 setMapLoading(false)
             }
         }

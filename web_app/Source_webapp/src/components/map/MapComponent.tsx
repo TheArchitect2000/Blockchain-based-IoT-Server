@@ -5,9 +5,13 @@ import MarkerCluster from './MarkerCluster'
 import { Button, Card } from '../ui'
 import CirclesLayer from './CirclesLayer'
 import { Loading } from '../shared'
+import { DeviceData } from '@/utils/hooks/useGetDevices'
+import { useMQTT } from '../ui/MqttComp'
+import LiveAnimation from '../animations/Heart/HeartAnimation'
+import './mapStyle.scss'
 
 interface MapComponentProps {
-    positions: [number, number, number, number, string][]
+    positions: Array<DeviceData>
     loading: boolean
 }
 
@@ -16,22 +20,81 @@ const MapComponent: React.FC<MapComponentProps> = ({ positions, loading }) => {
         'markers' | 'temperatures' | 'humidity'
     >('markers')
     const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
+    const [liveDevicesData, setLiveDevicesData] = useState<Record<string, any>>(
+        {}
+    )
+    const { status, subscribe } = useMQTT()
 
-    const nodeIds = Array.from(new Set(positions.map((pos) => pos[4])))
+    useEffect(() => {
+        const unsubscribeFunctions: (() => void)[] = []
+
+        positions.forEach((item) => {
+            if (item?.deviceEncryptedId) {
+                let deviceNodeId = ''
+
+                if (item.nodeId == 'developer.fidesinnova.io') {
+                    deviceNodeId = `wss://${item.nodeId}:8081`
+                } else {
+                    deviceNodeId = `wss://panel.${item.nodeId}:8081`
+                }
+
+                const unsubscribe = subscribe(
+                    deviceNodeId,
+                    item?.deviceEncryptedId,
+                    (message: any) => {
+                        let tempData = message.data
+                        delete tempData.HV
+                        delete tempData.FV
+                        if (tempData.proof) {
+                            delete tempData.proof
+                        }
+                        if (
+                            String(message.from) ===
+                            String(item.deviceEncryptedId)
+                        ) {
+                            setLiveDevicesData((prevData) => ({
+                                ...prevData,
+                                [String(message.from)]: {
+                                    received: true,
+                                    data: { ...tempData },
+                                    date: new Date(),
+                                },
+                            }))
+                            setTimeout(() => {
+                                setLiveDevicesData((prevData) => ({
+                                    ...prevData,
+                                    [String(message.from)]: {
+                                        ...prevData[String(message.from)],
+                                        received: false,
+                                    },
+                                }))
+                            }, 2000)
+                        }
+                    },
+                    true
+                )
+                unsubscribeFunctions.push(unsubscribe)
+            }
+        })
+
+        // Cleanup function to unsubscribe all
+        return () => {
+            unsubscribeFunctions.forEach((unsubscribe) => unsubscribe())
+        }
+    }, [positions])
+
+    const nodeIds = Array.from(new Set(positions.map((item) => item.nodeId)))
 
     const handleNodeIdSelect = (nodeId: string) => {
         setSelectedNodeId(nodeId === selectedNodeId ? null : nodeId)
     }
 
     // Filter positions based on selectedNodeId
+
     const filteredPositions =
-        selectedNodeId === 'Sample'
-            ? positions.filter((pos) => pos[4] === 'Sample')
-            : positions.filter((pos) =>
-                  selectedNodeId
-                      ? pos[4] === selectedNodeId
-                      : pos[4] !== 'Sample'
-              )
+        selectedNodeId !== null
+            ? positions.filter((item) => item.nodeId === selectedNodeId)
+            : positions
 
     // Custom component to zoom the map to Paris
     const ZoomToParis: React.FC = () => {
@@ -114,17 +177,27 @@ const MapComponent: React.FC<MapComponentProps> = ({ positions, loading }) => {
                         [90, 180],
                     ]}
                 >
+                    <div className="flex gap-2 live-holder">
+                        <p>Live</p> <LiveAnimation className="live-component" />
+                    </div>
+
                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+
                     {selectedView === 'markers' ? (
-                        <MarkerCluster positions={filteredPositions} />
+                        <MarkerCluster
+                            devices={filteredPositions}
+                            data={liveDevicesData}
+                        />
                     ) : selectedView === 'temperatures' ? (
                         <CirclesLayer
-                            data={filteredPositions}
+                            devices={filteredPositions}
+                            data={liveDevicesData}
                             type="temperature"
                         />
                     ) : (
                         <CirclesLayer
-                            data={filteredPositions}
+                            devices={filteredPositions}
+                            data={liveDevicesData}
                             type="humidity"
                         />
                     )}
