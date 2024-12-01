@@ -247,6 +247,10 @@ Allow IoT devices to connect to the MQTT broker through port 8883
 ```
 sudo ufw allow 8883
 ```
+Allow IoT devices to connect to the MQTT web socket through port 8081 
+```
+sudo ufw allow 8081
+```
 
 ### Enable firewall 
 ```
