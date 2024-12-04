@@ -63,7 +63,7 @@ sudo apt-get install certbot
 sudo certbot certonly --standalone --preferred-challenges http
 ```
 
-# Obtain an SSL Certificate
+### Obtain an SSL Certificate
 
 To manually obtain an SSL certificate for your domains without directly modifying your web server configurations, run the following command:
 
