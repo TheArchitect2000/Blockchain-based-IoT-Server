@@ -244,7 +244,7 @@ export class MqttService implements OnModuleInit {
 
             await this.deviceService.editDevice(
               {
-                deviceId: String(deviceData._id),
+                deviceId: String(deviceData?._id),
                 hardwareVersion: Number(String(parsedPayload.data.HV)),
                 firmwareVersion: Number(String(parsedPayload.data.FV)),
               } as any,

@@ -56,11 +56,11 @@ export class ContractService {
       this.provider,
     );
 
-    this.contracts.zkp = new ethers.Contract(
+    /* this.contracts.zkp = new ethers.Contract(
       contractData.zkpContractAddress,
       contractData.zkpContractABI,
       this.adminWallet,
-    );
+    ); */
 
     this.contracts.serviceDevice = new ethers.Contract(
       contractData.serviceDeviceContractAddress,
@@ -522,14 +522,14 @@ export class ContractService {
 
   async zpkProof(proofString: string): Promise<boolean> {
     try {
-      const proofSlices = parseProofString(proofString);
+      /* const proofSlices = parseProofString(proofString);
       const result = await this.contracts.zkp.verifyProof(
         proofSlices[0],
         [proofSlices[1], proofSlices[2]],
         proofSlices[3],
         proofSlices[4],
-      );
-      return result;
+      ); */
+      return false;
     } catch (error) {
       console.error('Error calling verifyProof:', error);
       return false;

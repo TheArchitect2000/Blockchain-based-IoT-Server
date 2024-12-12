@@ -1,11 +1,11 @@
 export const serviceDeviceContractAddress =
-  '0x2b746D228379F0E0a307723dF99486Dc17fdf9B1';
+  '0x0caf2cdaefa7a2c553f1fe45add08d812dacc35e';
   
 export const zkpContractAddress = '0xf1AdF8eD7569e0BceC73B371f4876Db69515CD20';
 
-export const storeZkpContractAddress = '0xCFC00106081c541389D449183D4EEADF5d895D37';
+export const storeZkpContractAddress = '0x731b6c8d68ca98e0ab0592fdb1749c1d2f2ac504';
 
-export const commitmentContractAddress = '0xA196D2B69c0CFD632953030302147Fa1927f2A8A'
+export const commitmentContractAddress = '0xfe6dccbc74603414ba1ac8f3f8def6d7e7eb92de'
 
 export const zkpContractABI = [
   {
