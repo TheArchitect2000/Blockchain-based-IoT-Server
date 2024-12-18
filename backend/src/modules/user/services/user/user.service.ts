@@ -1361,6 +1361,7 @@ export class UserService {
         },
       },
     ];
+  
     const selectCondition = this.getUserKeys();
 
     this.user = await this.userRepository.findUserByEmail(
