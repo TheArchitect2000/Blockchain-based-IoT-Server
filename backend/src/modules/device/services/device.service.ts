@@ -509,7 +509,9 @@ export class DeviceService {
           );
         }
         if (body.isShared == false && foundDevice.isShared == true) {
-          this.buildingService.deleteDeviceIdFromAllBuildings(newData.deviceEncryptedId);
+          this.buildingService.deleteDeviceIdFromAllBuildings(
+            newData.deviceEncryptedId,
+          );
           this.contractService.removeSharedDevice(
             process.env.NODE_ID,
             String(newData._id),
@@ -825,6 +827,11 @@ export class DeviceService {
         foundDevice.deviceEncryptedId,
       );
 
+    // removing device logs
+    this.deviceLogService.deleteAllUserDeviceLogsPermanently(
+      foundDevice.deviceEncryptedId,
+    );
+
     installedServices.map((insService) => {
       this.installedService.deleteInstalledServiceByInstalledServiceId(
         insService._id,
@@ -989,9 +996,15 @@ export class DeviceService {
       userId,
     );
 
-    this.installedService.deleteServicesOfAnUserWithDeviceId(userId, String(foundDevices.deviceEncryptedId))
+    this.installedService.deleteServicesOfAnUserWithDeviceId(
+      userId,
+      String(foundDevices.deviceEncryptedId),
+    );
 
-    this.buildingService.deleteDeviceIdFromBuildingsByUserId(String(foundDevices.deviceEncryptedId), userId);
+    this.buildingService.deleteDeviceIdFromBuildingsByUserId(
+      String(foundDevices.deviceEncryptedId),
+      userId,
+    );
 
     return result;
   }
