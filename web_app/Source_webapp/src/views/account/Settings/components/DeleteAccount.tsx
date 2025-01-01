@@ -57,8 +57,8 @@ export default function DeleteAccount() {
     return (
         <main className="flex flex-col gap-4 w-full">
             <FormDesription title="Account Deletion Warning:" desc="" />
-            <p className="text-[1.2rem] text-white">
-                <span className="text-red-500">Important</span>: Once you delete
+            <p className="text-[1.2rem] text-justify text-white">
+                <span className="text-red-500 ">Important</span>: Once you delete
                 your account, this action cannot be undone. All your data,
                 including settings, preferences, and history, will be
                 permanently removed from our system. If you wish to return in
@@ -87,7 +87,7 @@ export default function DeleteAccount() {
                 disabled={!isChecked}
                 variant="solid"
                 color="red-500"
-                className={`mt-4 ms-auto w-fit bg-red-500 ${
+                className={`mt-4 ms-auto w-full sm:w-fit bg-red-500 ${
                     !isChecked ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
                 onClick={() => setDialogOpen(true)}

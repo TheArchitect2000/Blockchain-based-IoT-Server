@@ -433,6 +433,7 @@ export function CreateEditBuilding() {
     }
 
     useEffect(() => {
+        
         dispatch(setSideNavCollapse(true))
         async function fetchData() {
             let functionLocalMyDevices = undefined

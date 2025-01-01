@@ -280,7 +280,7 @@ const _Notification = ({ className }: { className?: string }) => {
                 />
             }
             menuClass="p-0 min-w-[280px] md:min-w-[340px]"
-            placement={larger.md ? 'bottom-end' : 'bottom-center'}
+            placement={'bottom-end'}
         >
             <Dropdown.Item variant="header">
                 <div className="border-b border-gray-200 dark:border-gray-600 px-4 py-2 flex items-center justify-between">

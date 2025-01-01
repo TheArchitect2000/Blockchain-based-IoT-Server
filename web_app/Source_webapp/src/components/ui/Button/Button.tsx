@@ -67,34 +67,30 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
         switch (buttonSize) {
             case SIZES.LG:
                 sizeClass = classNames(
-                    `h-${CONTROL_SIZES.lg}`,
                     icon && !children
-                        ? `w-${CONTROL_SIZES.lg} ${sizeIconClass} text-2xl`
-                        : 'px-8 py-2 text-base'
+                        ? `${sizeIconClass} text-2xl`
+                        : 'px-8 py-4 text-base'
                 )
                 break
             case SIZES.SM:
                 sizeClass = classNames(
-                    `h-${CONTROL_SIZES.sm}`,
                     icon && !children
-                        ? `w-${CONTROL_SIZES.sm} ${sizeIconClass} text-lg`
-                        : 'px-3 py-2 text-sm'
+                        ? `${sizeIconClass} text-lg`
+                        : 'px-4 py-2 text-sm'
                 )
                 break
             case SIZES.XS:
                 sizeClass = classNames(
-                    `h-${CONTROL_SIZES.xs}`,
                     icon && !children
-                        ? `w-${CONTROL_SIZES.xs} ${sizeIconClass} text-base`
+                        ? `${sizeIconClass} text-base`
                         : 'px-3 py-1 text-xs'
                 )
                 break
             default:
                 sizeClass = classNames(
-                    `h-${CONTROL_SIZES.md}`,
                     icon && !children
-                        ? `w-${CONTROL_SIZES.md} ${sizeIconClass} text-xl`
-                        : 'px-8 py-2'
+                        ? `${sizeIconClass} text-xl`
+                        : 'px-6 py-3 text-base'
                 )
                 break
         }
@@ -187,7 +183,10 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
         `radius-${shape}`,
         getButtonSize(),
         className,
-        block ? 'w-full' : ''
+        block ? 'w-full' : '',
+        'whitespace-normal', // Allow text wrapping
+        'break-words', // Break long words
+        'flex items-center justify-center' // Ensure content alignment
     )
 
     const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
@@ -204,7 +203,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
             return (
                 <span className="flex items-center justify-center">
                     <Spinner enableTheme={false} className="mr-1" />
-                    {children}
+                    <span className="text-center">{children}</span>
                 </span>
             )
         }
@@ -219,14 +218,14 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
 
         if (icon && children && !loading) {
             return (
-                <span className="flex items-center justify-center">
+                <span className="flex items-center justify-center text-center">
                     <span className="text-lg">{icon}</span>
                     <span className="ltr:ml-1 rtl:mr-1">{children}</span>
                 </span>
             )
         }
 
-        return <>{children}</>
+        return <span className="text-center">{children}</span>
     }
 
     return (

@@ -167,14 +167,7 @@ const Password = () => {
                                         component={PasswordInput}
                                     />
                                 </FormRow>
-                                <div className="mt-4 ltr:text-right">
-                                    <Button
-                                        className="ltr:mr-2 rtl:ml-2"
-                                        type="button"
-                                        onClick={() => resetForm()}
-                                    >
-                                        Reset
-                                    </Button>
+                                <div className="flex gap-4 flex-col xs:flex-row mt-4 ltr:text-right">
                                     <Button
                                         variant="solid"
                                         loading={isSubmitting}
@@ -183,6 +176,13 @@ const Password = () => {
                                         {isSubmitting
                                             ? 'Updating'
                                             : 'Update Password'}
+                                    </Button>
+                                    <Button
+                                        className="ltr:mr-2 rtl:ml-2"
+                                        type="button"
+                                        onClick={() => resetForm()}
+                                    >
+                                        Reset
                                     </Button>
                                 </div>
                             </FormContainer>

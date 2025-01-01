@@ -185,7 +185,7 @@ const Header = (props: HeaderProps) => {
                 )}
 
                 <div className="flex flex-row">
-                    <div className="flex gap-4 mt-1 justify-end">
+                    <div className="gap-4 mt-1 justify-end hidden sm:flex">
                         <Dropdown
                             onSelect={dropDownSelectHandler}
                             renderTitle={

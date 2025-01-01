@@ -51,8 +51,8 @@ const PhoneNumberSelector: React.FC<PhoneNumberSelectorProps> = ({
     }
 
     return (
-        <form className="w-full flex gap-5 mx-auto">
-            <div className="w-4/12 mb-4">
+        <form className="w-full flex flex-col sm:flex-row gap-5 mx-auto">
+            <div className="w-full sm:w-4/12 mb-4">
                 <label
                     htmlFor="countryCode"
                     className="block text-sm font-medium"
@@ -67,7 +67,7 @@ const PhoneNumberSelector: React.FC<PhoneNumberSelectorProps> = ({
                     className="mt-1"
                 />
             </div>
-            <div className="w-8/12 mb-4">
+            <div className="w-full sm:w-8/12 mb-4">
                 <label
                     htmlFor="phoneNumber"
                     className="block text-sm font-medium"

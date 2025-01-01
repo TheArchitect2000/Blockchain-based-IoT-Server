@@ -54,7 +54,7 @@ const Verify = () => {
             const response = await apiRequestFaucet()
             setRequestLoading(false)
             setTimeout(() => {
-                queryClient.invalidateQueries(['walletBalance'])
+                queryClient.invalidateQueries(['walletBalance'] as any)
             }, 1000)
             toast.push(
                 <Notification
@@ -88,7 +88,7 @@ const Verify = () => {
                     walletAddress: walletAddress,
                 })
                 setTimeout(() => {
-                    queryClient.invalidateQueries(['walletBalance'])
+                    queryClient.invalidateQueries(['walletBalance'] as any)
                 }, 1000)
                 toast.push(
                     <Notification title="Success" type="success">
@@ -139,7 +139,7 @@ const Verify = () => {
                             </a>
                             .
                         </p>
-                        <div className="flex items-center justify-between gap-4">
+                        <div className="flex items-center flex-col md:flex-row justify-between gap-4">
                             <p className=" font-bold no-wrap">
                                 Enter your wallet address:
                             </p>
@@ -177,7 +177,7 @@ const Verify = () => {
                         <div className="flex items-center gap-4">
                             <p className="font-bold">
                                 {'Network faucet address: '}
-                                <span className="text-white font-normal">
+                                <span className="text-white font-normal break-all">
                                     {faucetData.address}
                                 </span>
                             </p>
@@ -188,8 +188,9 @@ const Verify = () => {
                                 more tokens, contact your node administrator.
                             </p>
                         </div>
-                        <div className="flex items-center">
+                        <div className="flex items-center w-full">
                             <Button
+                            className='w-full sm:w-auto'
                                 loading={requestLoading}
                                 onClick={handleRequestFaucet}
                                 variant="solid"

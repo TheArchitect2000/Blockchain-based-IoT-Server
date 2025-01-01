@@ -473,6 +473,7 @@ const createService = ({
                                         <div className="mt-4 ltr:text-right">
                                             {(isNew && (
                                                 <Button
+                                                    className="max-sm:w-full"
                                                     variant="solid"
                                                     loading={isSubmitting}
                                                     type="submit"
@@ -483,6 +484,7 @@ const createService = ({
                                                 </Button>
                                             )) || (
                                                 <Button
+                                                    className="max-sm:w-full"
                                                     variant="solid"
                                                     loading={isSubmitting}
                                                     type="submit"

@@ -24,9 +24,10 @@ import { Direction, NavMode } from '@/@types/theme'
 import type { NavigationTree } from '@/@types/navigation'
 import { apiGetNodeTheme } from '@/services/UserApi'
 import Logo from '../Logo'
-import { useAppSelector } from '@/store'
+import { setSideNavCollapse, useAppDispatch, useAppSelector } from '@/store'
 
 export interface VerticalMenuContentProps {
+    isMobile?: boolean
     navMode: NavMode
     collapsed?: boolean
     routeKey: string
@@ -55,6 +56,22 @@ const VerticalMenuContent = (props: VerticalMenuContentProps) => {
 
     const { activedRoute } = useMenuActive(navigationTree, routeKey)
 
+    const dispatch = useAppDispatch()
+
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth < 1000) {
+                dispatch(setSideNavCollapse(true))
+            } else {
+                //dispatch(setSideNavCollapse(false))
+            }
+        }
+
+        window.addEventListener('resize', handleResize)
+        handleResize() // Check initial width
+        return () => window.removeEventListener('resize', handleResize)
+    }, [dispatch])
+
     useEffect(() => {
         if (defaulExpandKey.length === 0 && activedRoute?.parentKey) {
             setDefaulExpandKey([activedRoute?.parentKey])
@@ -67,12 +84,14 @@ const VerticalMenuContent = (props: VerticalMenuContentProps) => {
     }
 
     const getNavItem = (nav: NavigationTree) => {
+        // props.isMobile
+
         if (nav.subMenu.length === 0 && nav.type === NAV_ITEM_TYPE_ITEM) {
             return (
                 <VerticalSingleMenuItem
                     key={nav.key}
                     nav={nav}
-                    sideCollapsed={collapsed}
+                    sideCollapsed={collapsed && !props.isMobile}
                     userAuthority={userAuthority}
                     direction={direction}
                     onLinkClick={handleLinkClick}
@@ -127,7 +146,7 @@ const VerticalMenuContent = (props: VerticalMenuContentProps) => {
                     </AuthorityCheck>
                 )
             } else {
-                ;<MenuGroup label={nav.title} />
+                return <MenuGroup label={nav.title} />
             }
         }
     }
@@ -152,7 +171,9 @@ const VerticalMenuContent = (props: VerticalMenuContentProps) => {
 
     return (
         <Menu
-            className="px-4 pb-4 flex flex-col h-full"
+            className={`px-4 pb-4 flex flex-col h-full ${
+                props.isMobile && 'pt-6'
+            }`}
             variant={navMode}
             sideCollapsed={collapsed}
             defaultActiveKeys={activedRoute?.key ? [activedRoute.key] : []}
@@ -161,13 +182,16 @@ const VerticalMenuContent = (props: VerticalMenuContentProps) => {
             {navigationTree.map((nav) => getNavItem(nav))}
             <Logo
                 mode={logoMode()}
-                type={sideNavCollapse ? 'streamline' : 'full'}
-                logoWidth={sideNavCollapse ? '100%' : '50%'}
+                type={
+                    sideNavCollapse && !props.isMobile ? 'streamline' : 'full'
+                }
+                logoWidth={sideNavCollapse && !props.isMobile ? '100%' : '50%'}
                 className={`mx-auto mt-auto`}
             />
-            {!sideNavCollapse && (
-                <p className="text-center">Powered by FidesInnova</p>
-            )}
+            {!sideNavCollapse ||
+                (props.isMobile && (
+                    <p className="text-center">Powered by FidesInnova</p>
+                ))}
         </Menu>
     )
 }

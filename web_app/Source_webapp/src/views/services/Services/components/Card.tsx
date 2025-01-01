@@ -114,6 +114,7 @@ const ServiceCard = ({
                     View / Edit
                 </Button>
                 <Button
+                    className="max-md:hidden"
                     disabled={disableAll}
                     variant="plain"
                     size="xs"
@@ -285,7 +286,7 @@ const ServiceCard = ({
                         <Button
                             disabled={disableAll}
                             variant="solid"
-                            color='yellow'
+                            color="yellow"
                             size="sm"
                             onClick={() => setCodeModal(true)}
                             className="w-1/2"
@@ -296,7 +297,7 @@ const ServiceCard = ({
                         <Button
                             disabled={disableAll}
                             variant="solid"
-                            color='green'
+                            color="green"
                             size="sm"
                             className="w-1/2"
                             onClick={handlePublishRequest}

@@ -62,7 +62,7 @@ function Services() {
             {loading === false && data.length === 0 && (
                 <section className="w-full h-[75dvh] flex flex-col gap-3 items-center justify-center">
                     <DoubleSidedImage
-                        className="w-2/12 max-w-[250px]"
+                        className="w-2/12 min-w-[125px] max-w-[250px]"
                         src="/img/others/img-2.png"
                         darkModeSrc="/img/others/img-2-dark.png"
                         alt="No product found!"

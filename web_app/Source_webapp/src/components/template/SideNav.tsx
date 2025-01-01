@@ -80,7 +80,7 @@ const SideNav = () => {
 
     return (
         <main>
-            {larger.md && (
+            {larger.lg && (
                 <div
                     style={
                         sideNavCollapse ? sideNavCollapseStyle : sideNavStyle

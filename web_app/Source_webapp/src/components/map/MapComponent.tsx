@@ -171,7 +171,8 @@ const MapComponent: React.FC<MapComponentProps> = ({ positions, loading }) => {
                     zoom={3} // Initial zoom level
                     minZoom={3}
                     maxZoom={18}
-                    style={{ height: '75vh', width: '100%' }}
+                    className="h-[40vh] xl:h-[75vh]"
+                    style={{ width: '100%' }}
                     maxBounds={[
                         [-90, -180],
                         [90, 180],

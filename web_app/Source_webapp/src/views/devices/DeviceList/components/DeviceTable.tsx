@@ -549,18 +549,18 @@ const DeviceTable = ({
             )}
 
             {loading === false && data.length === 0 && (
-                <section className="w-full h-[55dvh] flex flex-col gap-2 items-center justify-center">
+                <section className="w-full h-[55dvh] flex flex-col gap-4 sm:gap-3 items-center justify-center">
                     <DoubleSidedImage
-                        className="w-2/12 max-w-[250px]"
+                        className="w-2/12 min-w-[125px] max-w-[250px]"
                         src="/img/others/img-2.png"
                         darkModeSrc="/img/others/img-2-dark.png"
                         alt="No product found!"
                     />
-                    {type !== 'all' && <h3>No {type} devices were found.</h3>}
+                    {type !== 'all' && <h4 className='text-center'>No {type} devices were found.</h4>}
 
                     {type === 'all' && (
                         <>
-                            <p>
+                            <p className='text-center text-lg'>
                                 To add your device to this account, please use
                                 the FidesInnova mobile app.
                             </p>

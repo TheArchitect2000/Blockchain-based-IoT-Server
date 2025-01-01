@@ -1,4 +1,7 @@
 
+*localhost-key.pem
+*localhost.pem
+
 /backend/src/data/*
 
 /backend/uploads/*
@@ -70,3 +73,4 @@ dist
 dist-ssr
 build
 *.local
+.codegpt

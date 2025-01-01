@@ -6,7 +6,11 @@ import { apiGetAllPublishedServices } from '@/services/ServiceAPI'
 import { Loading } from '@/components/shared'
 import { Button } from '@/components/ui'
 import { DeviceData } from '@/utils/hooks/useGetDevices'
-import { apiGetAllSharedDevices, apiGetDevices, apiGetSharedWithMeDevices } from '@/services/DeviceApi'
+import {
+    apiGetAllSharedDevices,
+    apiGetDevices,
+    apiGetSharedWithMeDevices,
+} from '@/services/DeviceApi'
 import { useAppSelector } from '@/store'
 import CardHolder from '@/components/ui/CardHolder'
 
@@ -55,7 +59,13 @@ function Market() {
             <h4 className="mt-8">
                 Available IoT Servers in FidesInnova Network
             </h4>
-            <div className="flex items-center justify-start gap-6 p-4">
+            <div className="flex w-full overflow-x-auto items-center justify-start gap-6 p-4">
+                <Button
+                    onClick={() => setSelectedNodeId(null)}
+                    variant={selectedNodeId === null ? 'solid' : 'default'}
+                >
+                    All
+                </Button>
                 {nodeIds.map((nodeId) => (
                     <Button
                         key={nodeId}
@@ -67,12 +77,6 @@ function Market() {
                         {nodeId.split('.')[0]}
                     </Button>
                 ))}
-                <Button
-                    onClick={() => setSelectedNodeId(null)}
-                    variant={selectedNodeId === null ? 'solid' : 'default'}
-                >
-                    All
-                </Button>
             </div>
 
             <h4 className="mt-6">Available Service Contracts</h4>

@@ -64,12 +64,12 @@ const CrmDashboard = () => {
                 <Statistic />
 
                 <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
-                    <EmailSent className="xl:col-span-1" data={emailSentData} />
+                    <EmailSent className="col-span-2 xl:col-span-1" data={emailSentData} />
 
                     <ServiceTable />
                 </div>
 
-                <MapComponent positions={positions} loading={mapLoading} />
+                <MapComponent  positions={positions} loading={mapLoading} />
 
                 {/* <Leads data={recentLeadsData} /> */}
             </Loading>

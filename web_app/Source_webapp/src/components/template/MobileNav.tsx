@@ -66,9 +66,12 @@ const MobileNav = () => {
 
     return (
         <>
-            {smaller.md && (
+            {smaller.lg && (
                 <>
-                    <div className="text-2xl" onClick={openDrawer}>
+                    <div
+                        className="text-2xl"
+                        onClick={isOpen ? onDrawerClose : openDrawer}
+                    >
                         <MobileNavToggle toggled={isOpen} />
                     </div>
                     <Drawer
@@ -83,6 +86,7 @@ const MobileNav = () => {
                         <Suspense fallback={<></>}>
                             {isOpen && (
                                 <VerticalMenuContent
+                                    isMobile={true}
                                     navMode={navMode}
                                     collapsed={sideNavCollapse}
                                     navigationTree={navigationConfig}

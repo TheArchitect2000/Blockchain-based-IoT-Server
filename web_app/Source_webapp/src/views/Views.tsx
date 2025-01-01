@@ -24,50 +24,54 @@ const AllRoutes = (props: AllRoutesProps) => {
     const userAuthority = useAppSelector((state) => state.auth.user.authority)
 
     return (
-        <Routes>
-            <Route path="/" element={<ProtectedRoute />}>
-                <Route
-                    path="/"
-                    element={<Navigate replace to={authenticatedEntryPath} />}
-                />
-                {protectedRoutes.map((route, index) => (
+        <main className='min-h-[93.5dvh]'>
+            <Routes>
+                <Route path="/" element={<ProtectedRoute />}>
                     <Route
-                        key={route.key + index}
-                        path={route.path}
+                        path="/"
                         element={
-                            <AuthorityGuard
-                                userAuthority={userAuthority}
-                                authority={route.authority}
-                            >
-                                <PageContainer {...props} {...route.meta}>
-                                    <AppRoute
-                                        routeKey={route.key}
-                                        component={route.component}
-                                        {...route.meta}
-                                    />
-                                </PageContainer>
-                            </AuthorityGuard>
+                            <Navigate replace to={authenticatedEntryPath} />
                         }
                     />
-                ))}
-                <Route path="*" element={<Navigate replace to="/" />} />
-            </Route>
-            <Route path="/" element={<PublicRoute />}>
-                {publicRoutes.map((route) => (
-                    <Route
-                        key={route.path}
-                        path={route.path}
-                        element={
-                            <AppRoute
-                                routeKey={route.key}
-                                component={route.component}
-                                {...route.meta}
-                            />
-                        }
-                    />
-                ))}
-            </Route>
-        </Routes>
+                    {protectedRoutes.map((route, index) => (
+                        <Route
+                            key={route.key + index}
+                            path={route.path}
+                            element={
+                                <AuthorityGuard
+                                    userAuthority={userAuthority}
+                                    authority={route.authority}
+                                >
+                                    <PageContainer {...props} {...route.meta}>
+                                        <AppRoute
+                                            routeKey={route.key}
+                                            component={route.component}
+                                            {...route.meta}
+                                        />
+                                    </PageContainer>
+                                </AuthorityGuard>
+                            }
+                        />
+                    ))}
+                    <Route path="*" element={<Navigate replace to="/" />} />
+                </Route>
+                <Route path="/" element={<PublicRoute />}>
+                    {publicRoutes.map((route) => (
+                        <Route
+                            key={route.path}
+                            path={route.path}
+                            element={
+                                <AppRoute
+                                    routeKey={route.key}
+                                    component={route.component}
+                                    {...route.meta}
+                                />
+                            }
+                        />
+                    ))}
+                </Route>
+            </Routes>
+        </main>
     )
 }
 

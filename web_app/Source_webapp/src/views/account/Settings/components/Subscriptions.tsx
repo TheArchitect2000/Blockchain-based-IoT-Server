@@ -24,17 +24,17 @@ const SubscriptionComponent = ({
 }) => {
 
     return (
-        <div className="flex items-center gap-4 w-full p-4 border rounded-xl">
-            <h5 className="text-[1.25rem]">{title}:</h5>
+        <div className="flex items-center flex-col md:flex-row gap-4 w-full p-4 border rounded-xl">
+            <h5 className="text-[1.25rem] text-center">{title}:</h5>
             <p
-                className={`text-[1rem] text-[#${
+                className={`text-[1rem] text-center text-[#${
                     (color && color) || 'ffffff'
                 }]`}
             >
                 {desc}
             </p>
             <Button
-                className="ms-auto mr-4"
+                className="ms-auto mr-4 md: mr-auto"
                 variant="solid"
                 loading={loadingState}
                 onClick={() => onSubscribeChange(!subscription)}

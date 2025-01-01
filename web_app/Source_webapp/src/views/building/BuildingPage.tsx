@@ -133,7 +133,7 @@ export default function BuildingPage() {
                         return (
                             <Card
                                 key={index}
-                                className={`flex flex-0 flex-col gap-1 text-white border rounded-lg`}
+                                className={`flex max-sm:flex-1 flex-col gap-1 text-white border rounded-lg`}
                             >
                                 <HiHome
                                     className={`text-8xl mb-2 text-${themeColor}-${primaryColorLevel} mx-auto`}
@@ -150,20 +150,23 @@ export default function BuildingPage() {
                                 <p>
                                     Sensors: <strong>{data.deviceCount}</strong>
                                 </p>
-                                <div className="w-full mt-4 flex gap-2 justify-between">
+                                <div className="w-full mt-4 flex gap-3 justify-center">
                                     <Button
                                         size="sm"
                                         color="green"
                                         variant="solid"
                                         onClick={() => {
                                             navigateTo(
-                                                `/buildings/details/${build._id}?view=${true}` //    /buildings/${build._id}?view=${true}
+                                                `/buildings/details/${
+                                                    build._id
+                                                }?view=${true}` //    /buildings/${build._id}?view=${true}
                                             )
                                         }}
                                     >
                                         View
                                     </Button>
                                     <Button
+                                        className="max-lg:hidden"
                                         size="sm"
                                         color="yellow"
                                         variant="solid"
@@ -194,7 +197,7 @@ export default function BuildingPage() {
                         onClick={() => {
                             navigateTo('/buildings/new')
                         }}
-                        className="flex flex-0 min-h-[275px] cursor-pointer justify-center items-center px-14 text-white border rounded-lg"
+                        className="flex max-lg:hidden min-h-[275px] cursor-pointer justify-center items-center px-14 text-white border rounded-lg"
                     >
                         <HiPlus className="text-5xl" />
                     </Card>

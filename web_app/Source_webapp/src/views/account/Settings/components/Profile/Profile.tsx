@@ -568,7 +568,7 @@ const Profile = ({}: ProfileProps) => {
                                     label="Email"
                                     {...validatorProps}
                                 >
-                                    <section className="flex w-full gap-6">
+                                    <section className="flex flex-col sm:flex-row w-full gap-6">
                                         <Field
                                             type="email"
                                             autoComplete="off"
@@ -643,7 +643,7 @@ const Profile = ({}: ProfileProps) => {
                                     {...validatorProps}
                                 >
                                     <div
-                                        className={`flex w-full justify-around items-center`}
+                                        className={`flex w-full flex-col sm:flex-row gap-2 justify-around items-center`}
                                     >
                                         <Dialog
                                             isOpen={imageModal}
