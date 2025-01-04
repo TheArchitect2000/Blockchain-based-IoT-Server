@@ -4250,6 +4250,9 @@ h-4/6
 h-5/6
 h-full
 h-screen
+h-svh
+h-lvh
+h-dvh
 h-min
 h-max
 h-fit
@@ -4317,6 +4320,9 @@ w-10/12
 w-11/12
 w-full
 w-screen
+w-svw
+w-lvw
+w-dvw
 w-min
 w-max
 w-fit

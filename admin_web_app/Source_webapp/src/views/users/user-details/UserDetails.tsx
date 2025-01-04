@@ -1,12 +1,22 @@
 import { Loading } from '@/components/shared'
-import { Avatar, Notification, toast } from '@/components/ui'
-import { apiGetUserProfileByUserId } from '@/services/UserApi'
+import { Avatar, Checkbox, Input, Notification, toast } from '@/components/ui'
+import {
+    apiGetUserProfileByUserId,
+    apiGiveUserAdminRank,
+    apiTakeUserAdminRank,
+} from '@/services/UserApi'
 import { useEffect, useState } from 'react'
 import { HiBadgeCheck, HiUser } from 'react-icons/hi'
 import { useParams } from 'react-router-dom'
 
+function capitalizeFirstLetter(string: string) {
+    if (!string) return '' // Handle empty strings
+    return string.charAt(0).toUpperCase() + string.slice(1)
+}
+
 export default function UserDetails() {
     const [apiLoading, setApiLoading] = useState<boolean>(true)
+    const [developerLoading, setDeveloperLoading] = useState<boolean>(false)
     const [userData, setUserData] = useState<any>()
     const { userId } = useParams()
 
@@ -30,6 +40,44 @@ export default function UserDetails() {
         }
     }
 
+    function isDeveloper() {
+        return userData.roles.some(
+            (theRole: any) =>
+                theRole.name == 'company_developer' ||
+                theRole.label == 'company_developer' ||
+                theRole.department == 'company_developer'
+        )
+    }
+
+    async function changeUserDeveloper(checked: boolean) {
+        setDeveloperLoading(true)
+        if (checked) {
+            await apiGiveUserAdminRank(userData.email, ['cm_developer'])
+            toast.push(
+                <Notification
+                    title={`User has been successfully granted the 'Company Developer' rank.`}
+                    type="success"
+                />,
+                {
+                    placement: 'top-center',
+                }
+            )
+        } else {
+            await apiTakeUserAdminRank(userData.email, ['cm_developer'])
+            toast.push(
+                <Notification
+                    title={`The 'Company Developer' rank has been successfully removed from the user.`}
+                    type="success"
+                />,
+                {
+                    placement: 'top-center',
+                }
+            )
+        }
+        await fetchData()
+        setDeveloperLoading(false)
+    }
+
     useEffect(() => {
         fetchData()
     }, [userId])
@@ -43,8 +91,8 @@ export default function UserDetails() {
     }
 
     return (
-        <div className="p-6 max-w-5xl mx-auto shadow-md rounded-md">
-            <header className="flex items-center space-x-4 mb-6">
+        <div className="p-6 max-w-5xl mx-auto shadow-xl rounded-md">
+            <header className="w-full flex items-center space-x-4 mb-6">
                 <Avatar
                     className="!w-[60px] !h-[60px] overflow-hidden border-2 border-white dark:border-gray-800 shadow-lg"
                     size={60}
@@ -74,6 +122,15 @@ export default function UserDetails() {
                         Status: {userData.activationStatus}
                     </p>
                 </div>
+                <div className="!ml-auto flex items-center gap-2">
+                    <h2 className="text-lg font-semibold">Developer:</h2>
+                    <Checkbox
+                        disabled={developerLoading}
+                        defaultChecked={isDeveloper()}
+                        onChange={changeUserDeveloper}
+                        id="admin_developer_checkbox"
+                    />
+                </div>
             </header>
 
             <section className="mb-6">
@@ -81,17 +138,14 @@ export default function UserDetails() {
                     Contact Information
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <p>
-                            <strong>Phone:</strong>{' '}
-                            {userData.tel?.countryCode?.value}{' '}
-                            {userData.tel?.phoneNumber || 'N/A'}
-                        </p>
-                        <p>
-                            <strong>Time Zone:</strong>{' '}
-                            {userData.timezone || 'N/A'}
-                        </p>
-                    </div>
+                    <p>
+                        <strong>Phone:</strong>{' '}
+                        {userData.tel?.countryCode?.value}{' '}
+                        {userData.tel?.phoneNumber || 'N/A'}
+                    </p>
+                    <p>
+                        <strong>Time Zone:</strong> {userData.timezone || 'N/A'}
+                    </p>
                     <div>
                         <p>
                             <strong>Address:</strong>{' '}
@@ -109,6 +163,23 @@ export default function UserDetails() {
                                 : ''}
                         </p>
                     </div>
+                    <div>
+                        <p>
+                            <strong>Company:</strong>{' '}
+                            {[
+                                userData.company?.line_1,
+                                userData.company?.line_2,
+                                userData.company?.city,
+                                userData.company?.state,
+                                userData.company?.country,
+                            ]
+                                .filter(Boolean)
+                                .join(', ') || 'N/A'}
+                            {userData.company?.zipCode
+                                ? ` - ${userData.company.zipCode}`
+                                : ''}
+                        </p>
+                    </div>
                 </div>
             </section>
 
@@ -122,7 +193,13 @@ export default function UserDetails() {
                         className="p-4 border rounded-md mb-4"
                     >
                         <p>
-                            <strong>Role:</strong> {role.label} ({role.name})
+                            <strong>Role:</strong>{' '}
+                            {capitalizeFirstLetter(
+                                String(role.label).split('_')[0]
+                            )}{' '}
+                            {capitalizeFirstLetter(
+                                String(role.label).split('_')[1]
+                            )}
                         </p>
                         <p>
                             <strong>Department:</strong> {role.department}
@@ -136,7 +213,7 @@ export default function UserDetails() {
                         <ul className="list-disc list-inside text-sm">
                             {role.permissions?.map((perm: any, idx: number) => (
                                 <li key={perm._id || idx}>
-                                    {perm.label} - {perm.name}
+                                    {perm.label} - {perm.name.replace('_', ' ')}
                                 </li>
                             ))}
                         </ul>

@@ -6,7 +6,6 @@ import {
 } from '@/services/UserApi'
 import { useState } from 'react'
 
-
 function formatRankString(str: string) {
     return str
         .split('_') // Split the string by underscores
@@ -29,6 +28,7 @@ export default function MakeAdmin() {
         { short: 'service', roleName: 'service_admin' },
         { short: 'request', roleName: 'request_admin' },
         { short: 'notification', roleName: 'notification_admin' },
+        { short: 'cm_developer', roleName: 'company_developer' },
     ]
 
     const [selected, setSelected] = useState<any>()
@@ -155,7 +155,7 @@ export default function MakeAdmin() {
 
     return (
         <section className="w-full p-6 flex flex-col gap-4">
-            <h3>Manage Admins</h3>
+            <h3>Manage Roles</h3>
             <div className="flex flex-col lg:flex-row gap-10 ">
                 <div className="w-full lg:w-1/2 flex flex-col gap-4">
                     <Input
@@ -200,7 +200,7 @@ export default function MakeAdmin() {
                     </div>
                 </div>
                 <div className="w-full lg:w-1/2 grid grid-cols-2 gap-4 px-4 py-6 border border-gray-600 rounded-lg">
-                    <h4 className='col-span-2 mb-2 mx-auto'> Rank Selection</h4>
+                    <h4 className="col-span-2 mb-2 mx-auto">Role Selection</h4>
                     {adminRanks.map((rank, index) => (
                         <div
                             key={index}

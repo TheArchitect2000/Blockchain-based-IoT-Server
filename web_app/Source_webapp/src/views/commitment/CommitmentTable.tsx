@@ -11,7 +11,6 @@ import { HiOutlineEye, HiTrash } from 'react-icons/hi'
 import useThemeClass from '@/utils/hooks/useThemeClass'
 import { useNavigate } from 'react-router-dom'
 import { DoubleSidedImage } from '@/components/shared'
-import { CommitmentFormModel } from '.'
 import { Button, Dialog, Notification, toast } from '@/components/ui'
 import JsonDisplay from '@/components/ui/JsonDisplay'
 import { apiRemoveCommitment } from '@/services/ContractServices'
@@ -22,7 +21,7 @@ const CommitmentTable = ({
     data,
     refreshData,
 }: {
-    data: CommitmentFormModel[]
+    data: any[]
     refreshData: Function
 }) => {
     const [sorting, setSorting] = useState<ColumnSort[]>([])
@@ -31,11 +30,12 @@ const CommitmentTable = ({
     const [apiLoading, setApiLoading] = useState<boolean>(false)
     const [commitmentData, setCommitmentData] = useState<string>('')
     const [deleteData, setDeleteData] = useState<{
+        dbId: string
         commitmentId: string
         nodeId: string
-    }>({ commitmentId: '', nodeId: '' })
+    }>({ commitmentId: '', nodeId: '', dbId: '' })
 
-    const ActionColumn = ({ row }: { row: CommitmentFormModel }) => {
+    const ActionColumn = ({ row }: { row: any }) => {
         const { textTheme } = useThemeClass()
 
         function onView() {
@@ -44,7 +44,11 @@ const CommitmentTable = ({
         }
 
         function onDelete() {
-            setDeleteData({ commitmentId: row._id, nodeId: row.nodeId })
+            setDeleteData({
+                dbId: row._id,
+                commitmentId: row.commitmentId,
+                nodeId: row.nodeId,
+            })
             setDeleteDialog(true)
         }
 
@@ -62,22 +66,21 @@ const CommitmentTable = ({
         )
     }
 
-    const columns: ColumnDef<CommitmentFormModel>[] = [
+    const columns: ColumnDef<any>[] = [
+        {
+            header: 'Commitment ID',
+            accessorKey: 'commitmentID',
+            cell: (props) => {
+                const row = props.row.original
+                return <span>{row.commitmentId}</span>
+            },
+        },
         {
             header: 'Manufacturer Name',
             accessorKey: 'manufacturerName',
             cell: (props) => {
                 const row = props.row.original
                 return <span>{row.manufacturerName}</span>
-            },
-        },
-
-        {
-            header: 'Device Type',
-            accessorKey: 'deviceType',
-            cell: (props) => {
-                const row = props.row.original
-                return <span>{row.deviceType}</span>
             },
         },
 
@@ -96,15 +99,6 @@ const CommitmentTable = ({
             cell: (props) => {
                 const row = props.row.original
                 return <span>{row.hardwareVersion}</span>
-            },
-        },
-
-        {
-            header: 'Lines',
-            accessorKey: 'lines',
-            cell: (props) => {
-                const row = props.row.original
-                return <span>{row.lines}</span>
             },
         },
 
@@ -131,6 +125,7 @@ const CommitmentTable = ({
         try {
             const res = await apiRemoveCommitment(
                 deleteData.commitmentId,
+                deleteData.dbId,
                 deleteData.nodeId
             )
             setApiLoading(false)

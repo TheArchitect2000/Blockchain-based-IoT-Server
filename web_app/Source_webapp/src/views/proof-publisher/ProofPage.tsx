@@ -8,24 +8,21 @@ import {
     toast,
 } from '@/components/ui'
 import { Field, Form, Formik } from 'formik'
-import { useEffect, useMemo, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 import FormRow from '../account/Settings/components/FormRow'
-import * as Yup from 'yup'
-import { apiValidateZkpCommitment } from '@/services/UserApi'
 import { apiGetNodeDevices } from '@/services/DeviceApi'
 import { apiZKPPublishProof } from '@/services/ContractServices'
+import { useRoleStore } from '@/store/user/userRoleStore'
 
 export default function ProofPage() {
     const [loading, setLoading] = useState<boolean>(true)
     const [devicesData, setDevicesData] = useState<any[]>([])
     const [selectedDevice, setSelectedDevice] = useState<any>(null)
-
-    const location = useLocation()
-    const navigateTo = useNavigate()
-    const params = new URLSearchParams(location.search)
-    const userValue = params.get('user') || ''
-    const passwordValue = params.get('pass') || ''
+    const {
+        fetchUserRoles,
+        loading: roleLoading,
+        checkUserHasRole,
+    } = useRoleStore()
 
     function checkObjectItems(object: { [key: string]: any }): boolean {
         const device = devicesData.find(
@@ -50,21 +47,14 @@ export default function ProofPage() {
     }
 
     useEffect(() => {
-        async function validateData() {
-            const res = (await apiValidateZkpCommitment(
-                userValue,
-                passwordValue
-            )) as any
-            if (!res?.data?.data) navigateTo('/')
-        }
         async function fetchDevices() {
             const res = (await apiGetNodeDevices()) as any
             setDevicesData(res?.data?.data || [])
             setLoading(false)
         }
-        validateData()
+        fetchUserRoles()
         fetchDevices()
-    }, [location.search])
+    }, [])
 
     const handleDeviceChange = (deviceType: any, setFieldValue: any) => {
         const device = devicesData.find((d) => d.type === deviceType.value)
@@ -75,7 +65,7 @@ export default function ProofPage() {
         })
     }
 
-    if (loading) {
+    if (loading || roleLoading) {
         return (
             <div className="flex flex-col items-center justify-center w-full h-screen">
                 <Loading loading={true} />
@@ -173,7 +163,7 @@ export default function ProofPage() {
                     return (
                         <Form>
                             <FormContainer>
-                                <h3>ZKP Commitment Publisher</h3>
+                                <h3>ZKP Proof Publisher</h3>
                                 {/* Device Type Dropdown */}
                                 <FormRow
                                     name="deviceType"
@@ -181,6 +171,11 @@ export default function ProofPage() {
                                     {...validatorProps}
                                 >
                                     <Field
+                                        isDisabled={
+                                            !checkUserHasRole(
+                                                'company_developer'
+                                            )
+                                        }
                                         component={Select}
                                         name="deviceType"
                                         value={values.deviceType} // Bind value to form state
@@ -269,6 +264,11 @@ export default function ProofPage() {
                                 {/* Buttons */}
                                 <div className="flex items-center justify-center mt-4">
                                     <Button
+                                        disabled={
+                                            !checkUserHasRole(
+                                                'company_developer'
+                                            )
+                                        }
                                         variant="solid"
                                         loading={isSubmitting}
                                         type="submit"
@@ -278,6 +278,11 @@ export default function ProofPage() {
                                             : 'Publish'}
                                     </Button>
                                     <Button
+                                        disabled={
+                                            !checkUserHasRole(
+                                                'company_developer'
+                                            )
+                                        }
                                         variant="default"
                                         className="ml-2"
                                         onClick={() => {

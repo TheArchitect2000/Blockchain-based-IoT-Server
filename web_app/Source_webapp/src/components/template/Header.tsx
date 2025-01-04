@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 import { HEADER_HEIGHT_CLASS } from '@/constants/theme.constant'
-import { useState, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import type { CommonProps } from '@/@types/common'
 
 import {
@@ -21,6 +21,7 @@ import {
 } from '@/services/UserApi'
 import { PasswordInput } from '../shared'
 import './style.css'
+import { useRoleStore } from '@/store/user/userRoleStore'
 
 interface HeaderProps extends CommonProps {
     headerStart?: ReactNode
@@ -31,16 +32,8 @@ interface HeaderProps extends CommonProps {
 
 const Header = (props: HeaderProps) => {
     const { headerStart, headerEnd, headerMiddle, className, container } = props
+
     const navigate = useNavigate()
-    const [consoleDialog, setConsoleDialog] = useState(false)
-    const [dialogState, setDialogState] = useState('')
-    const [loading, setLoading] = useState(false)
-    const [username, setUsername] = useState('')
-    const [password, setPassword] = useState('')
-    const [errors, setErrors] = useState<{
-        username?: string
-        password?: string
-    }>({})
 
     const onCreateNewService = () => {
         navigate(`/services/new`)
@@ -48,67 +41,15 @@ const Header = (props: HeaderProps) => {
 
     const { themeBackground } = useConfig()
 
-    const validateForm = () => {
-        let valid = true
-        const newErrors: { username?: string; password?: string } = {}
-
-        if (!username) {
-            newErrors.username = 'Username is required'
-            valid = false
-        }
-
-        if (!password) {
-            newErrors.password = 'Password is required'
-            valid = false
-        }
-
-        setErrors(newErrors)
-        return valid
-    }
-
-    async function validateSmartContractData(user: string, pass: string) {
-        setLoading(true)
-        let res = null
-        if (dialogState == 'Smart Contract Console') {
-            res = (await apiValidateRemixIDE(user, pass)) as any
-        } else {
-            res = (await apiValidateZkpCommitment(user, pass)) as any
-        }
-
-        setLoading(false)
-        if (res.data.data == true) {
-            setConsoleDialog(false)
-            if (dialogState == 'Smart Contract Console') {
-                navigate(`/remix?user=${username}&pass=${password}`)
-            } else if (dialogState == 'ZKP Commitment Publisher') {
-                navigate(`/commitment?user=${username}&pass=${password}`)
-            } else if (dialogState == 'ZKP Proof Publisher') {
-                navigate(`/proof-publisher?user=${username}&pass=${password}`)
-            }
-        } else {
-            toast.push(
-                <Notification type="danger">
-                    {'Username or password is not valid'}
-                </Notification>,
-                {
-                    placement: 'top-center',
-                }
-            )
-        }
-    }
-
-    const onValidate = () => {
-        if (validateForm()) {
-            validateSmartContractData(username, password)
-        }
-    }
-
     function dropDownSelectHandler(eventKey: string) {
-        if (eventKey == 'ZKP Commitment Generator') {
+        if (eventKey == 'Smart Contract Console') {
+            navigate(`/remix`)
+        } else if (eventKey == 'ZKP Commitment Publisher') {
+            navigate(`/commitment`)
+        } else if (eventKey == 'ZKP Proof Publisher') {
+            navigate(`/proof-publisher`)
+        } else if (eventKey == 'ZKP Commitment Generator') {
             window.open('https://github.com/FidesInnova/zkiot', '_blank')
-        } else {
-            setDialogState(eventKey)
-            setConsoleDialog(true)
         }
     }
 
@@ -120,53 +61,6 @@ const Header = (props: HeaderProps) => {
                 className
             )}
         >
-            <Dialog
-                isOpen={consoleDialog}
-                onClose={() => setConsoleDialog(false)}
-            >
-                <h3>{dialogState}</h3>
-                <div className="flex p-6 justify-around gap-6">
-                    <div className="w-full">
-                        <Input
-                            disabled={loading}
-                            placeholder="Username..."
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            className={errors.username ? 'border-red-500' : ''}
-                        />
-                        {errors.username && (
-                            <span className="text-red-500 text-sm">
-                                {errors.username}
-                            </span>
-                        )}
-                    </div>
-                    <div className="w-full">
-                        <PasswordInput
-                            disabled={loading}
-                            placeholder="Password..."
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className={errors.password ? 'border-red-500' : ''}
-                        />
-                        {errors.password && (
-                            <span className="text-red-500 text-sm">
-                                {errors.password}
-                            </span>
-                        )}
-                    </div>
-                </div>
-                <div className="flex justify-center">
-                    <Button
-                        loading={loading}
-                        color="green"
-                        variant="solid"
-                        onClick={onValidate}
-                    >
-                        Login
-                    </Button>
-                </div>
-            </Dialog>
             <div
                 className={classNames(
                     'header-wrapper',
@@ -190,7 +84,7 @@ const Header = (props: HeaderProps) => {
                             onSelect={dropDownSelectHandler}
                             renderTitle={
                                 <Button variant="solid">
-                                    Advanced Console
+                                    IoT Developer Console
                                 </Button>
                             }
                             placement="bottom-center"
@@ -220,7 +114,7 @@ const Header = (props: HeaderProps) => {
                             >
                                 ZKP Proof Publisher
                             </Dropdown.Item>
-                        </Dropdown>{' '}
+                        </Dropdown>
                         <Button onClick={onCreateNewService} variant="solid">
                             Create New Service
                         </Button>{' '}

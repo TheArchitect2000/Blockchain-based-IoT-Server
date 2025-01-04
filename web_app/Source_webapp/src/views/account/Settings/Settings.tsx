@@ -5,6 +5,7 @@ import Container from '@/components/shared/Container'
 import { useNavigate, useLocation } from 'react-router-dom'
 import isEmpty from 'lodash/isEmpty'
 import { apiGetAccountSettingData } from '@/services/AccountServices'
+import CompanyDeveloperPage from './components/CompanyDeveloper'
 
 const Profile = lazy(() => import('./components/Profile/Profile'))
 const Address = lazy(() => import('./components/Address'))
@@ -37,6 +38,7 @@ const settingsMenu: Record<
     },
     storx: { label: 'StorX', path: 'storx', element: <StorX /> },
     password: { label: 'Password', path: 'password', element: <Password /> },
+    developer: { label: 'IoT Developer (optional)', path: 'developer', element: <CompanyDeveloperPage /> },
     deleteaccount: {
         label: 'Delete Account',
         path: 'deleteaccount',

@@ -2,23 +2,26 @@ import Input from '@/components/ui/Input'
 import Notification from '@/components/ui/Notification'
 import toast from '@/components/ui/toast'
 import { FormContainer, FormItem } from '@/components/ui/Form'
-import FormDesription from './FormDesription'
-import FormRow from './FormRow'
 import { Field, Form, Formik } from 'formik'
 import {
     HiGlobeAlt,
     HiHashtag,
     HiHome,
+    HiOutlineCheckCircle,
+    HiOutlineXCircle,
     HiPencil,
     HiPencilAlt,
 } from 'react-icons/hi'
 import * as Yup from 'yup'
 import { useEffect, useState } from 'react'
 import { apiEditUserProfile, apiGetCurUserProfile } from '@/services/UserApi'
-import CountrySelector from './CountrySelector'
 import { Button } from '@/components/ui'
 import { Loading } from '@/components/shared'
 import { useAppSelector } from '@/store'
+import FormDesription from '../FormDesription'
+import FormRow from '../FormRow'
+import CountrySelector from '../CountrySelector'
+import { useRoleStore } from '@/store/user/userRoleStore'
 
 type AddressFormModel = {
     line_1: string
@@ -30,7 +33,7 @@ type AddressFormModel = {
 }
 
 const validationSchema = Yup.object().shape({
-    name: Yup.string().required('Home name is required'),
+    name: Yup.string().required('Company name is required'),
     line_1: Yup.string().required('Line 1 is required'),
     line_2: Yup.string(),
     city: Yup.string().required('City is required'),
@@ -38,21 +41,27 @@ const validationSchema = Yup.object().shape({
     zipCode: Yup.string().required('Zip Code is required'),
 })
 
-const Address = () => {
+export default function CompanyDeveloperPage() {
     const [apiData, setApiData] = useState<any>()
-    const [selectedCountry, setSelectedCountry] = useState<any>()
+    const [selectedCountry, setSelectedCountry] = useState<any>(null)
     const [loading, setLoading] = useState(true)
+    const {
+        checkUserHasRole,
+        fetchUserRoles,
+        loading: roleLoading,
+    } = useRoleStore()
 
     useEffect(() => {
         async function fetchData() {
             setLoading(true)
+            await fetchUserRoles()
             const resData = (await apiGetCurUserProfile()) as any
             const datas = resData.data.data
             setApiData(datas)
-            if (datas?.address?.country) {
+            if (datas?.company?.country) {
                 setSelectedCountry({
-                    label: datas.address.country,
-                    value: datas.address.country,
+                    label: datas.company.country,
+                    value: datas.company.country,
                 })
             }
             setLoading(false)
@@ -66,10 +75,24 @@ const Address = () => {
         values: AddressFormModel,
         setSubmitting: (isSubmitting: boolean) => void
     ) => {
+        if (!selectedCountry?.label) {
+            toast.push(
+                <Notification
+                    title={'You have to select the country'}
+                    type="danger"
+                />,
+                {
+                    placement: 'top-center',
+                }
+            )
+            setSubmitting(false)
+            return false
+        }
+
         setSubmitting(true)
         const dbDatas = {
             ...apiData,
-            address: { ...values, country: selectedCountry.label },
+            company: { ...values, country: selectedCountry.label },
         }
         const res = await apiEditUserProfile(userId?.toString() || '', dbDatas)
         toast.push(<Notification title={'Address updated'} type="success" />, {
@@ -79,11 +102,13 @@ const Address = () => {
         console.log('values', dbDatas)
     }
 
+    const isDeveloper = checkUserHasRole('company_developer')
+
     return (
         <Formik
             enableReinitialize
             initialValues={
-                apiData?.address || {
+                apiData?.company || {
                     name: '',
                     line_1: '',
                     line_2: '',
@@ -102,29 +127,47 @@ const Address = () => {
                 const validatorProps = { touched, errors }
                 return (
                     <Form>
-                        {(loading == false && (
+                        {(!loading && !roleLoading && (
                             <FormContainer>
                                 <FormDesription
                                     className=""
-                                    title="Personal"
-                                    desc="Your personal information that is hidden"
+                                    title="Company Data"
+                                    desc="Fill all fields about your company"
                                 />
                                 <FormRow
                                     name="name"
-                                    label="Home name"
+                                    label={
+                                        (
+                                            <div className="flex items-center gap-2">
+                                                <span>Company Name</span>
+                                                <span>(</span>
+                                                <p>
+                                                    {!isDeveloper && 'Not'}{' '}
+                                                    Verified
+                                                </p>
+                                                {(isDeveloper && (
+                                                    <HiOutlineCheckCircle className="text-xl text-green-500" />
+                                                )) || (
+                                                    <HiOutlineXCircle className="text-xl text-red-500" />
+                                                )}
+                                                <span>)</span>
+                                            </div>
+                                        ) as any
+                                    }
                                     {...validatorProps}
                                 >
                                     <Field
                                         type="text"
                                         autoComplete="off"
                                         name="name"
-                                        placeholder="Enter home name"
+                                        placeholder="Enter Company name"
                                         component={Input}
                                         prefix={
                                             <HiHashtag className="text-xl" />
                                         }
                                     />
                                 </FormRow>
+
                                 <FormRow
                                     name="line_1"
                                     label="Address line 1"
@@ -249,5 +292,3 @@ const Address = () => {
         </Formik>
     )
 }
-
-export default Address

@@ -93,7 +93,7 @@ const navigationConfig: NavigationTree[] = [
         key: 'admins',
         path: '/admins',
         role: 'super',
-        title: 'Admins',
+        title: 'User Roles',
         translateKey: 'Admins',
         icon: 'admins',
         type: NAV_ITEM_TYPE_ITEM,

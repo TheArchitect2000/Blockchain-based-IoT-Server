@@ -69,4 +69,8 @@ function countBuildingDetails(building: Building): CountResult {
     return { floorCount, unitCount, deviceCount }
 }
 
-export default { formatBuildingStrings, countBuildingDetails, sliceBuildingStrings }
+export default {
+    formatBuildingStrings,
+    countBuildingDetails,
+    sliceBuildingStrings,
+}

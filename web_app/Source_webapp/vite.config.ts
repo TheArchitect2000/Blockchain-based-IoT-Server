@@ -35,7 +35,6 @@ export default defineConfig({
                   }
                 : false,
         host: 'localhost',
-        port: 3000, // Or any port of your choice
     },
     assetsInclude: ['**/*.md'],
     resolve: {
@@ -45,7 +44,6 @@ export default defineConfig({
     },
     build: {
         outDir: 'build',
-       
     },
     preview: {
         port: 80,

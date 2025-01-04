@@ -180,6 +180,22 @@ export default function AdminsList() {
                 )
             },
         },
+        {
+            header: 'Company Developer',
+            accessorKey: '',
+            cell: (props) => {
+                const row = props.row.original
+                return (
+                    <span>
+                        {(row.roles.some(
+                            (role: any) => role.name == 'company_developer'
+                        ) && <HiCheck className="text-[1.5rem]" />) || (
+                            <HiX className="text-[1.5rem]" />
+                        )}
+                    </span>
+                )
+            },
+        },
     ]
 
     const table = useReactTable({
@@ -219,7 +235,7 @@ export default function AdminsList() {
 
     return (
         <main className="p-6">
-            <h3 className="mb-6">All Admins List ( {count} )</h3>
+            <h3 className="mb-6">All Roles Overview ( {count} )</h3>
             <div className="flex justify-between mb-4">
                 <input
                     type="text"

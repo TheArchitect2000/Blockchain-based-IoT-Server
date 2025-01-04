@@ -31,12 +31,11 @@ export async function apiZKPPublishProof(
 }
 
 export async function apiStoreCommitment(
+    commitmentID: string,
     manufacturerName: string,
     deviceName: string,
-    deviceType: string,
     hardwareVersion: string,
     firmwareVersion: string,
-    lines: string,
     commitmentData: string
 ) {
     return ApiService.fetchData({
@@ -45,10 +44,10 @@ export async function apiStoreCommitment(
         data: {
             manufacturerName: manufacturerName,
             deviceName: deviceName,
-            deviceType: deviceType,
+            commitmentID: commitmentID,
             hardwareVersion: hardwareVersion,
             firmwareVersion: firmwareVersion,
-            lines: lines,
+            
             commitmentData: commitmentData,
         },
     })
@@ -56,6 +55,7 @@ export async function apiStoreCommitment(
 
 export async function apiRemoveCommitment(
     commitmentId: string,
+    dbId: string,
     nodeId: string
 ) {
     return ApiService.fetchData({
@@ -63,6 +63,7 @@ export async function apiRemoveCommitment(
         method: 'post',
         data: {
             commitmentId: commitmentId,
+            dbId: dbId,
             nodeId: nodeId,
         },
     })
