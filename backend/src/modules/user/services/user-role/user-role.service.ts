@@ -56,6 +56,13 @@ export class UserRoleService {
       roleDepartment: RoleDepartmentsEnum.ADMINS,
     },
     {
+      short: 'cm_developer',
+      roleName: 'company_developer',
+      roleLabel: 'company_developer',
+      permissionName: 'cm_developer',
+      roleDepartment: RoleDepartmentsEnum.DEVELOPMENT,
+    },
+    {
       short: 'normal',
       roleName: 'ordinary',
       roleLabel: 'ordinary_user',

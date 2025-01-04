@@ -452,18 +452,11 @@ export class UserController {
       const adminRes = await this.userService.makeUserAdmin(body.email, [
         'super',
       ]);
-      return await this.userService.adminCredential({
-        ...body,
-        email: body.email.toString().toLocaleLowerCase(),
-      });
-    } else {
-      console.log('Not Included');
-
-      return await this.userService.adminCredential({
-        ...body,
-        email: body.email.toString().toLocaleLowerCase(),
-      });
     }
+    return await this.userService.adminCredential({
+      ...body,
+      email: body.email.toString().toLocaleLowerCase(),
+    });
   }
 
   @Post('v1/user/check-password')

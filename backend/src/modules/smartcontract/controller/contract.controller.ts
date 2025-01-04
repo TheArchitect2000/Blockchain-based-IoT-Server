@@ -107,6 +107,7 @@ export class contractController {
 
     return this.contractService.removeCommitment(
       body.commitmentId,
+      body.dbId,
       body.nodeId,
     );
   }

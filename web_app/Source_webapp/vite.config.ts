@@ -45,10 +45,7 @@ export default defineConfig({
     },
     build: {
         outDir: 'build',
-        rollupOptions: {
-            treeshake: true,
-        },
-        chunkSizeWarningLimit: 2000, // Increase the limit if your chunks are large
+       
     },
     preview: {
         port: 80,

@@ -1,5 +1,5 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { ethers } from 'ethers';
+import { ContractTransaction, ethers } from 'ethers';
 import * as contractData from '../contract-data';
 import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
@@ -15,6 +15,21 @@ function parseProofString(proofString) {
     section = section.replace(/^\[|\]$/g, '');
     return section.split(',').map((item) => item.trim().replace(/^'|'$/g, ''));
   });
+
+  interface StoreCommitmentData {
+    commitmentID: string;
+    manufacturerName: string;
+    deviceName: string;
+    hardwareVersion: string;
+    firmwareVersion: string;
+    commitmentData: string;
+  }
+
+  interface StoreCommitmentResponse {
+    success: boolean;
+    transactionId?: string;
+    error?: string;
+  }
 }
 
 @Injectable()
@@ -99,7 +114,6 @@ export class ContractService {
         updateDate: service[11],
         published: true,
       };
-      
 
       try {
         const createService = await this.serviceService.insertService(
@@ -220,7 +234,6 @@ export class ContractService {
         await tx.wait();
 
         this.lastRequestTime[walletAddress] = currentTime;
-        
       } catch (error) {
         throw new GeneralException(
           ErrorTypeEnum.NOT_FOUND,
@@ -465,44 +478,86 @@ export class ContractService {
     );
   }
 
-  async storeCommitment(data: StoreCommitmentData) {
-    const {
-      manufacturerName,
-      deviceName,
-      deviceType,
-      hardwareVersion,
-      firmwareVersion,
-      lines,
-      commitmentData,
-    } = data;
+  async storeCommitment(data: StoreCommitmentData): Promise<any> {
+    try {
+      const {
+        commitmentID,
+        manufacturerName,
+        deviceName,
+        hardwareVersion,
+        firmwareVersion,
+        commitmentData,
+      } = data;
 
-    const res = await this.saveCommitmentInDB(data);
+      // Initiate the transaction
+      const tx: any = await this.contracts.commitment.storeCommitment(
+        commitmentID,
+        process.env.NODE_ID,
+        manufacturerName,
+        deviceName,
+        hardwareVersion,
+        firmwareVersion,
+        commitmentData,
+      );
 
-    const result = await this.contracts.commitment.storeCommitment(
-      String(res._id),
-      process.env.NODE_ID,
-      manufacturerName,
-      deviceName,
-      deviceType,
-      hardwareVersion,
-      firmwareVersion,
-      lines,
-      commitmentData,
-    );
+      console.log(`Transaction submitted. Hash: ${tx.hash}`);
 
-    return result;
+      /*   // Wait for the transaction to be mined
+      const receipt = await tx.wait();
+
+      if (receipt.status !== 1) {
+        // Transaction failed
+        const errorMsg = 'Transaction failed on the blockchain.';
+        console.error(errorMsg);
+        throw new GeneralException(
+          ErrorTypeEnum.INTERNAL_SERVER_ERROR,
+          errorMsg,
+        );
+      }
+
+      console.log(
+        `Transaction confirmed. Block Number: ${receipt.blockNumber}`,
+      ); */
+
+      // Save commitment data to the database
+      await this.saveCommitmentInDB(data);
+      console.log('Commitment data saved to the database successfully.');
+
+      return tx.hash;
+    } catch (error: any) {
+      // Handle different types of errors
+      let errorMessage = 'An unexpected error occurred.';
+
+      if (error.code === 'INSUFFICIENT_FUNDS') {
+        errorMessage = 'Transaction failed due to insufficient funds.';
+      } else if (error.code === 'CALL_EXCEPTION') {
+        errorMessage = 'Smart contract execution reverted.';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      console.error(`Error in storeCommitment: ${errorMessage}`, error);
+
+      // Optionally, you can log the error to an external monitoring service here
+
+      // Return the error message to the front-end
+      throw new GeneralException(
+        ErrorTypeEnum.INTERNAL_SERVER_ERROR,
+        errorMessage,
+      );
+    }
   }
 
-  async removeCommitment(commitmentId: string, nodeId: string) {
+  async removeCommitment(commitmentId: string, dbId: string, nodeId: string) {
     const commitmentDb =
       await this.contractRepository.getCommitmentByCommitmentIdAndNodeId(
-        commitmentId,
+        dbId,
         nodeId,
       );
 
     if (commitmentDb) {
       await this.contractRepository.deleteCommitmentByCommitmentIdAndNodeId(
-        commitmentId,
+        dbId,
         nodeId,
       );
 
@@ -538,14 +593,13 @@ export class ContractService {
 
   async saveCommitmentInDB(data: StoreCommitmentData) {
     return await this.contractRepository.saveCommitment({
+      commitmentId: data.commitmentID,
       nodeId: process.env.NODE_ID,
       userId: data.userId,
       manufacturerName: data.manufacturerName,
       deviceName: data.deviceName,
-      deviceType: data.deviceType,
       hardwareVersion: data.hardwareVersion,
       firmwareVersion: data.firmwareVersion,
-      lines: data.lines,
       commitmentData: data.commitmentData,
     });
   }

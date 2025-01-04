@@ -15,6 +15,11 @@ const schema = new Schema({
     required: false,
     default: null,
   },
+  company: {
+    type: Object,
+    required: false,
+    default: {},
+  },
   tel: {
     type: Object,
     required: false,

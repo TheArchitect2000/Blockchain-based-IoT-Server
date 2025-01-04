@@ -18,6 +18,6 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "resolveJsonModule": true,
-    "lib": ["ES2021.String"]
+    "lib": ["ES2021"]
   }
 }

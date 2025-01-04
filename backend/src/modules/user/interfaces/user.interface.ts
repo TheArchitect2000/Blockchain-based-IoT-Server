@@ -10,6 +10,7 @@ export interface UserChangeEmailTokenInterface extends Document {
 export interface UserInterface extends Document {
   firstName: string;
   lastName: string;
+  company: Object;
   tel: Object;
   address: Object;
   timezone: string;

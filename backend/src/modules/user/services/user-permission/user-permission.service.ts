@@ -11,6 +11,7 @@ export class UserPermissionService {
   private defaultPremissions = [
     { Name: 'full_controll', Label: 'system' },
     { Name: 'read_content', Label: 'system' },
+    { Name: 'cm_developer', Label: 'system' },
     { Name: 'users', Label: 'admin' },
     { Name: 'devices', Label: 'admin' },
     { Name: 'services', Label: 'admin' },

@@ -9,17 +9,22 @@ export class verifyProofDto {
 }
 
 export interface StoreCommitmentData {
+  commitmentID: string;
   userId: string;
   manufacturerName: string;
   deviceName: string;
-  deviceType: string;
   hardwareVersion: string;
   firmwareVersion: string;
-  lines: string;
   commitmentData: string;
 }
 
+
 export class storeCommitmentDto {
+  @IsNotEmpty({ message: 'commitmentID is required and must be entered.' })
+  @IsString({ message: 'commitmentID must be string.' })
+  @ApiProperty({ required: true })
+  commitmentID: string;
+
   @IsNotEmpty({ message: 'manufacturerName is required and must be entered.' })
   @IsString({ message: 'manufacturerName must be string.' })
   @ApiProperty({ required: true })
@@ -29,11 +34,6 @@ export class storeCommitmentDto {
   @IsString({ message: 'deviceName must be string.' })
   @ApiProperty({ required: true })
   deviceName: string;
-
-  @IsNotEmpty({ message: 'deviceType is required and must be entered.' })
-  @IsString({ message: 'deviceType must be string.' })
-  @ApiProperty({ required: true })
-  deviceType: string;
 
   @IsNotEmpty({
     message: 'hardwareVersion is required and must be entered.',
@@ -47,11 +47,6 @@ export class storeCommitmentDto {
   @ApiProperty({ required: true })
   firmwareVersion: string;
 
-  @IsNotEmpty({ message: 'lines is required and must be entered.' })
-  @IsString({ message: 'lines must be string.' })
-  @ApiProperty({ required: true })
-  lines: string;
-
   @IsNotEmpty({ message: 'commitmentData is required and must be entered.' })
   @IsString({ message: 'commitmentData must be string.' })
   @ApiProperty({ required: true })
@@ -63,6 +58,11 @@ export class removeCommitmentDto {
   @IsString({ message: 'commitmentId must be string.' })
   @ApiProperty({ required: true })
   commitmentId: string;
+  
+  @IsNotEmpty({ message: 'dbId is required and must be entered.' })
+  @IsString({ message: 'dbId must be string.' })
+  @ApiProperty({ required: true })
+  dbId: string;
 
   @IsNotEmpty({ message: 'nodeId is required and must be entered.' })
   @IsString({ message: 'nodeId must be string.' })

@@ -42,7 +42,7 @@
         "bcrypt": "^5.0.1",
         "blockly": "^10.0.2",
         "class-validator": "^0.14.1",
-        "ethers": "^6.12.1",
+        "ethers": "^6.13.4",
         "firebase-admin": "^12.0.0",
         "handlebars": "^4.7.7",
         "mongoose": "^6.5.2",
