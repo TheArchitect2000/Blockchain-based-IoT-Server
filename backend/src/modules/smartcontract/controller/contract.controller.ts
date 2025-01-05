@@ -230,8 +230,8 @@ export class contractController {
       body.deviceType,
       body.data.HV,
       body.data.FV,
-      JSON.stringify(body.data),
       JSON.stringify(body.proof),
+      JSON.stringify(body.data),
     );
   }
 

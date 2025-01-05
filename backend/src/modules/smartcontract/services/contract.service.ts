@@ -472,9 +472,9 @@ export class ContractService {
       deviceType,
       hardwareVersion,
       firmwareVersion,
-      zkp_payload,
-      String(unixTimestamp),
       data_payload,
+      String(unixTimestamp),
+      zkp_payload,
     );
   }
 
