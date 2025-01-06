@@ -164,7 +164,13 @@ export default function ProofPage() {
                         <Form>
                             <FormContainer>
                                 <h3>ZKP Proof Publisher</h3>
-                                {/* Device Type Dropdown */}
+                                {!checkUserHasRole('company_developer') && (
+                                    <p className="mt-4 text-md text-red-400">
+                                        *You do not have a developer role
+                                        assigned. Please contact your node
+                                        administrator for further assistance.
+                                    </p>
+                                )}
                                 <FormRow
                                     name="deviceType"
                                     label="IoT Device Type"

@@ -1,5 +1,6 @@
 .avatar {
   @apply inline-block relative bg-gray-400 dark:bg-gray-600 text-gray-100;
+  /* No overflow-hidden here */
 }
 
 .avatar-sm {
@@ -24,10 +25,51 @@
 
 .avatar-circle {
   @apply rounded-full;
+  /* No overflow-hidden here */
+}
+
+.avatar-img-rounded {
+  @apply rounded-md;
+}
+
+.avatar-img-square {
+  @apply rounded-none;
+}
+
+.avatar-img-circle {
+  @apply rounded-full;
+  /* No overflow-hidden here */
+}
+
+
+
+.avatar-img-wrapper {
+  @apply w-full h-full block overflow-hidden; /* Clipping the image */
+}
+
+.avatar-img-circle {
+  @apply rounded-full;
 }
 
 .avatar-img {
   @apply block w-full h-full object-cover;
+}
+
+.avatar-badge {
+  position: absolute;
+  top: 0; /* Align to the top */
+  left: 0; /* Align to the left */
+  transform: translate(-30%, -30%); /* Fine-tune positioning */
+  background-color: rgba(0, 0, 0, 0.4);
+  padding: 1px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px; /* Adjust width to fit the badge size */
+  height: 16px; /* Adjust height to fit the badge size */
+  font-size: 0.75rem; /* Adjust font size */
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2); /* Optional shadow for better visibility */
 }
 
 .avatar-string {
@@ -69,13 +111,13 @@
 .avatar-group-chained {
   > .avatar,
   > .tooltip-wrapper {
-    @apply -ml-2 rtl:-mr-2;
+      @apply -ml-2 rtl:-mr-2;
   }
 
   > .avatar,
   > .tooltip-wrapper {
-    &:first-child {
-      @apply ml-0 rtl:mr-0;
-    }
+      &:first-child {
+          @apply ml-0 rtl:mr-0;
+      }
   }
 }

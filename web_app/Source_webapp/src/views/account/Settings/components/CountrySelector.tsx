@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import countrys from './countrys.json' 
+import countrys from './countrys.json'
 import { Select } from '@/components/ui'
 import { HiOutlineGlobeAlt } from 'react-icons/hi'
 
@@ -23,7 +23,11 @@ function getCountrys(data: CountryData[]): Country[] {
 
 const countrysOptions = getCountrys(countrys)
 
-const CountrySelector = ({ selectedCountry, setSelectedCountry }: any) => {
+const CountrySelector = ({
+    selectedCountry,
+    setSelectedCountry,
+    ...props
+}: any) => {
     const handleChange = (selectedOption: any) => {
         setSelectedCountry(selectedOption)
     }
@@ -34,7 +38,7 @@ const CountrySelector = ({ selectedCountry, setSelectedCountry }: any) => {
             value={selectedCountry}
             onChange={handleChange}
             options={countrysOptions}
-
+            {...props}
             //menuPlacement='top'
         />
     )

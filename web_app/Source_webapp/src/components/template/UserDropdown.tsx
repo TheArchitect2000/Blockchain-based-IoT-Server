@@ -14,6 +14,8 @@ import {
 } from '@/store'
 import { useEffect, useState } from 'react'
 import { apiGetCurUserProfile } from '@/services/UserApi'
+import { FaCode } from 'react-icons/fa'
+import { useRoleStore } from '@/store/user/userRoleStore'
 
 type DropdownList = {
     label: string
@@ -31,10 +33,10 @@ const dropdownItemList: DropdownList[] = [
 
 const _UserDropdown = ({ className }: CommonProps) => {
     const [profileData, setProfileData] = useState('') as any
-    const { authority, email } = useAppSelector(
-        (state) => state.auth.user
-    )
+    const [isDeveloper, setIsDeveloper] = useState<boolean>(false)
+    const { authority, email } = useAppSelector((state) => state.auth.user)
     const { avatarLink, firstName } = useAppSelector((state) => state.locale)
+    const { fetchUserRoles, checkUserHasRole } = useRoleStore()
     const dispatch = useAppDispatch()
 
     useEffect(() => {
@@ -43,6 +45,10 @@ const _UserDropdown = ({ className }: CommonProps) => {
             setProfileData(resData.data.data)
             dispatch(setAvatar(resData.data.data.avatar))
             dispatch(setFirstName(resData.data.data.firstName))
+            await fetchUserRoles()
+            if (checkUserHasRole('company_developer')) {
+                setIsDeveloper(true)
+            }
         }
         fetchData()
     }, [])
@@ -52,9 +58,9 @@ const _UserDropdown = ({ className }: CommonProps) => {
     const UserAvatar = (
         <div className={classNames(className, 'flex items-center gap-2')}>
             <Avatar
-                className="overflow-hidden"
                 size={32}
                 shape="circle"
+                badge={isDeveloper && <FaCode className="!text-xl" />}
                 icon={
                     (avatarLink && <img src={avatarLink} />) || (
                         <HiOutlineUser />
@@ -89,7 +95,8 @@ const _UserDropdown = ({ className }: CommonProps) => {
                         />
                         <div>
                             <div className="font-bold text-gray-900 dark:text-gray-100">
-                                {firstName && firstName || email?.split('@')[0]}
+                                {(firstName && firstName) ||
+                                    email?.split('@')[0]}
                             </div>
                             <div className="text-xs">{email}</div>
                         </div>

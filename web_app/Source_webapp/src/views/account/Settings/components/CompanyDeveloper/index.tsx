@@ -4,13 +4,17 @@ import toast from '@/components/ui/toast'
 import { FormContainer, FormItem } from '@/components/ui/Form'
 import { Field, Form, Formik } from 'formik'
 import {
+    HiDatabase,
     HiGlobeAlt,
     HiHashtag,
     HiHome,
+    HiInbox,
     HiOutlineCheckCircle,
     HiOutlineXCircle,
     HiPencil,
     HiPencilAlt,
+    HiUser,
+    HiUsers,
 } from 'react-icons/hi'
 import * as Yup from 'yup'
 import { useEffect, useState } from 'react'
@@ -131,15 +135,15 @@ export default function CompanyDeveloperPage() {
                             <FormContainer>
                                 <FormDesription
                                     className=""
-                                    title="Company Data"
-                                    desc="Fill all fields about your company"
+                                    title="IoT Developer"
+                                    desc="Please fill out all the fields about your company."
                                 />
                                 <FormRow
                                     name="name"
                                     label={
                                         (
                                             <div className="flex items-center gap-2">
-                                                <span>Company Name</span>
+                                                <span>Name</span>
                                                 <span>(</span>
                                                 <p>
                                                     {!isDeveloper && 'Not'}{' '}
@@ -157,14 +161,13 @@ export default function CompanyDeveloperPage() {
                                     {...validatorProps}
                                 >
                                     <Field
+                                        disabled={isDeveloper}
                                         type="text"
                                         autoComplete="off"
                                         name="name"
                                         placeholder="Enter Company name"
                                         component={Input}
-                                        prefix={
-                                            <HiHashtag className="text-xl" />
-                                        }
+                                        prefix={<HiUser className="text-xl" />}
                                     />
                                 </FormRow>
 
@@ -174,6 +177,7 @@ export default function CompanyDeveloperPage() {
                                     {...validatorProps}
                                 >
                                     <Field
+                                        disabled={isDeveloper}
                                         type="text"
                                         autoComplete="off"
                                         name="line_1"
@@ -190,6 +194,7 @@ export default function CompanyDeveloperPage() {
                                     {...validatorProps}
                                 >
                                     <Field
+                                        disabled={isDeveloper}
                                         type="text"
                                         autoComplete="off"
                                         name="line_2"
@@ -204,6 +209,7 @@ export default function CompanyDeveloperPage() {
                                     {...validatorProps}
                                 >
                                     <Field
+                                        isDisabled={isDeveloper}
                                         readOnly
                                         type="text"
                                         autoComplete="off"
@@ -220,6 +226,7 @@ export default function CompanyDeveloperPage() {
                                     {...validatorProps}
                                 >
                                     <Field
+                                        disabled={isDeveloper}
                                         type="text"
                                         autoComplete="off"
                                         name="city"
@@ -236,6 +243,7 @@ export default function CompanyDeveloperPage() {
                                     {...validatorProps}
                                 >
                                     <Field
+                                        disabled={isDeveloper}
                                         type="text"
                                         name="state"
                                         placeholder="State/Province/Region"
@@ -251,6 +259,7 @@ export default function CompanyDeveloperPage() {
                                     {...validatorProps}
                                 >
                                     <Field
+                                        disabled={isDeveloper}
                                         type="text"
                                         autoComplete="off"
                                         name="zipCode"
@@ -263,6 +272,7 @@ export default function CompanyDeveloperPage() {
                                 </FormRow>
                                 <div className="flex gap-3 mt-4 ltr:text-right">
                                     <Button
+                                        disabled={isDeveloper}
                                         variant="solid"
                                         loading={isSubmitting}
                                         type="submit"
@@ -270,6 +280,7 @@ export default function CompanyDeveloperPage() {
                                         {isSubmitting ? 'Updating' : 'Update'}
                                     </Button>
                                     <Button
+                                        disabled={isDeveloper}
                                         className="ltr:mr-2 rtl:ml-2"
                                         type="button"
                                         onClick={() => {

@@ -17,6 +17,7 @@ import { useRoleStore } from '@/store/user/userRoleStore'
 import { AdaptableCard, Loading } from '@/components/shared'
 import CommitmentTable from './CommitmentTable'
 import { useAppSelector } from '@/store'
+import { apiGetCurUserProfile } from '@/services/UserApi'
 
 type CommitmentFormModel = {
     commitmentData: File | null
@@ -31,6 +32,7 @@ export default function CommitmentPage() {
 
     // Fields extracted from JSON file
     const [commitmentID, setCommitmentID] = useState<string>('')
+    const [companyName, setCompanyName] = useState<string>('')
     const [iotManufacturerName, setIotManufacturerName] = useState<string>('')
     const [iotDeviceName, setIotDeviceName] = useState<string>('')
     const [deviceHardwareVersion, setDeviceHardwareVersion] =
@@ -56,7 +58,15 @@ export default function CommitmentPage() {
         setCommitmentLoading(false)
     }
 
+    async function getUserData() {
+        const res = (await apiGetCurUserProfile()) as any
+        if (res.data?.data?.company?.name) {
+            setCompanyName(res.data?.data?.company?.name)
+        }
+    }
+
     useEffect(() => {
+        getUserData()
         fetchUserRoles()
     }, [])
 
@@ -248,10 +258,22 @@ export default function CommitmentPage() {
                                     <h3 className="mb-4">
                                         ZKP Commitment Publisher
                                     </h3>
+                                    {!checkUserHasRole('company_developer') && (
+                                        <p className="mb-4 text-md text-red-400">
+                                            *You do not have a developer role
+                                            assigned. Please contact your node
+                                            administrator for further
+                                            assistance.
+                                        </p>
+                                    )}
                                     <AdaptableCard>
                                         <div className="mb-4 py-4">
                                             <Upload
-                                                disabled={txHash.length > 0}
+                                                disabled={
+                                                    !checkUserHasRole(
+                                                        'company_developer'
+                                                    ) || txHash.length > 0
+                                                }
                                                 changeForReset={resetUpload}
                                                 className="flex items-center justify-around w-full"
                                                 showList={false}
@@ -306,19 +328,49 @@ export default function CommitmentPage() {
                                     <AdaptableCard>
                                         {values.commitmentData &&
                                             txHash.length == 0 && (
-                                                <div className="p-4 mb-4 border border-green-400 rounded-lg space-y-2">
+                                                <div
+                                                    className={`p-4 mb-4 border border-${
+                                                        companyName !=
+                                                        iotManufacturerName
+                                                            ? 'red'
+                                                            : 'green'
+                                                    }-400 rounded-lg space-y-2`}
+                                                >
                                                     <div>
                                                         <strong>
                                                             Commitment ID:
                                                         </strong>{' '}
                                                         {commitmentID}
                                                     </div>
-                                                    <div>
+                                                    <div className="flex gap-2">
                                                         <strong>
-                                                            IoT Manufacturer
-                                                            Name:
+                                                            IoT Developer Name:
                                                         </strong>{' '}
                                                         {iotManufacturerName}
+                                                        {companyName !=
+                                                            iotManufacturerName && (
+                                                            <p className="text-red-400">
+                                                                ( The IoT
+                                                                Developer Name
+                                                                in your JSON
+                                                                file, "
+                                                                {
+                                                                    iotManufacturerName
+                                                                }
+                                                                " , does not
+                                                                match the IoT
+                                                                Developer Name
+                                                                in your profile,
+                                                                "{companyName}".
+                                                                Please update
+                                                                the IoT
+                                                                Developer Name
+                                                                in your JSON
+                                                                file to "
+                                                                {companyName}"{' '}
+                                                                and try again.)
+                                                            </p>
+                                                        )}
                                                     </div>
                                                     <div>
                                                         <strong>
@@ -341,7 +393,9 @@ export default function CommitmentPage() {
                                                 </div>
                                             )}
                                         {txHash.length > 0 && (
-                                            <div className="p-4 mb-4 border border-green-400 rounded-lg space-y-0.5">
+                                            <div
+                                                className={`p-4 mb-4 border border-green-400 rounded-lg space-y-0.5`}
+                                            >
                                                 <h5>Transaction Submitted!</h5>
                                                 <p>
                                                     You can track the status of
@@ -370,7 +424,9 @@ export default function CommitmentPage() {
                                                 disabled={
                                                     !checkUserHasRole(
                                                         'company_developer'
-                                                    )
+                                                    ) ||
+                                                    companyName !=
+                                                        iotManufacturerName
                                                 }
                                                 variant="solid"
                                                 loading={isSubmitting}
