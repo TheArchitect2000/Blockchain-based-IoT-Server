@@ -12,12 +12,16 @@ import { useEffect, useState } from 'react'
 import {
     apiGetMyCommitments,
     apiStoreCommitment,
+    apiZKPPublishProof,
 } from '@/services/ContractServices'
 import { useRoleStore } from '@/store/user/userRoleStore'
 import { AdaptableCard, Loading } from '@/components/shared'
 import CommitmentTable from './CommitmentTable'
 import { useAppSelector } from '@/store'
 import { apiGetCurUserProfile } from '@/services/UserApi'
+import { useAppKitAccount } from '@reown/appkit-core/react'
+import { useNavigate } from 'react-router-dom'
+import { useContractStore } from '@/provider/contract-provider'
 
 type CommitmentFormModel = {
     commitmentData: File | null
@@ -38,6 +42,10 @@ export default function CommitmentPage() {
     const [deviceHardwareVersion, setDeviceHardwareVersion] =
         useState<string>('')
     const [firmwareVersion, setFirmwareVersion] = useState<string>('')
+    const { isConnected } = useAppKitAccount()
+    const navigateTo = useNavigate()
+    const contractStore = useContractStore()
+    const { storeCommitment } = contractStore((state) => state)
 
     // Roles
     const {
@@ -192,17 +200,65 @@ export default function CommitmentPage() {
                 return
             }
 
+            const res = (await apiZKPPublishProof('', '', {}, true)) as any
+            const nodeId = res.data.data.nodeId
+
             try {
-                // Call your store API
-                const txHash = (await apiStoreCommitment(
-                    commitmentID,
-                    iotManufacturerName,
-                    iotDeviceName,
-                    deviceHardwareVersion,
-                    firmwareVersion,
-                    jsonText
-                )) as any
-                setTxHash(String(txHash.data.data))
+                let txHash = ''
+
+                if (isConnected) {
+                    const frontTx = (await storeCommitment(
+                        commitmentID,
+                        nodeId,
+                        iotManufacturerName,
+                        iotDeviceName,
+                        deviceHardwareVersion,
+                        firmwareVersion,
+                        jsonText
+                    )) as any
+                    if (frontTx == false) {
+                        setSubmitting(false)
+                        return toast.push(
+                            <Notification type="danger">
+                                CommitmentID already registered.
+                            </Notification>,
+                            { placement: 'top-center' }
+                        )
+                    } else if (typeof frontTx == 'string') {
+                        setSubmitting(false)
+                        return toast.push(
+                            <Notification type="danger">
+                                {frontTx}
+                            </Notification>,
+                            { placement: 'top-center' }
+                        )
+                    }
+
+                    await apiStoreCommitment(
+                        commitmentID,
+                        iotManufacturerName,
+                        iotDeviceName,
+                        deviceHardwareVersion,
+                        firmwareVersion,
+                        jsonText,
+                        true
+                    )
+
+                    txHash = String(frontTx.hash)
+                } else {
+                    const tx = (await apiStoreCommitment(
+                        commitmentID,
+                        iotManufacturerName,
+                        iotDeviceName,
+                        deviceHardwareVersion,
+                        firmwareVersion,
+                        jsonText,
+                        isConnected
+                    )) as any
+                    txHash = String(tx.data.data)
+                }
+
+                setTxHash(String(txHash))
                 setCommitmentLoading(true)
                 setTimeout(() => {
                     refreshCommitmentList()
@@ -417,6 +473,50 @@ export default function CommitmentPage() {
                                             </div>
                                         )}
                                     </AdaptableCard>
+
+                                    {!isConnected ? (
+                                        <p className={`mt-4 text-[#EAF4FF]`}>
+                                            *This transaction will be processed
+                                            using the{' '}
+                                            <strong className="text-green-400">
+                                                Node Admin Wallet
+                                            </strong>
+                                            . If you'd prefer to pay with your
+                                            own wallet, please{' '}
+                                            <strong
+                                                onClick={() =>
+                                                    navigateTo(
+                                                        '/account/settings/wallet'
+                                                    )
+                                                }
+                                                className="underline cursor-pointer text-[#0056b3]"
+                                            >
+                                                click here
+                                            </strong>{' '}
+                                            to connect your wallet.
+                                        </p>
+                                    ) : (
+                                        <p className={`mt-4 text-[#EAF4FF]`}>
+                                            *This transaction will be processed
+                                            using{' '}
+                                            <strong className="text-red-400">
+                                                your connected wallet
+                                            </strong>
+                                            . If you'd like to pay with the Node
+                                            Admin Wallet instead, please{' '}
+                                            <strong
+                                                onClick={() =>
+                                                    navigateTo(
+                                                        '/account/settings/wallet'
+                                                    )
+                                                }
+                                                className="underline cursor-pointer text-[#0056b3]"
+                                            >
+                                                click here
+                                            </strong>{' '}
+                                            and disconnect your wallet.
+                                        </p>
+                                    )}
 
                                     <div className="flex items-center justify-center mt-4">
                                         {(txHash.length == 0 && (

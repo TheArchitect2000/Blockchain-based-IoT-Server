@@ -4,49 +4,55 @@ import toast from '@/components/ui/toast'
 import { apiEditUserProfile, apiGetCurUserProfile } from '@/services/UserApi' // Assuming you have an API function to save the address
 import { useEffect, useState } from 'react'
 import { Loading } from '@/components/shared'
-import { Input } from '@/components/ui'
-import { HiCurrencyDollar } from 'react-icons/hi'
-import FormDesription from './FormDesription'
 import { useAppSelector } from '@/store'
 import {
     apiGetFaucetWalletData,
     apiRequestFaucet,
 } from '@/services/ContractServices'
-import { useQueryClient } from '@tanstack/react-query'
-import { useWalletBalance } from '@/utils/hooks/useWaletAddress'
+import {
+    useAppKitProvider,
+    useAppKitAccount,
+    useDisconnect,
+} from '@reown/appkit/react'
+import { BrowserProvider, formatUnits } from 'ethers'
+
 
 const Verify = () => {
     const [loading, setLoading] = useState(true)
     const [requestLoading, setRequestLoading] = useState(false)
-    const [walletAddress, setWalletAddress] = useState('')
+    const [walletBalance, setWalletBalance] = useState<null | string>(null)
     const [faucetData, setFaucetData] = useState<any>({
         address: '',
         balance: 0,
     })
     const { _id: userId } = useAppSelector((state) => state.auth.user)
-    const {
-        data: walletData,
-        isError: walletError,
-        isLoading: walletLoading,
-    } = useWalletBalance()
+    const { address, isConnected } = useAppKitAccount()
+    const { walletProvider } = useAppKitProvider('eip155')
+    const { disconnect } = useDisconnect()
 
-    const queryClient = useQueryClient()
+    async function getBalance() {
+        if (!isConnected) return
+        const ethersProvider = new BrowserProvider(walletProvider as any)
+        const balanceWei = await ethersProvider.getBalance(String(address))
+        setWalletBalance(formatUnits(balanceWei, 18).slice(0, 7))
+    }
+
+    useEffect(() => {
+        if (isConnected == false) return
+        if (loading == true) return
+        handleSaveWalletAddress()
+    }, [isConnected])
 
     useEffect(() => {
         async function fetchData() {
+            await getBalance()
             const resfaucetAddress = (await apiGetFaucetWalletData()) as any
             setFaucetData(resfaucetAddress.data.data)
             const resData = (await apiGetCurUserProfile()) as any
-            setWalletAddress(resData.data.data.walletAddress || '') // Initialize from API data if available
             setLoading(false)
         }
         fetchData()
     }, [])
-
-    const isValidWalletAddress = (address: string) => {
-        const regex = /^0x[a-fA-F0-9]{40}$/
-        return regex.test(address)
-    }
 
     async function handleRequestFaucet() {
         try {
@@ -54,7 +60,7 @@ const Verify = () => {
             const response = await apiRequestFaucet()
             setRequestLoading(false)
             setTimeout(() => {
-                queryClient.invalidateQueries(['walletBalance'] as any)
+                getBalance()
             }, 1000)
             toast.push(
                 <Notification
@@ -81,50 +87,40 @@ const Verify = () => {
     }
 
     const handleSaveWalletAddress = async () => {
-        if (isValidWalletAddress(walletAddress)) {
-            try {
-                setRequestLoading(true)
-                await apiEditUserProfile(userId || '', {
-                    walletAddress: walletAddress,
-                })
-                setTimeout(() => {
-                    queryClient.invalidateQueries(['walletBalance'] as any)
-                }, 1000)
-                toast.push(
-                    <Notification title="Success" type="success">
-                        Wallet address saved successfully!
-                    </Notification>,
-                    {
-                        placement: 'top-center',
-                    }
-                )
-            } catch (error) {
-                console.error('Error saving wallet address:', error)
-                toast.push(
-                    <Notification title="Error" type="danger">
-                        Failed to save wallet address. Please try again.
-                    </Notification>,
-                    {
-                        placement: 'top-center',
-                    }
-                )
-            }
-            setRequestLoading(false)
-        } else {
+        try {
+            setRequestLoading(true)
+            await apiEditUserProfile(userId || '', {
+                walletAddress: address,
+            })
+            setTimeout(() => {
+                getBalance()
+            }, 1000)
+            toast.push(
+                <Notification
+                    title="Wallet address saved successfully!"
+                    type="success"
+                />,
+                {
+                    placement: 'top-center',
+                }
+            )
+        } catch (error) {
+            console.error('Error saving wallet address:', error)
             toast.push(
                 <Notification title="Error" type="danger">
-                    Invalid wallet address format.
+                    Failed to save wallet address. Please try again.
                 </Notification>,
                 {
                     placement: 'top-center',
                 }
             )
         }
+        setRequestLoading(false)
     }
 
     return (
         <>
-            {(loading == false && walletLoading == false && (
+            {(loading == false && (
                 <main>
                     <div className="flex text-[1rem] flex-col gap-4">
                         <p>
@@ -139,41 +135,41 @@ const Verify = () => {
                             </a>
                             .
                         </p>
-                        <div className="flex items-center flex-col md:flex-row justify-between gap-4">
+
+                        <div className="flex items-center flex-col md:flex-row gap-4">
                             <p className=" font-bold no-wrap">
-                                Enter your wallet address:
+                                {!isConnected ? 'Connect your' : 'Your'} wallet
+                                address:
                             </p>
-                            <Input
-                                value={walletAddress}
-                                onChange={(e) =>
-                                    setWalletAddress(e.target.value)
-                                }
-                                type="text"
-                                autoComplete="off"
-                                name="walletAddress"
-                                placeholder="wallet address"
-                            />
-                            <Button
-                                loading={requestLoading}
-                                variant="solid"
-                                onClick={handleSaveWalletAddress}
-                            >
-                                Save
-                            </Button>
+                            {(isConnected && (
+                                <>
+                                    <p className="text-white">{address}</p>
+                                    <Button
+                                        variant="solid"
+                                        color="red"
+                                        size="sm"
+                                        onClick={disconnect}
+                                    >
+                                        Disconnect
+                                    </Button>
+                                </>
+                            )) || <appkit-button balance="hide" />}
                         </div>
 
-                        <div className="flex items-center gap-8">
-                            <p className="font-bold">
-                                {(walletData?.data == null &&
-                                    'Wallet address not found!') ||
-                                    `Your wallet balance: `}
-                                {walletData?.data != null && (
-                                    <span className="text-white font-normal">
-                                        {walletData?.data} FDS
-                                    </span>
-                                )}
-                            </p>
-                        </div>
+                        {isConnected && (
+                            <div className="flex items-center gap-8">
+                                <p className="font-bold">
+                                    {(walletBalance == null &&
+                                        'Wallet address not found!') ||
+                                        `Your wallet balance: `}
+                                    {walletBalance != null && (
+                                        <span className="text-white font-normal">
+                                            {walletBalance} FDS
+                                        </span>
+                                    )}
+                                </p>
+                            </div>
+                        )}
                         <div className="flex items-center gap-4">
                             <p className="font-bold">
                                 {'Network faucet address: '}
@@ -190,7 +186,7 @@ const Verify = () => {
                         </div>
                         <div className="flex items-center w-full">
                             <Button
-                            className='w-full sm:w-auto'
+                                className="w-full sm:w-auto"
                                 loading={requestLoading}
                                 onClick={handleRequestFaucet}
                                 variant="solid"

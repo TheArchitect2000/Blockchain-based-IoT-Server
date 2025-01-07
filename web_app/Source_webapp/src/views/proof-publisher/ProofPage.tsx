@@ -13,6 +13,10 @@ import FormRow from '../account/Settings/components/FormRow'
 import { apiGetNodeDevices } from '@/services/DeviceApi'
 import { apiZKPPublishProof } from '@/services/ContractServices'
 import { useRoleStore } from '@/store/user/userRoleStore'
+import { useContractStore } from '@/provider/contract-provider'
+import { useAppKitAccount } from '@reown/appkit-core/react'
+import { useConfig } from '@/components/ui/ConfigProvider'
+import { useNavigate } from 'react-router-dom'
 
 export default function ProofPage() {
     const [loading, setLoading] = useState<boolean>(true)
@@ -23,6 +27,11 @@ export default function ProofPage() {
         loading: roleLoading,
         checkUserHasRole,
     } = useRoleStore()
+    const contractStore = useContractStore()
+    const { storeZKP } = contractStore((state) => state)
+    const { isConnected } = useAppKitAccount()
+    const { themeColor, primaryColorLevel } = useConfig()
+    const navigateTo = useNavigate()
 
     function checkObjectItems(object: { [key: string]: any }): boolean {
         const device = devicesData.find(
@@ -105,11 +114,39 @@ export default function ProofPage() {
 
         try {
             setLoading(true)
-            const res = await apiZKPPublishProof(
+
+            const res = (await apiZKPPublishProof(
                 values.deviceType.value,
                 values.proof,
-                filteredItems
-            )
+                filteredItems,
+                isConnected
+            )) as any
+            const resultData = res.data.data
+            
+            if (isConnected) {
+                const tx = await storeZKP(
+                    resultData.nodeId,
+                    resultData.objectId,
+                    values.deviceType.value,
+                    filteredItems.HV,
+                    filteredItems.FV,
+                    JSON.stringify(filteredItems),
+                    JSON.stringify(values.proof)
+                )
+
+                if (tx == false) {
+                    setLoading(false)
+                    return toast.push(
+                        <Notification type="danger">
+                            {'Error while publishing proof'}
+                        </Notification>,
+                        {
+                            placement: 'top-center',
+                        }
+                    )
+                }
+            }
+
             toast.push(
                 <Notification type="success">
                     {'Proof published successfully'}
@@ -120,6 +157,8 @@ export default function ProofPage() {
             )
             setLoading(false)
         } catch (error: any) {
+            console.log('error:', error)
+
             setLoading(false)
             toast.push(
                 <Notification type="danger">
@@ -267,7 +306,50 @@ export default function ProofPage() {
                                     </>
                                 )}
 
-                                {/* Buttons */}
+                                {!isConnected ? (
+                                    <p className={`mt-4 text-[#EAF4FF]`}>
+                                        *This transaction will be processed
+                                        using the{' '}
+                                        <strong className="text-green-400">
+                                            Node Admin Wallet
+                                        </strong>
+                                        . If you'd prefer to pay with your own
+                                        wallet, please{' '}
+                                        <strong
+                                            onClick={() =>
+                                                navigateTo(
+                                                    '/account/settings/wallet'
+                                                )
+                                            }
+                                            className="underline cursor-pointer text-[#0056b3]"
+                                        >
+                                            click here
+                                        </strong>{' '}
+                                        to connect your wallet.
+                                    </p>
+                                ) : (
+                                    <p className={`mt-4 text-[#EAF4FF]`}>
+                                        *This transaction will be processed
+                                        using{' '}
+                                        <strong className="text-red-400">
+                                            your connected wallet
+                                        </strong>
+                                        . If you'd like to pay with the Node
+                                        Admin Wallet instead, please{' '}
+                                        <strong
+                                            onClick={() =>
+                                                navigateTo(
+                                                    '/account/settings/wallet'
+                                                )
+                                            }
+                                            className="underline cursor-pointer text-[#0056b3]"
+                                        >
+                                            click here
+                                        </strong>{' '}
+                                        and disconnect your wallet.
+                                    </p>
+                                )}
+
                                 <div className="flex items-center justify-center mt-4">
                                     <Button
                                         disabled={

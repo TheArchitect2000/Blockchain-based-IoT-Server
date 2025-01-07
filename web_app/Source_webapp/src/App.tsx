@@ -10,6 +10,10 @@ import './locales'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 const environment = process.env.NODE_ENV
+import { createAppKit } from '@reown/appkit/react'
+import { EthersAdapter } from '@reown/appkit-adapter-ethers'
+import { defineChain } from '@reown/appkit/networks'
+import { ContractProvider } from './provider/contract-provider'
 
 /**
  * Set enableMock(Default false) to true at configs/app.config.js
@@ -21,6 +25,43 @@ if (environment !== 'production' && appConfig.enableMock) {
 
 const STALE_TIME_SECONDS = Infinity
 
+// 1. Get projectId
+const projectId = '4c42b5bbf66a6cb3131e03b4f48f63f7'
+
+const customNetwork = defineChain({
+    id: 706883,
+    caipNetworkId: 'eip155:706883',
+    chainNamespace: 'eip155',
+    name: 'FidesInnova',
+    testnet: true,
+    nativeCurrency: {
+        decimals: 18,
+        name: 'Fides',
+        symbol: 'FDS',
+    },
+    rpcUrls: {
+        default: {
+            http: ['https://fidesf1-rpc.fidesinnova.io'],
+        },
+    },
+    blockExplorers: {
+        default: { name: 'Explorer', url: 'https://explorer.fidesinnova.io/' },
+    },
+})
+
+// 4. Create a AppKit instance
+createAppKit({
+    adapters: [new EthersAdapter()],
+    networks: [customNetwork],
+    projectId,
+    features: {
+        analytics: false,
+        socials: false,
+        email: false,
+        allWallets: true,
+    },
+})
+
 function App() {
     const queryClient = new QueryClient({
         defaultOptions: { queries: { staleTime: STALE_TIME_SECONDS } },
@@ -28,15 +69,17 @@ function App() {
 
     return (
         <QueryClientProvider client={queryClient}>
-            <Provider store={store}>
-                <PersistGate loading={null} persistor={persistor}>
-                    <BrowserRouter>
-                        <Theme>
-                            <Layout />
-                        </Theme>
-                    </BrowserRouter>
-                </PersistGate>
-            </Provider>
+            <ContractProvider>
+                <Provider store={store}>
+                    <PersistGate loading={null} persistor={persistor}>
+                        <BrowserRouter>
+                            <Theme>
+                                <Layout />
+                            </Theme>
+                        </BrowserRouter>
+                    </PersistGate>
+                </Provider>
+            </ContractProvider>
             <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
     )

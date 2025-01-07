@@ -17,7 +17,8 @@ export async function apiRequestFaucet() {
 export async function apiZKPPublishProof(
     deviceType: string,
     proof: string,
-    data: Object
+    data: Object,
+    frontPublish = false
 ) {
     return ApiService.fetchData({
         url: import.meta.env.VITE_URL + 'v1/contract/publish-proof',
@@ -26,6 +27,7 @@ export async function apiZKPPublishProof(
             deviceType,
             proof,
             data,
+            frontPublish,
         },
     })
 }
@@ -36,7 +38,8 @@ export async function apiStoreCommitment(
     deviceName: string,
     hardwareVersion: string,
     firmwareVersion: string,
-    commitmentData: string
+    commitmentData: string,
+    frontPublish = false
 ) {
     return ApiService.fetchData({
         url: import.meta.env.VITE_URL + 'v1/contract/store-commitment',
@@ -47,8 +50,8 @@ export async function apiStoreCommitment(
             commitmentID: commitmentID,
             hardwareVersion: hardwareVersion,
             firmwareVersion: firmwareVersion,
-            
             commitmentData: commitmentData,
+            frontPublish: frontPublish,
         },
     })
 }
