@@ -258,18 +258,17 @@ export default function CommitmentPage() {
                     txHash = String(tx.data.data)
                 }
 
-                setTxHash(String(txHash))
                 setCommitmentLoading(true)
                 setTimeout(() => {
                     refreshCommitmentList()
-                }, 2000)
-
-                toast.push(
-                    <Notification type="success">
-                        Commitment published successfully.
-                    </Notification>,
-                    { placement: 'top-center' }
-                )
+                    setTxHash(String(txHash))
+                    toast.push(
+                        <Notification type="success">
+                            Commitment published successfully.
+                        </Notification>,
+                        { placement: 'top-center' }
+                    )
+                }, 5000)
             } catch (err) {
                 toast.push(
                     <Notification type="danger">
@@ -526,10 +525,14 @@ export default function CommitmentPage() {
                                                         'company_developer'
                                                     ) ||
                                                     companyName !=
-                                                        iotManufacturerName
+                                                        iotManufacturerName ||
+                                                    commitmentLoading
                                                 }
                                                 variant="solid"
-                                                loading={isSubmitting}
+                                                loading={
+                                                    isSubmitting ||
+                                                    commitmentLoading
+                                                }
                                                 type="submit"
                                             >
                                                 {isSubmitting

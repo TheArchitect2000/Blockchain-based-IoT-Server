@@ -127,7 +127,7 @@ const Verify = () => {
                             Note: Create a wallet on the FidesInnova blockchain.
                             For instructions on how to create a new wallet,{' '}
                             <a
-                                href="https://fidesinnova-1.gitbook.io/fidesinnova-docs/using-the-network/adding-the-network-to-metamask"
+                                href="https://fidesinnova-1.gitbook.io/fidesinnova-docs/users-how-to-use-the-fidesinnova-network/connecting-your-metamask-to-the-fidesinnova-network"
                                 target="_blank"
                                 className="underline cursor-pointer"
                             >

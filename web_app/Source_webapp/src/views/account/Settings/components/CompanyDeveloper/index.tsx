@@ -26,6 +26,7 @@ import FormDesription from '../FormDesription'
 import FormRow from '../FormRow'
 import CountrySelector from '../CountrySelector'
 import { useRoleStore } from '@/store/user/userRoleStore'
+import { clipboard } from 'blockly'
 
 type AddressFormModel = {
     line_1: string
@@ -133,11 +134,40 @@ export default function CompanyDeveloperPage() {
                     <Form>
                         {(!loading && !roleLoading && (
                             <FormContainer>
-                                <FormDesription
-                                    className=""
-                                    title="IoT Developer"
-                                    desc="Please fill out all the fields about your company."
-                                />
+                                <div className="flex justify-between">
+                                    <FormDesription
+                                        className=""
+                                        title="IoT Developer"
+                                        desc="Please fill out all the fields about your company."
+                                    />
+                                </div>
+
+                                <p
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(
+                                            'info@fidesinnova.io'
+                                        )
+                                        toast.push(
+                                            <Notification
+                                                title={'Email copied'}
+                                                type="info"
+                                            />,
+                                            {
+                                                placement: 'top-center',
+                                            }
+                                        )
+                                    }}
+                                    className="text-white mt-4 cursor-pointer"
+                                >
+                                    *If you're looking to join us as a
+                                    developer, send your email to{' '}
+                                    <span className="underline">
+                                        info@fidesinnova.io
+                                    </span>{' '}
+                                    and request the developer role. We look
+                                    forward to hearing from you!
+                                </p>
+
                                 <FormRow
                                     name="name"
                                     label={
@@ -270,6 +300,7 @@ export default function CompanyDeveloperPage() {
                                         }
                                     />
                                 </FormRow>
+
                                 <div className="flex gap-3 mt-4 ltr:text-right">
                                     <Button
                                         disabled={isDeveloper}
