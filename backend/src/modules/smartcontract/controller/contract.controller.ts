@@ -224,14 +224,21 @@ export class contractController {
 
     const objectId = String(new mongoose.Types.ObjectId());
 
+    if (body.frontPublish) {
+      return {
+        objectId: objectId,
+        nodeId: process.env.NODE_ID,
+      };
+    }
+
     return this.contractService.storeZKP(
       process.env.NODE_ID,
       objectId,
       body.deviceType,
       body.data.HV,
       body.data.FV,
-      JSON.stringify(body.proof),
       JSON.stringify(body.data),
+      JSON.stringify(body.proof),
     );
   }
 

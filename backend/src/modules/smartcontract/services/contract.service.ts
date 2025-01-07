@@ -487,43 +487,32 @@ export class ContractService {
         hardwareVersion,
         firmwareVersion,
         commitmentData,
+        frontPublish,
       } = data;
 
-      // Initiate the transaction
-      const tx: any = await this.contracts.commitment.storeCommitment(
-        commitmentID,
-        process.env.NODE_ID,
-        manufacturerName,
-        deviceName,
-        hardwareVersion,
-        firmwareVersion,
-        commitmentData,
-      );
+      let txHash = '';
 
-      console.log(`Transaction submitted. Hash: ${tx.hash}`);
-
-      /*   // Wait for the transaction to be mined
-      const receipt = await tx.wait();
-
-      if (receipt.status !== 1) {
-        // Transaction failed
-        const errorMsg = 'Transaction failed on the blockchain.';
-        console.error(errorMsg);
-        throw new GeneralException(
-          ErrorTypeEnum.INTERNAL_SERVER_ERROR,
-          errorMsg,
+      if (!frontPublish) {
+        const tx: any = await this.contracts.commitment.storeCommitment(
+          commitmentID,
+          process.env.NODE_ID,
+          manufacturerName,
+          deviceName,
+          hardwareVersion,
+          firmwareVersion,
+          commitmentData,
         );
-      }
 
-      console.log(
-        `Transaction confirmed. Block Number: ${receipt.blockNumber}`,
-      ); */
+        txHash = tx.hash;
+
+        console.log(`Transaction submitted. Hash: ${tx.hash}`);
+      }
 
       // Save commitment data to the database
       await this.saveCommitmentInDB(data);
       console.log('Commitment data saved to the database successfully.');
 
-      return tx.hash;
+      return txHash;
     } catch (error: any) {
       // Handle different types of errors
       let errorMessage = 'An unexpected error occurred.';

@@ -9,6 +9,7 @@ export class verifyProofDto {
 }
 
 export interface StoreCommitmentData {
+  frontPublish: boolean;
   commitmentID: string;
   userId: string;
   manufacturerName: string;
@@ -18,8 +19,12 @@ export interface StoreCommitmentData {
   commitmentData: string;
 }
 
-
 export class storeCommitmentDto {
+  @IsNotEmpty({ message: 'frontPublish is required and must be entered.' })
+  @IsString({ message: 'frontPublish must be string.' })
+  @ApiProperty({ required: true })
+  frontPublish: boolean;
+
   @IsNotEmpty({ message: 'commitmentID is required and must be entered.' })
   @IsString({ message: 'commitmentID must be string.' })
   @ApiProperty({ required: true })
@@ -58,7 +63,7 @@ export class removeCommitmentDto {
   @IsString({ message: 'commitmentId must be string.' })
   @ApiProperty({ required: true })
   commitmentId: string;
-  
+
   @IsNotEmpty({ message: 'dbId is required and must be entered.' })
   @IsString({ message: 'dbId must be string.' })
   @ApiProperty({ required: true })
@@ -71,6 +76,11 @@ export class removeCommitmentDto {
 }
 
 export class publishProofDto {
+  @IsNotEmpty({ message: 'frontPublish is required and must be entered.' })
+  @IsString({ message: 'frontPublish must be string.' })
+  @ApiProperty({ required: true })
+  frontPublish: boolean;
+
   @IsNotEmpty({ message: 'deviceType is required and must be entered.' })
   @IsString({ message: 'deviceType must be string.' })
   @ApiProperty({ required: true })
