@@ -128,8 +128,8 @@ export default function CommitmentPage() {
                 const parsedJson = JSON.parse(jsonText)
 
                 // If these fields are missing, handle accordingly
-                setCommitmentID(parsedJson.commitmentID || '')
-                setIotManufacturerName(parsedJson.iot_manufacturer_name || '')
+                setCommitmentID(parsedJson.commitment_id || '')
+                setIotManufacturerName(parsedJson.iot_developer_name || '')
                 setIotDeviceName(parsedJson.iot_device_name || '')
                 setDeviceHardwareVersion(
                     parsedJson.device_hardware_version || ''
