@@ -9,4 +9,5 @@ export interface Contract extends Document {
   hardwareVersion: string;
   firmwareVersion: string;
   commitmentData: string;
+  createdAt: Date;
 }

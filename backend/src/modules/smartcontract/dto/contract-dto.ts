@@ -17,6 +17,7 @@ export interface StoreCommitmentData {
   hardwareVersion: string;
   firmwareVersion: string;
   commitmentData: string;
+  createdAt?: Date;
 }
 
 export class storeCommitmentDto {

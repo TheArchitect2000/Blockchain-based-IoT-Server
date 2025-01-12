@@ -35,6 +35,12 @@ const schema = new Schema({
     type: String,
     required: true,
   },
+  createdAt: {
+    type: Date,
+    required: true,
+    default: () => new Date(),
+    immutable: true,
+  },
 });
 
 schema.plugin(require('mongoose-paginate-v2'));
