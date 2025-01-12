@@ -60,7 +60,11 @@ const _UserDropdown = ({ className }: CommonProps) => {
             <Avatar
                 size={32}
                 shape="circle"
-                badge={isDeveloper && <FaCode className="!text-xl" />}
+                badge={
+                    isDeveloper && (
+                        <img className='!w-[80px]' src="/img/others/medal.png" />
+                    ) /* <FaCode className="!text-xl" /> */
+                }
                 icon={
                     (avatarLink && <img src={avatarLink} />) || (
                         <HiOutlineUser />

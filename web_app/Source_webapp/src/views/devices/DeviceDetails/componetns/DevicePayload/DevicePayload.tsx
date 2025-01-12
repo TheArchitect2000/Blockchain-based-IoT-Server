@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import { Loading } from '@/components/shared'
 import './style.scss'
 
-function formatDate(isoDate: string) {
+export function formatDate(isoDate: string) {
     const date = new Date(isoDate)
     const formattedDate = `${date.getFullYear()}/${String(
         date.getMonth() + 1

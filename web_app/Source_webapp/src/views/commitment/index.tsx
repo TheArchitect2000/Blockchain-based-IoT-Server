@@ -234,6 +234,8 @@ export default function CommitmentPage() {
                         )
                     }
 
+                    txHash = String(frontTx.hash)
+
                     await apiStoreCommitment(
                         commitmentID,
                         iotManufacturerName,
@@ -241,10 +243,9 @@ export default function CommitmentPage() {
                         deviceHardwareVersion,
                         firmwareVersion,
                         jsonText,
+                        txHash,
                         true
                     )
-
-                    txHash = String(frontTx.hash)
                 } else {
                     const tx = (await apiStoreCommitment(
                         commitmentID,
@@ -253,7 +254,8 @@ export default function CommitmentPage() {
                         deviceHardwareVersion,
                         firmwareVersion,
                         jsonText,
-                        isConnected
+                        null,
+                        false
                     )) as any
                     txHash = String(tx.data.data)
                 }
@@ -264,7 +266,7 @@ export default function CommitmentPage() {
                     setTxHash(String(txHash))
                     toast.push(
                         <Notification type="success">
-                            Commitment published successfully.
+                            Commitment submitted successfully.
                         </Notification>,
                         { placement: 'top-center' }
                     )
@@ -311,14 +313,14 @@ export default function CommitmentPage() {
                             <Form>
                                 <FormContainer>
                                     <h3 className="mb-4">
-                                        ZKP Commitment Publisher
+                                        ZKP Commitment Submiter
                                     </h3>
                                     {!checkUserHasRole('company_developer') && (
                                         <p className="mb-4 text-md text-red-400">
-                                            *You do not have a developer role
-                                            assigned. Please contact your node
-                                            administrator for further
-                                            assistance.
+                                            * You do not have a developer role
+                                            assigned. Please reach out to your
+                                            node administrator to request this
+                                            permission.
                                         </p>
                                     )}
                                     <AdaptableCard>
@@ -352,7 +354,7 @@ export default function CommitmentPage() {
                                                     >
                                                         {values.commitmentData
                                                             ? 'File Selected'
-                                                            : 'No File Selected'}
+                                                            : 'No Commitment File Selected'}
                                                     </span>
                                                 </p>
                                                 <Button
@@ -475,13 +477,13 @@ export default function CommitmentPage() {
 
                                     {!isConnected ? (
                                         <p className={`mt-4 text-[#EAF4FF]`}>
-                                            *This transaction will be processed
+                                            * This transaction will be processed
                                             using the{' '}
                                             <strong className="text-green-400">
                                                 Node Admin Wallet
                                             </strong>
-                                            . If you'd prefer to pay with your
-                                            own wallet, please{' '}
+                                            . If you prefer to process it with
+                                            your own wallet, please{' '}
                                             <strong
                                                 onClick={() =>
                                                     navigateTo(
@@ -496,13 +498,13 @@ export default function CommitmentPage() {
                                         </p>
                                     ) : (
                                         <p className={`mt-4 text-[#EAF4FF]`}>
-                                            *This transaction will be processed
+                                            * This transaction will be processed
                                             using{' '}
                                             <strong className="text-red-400">
                                                 your connected wallet
                                             </strong>
-                                            . If you'd like to pay with the Node
-                                            Admin Wallet instead, please{' '}
+                                            . If you prefer to process it with
+                                            Node Admin Wallet instead, please{' '}
                                             <strong
                                                 onClick={() =>
                                                     navigateTo(
@@ -536,8 +538,8 @@ export default function CommitmentPage() {
                                                 type="submit"
                                             >
                                                 {isSubmitting
-                                                    ? 'Publishing'
-                                                    : 'Publish'}
+                                                    ? 'Submitting'
+                                                    : 'Submit'}
                                             </Button>
                                         )) || (
                                             <Button

@@ -7,13 +7,15 @@ import {
     useReactTable,
 } from '@tanstack/react-table'
 import type { ColumnDef, ColumnSort } from '@tanstack/react-table'
-import { HiOutlineEye, HiTrash } from 'react-icons/hi'
+import { HiGlobe, HiOutlineEye, HiTrash } from 'react-icons/hi'
 import useThemeClass from '@/utils/hooks/useThemeClass'
 import { useNavigate } from 'react-router-dom'
 import { DoubleSidedImage } from '@/components/shared'
 import { Button, Dialog, Notification, toast } from '@/components/ui'
 import JsonDisplay from '@/components/ui/JsonDisplay'
 import { apiRemoveCommitment } from '@/services/ContractServices'
+import { formatDate } from '../devices/DeviceDetails/componetns/DevicePayload/DevicePayload'
+import { FaGlobe } from 'react-icons/fa'
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
@@ -52,8 +54,19 @@ const CommitmentTable = ({
             setDeleteDialog(true)
         }
 
+        function onTransactionView() {
+            window.open(
+                `https://explorer.fidesinnova.io/tx/${row.transactionId}`,
+                '_blank'
+            )
+        }
+
         return (
             <span className={`flex gap-4 justify-center p-2`}>
+                <FaGlobe
+                    onClick={onTransactionView}
+                    className={`cursor-pointer hover:text-yellow-500`}
+                />
                 <HiOutlineEye
                     onClick={onView}
                     className={`cursor-pointer hover:${textTheme}`}
@@ -76,14 +89,29 @@ const CommitmentTable = ({
             },
         },
         {
-            header: 'Manufacturer Name',
-            accessorKey: 'manufacturerName',
+            header: 'IoT Developer Name',
+            accessorKey: 'iotDeveloperName',
             cell: (props) => {
                 const row = props.row.original
                 return <span>{row.manufacturerName}</span>
             },
         },
-
+        {
+            header: 'IoT Device Name',
+            accessorKey: 'deviceName',
+            cell: (props) => {
+                const row = props.row.original
+                return <span>{row.deviceName}</span>
+            },
+        },
+        {
+            header: 'Hardware Version',
+            accessorKey: 'hardwareVersion',
+            cell: (props) => {
+                const row = props.row.original
+                return <span>{row.hardwareVersion}</span>
+            },
+        },
         {
             header: 'Firmware Version',
             accessorKey: 'firmwareVersion',
@@ -92,13 +120,12 @@ const CommitmentTable = ({
                 return <span>{row.firmwareVersion}</span>
             },
         },
-
         {
-            header: 'Hardware Version',
-            accessorKey: 'hardwareVersion',
+            header: 'Created At',
+            accessorKey: 'createdAt',
             cell: (props) => {
                 const row = props.row.original
-                return <span>{row.hardwareVersion}</span>
+                return <span>{formatDate(row?.createdAt)}</span>
             },
         },
 

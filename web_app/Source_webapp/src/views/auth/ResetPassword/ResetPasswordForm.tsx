@@ -141,7 +141,7 @@ const ResetPasswordForm = (props: ResetPasswordFormProps) => {
                                         type="submit"
                                     >
                                         {isSubmitting
-                                            ? 'Submiting...'
+                                            ? 'Submitting...'
                                             : 'Submit'}
                                     </Button>
                                 </>

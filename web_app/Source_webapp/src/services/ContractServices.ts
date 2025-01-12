@@ -39,6 +39,7 @@ export async function apiStoreCommitment(
     hardwareVersion: string,
     firmwareVersion: string,
     commitmentData: string,
+    transactionId: null | string = null,
     frontPublish = false
 ) {
     return ApiService.fetchData({
@@ -52,6 +53,7 @@ export async function apiStoreCommitment(
             firmwareVersion: firmwareVersion,
             commitmentData: commitmentData,
             frontPublish: frontPublish,
+            transactionId: transactionId,
         },
     })
 }

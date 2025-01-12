@@ -44,10 +44,10 @@ const Header = (props: HeaderProps) => {
     function dropDownSelectHandler(eventKey: string) {
         if (eventKey == 'Smart Contract Console') {
             navigate(`/remix`)
-        } else if (eventKey == 'ZKP Commitment Publisher') {
+        } else if (eventKey == 'ZKP Commitment Submiter') {
             navigate(`/commitment`)
-        } else if (eventKey == 'ZKP Proof Publisher') {
-            navigate(`/proof-publisher`)
+        } else if (eventKey == 'ZKP Proof Submiter') {
+            navigate(`/proof-submiter`)
         } else if (eventKey == 'ZKP Commitment Generator') {
             window.open('https://github.com/FidesInnova/zkiot', '_blank')
         }
@@ -104,15 +104,15 @@ const Header = (props: HeaderProps) => {
                             </Dropdown.Item>
                             <Dropdown.Item
                                 className="flex justify-center advanced-drop-down-items"
-                                eventKey={'ZKP Commitment Publisher'}
+                                eventKey={'ZKP Commitment Submiter'}
                             >
-                                ZKP Commitment Publisher
+                                ZKP Commitment Submiter
                             </Dropdown.Item>
                             <Dropdown.Item
                                 className="flex justify-center advanced-drop-down-items"
-                                eventKey={'ZKP Proof Publisher'}
+                                eventKey={'ZKP Proof Submiter'}
                             >
-                                ZKP Proof Publisher
+                                ZKP Proof Submiter
                             </Dropdown.Item>
                         </Dropdown>
                         <Button onClick={onCreateNewService} variant="solid">

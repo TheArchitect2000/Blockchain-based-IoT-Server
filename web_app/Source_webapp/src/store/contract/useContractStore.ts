@@ -17,7 +17,7 @@ interface ContractStore {
         firmwareVersion: string,
         data_payload: string,
         zkp_payload: string
-    ) => Promise<boolean>
+    ) => Promise<boolean | string>
     storeCommitment: (
         commitmentID: string,
         nodeId: string,
@@ -65,7 +65,7 @@ export function createContractStore(walletProvider: any) {
                 const signer = await provider.getSigner()
                 const unixTimestamp = Math.floor(Date.now() / 1000)
 
-                await (zkpContract.connect(signer) as any).storeZKP(
+                const tx = await (zkpContract.connect(signer) as any).storeZKP(
                     nodeId,
                     deviceId,
                     deviceType,
@@ -76,7 +76,7 @@ export function createContractStore(walletProvider: any) {
                     zkp_payload
                 )
 
-                return true
+                return tx
             } catch (error) {
                 set({ loading: false })
                 return false

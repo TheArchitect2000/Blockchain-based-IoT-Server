@@ -15,10 +15,6 @@ import { EthersAdapter } from '@reown/appkit-adapter-ethers'
 import { defineChain } from '@reown/appkit/networks'
 import { ContractProvider } from './provider/contract-provider'
 
-/**
- * Set enableMock(Default false) to true at configs/app.config.js
- * If you wish to enable mock api
- */
 if (environment !== 'production' && appConfig.enableMock) {
     mockServer({ environment })
 }
@@ -42,6 +38,7 @@ const customNetwork = defineChain({
     rpcUrls: {
         default: {
             http: ['https://fidesf1-rpc.fidesinnova.io'],
+            webSocket: ['https://fidesf1-rpc.fidesinnova.io'],
         },
     },
     blockExplorers: {

@@ -1,123 +1,119 @@
 .avatar {
-  @apply inline-block relative bg-gray-400 dark:bg-gray-600 text-gray-100;
-  /* No overflow-hidden here */
+    @apply inline-block relative bg-gray-400 dark:bg-gray-600 text-gray-100;
+    /* No overflow-hidden here */
 }
 
 .avatar-sm {
-  @apply w-8 h-8 leading-8;
+    @apply w-8 h-8 leading-8;
 }
 
 .avatar-md {
-  @apply w-10 h-10 leading-10;
+    @apply w-10 h-10 leading-10;
 }
 
 .avatar-lg {
-  @apply w-12 h-12 leading-10;
+    @apply w-12 h-12 leading-10;
 }
 
 .avatar-rounded {
-  @apply rounded-md;
+    @apply rounded-md;
 }
 
 .avatar-square {
-  @apply rounded-none;
+    @apply rounded-none;
 }
 
 .avatar-circle {
-  @apply rounded-full;
-  /* No overflow-hidden here */
+    @apply rounded-full;
+    /* No overflow-hidden here */
 }
 
 .avatar-img-rounded {
-  @apply rounded-md;
+    @apply rounded-md;
 }
 
 .avatar-img-square {
-  @apply rounded-none;
+    @apply rounded-none;
 }
 
 .avatar-img-circle {
-  @apply rounded-full;
-  /* No overflow-hidden here */
+    @apply rounded-full;
+    /* No overflow-hidden here */
 }
-
-
 
 .avatar-img-wrapper {
-  @apply w-full h-full block overflow-hidden; /* Clipping the image */
+    @apply w-full h-full block overflow-hidden; /* Clipping the image */
 }
 
 .avatar-img-circle {
-  @apply rounded-full;
+    @apply rounded-full;
 }
 
 .avatar-img {
-  @apply block w-full h-full object-cover;
+    @apply block w-full h-full object-cover;
 }
 
 .avatar-badge {
-  position: absolute;
-  top: 0; /* Align to the top */
-  left: 0; /* Align to the left */
-  transform: translate(-30%, -30%); /* Fine-tune positioning */
-  background-color: rgba(0, 0, 0, 0.4);
-  padding: 1px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 16px; /* Adjust width to fit the badge size */
-  height: 16px; /* Adjust height to fit the badge size */
-  font-size: 0.75rem; /* Adjust font size */
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2); /* Optional shadow for better visibility */
+    position: absolute;
+    top: 0; /* Align to the top */
+    left: 0; /* Align to the left */
+    transform: translate(-50%, -30%); /* Fine-tune positioning */
+    padding: 1px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px; /* Adjust width to fit the badge size */
+    height: 30px; /* Adjust height to fit the badge size */
+    font-size: 0.75rem; /* Adjust font size */
 }
 
 .avatar-string {
-  @apply absolute origin-center left-2/4 flex items-center;
+    @apply absolute origin-center left-2/4 flex items-center;
 }
 
 .avatar-inner-sm {
-  @apply h-8;
+    @apply h-8;
 }
 
 .avatar-inner-md {
-  @apply h-10;
+    @apply h-10;
 }
 
 .avatar-inner-lg {
-  @apply h-12;
+    @apply h-12;
 }
 
 .avatar-icon {
-  @apply flex items-center justify-center h-full;
+    @apply flex items-center justify-center h-full;
 }
 
 .avatar-icon-sm {
-  @apply text-lg;
+    @apply text-lg;
 }
 
 .avatar-icon-md {
-  @apply text-xl;
+    @apply text-xl;
 }
 
 .avatar-icon-lg {
-  @apply text-2xl;
+    @apply text-2xl;
 }
 
 .avatar-group {
-  @apply inline-flex;
+    @apply inline-flex;
 }
 
 .avatar-group-chained {
-  > .avatar,
-  > .tooltip-wrapper {
-      @apply -ml-2 rtl:-mr-2;
-  }
+    > .avatar,
+    > .tooltip-wrapper {
+        @apply -ml-2 rtl:-mr-2;
+    }
 
-  > .avatar,
-  > .tooltip-wrapper {
-      &:first-child {
-          @apply ml-0 rtl:mr-0;
-      }
-  }
+    > .avatar,
+    > .tooltip-wrapper {
+        &:first-child {
+            @apply ml-0 rtl:mr-0;
+        }
+    }
 }

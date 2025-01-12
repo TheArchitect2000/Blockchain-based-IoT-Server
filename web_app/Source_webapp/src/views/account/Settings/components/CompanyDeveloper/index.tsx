@@ -159,13 +159,12 @@ export default function CompanyDeveloperPage() {
                                     }}
                                     className="text-white mt-4 cursor-pointer"
                                 >
-                                    *If you're looking to join us as a
-                                    developer, send your email to{' '}
+                                    * If you are looking to join the network as
+                                    an IoT developer, please send your email to{' '}
                                     <span className="underline">
                                         info@fidesinnova.io
-                                    </span>{' '}
-                                    and request the developer role. We look
-                                    forward to hearing from you!
+                                    </span>
+                                    .
                                 </p>
 
                                 <FormRow

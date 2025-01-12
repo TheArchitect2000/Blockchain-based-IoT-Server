@@ -1,4 +1,4 @@
-import { Loading } from '@/components/shared'
+import { AdaptableCard, Loading } from '@/components/shared'
 import {
     Button,
     FormContainer,
@@ -19,6 +19,8 @@ import { useConfig } from '@/components/ui/ConfigProvider'
 import { useNavigate } from 'react-router-dom'
 
 export default function ProofPage() {
+    const [txHash, setTxHash] = useState('')
+    const [transactionLoading, setTransactionLoading] = useState<boolean>(false)
     const [loading, setLoading] = useState<boolean>(true)
     const [devicesData, setDevicesData] = useState<any[]>([])
     const [selectedDevice, setSelectedDevice] = useState<any>(null)
@@ -53,6 +55,10 @@ export default function ProofPage() {
         }
 
         return true
+    }
+
+    function handleViewTransaction() {
+        window.open(`https://explorer.fidesinnova.io/tx/${txHash}`, '_blank')
     }
 
     useEffect(() => {
@@ -112,8 +118,10 @@ export default function ProofPage() {
             }
         })
 
+        let txHash = ''
+
         try {
-            setLoading(true)
+            setTransactionLoading(true)
 
             const res = (await apiZKPPublishProof(
                 values.deviceType.value,
@@ -121,10 +129,11 @@ export default function ProofPage() {
                 filteredItems,
                 isConnected
             )) as any
+
             const resultData = res.data.data
-            
+
             if (isConnected) {
-                const tx = await storeZKP(
+                const tx: any = await storeZKP(
                     resultData.nodeId,
                     resultData.objectId,
                     values.deviceType.value,
@@ -134,32 +143,40 @@ export default function ProofPage() {
                     JSON.stringify(values.proof)
                 )
 
+                txHash = tx.hash
+
                 if (tx == false) {
-                    setLoading(false)
+                    setTransactionLoading(false)
                     return toast.push(
                         <Notification type="danger">
-                            {'Error while publishing proof'}
+                            {'Error while submitting proof'}
                         </Notification>,
                         {
                             placement: 'top-center',
                         }
                     )
                 }
+            } else {
+                txHash = resultData
             }
 
-            toast.push(
-                <Notification type="success">
-                    {'Proof published successfully'}
-                </Notification>,
-                {
-                    placement: 'top-center',
-                }
-            )
-            setLoading(false)
+            setTimeout(() => {
+                setTransactionLoading(false)
+                setTxHash(String(txHash))
+                setSelectedDevice(null)
+                toast.push(
+                    <Notification type="success">
+                        {'Proof submitted successfully'}
+                    </Notification>,
+                    {
+                        placement: 'top-center',
+                    }
+                )
+            }, 5000)
         } catch (error: any) {
             console.log('error:', error)
 
-            setLoading(false)
+            setTransactionLoading(false)
             toast.push(
                 <Notification type="danger">
                     {error.response.data.message}
@@ -202,12 +219,13 @@ export default function ProofPage() {
                     return (
                         <Form>
                             <FormContainer>
-                                <h3>ZKP Proof Publisher</h3>
+                                <h3>ZKP Proof Submiter</h3>
                                 {!checkUserHasRole('company_developer') && (
                                     <p className="mt-4 text-md text-red-400">
-                                        *You do not have a developer role
-                                        assigned. Please contact your node
-                                        administrator for further assistance.
+                                        * You do not have a developer role
+                                        assigned. Please reach out to your node
+                                        administrator to request this
+                                        permission.
                                     </p>
                                 )}
                                 <FormRow
@@ -219,8 +237,9 @@ export default function ProofPage() {
                                         isDisabled={
                                             !checkUserHasRole(
                                                 'company_developer'
-                                            )
+                                            ) || transactionLoading
                                         }
+                                        disabled={transactionLoading}
                                         component={Select}
                                         name="deviceType"
                                         value={values.deviceType} // Bind value to form state
@@ -254,6 +273,12 @@ export default function ProofPage() {
                                                 >
                                                     {param.value.length > 0 ? (
                                                         <Field
+                                                            isDisabled={
+                                                                transactionLoading
+                                                            }
+                                                            disabled={
+                                                                transactionLoading
+                                                            }
                                                             component={Select}
                                                             name={`parameters.${param.label}`}
                                                             value={
@@ -281,6 +306,9 @@ export default function ProofPage() {
                                                         />
                                                     ) : (
                                                         <Field
+                                                            disabled={
+                                                                transactionLoading
+                                                            }
                                                             component={Input}
                                                             name={`parameters.${param.label}`}
                                                             placeholder={`Enter ${param.label}`}
@@ -296,6 +324,7 @@ export default function ProofPage() {
                                             {...validatorProps}
                                         >
                                             <Field
+                                                disabled={transactionLoading}
                                                 component={Input}
                                                 textArea={true}
                                                 style={{ resize: 'none' }}
@@ -308,7 +337,7 @@ export default function ProofPage() {
 
                                 {!isConnected ? (
                                     <p className={`mt-4 text-[#EAF4FF]`}>
-                                        *This transaction will be processed
+                                        * This transaction will be processed
                                         using the{' '}
                                         <strong className="text-green-400">
                                             Node Admin Wallet
@@ -329,7 +358,7 @@ export default function ProofPage() {
                                     </p>
                                 ) : (
                                     <p className={`mt-4 text-[#EAF4FF]`}>
-                                        *This transaction will be processed
+                                        * This transaction will be processed
                                         using{' '}
                                         <strong className="text-red-400">
                                             your connected wallet
@@ -350,36 +379,81 @@ export default function ProofPage() {
                                     </p>
                                 )}
 
+                                <AdaptableCard className="mt-4">
+                                    {txHash.length > 0 && (
+                                        <div
+                                            className={`p-4 mb-4 border border-green-400 rounded-lg space-y-0.5`}
+                                        >
+                                            <h5>Transaction Submitted!</h5>
+                                            <p>
+                                                You can track the status of your
+                                                transaction using the following
+                                                Transaction ID:
+                                            </p>
+                                            <p
+                                                onClick={handleViewTransaction}
+                                                className={`underline text-${themeColor}-${primaryColorLevel} hover:text-${themeColor}-300 cursor-pointer`}
+                                            >
+                                                {txHash}
+                                            </p>
+                                            <p>
+                                                Click the link above to view the
+                                                details on the Explorer.
+                                            </p>
+                                        </div>
+                                    )}
+                                </AdaptableCard>
+
                                 <div className="flex items-center justify-center mt-4">
-                                    <Button
-                                        disabled={
-                                            !checkUserHasRole(
-                                                'company_developer'
-                                            )
-                                        }
-                                        variant="solid"
-                                        loading={isSubmitting}
-                                        type="submit"
-                                    >
-                                        {isSubmitting
-                                            ? 'Publishing'
-                                            : 'Publish'}
-                                    </Button>
-                                    <Button
-                                        disabled={
-                                            !checkUserHasRole(
-                                                'company_developer'
-                                            )
-                                        }
-                                        variant="default"
-                                        className="ml-2"
-                                        onClick={() => {
-                                            resetForm()
-                                            setSelectedDevice(null)
-                                        }}
-                                    >
-                                        Reset
-                                    </Button>
+                                    {txHash.length == 0 ? (
+                                        <>
+                                            <Button
+                                                disabled={
+                                                    !checkUserHasRole(
+                                                        'company_developer'
+                                                    )
+                                                }
+                                                variant="solid"
+                                                loading={
+                                                    isSubmitting ||
+                                                    transactionLoading
+                                                }
+                                                type="submit"
+                                            >
+                                                {isSubmitting
+                                                    ? 'Submitting'
+                                                    : 'Submit'}
+                                            </Button>
+                                            <Button
+                                                disabled={
+                                                    !checkUserHasRole(
+                                                        'company_developer'
+                                                    ) || transactionLoading
+                                                }
+                                                variant="default"
+                                                className="ml-2"
+                                                onClick={() => {
+                                                    resetForm()
+                                                    setSelectedDevice(null)
+                                                    setTxHash('')
+                                                }}
+                                            >
+                                                Reset
+                                            </Button>
+                                        </>
+                                    ) : (
+                                        <Button
+                                            onClick={(e) => {
+                                                e.preventDefault()
+                                                resetForm()
+                                                setSelectedDevice(null)
+                                                setTxHash('')
+                                            }}
+                                            type="button"
+                                        >
+                                            OK
+                                        </Button>
+                                    )}
                                 </div>
                             </FormContainer>
                         </Form>
