@@ -94,7 +94,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ positions, loading }) => {
     const filteredPositions =
         selectedNodeId !== null
             ? positions.filter((item) => item.nodeId === selectedNodeId)
-            : positions
+            : positions.filter((item) => item.nodeId !== "Sample")
 
     // Custom component to zoom the map to Paris
     const ZoomToParis: React.FC = () => {

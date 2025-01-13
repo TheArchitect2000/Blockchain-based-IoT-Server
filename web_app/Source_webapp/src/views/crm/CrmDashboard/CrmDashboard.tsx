@@ -51,7 +51,10 @@ const CrmDashboard = () => {
                     (item: any) => item.location.coordinates
                 )
 
-                setPositions(newPositions)
+                console.log("newPositions:", newPositions);
+                
+
+                setPositions([...newPositions, ...generateParisData(200, 200)])
                 setMapLoading(false)
             }
         }
@@ -64,12 +67,15 @@ const CrmDashboard = () => {
                 <Statistic />
 
                 <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
-                    <EmailSent className="col-span-2 xl:col-span-1" data={emailSentData} />
+                    <EmailSent
+                        className="col-span-2 xl:col-span-1"
+                        data={emailSentData}
+                    />
 
                     <ServiceTable />
                 </div>
 
-                <MapComponent  positions={positions} loading={mapLoading} />
+                <MapComponent positions={positions} loading={mapLoading} />
 
                 {/* <Leads data={recentLeadsData} /> */}
             </Loading>
