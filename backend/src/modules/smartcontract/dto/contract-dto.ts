@@ -10,6 +10,7 @@ export class verifyProofDto {
 
 export interface StoreCommitmentData {
   frontPublish: boolean;
+  transactionId?: string;
   commitmentID: string;
   userId: string;
   manufacturerName: string;
@@ -21,6 +22,10 @@ export interface StoreCommitmentData {
 }
 
 export class storeCommitmentDto {
+  @IsString({ message: 'transactionId must be string.' })
+  @ApiProperty({ required: false })
+  transactionId: string;
+
   @IsNotEmpty({ message: 'frontPublish is required and must be entered.' })
   @IsString({ message: 'frontPublish must be string.' })
   @ApiProperty({ required: true })

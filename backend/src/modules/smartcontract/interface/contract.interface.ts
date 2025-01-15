@@ -1,6 +1,7 @@
 import { Document } from 'mongoose';
 
 export interface Contract extends Document {
+  transactionId: string;
   commitmentId: string;
   userId: string;
   nodeId: string;

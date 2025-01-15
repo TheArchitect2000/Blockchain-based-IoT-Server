@@ -1,6 +1,10 @@
 import { Schema } from 'mongoose';
 
 const schema = new Schema({
+  transactionId: {
+    type: String,
+    required: true,
+  },
   commitmentId: {
     type: String,
     required: true,

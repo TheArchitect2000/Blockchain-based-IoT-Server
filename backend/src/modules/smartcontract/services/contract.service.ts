@@ -466,7 +466,7 @@ export class ContractService {
   ) {
     const unixTimestamp = Math.floor(Date.now() / 1000);
 
-    const result = await this.contracts.storeZkp.storeZKP(
+    return await this.contracts.storeZkp.storeZKP(
       nodeId,
       deviceId,
       deviceType,
@@ -488,11 +488,16 @@ export class ContractService {
         firmwareVersion,
         commitmentData,
         frontPublish,
+        transactionId
       } = data;
+
+      console.log("data:", data);
+      
 
       let txHash = '';
 
       if (!frontPublish) {
+        console.log("Storing commitment");
         const tx: any = await this.contracts.commitment.storeCommitment(
           commitmentID,
           process.env.NODE_ID,
@@ -509,7 +514,7 @@ export class ContractService {
       }
 
       // Save commitment data to the database
-      await this.saveCommitmentInDB(data);
+      await this.saveCommitmentInDB({...data, transactionId: transactionId ? transactionId : txHash});
       console.log('Commitment data saved to the database successfully.');
 
       return txHash;
@@ -525,7 +530,7 @@ export class ContractService {
         errorMessage = error.message;
       }
 
-      console.error(`Error in storeCommitment: ${errorMessage}`, error);
+      //console.error(`Error in storeCommitment: ${errorMessage}`, error);
 
       // Optionally, you can log the error to an external monitoring service here
 
@@ -582,6 +587,7 @@ export class ContractService {
 
   async saveCommitmentInDB(data: StoreCommitmentData) {
     return await this.contractRepository.saveCommitment({
+      transactionId: data.transactionId,
       commitmentId: data.commitmentID,
       nodeId: process.env.NODE_ID,
       userId: data.userId,

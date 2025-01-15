@@ -231,7 +231,7 @@ export class contractController {
       };
     }
 
-    return this.contractService.storeZKP(
+    const tx: any = await this.contractService.storeZKP(
       process.env.NODE_ID,
       objectId,
       body.deviceType,
@@ -240,6 +240,8 @@ export class contractController {
       JSON.stringify(body.data),
       JSON.stringify(body.proof),
     );
+
+    return String(tx.hash);
   }
 
   /* @Get('/fetch-service')

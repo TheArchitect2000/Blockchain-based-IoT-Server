@@ -7,7 +7,7 @@ import { ContractModel } from '../model/contract.model';
 @Injectable()
 export class ContractRepository {
   private result;
-  private selectCondition: 'userId manufacturerName deviceType hardwareVersion firmwareVersion lines commitmentData createdAt';
+  private selectCondition: 'userId manufacturerName deviceType hardwareVersion firmwareVersion lines commitmentData createdAt transactionId';
 
   constructor(
     @InjectModel('contract')
