@@ -33,7 +33,11 @@ const JsonDisplay = ({ jsonData }: { jsonData: string }) => {
                 </div>
             ) : (
                 parsedJson && (
-                    <SyntaxHighlighter language="json" style={atomDark}>
+                    <SyntaxHighlighter
+                        className="can-select min-w-fit"
+                        language="json"
+                        style={atomDark}
+                    >
                         {parsedJson}
                     </SyntaxHighlighter>
                 )

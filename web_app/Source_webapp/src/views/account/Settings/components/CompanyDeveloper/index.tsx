@@ -172,7 +172,7 @@ export default function CompanyDeveloperPage() {
                                     label={
                                         (
                                             <div className="flex items-center gap-2">
-                                                <span>Name</span>
+                                                <span>Company Name</span>
                                                 <span>(</span>
                                                 <p>
                                                     {!isDeveloper && 'Not'}{' '}

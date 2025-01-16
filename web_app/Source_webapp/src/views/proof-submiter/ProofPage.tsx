@@ -6,6 +6,7 @@ import {
     Notification,
     Select,
     toast,
+    Upload,
 } from '@/components/ui'
 import { Field, Form, Formik } from 'formik'
 import { useEffect, useState } from 'react'
@@ -192,6 +193,63 @@ export default function ProofPage() {
         console.log('Proof:', values.proof)
     }
 
+    const handleProofFileChange = (event: any, setFieldValue: any) => {
+        const file = event.target.files[0]
+        if (!file || file.type !== 'application/json') {
+            toast.push(
+                <Notification type="danger">
+                    Please upload a valid JSON proof file.
+                </Notification>,
+                { placement: 'top-center' }
+            )
+            return
+        }
+
+        const reader = new FileReader()
+        reader.onload = (e) => {
+            if (!e.target?.result) {
+                toast.push(
+                    <Notification type="danger">File read error.</Notification>,
+                    { placement: 'top-center' }
+                )
+                return
+            }
+
+            try {
+                const jsonText = e.target.result as string
+                const parsedJson = JSON.parse(jsonText)
+
+                if (!parsedJson.commitment_id) {
+                    toast.push(
+                        <Notification type="danger">
+                            This file has no commitment_id.
+                        </Notification>,
+                        { placement: 'top-center' }
+                    )
+                    return
+                }
+
+                // Store the entire parsed JSON proof if desired
+                setFieldValue('proof', parsedJson)
+
+                toast.push(
+                    <Notification type="success">
+                        Proof file loaded successfully.
+                    </Notification>,
+                    { placement: 'top-center' }
+                )
+            } catch (err) {
+                toast.push(
+                    <Notification type="danger">
+                        Invalid JSON file.
+                    </Notification>,
+                    { placement: 'top-center' }
+                )
+            }
+        }
+        reader.readAsText(file)
+    }
+
     return (
         <main className="flex flex-col w-full">
             <Formik
@@ -323,14 +381,34 @@ export default function ProofPage() {
                                             label={'Proof'}
                                             {...validatorProps}
                                         >
-                                            <Field
-                                                disabled={transactionLoading}
-                                                component={Input}
-                                                textArea={true}
-                                                style={{ resize: 'none' }}
-                                                name={`proof`}
-                                                placeholder={`Paste the proof here`}
-                                            />
+                                            <Upload
+                                                disabled={
+                                                    !checkUserHasRole(
+                                                        'company_developer'
+                                                    ) || transactionLoading
+                                                }
+                                                showList={false}
+                                                uploadLimit={1}
+                                                accept=".json"
+                                                onChange={(event: any) =>
+                                                    handleProofFileChange(
+                                                        event,
+                                                        setFieldValue
+                                                    )
+                                                }
+                                            >
+                                                <Button
+                                                    disabled={
+                                                        !checkUserHasRole(
+                                                            'company_developer'
+                                                        ) || transactionLoading
+                                                    }
+                                                    variant="twoTone"
+                                                    type="button"
+                                                >
+                                                    Upload Proof
+                                                </Button>
+                                            </Upload>
                                         </FormRow>
                                     </>
                                 )}

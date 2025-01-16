@@ -19,6 +19,7 @@
         "@fullcalendar/timegrid": "^6.1.8",
         "@heroicons/react": "^2.1.3",
         "@popperjs/core": "^2.11.8",
+        "@react-oauth/google": "^0.12.1",
         "@reduxjs/toolkit": "^1.9.3",
         "@reown/appkit": "^1.6.3",
         "@reown/appkit-adapter-ethers": "^1.6.3",
