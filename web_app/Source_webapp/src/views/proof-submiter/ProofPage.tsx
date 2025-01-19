@@ -1,6 +1,7 @@
 import { AdaptableCard, Loading } from '@/components/shared'
 import {
     Button,
+    Card,
     FormContainer,
     Input,
     Notification,
@@ -381,34 +382,53 @@ export default function ProofPage() {
                                             label={'Proof'}
                                             {...validatorProps}
                                         >
-                                            <Upload
-                                                disabled={
-                                                    !checkUserHasRole(
-                                                        'company_developer'
-                                                    ) || transactionLoading
-                                                }
-                                                showList={false}
-                                                uploadLimit={1}
-                                                accept=".json"
-                                                onChange={(event: any) =>
-                                                    handleProofFileChange(
-                                                        event,
-                                                        setFieldValue
-                                                    )
-                                                }
-                                            >
-                                                <Button
+                                            <div className="flex flex-col w-full gap-4">
+                                                <Upload
                                                     disabled={
                                                         !checkUserHasRole(
                                                             'company_developer'
                                                         ) || transactionLoading
                                                     }
-                                                    variant="twoTone"
-                                                    type="button"
+                                                    showList={false}
+                                                    uploadLimit={1}
+                                                    accept=".json"
+                                                    onChange={(event: any) =>
+                                                        handleProofFileChange(
+                                                            event,
+                                                            setFieldValue
+                                                        )
+                                                    }
                                                 >
-                                                    Upload Proof
-                                                </Button>
-                                            </Upload>
+                                                    <Button
+                                                        className="w-fit"
+                                                        disabled={
+                                                            !checkUserHasRole(
+                                                                'company_developer'
+                                                            ) ||
+                                                            transactionLoading
+                                                        }
+                                                        variant={
+                                                            values.proof
+                                                                ? 'solid'
+                                                                : 'twoTone'
+                                                        }
+                                                        type="button"
+                                                    >
+                                                        Upload Proof
+                                                    </Button>
+                                                </Upload>
+                                                {values.proof && (
+                                                    <Card>
+                                                        Commitment Id:{' '}
+                                                        <span className="font-bold break-all">
+                                                            {
+                                                                values.proof
+                                                                    .commitment_id
+                                                            }
+                                                        </span>
+                                                    </Card>
+                                                )}
+                                            </div>
                                         </FormRow>
                                     </>
                                 )}
