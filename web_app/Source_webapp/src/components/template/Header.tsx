@@ -80,6 +80,7 @@ const Header = (props: HeaderProps) => {
                 )}
 
                 <div className="flex flex-row">
+                    <GoogleLoginButton />
                     <div className="gap-4 mt-1 justify-end hidden sm:flex">
                         <Dropdown
                             onSelect={dropDownSelectHandler}
