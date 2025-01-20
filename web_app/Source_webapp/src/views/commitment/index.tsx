@@ -95,6 +95,8 @@ export default function CommitmentPage() {
         const file = event.target.files[0]
 
         if (!file || file.type !== 'application/json') {
+            console.log('Maghol 55')
+
             toast.push(
                 <Notification type="danger">
                     Please upload a valid JSON file.
@@ -112,6 +114,8 @@ export default function CommitmentPage() {
         const reader = new FileReader()
         reader.onload = (e) => {
             if (!e.target?.result) {
+                console.log('Maghol')
+
                 toast.push(
                     <Notification type="danger">
                         Please upload a valid JSON file.
@@ -126,6 +130,30 @@ export default function CommitmentPage() {
             try {
                 const jsonText = e.target.result as string
                 const parsedJson = JSON.parse(jsonText)
+
+                if (
+                    !parsedJson.commitment_id ||
+                    !parsedJson.iot_developer_name ||
+                    !parsedJson.iot_device_name ||
+                    !parsedJson.device_hardware_version ||
+                    !parsedJson.firmware_version ||
+                    parsedJson.commitment_id.trim() === '' ||
+                    parsedJson.iot_developer_name.trim() === '' ||
+                    parsedJson.iot_device_name.trim() === '' ||
+                    parsedJson.device_hardware_version.trim() === '' ||
+                    parsedJson.firmware_version.trim() === ''
+                ) {
+                    toast.push(
+                        <Notification type="danger">
+                            The JSON file is missing required fields. Please
+                            ensure all fields are filled.
+                        </Notification>,
+                        { placement: 'top-center' }
+                    )
+                    setResetUpload((r) => r + 1)
+                    setFieldValue('commitmentData', null)
+                    return false
+                }
 
                 // If these fields are missing, handle accordingly
                 setCommitmentID(parsedJson.commitment_id || '')
@@ -143,6 +171,8 @@ export default function CommitmentPage() {
                     { placement: 'top-center' }
                 )
             } catch (error) {
+                console.log('Maghol 22')
+
                 toast.push(
                     <Notification type="danger">
                         Please upload a valid JSON file.
@@ -161,6 +191,8 @@ export default function CommitmentPage() {
         setSubmitting: (isSubmitting: boolean) => void
     ) => {
         if (!values.commitmentData) {
+            console.log('Maghol 33')
+
             toast.push(
                 <Notification type="danger">
                     Please upload a valid JSON file.
@@ -190,6 +222,8 @@ export default function CommitmentPage() {
             try {
                 parsedJson = JSON.parse(jsonText)
             } catch (error) {
+                console.log('Maghol 44')
+
                 toast.push(
                     <Notification type="danger">
                         Please upload a valid JSON file.
@@ -393,20 +427,24 @@ export default function CommitmentPage() {
                                                             : 'green'
                                                     }-400 rounded-lg space-y-2`}
                                                 >
-                                                    <div>
+                                                    <div className="break-all">
                                                         <strong>
                                                             Commitment ID:
                                                         </strong>{' '}
                                                         {commitmentID}
                                                     </div>
-                                                    <div className="flex gap-2">
-                                                        <strong>
+                                                    <div className="flex max-sm:flex-wrap items-center gap-2">
+                                                        <strong className="text-nowrap">
                                                             IoT Developer Name:
                                                         </strong>{' '}
-                                                        {iotManufacturerName}
+                                                        <p className="text-nowrap">
+                                                            {
+                                                                iotManufacturerName
+                                                            }
+                                                        </p>
                                                         {companyName !=
                                                             iotManufacturerName && (
-                                                            <p className="text-red-400">
+                                                            <p className="text-red-400 text-wrap">
                                                                 ( The IoT
                                                                 Developer Name
                                                                 in your JSON

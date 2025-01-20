@@ -22,6 +22,7 @@ import {
 import { PasswordInput } from '../shared'
 import './style.css'
 import { useRoleStore } from '@/store/user/userRoleStore'
+import GoogleLoginButton from '../GoogleLoginButton/GoogleLoginButton'
 
 interface HeaderProps extends CommonProps {
     headerStart?: ReactNode
@@ -79,6 +80,7 @@ const Header = (props: HeaderProps) => {
                 )}
 
                 <div className="flex flex-row">
+                    <GoogleLoginButton />
                     <div className="gap-4 mt-1 justify-end hidden sm:flex">
                         <Dropdown
                             onSelect={dropDownSelectHandler}
@@ -112,7 +114,7 @@ const Header = (props: HeaderProps) => {
                                 className="flex justify-center advanced-drop-down-items"
                                 eventKey={'ZKP Proof Submiter'}
                             >
-                                ZKP Proof Submiter
+                                ZKP Proof Submiter (Test)
                             </Dropdown.Item>
                         </Dropdown>
                         <Button onClick={onCreateNewService} variant="solid">

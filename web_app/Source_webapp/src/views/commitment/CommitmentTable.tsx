@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Table from '@/components/ui/Table'
 import {
     flexRender,
@@ -16,6 +16,10 @@ import JsonDisplay from '@/components/ui/JsonDisplay'
 import { apiRemoveCommitment } from '@/services/ContractServices'
 import { formatDate } from '../devices/DeviceDetails/componetns/DevicePayload/DevicePayload'
 import { FaGlobe } from 'react-icons/fa'
+import { apiGetCurUserProfile } from '@/services/UserApi'
+import { convertToTimeZone } from '../account/Settings/components/TimezoneSelector'
+import { formatToCustomDateTime } from '../devices/DeviceDetails/DeviceDetails'
+import { formatISODate } from '../services/Services/components/Card'
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
@@ -31,11 +35,20 @@ const CommitmentTable = ({
     const [deleteDialog, setDeleteDialog] = useState<boolean>(false)
     const [apiLoading, setApiLoading] = useState<boolean>(false)
     const [commitmentData, setCommitmentData] = useState<string>('')
+    const [userProfile, setUserProfile] = useState<any>()
     const [deleteData, setDeleteData] = useState<{
         dbId: string
         commitmentId: string
         nodeId: string
     }>({ commitmentId: '', nodeId: '', dbId: '' })
+
+    useEffect(() => {
+        async function fetchProfile() {
+            const res = (await apiGetCurUserProfile()) as any
+            setUserProfile(res.data.data)
+        }
+        fetchProfile()
+    }, [])
 
     const ActionColumn = ({ row }: { row: any }) => {
         const { textTheme } = useThemeClass()
@@ -85,7 +98,19 @@ const CommitmentTable = ({
             accessorKey: 'commitmentID',
             cell: (props) => {
                 const row = props.row.original
-                return <span>{row.commitmentId}</span>
+                return (
+                    <span
+                        onClick={() => {
+                            window.open(
+                                `https://explorer.fidesinnova.io/tx/${row.transactionId}`,
+                                '_blank'
+                            )
+                        }}
+                        className="hover:cursor-pointer hover:underline hover:text-white"
+                    >
+                        {row.commitmentId}
+                    </span>
+                )
             },
         },
         {
@@ -125,7 +150,40 @@ const CommitmentTable = ({
             accessorKey: 'createdAt',
             cell: (props) => {
                 const row = props.row.original
-                return <span>{formatDate(row?.createdAt)}</span>
+
+                let userDate, formattedUTCOffset
+
+                if (userProfile?.timezone) {
+                    userDate = new Date(
+                        convertToTimeZone(row?.createdAt, userProfile?.timezone)
+                    )
+
+                    // Get the timezone offset in minutes
+                    const timezoneOffset = userDate.getTimezoneOffset() // Offset in minutes
+                    const totalOffsetMinutes = -timezoneOffset // Negate for UTC+/- convention
+
+                    // Calculate hours and minutes
+                    const offsetHours = Math.floor(totalOffsetMinutes / 60)
+                    const offsetMinutes = Math.abs(totalOffsetMinutes % 60)
+
+                    // Format as UTC+HH:mm or UTC-HH:mm
+                    formattedUTCOffset = `UTC${
+                        offsetHours >= 0 ? '+' : ''
+                    }${offsetHours}:${offsetMinutes
+                        .toString()
+                        .padStart(2, '0')}`
+                }
+
+                return (
+                    <span>
+                        {(userProfile?.timezone &&
+                            formatDate(String(userDate))) ||
+                            formatDate(String(row?.createdAt))}
+                        {userProfile?.timezone && formattedUTCOffset && (
+                            <p>{formattedUTCOffset}</p>
+                        )}
+                    </span>
+                )
             },
         },
 
@@ -190,7 +248,7 @@ const CommitmentTable = ({
                 onClose={() => setConsoleDialog(false)}
             >
                 <h3>Commitment Data</h3>
-                <div className="h-[80dvh] overflow-y-auto">
+                <div className="h-[80dvh] overflow-auto">
                     <JsonDisplay jsonData={commitmentData} />
                 </div>
             </Dialog>

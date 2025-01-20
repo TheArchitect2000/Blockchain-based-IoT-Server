@@ -22,6 +22,11 @@
     user-select: none;
 }
 
+.can-select,
+.can-select * {
+    user-select: text !important;
+}
+
 /* Add this to your main CSS file or within a style tag in your main HTML/JSX file */
 
 .marker-cluster div {
