@@ -53,7 +53,7 @@ const GoogleLoginButton: React.FC = () => {
 
     return (
         <>
-            {/ <GoogleButton style={{ width: '100%' }} onClick={() => login()} /> /}
+            {/* <GoogleButton style={{ width: '100%' }} onClick={() => login()} /> */}
             <GoogleLogin
                 type="standard"
                 theme="outline"
