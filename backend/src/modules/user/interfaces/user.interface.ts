@@ -11,9 +11,11 @@ export interface UserInterface extends Document {
   firstName: string;
   lastName: string;
   company: Object;
+  mobile: string | number;
   tel: Object;
   address: Object;
   timezone: string;
+  google: boolean;
   email: string;
   password: string;
   unsubscribed: boolean;

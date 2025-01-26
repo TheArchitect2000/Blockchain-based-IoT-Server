@@ -4,7 +4,7 @@ import { Types } from 'mongoose';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { ChangeEmailTokenModel, UserModel } from '../models/user.model';
-import { UserChangeEmailTokenInterface } from '../interfaces/user.interface';
+import { UserChangeEmailTokenInterface, UserInterface } from '../interfaces/user.interface';
 import { changeEmailTokenSchema, userSchema } from '../schemas/user.schema';
 
 @Injectable()
@@ -87,7 +87,7 @@ export class UserRepository {
     }
   }
 
-  async insertUser(data) {
+  async insertUser(data): Promise<UserInterface> {
     await this.userModel
       .create(data)
       .then((data) => {

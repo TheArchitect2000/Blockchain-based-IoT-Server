@@ -16,8 +16,7 @@ import {
 } from '@reown/appkit/react'
 import { BrowserProvider, formatUnits } from 'ethers'
 
-
-const Verify = () => {
+const WalletSettings = () => {
     const [loading, setLoading] = useState(true)
     const [requestLoading, setRequestLoading] = useState(false)
     const [walletBalance, setWalletBalance] = useState<null | string>(null)
@@ -123,23 +122,9 @@ const Verify = () => {
             {(loading == false && (
                 <main>
                     <div className="flex text-[1rem] flex-col gap-4">
-                        <p>
-                            Note: Create a wallet on the FidesInnova blockchain.
-                            For instructions on how to create a new wallet,{' '}
-                            <a
-                                href="https://fidesinnova-1.gitbook.io/fidesinnova-docs/users-how-to-use-the-fidesinnova-network/connecting-your-metamask-to-the-fidesinnova-network"
-                                target="_blank"
-                                className="underline cursor-pointer"
-                            >
-                                click here
-                            </a>
-                            .
-                        </p>
-
                         <div className="flex items-center flex-col md:flex-row gap-4">
                             <p className=" font-bold no-wrap">
-                                {!isConnected ? 'Connect your' : 'Your'} wallet
-                                address:
+                                {!isConnected ? 'Connect your' : 'Your'} wallet:
                             </p>
                             {(isConnected && (
                                 <>
@@ -178,12 +163,12 @@ const Verify = () => {
                                 </span>
                             </p>
                         </div>
-                        <div className="flex items-center">
+                        {/* <div className="flex items-center">
                             <p>
                                 Note: You can receive 5 tokens daily. To obtain
                                 more tokens, contact your node administrator.
                             </p>
-                        </div>
+                        </div> */}
                         <div className="flex items-center w-full">
                             <Button
                                 className="w-full sm:w-auto"
@@ -207,4 +192,4 @@ const Verify = () => {
     )
 }
 
-export default Verify
+export default WalletSettings

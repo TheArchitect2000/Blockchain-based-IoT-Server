@@ -1,4 +1,9 @@
-import { apiSignIn, apiSignOut, apiSignUp } from '@/services/AuthService'
+import {
+    apiSignIn,
+    apiSignInGoogle,
+    apiSignOut,
+    apiSignUp,
+} from '@/services/AuthService'
 import {
     setUser,
     signInSuccess,
@@ -12,6 +17,9 @@ import { REDIRECT_URL_KEY } from '@/constants/app.constant'
 import { useNavigate } from 'react-router-dom'
 import useQuery from './useQuery'
 import type { SignInCredential, SignUpCredential } from '@/@types/auth'
+import Notification from '@/components/ui/Notification'
+import { toast } from '@/components/ui'
+import { FaGlasses } from 'react-icons/fa'
 
 type Status = 'success' | 'failed'
 
@@ -34,7 +42,21 @@ function useAuth() {
         | undefined
     > => {
         try {
-            const resp = await apiSignIn(values)
+            let resp
+
+            if (values.tokenId) {
+                try {
+                    resp = await apiSignInGoogle(values.tokenId)
+                } catch (error: any) {
+                    return {
+                        message: error.response.data.message,
+                        status: 'failed',
+                    }
+                }
+            } else {
+                resp = await apiSignIn(values)
+            }
+
             if (resp.data) {
                 const token = resp.data.data.tokens.accessToken
                 dispatch(signInSuccess(token))

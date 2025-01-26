@@ -59,6 +59,7 @@
         "react-blockly": "^8.1.1",
         "react-custom-scrollbars-2": "^4.5.0",
         "react-dom": "^18.2.0",
+        "react-google-button": "^0.8.0",
         "react-highlight-words": "^0.20.0",
         "react-i18next": "^12.2.0",
         "react-icons": "^4.8.0",

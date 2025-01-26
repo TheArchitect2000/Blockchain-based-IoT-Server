@@ -19,6 +19,18 @@ export async function apiSignIn(data: SignInCredential) {
     return res
 }
 
+export async function apiSignInGoogle(tokenId: string) {
+    const res = ApiService.fetchData<SignInResponse>({
+        url: import.meta.env.VITE_URL + 'authentication/google/token',
+        method: 'post',
+        data: {
+            tokenId: tokenId
+        }
+    })
+
+    return res
+}
+
 export async function apiCheckEmailExist(email: string) {
     const res = ApiService.fetchData<SignInResponse>({
         url:

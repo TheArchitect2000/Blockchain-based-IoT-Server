@@ -6,6 +6,7 @@ import {
   UseGuards,
   Body,
   Res,
+  Req,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthenticationService } from './authentication.service';
@@ -15,37 +16,25 @@ import { JwtAuthGuard } from './guard/jwt-auth.guard';
 import { LocalAuthGuard } from './guard/local-auth.guard';
 import { GoogleAuthRequestDto } from './data-transfer-objects/google-auth.dto';
 import { AppleAuthRequestDto } from './data-transfer-objects/apple-auth.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('Manage Authentication')
-@Controller('app')
+@Controller('app/authentication')
 export class AuthenticationController {
   constructor(private authenticationService: AuthenticationService) {}
 
-  @Post('authentication/login')
-  @UseGuards(LocalAuthGuard)
-  async login(@Body() body: UserLoginDto, @Request() request) {
-    return this.authenticationService.login(request.user);
+  
+
+  @Post('google/token')
+  async verifyGoogleToken(@Body('tokenId') tokenId: string) {
+    return await this.authenticationService.loginWithGoogle(tokenId)
   }
 
-  @Post('authentication/googleAuth')
-  async googleAuth(@Body() body: GoogleAuthRequestDto) {
-    return this.authenticationService.googleAuthVerify(body.token);
-  }
-
-  @Post('authentication/appleAuth')
-  async appleAuth(@Body() body: AppleAuthRequestDto) {
-    return this.authenticationService.googleAuthVerify(body.token);
-  }
-
-  @Post('v1/authentication/refresh-tokens')
-  async refreshTokens(@Body() body: NewTokenRequestDto, @Request() request) {
-    return this.authenticationService.createNewTokens(body, request.user);
-  }
-
-  @Get('profile')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  getProfile(@Request() request) {
-    return request.user;
+  @Get('google/redirect')
+  @UseGuards(AuthGuard('google'))
+  async googleLoginCallback(@Req() req) {
+    // Successful Google login
+    console.log('req.user:', req.user);
+    return req.user; // Add logic to handle user (e.g., generate a JWT)
   }
 }

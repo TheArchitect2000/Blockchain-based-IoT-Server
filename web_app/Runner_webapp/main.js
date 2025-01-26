@@ -4,8 +4,8 @@ require("dotenv").config();
 const https = require("https");
 const fs = require("fs");
 
-var key = fs.readFileSync("/etc/nginx/ssl/privkey.pem"); //*
-var cert = fs.readFileSync("/etc/nginx/ssl/fullchain.pem"); //*
+var key = fs.readFileSync("/etc/nginx/ssl/privkey.pem");
+var cert = fs.readFileSync("/etc/nginx/ssl/fullchain.pem");
 var options = {
   key: key,
   cert: cert,

@@ -41,6 +41,12 @@ const schema = new Schema({
     required: false,
     default: null,
   },
+  google: {
+    type: Boolean,
+    required: false,
+    default: false,
+    immutable: true,
+  },
   password: {
     minlength: 6,
     type: String,
