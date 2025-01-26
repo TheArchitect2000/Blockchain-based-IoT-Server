@@ -302,6 +302,10 @@ FAUCET_WALLET_PRIVATE_KEY = 'YOUR_FAUCET_WALLET_PRIVATE_KEY'
 # Admin Wallet Private Key
 ADMIN_WALLET_PRIVATE_KEY = 'YOUR_ADMIN_WALLET_PRIVATE_KEY'
 
+GOOGLE_CLIENT_ID=990952057079-r35cambumvgrl8pqcvegi676gplmilq2.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=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
+GOOGLE_BALLBACK_URL=<panel.YOUR-DOMAIN.COM>/app/authentication/google/redirect
+
 # Server Configuration
 HOST_PROTOCOL = 'https://'
 HOST_NAME_OR_IP = 'panel.YOUR_DOMAIN.COM'
@@ -384,6 +388,11 @@ ZKP_USER = 'your-zkp-username'
 ZKP_PASS = 'your-zkp-password'
 
 RPC_URL = 'your-rpc-url'
+
+GOOGLE_CLIENT_ID=990952057079-r35cambumvgrl8pqcvegi676gplmilq2.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=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
+GOOGLE_BALLBACK_URL=<panel.YOUR-DOMAIN.COM>/app/authentication/google/redirect
+
 ```
 
 ## 8- Device Installation Data
