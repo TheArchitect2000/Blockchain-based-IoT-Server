@@ -22,7 +22,7 @@ import {
 import { PasswordInput } from '../shared'
 import './style.css'
 import { useRoleStore } from '@/store/user/userRoleStore'
-import GoogleLoginButton from '../GoogleLoginButton/GoogleLoginButton'
+
 
 interface HeaderProps extends CommonProps {
     headerStart?: ReactNode
@@ -80,7 +80,6 @@ const Header = (props: HeaderProps) => {
                 )}
 
                 <div className="flex flex-row">
-                    <GoogleLoginButton />
                     <div className="gap-4 mt-1 justify-end hidden sm:flex">
                         <Dropdown
                             onSelect={dropDownSelectHandler}

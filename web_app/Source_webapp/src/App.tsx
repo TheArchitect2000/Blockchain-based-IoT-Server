@@ -14,6 +14,7 @@ import { createAppKit } from '@reown/appkit/react'
 import { EthersAdapter } from '@reown/appkit-adapter-ethers'
 import { defineChain } from '@reown/appkit/networks'
 import { ContractProvider } from './provider/contract-provider'
+import { GoogleOAuthProvider } from '@react-oauth/google'
 
 if (environment !== 'production' && appConfig.enableMock) {
     mockServer({ environment })
@@ -68,13 +69,15 @@ function App() {
         <QueryClientProvider client={queryClient}>
             <ContractProvider>
                 <Provider store={store}>
-                    <PersistGate loading={null} persistor={persistor}>
-                        <BrowserRouter>
-                            <Theme>
-                                <Layout />
-                            </Theme>
-                        </BrowserRouter>
-                    </PersistGate>
+                    <GoogleOAuthProvider clientId="990952057079-r35cambumvgrl8pqcvegi676gplmilq2.apps.googleusercontent.com">
+                        <PersistGate loading={null} persistor={persistor}>
+                            <BrowserRouter>
+                                <Theme>
+                                    <Layout />
+                                </Theme>
+                            </BrowserRouter>
+                        </PersistGate>
+                    </GoogleOAuthProvider>
                 </Provider>
             </ContractProvider>
             <ReactQueryDevtools initialIsOpen={false} />

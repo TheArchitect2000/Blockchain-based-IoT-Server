@@ -34,6 +34,8 @@ import {
   UserInterface,
 } from '../../interfaces/user.interface';
 import { MailService } from 'src/modules/utility/services/mail.service';
+import { randomBytes } from 'crypto';
+
 
 const saltRounds = 10;
 
@@ -42,6 +44,22 @@ const saltRounds = 10;
  */
 
 export type User = any;
+
+function generatePassword(length: number): string {
+  if (length < 1) {
+  throw new Error('Length must be greater than 0');
+  }
+  
+  const buffer = randomBytes(length);
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let password = '';
+  
+  for (let i = 0; i < length; i++) {
+  password += characters.charAt(buffer[i] % characters.length);
+  }
+  
+  return password;
+}
 
 @Injectable()
 export class UserService {
@@ -86,7 +104,9 @@ export class UserService {
   async generateAndSaveChangeEmailToken(data) {
     console.log('data.newEmail:', String(data.newEmail));
 
-    const isEmailVerified: boolean = await this.checkUserEmailVerified(data.nowEmail);
+    const isEmailVerified: boolean = await this.checkUserEmailVerified(
+      data.nowEmail,
+    );
 
     if (isEmailVerified == false) {
       throw new GeneralException(
@@ -1276,8 +1296,10 @@ export class UserService {
     return isValidPassword;
   }
 
-  async credential(data) {
+  async credential(data, createIfNotExist = false) {
     console.log('We are in credential');
+
+    this.user = null
 
     const whereCondition = { isDeleted: false };
     const populateCondition = [
@@ -1298,13 +1320,31 @@ export class UserService {
       selectCondition,
     );
 
-    console.log('this.user:', this.user);
+    if (createIfNotExist == true && !this.user) {
+      console.log("Creating User")
+      this.user = await this.insertAUserByEmail({
+        ...data,
+        google: true,
+        email: data.email,
+        password: generatePassword(16),
+        StorX: {},
+      });
+    }
 
     if (this.user) {
-      const isValidPassword = await this.validateUserPassword(
-        data.password,
-        this.user.password,
-      );
+      let isValidPassword;
+
+      if (createIfNotExist == true) {
+        if (!this.user.google || this.user.google == false) {
+          throw new GeneralException(ErrorTypeEnum.FORBIDDEN, "This email already have an account ( login via email and password )")
+        }
+        isValidPassword = true;
+      } else {
+        isValidPassword = await this.validateUserPassword(
+          data.password,
+          this.user.password,
+        );
+      }
 
       console.log('Is Valid Password:', isValidPassword.toString());
 
@@ -1339,7 +1379,7 @@ export class UserService {
         const response: any = await this.myProfileResponse(this.user);
         response.tokens = tokens;
 
-        return await response;
+        return response;
       } else {
         throw new GeneralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
       }
@@ -1361,7 +1401,7 @@ export class UserService {
         },
       },
     ];
-  
+
     const selectCondition = this.getUserKeys();
 
     this.user = await this.userRepository.findUserByEmail(
@@ -1745,7 +1785,7 @@ export class UserService {
     });
   }
 
-  async insertAUserByEmail(body) {
+  async insertAUserByEmail(body): Promise<UserInterface> {
     const roles: any[] = [];
     const ordinaryUserRole = await this.userRoleRepository.findARoleByName(
       RolesEnum.ORDINARY,
@@ -1758,13 +1798,16 @@ export class UserService {
     const salt = bcrypt.genSaltSync(saltRounds);
 
     const newUser = {
-      email: body.email,
+      ...body,
       password: bcrypt.hashSync(String(body.password), salt),
       StorX: body.StorX || {},
       roles: roles,
       insertDate: new Date(),
       updateDate: new Date(),
     };
+
+    console.log("newUser:", newUser);
+    
 
     const insertedUser = await this.userRepository.insertUser(newUser);
     console.log('User inserted!');
