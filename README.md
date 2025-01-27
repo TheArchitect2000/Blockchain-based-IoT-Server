@@ -267,7 +267,7 @@ apt install git
 Clone the project
 ```
 cd /home
-git clone https://github.com/FidesInnova/iot_node_backend_web_app_source_source.git
+git clone https://github.com/FidesInnova/iot_node_backend_web_app_source.git
 ```
 
 # Step B. Prepare the app
