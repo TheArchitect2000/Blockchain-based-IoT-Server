@@ -44,9 +44,9 @@ function useAuth() {
         try {
             let resp
 
-            if (values.tokenId) {
+            if (values.tokenId || values.accessToken) {
                 try {
-                    resp = await apiSignInGoogle(values.tokenId)
+                    resp = await apiSignInGoogle(values.tokenId || null, values.accessToken || null)
                 } catch (error: any) {
                     return {
                         message: error.response.data.message,

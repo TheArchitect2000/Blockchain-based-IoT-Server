@@ -22,7 +22,7 @@ const FooterContent = () => {
                 <a
                     className="text-gray"
                     target='_blank'
-                    href="https://fidesinnova.io/privacy/"
+                    href="https://privacy.fidesinnova.io/"
                 >
                     Privacy & Policy
                 </a>

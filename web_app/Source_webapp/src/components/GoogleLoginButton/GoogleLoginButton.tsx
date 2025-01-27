@@ -30,42 +30,36 @@ const GoogleLoginButton: React.FC = () => {
         }
     }
 
-    const handleError = () => {
-        console.error('Google Login Failed')
-    }
-
     const login = useGoogleLogin({
         onSuccess: async (tokenResponse) => {
-            console.log(tokenResponse)
-            // fetching userinfo can be done on the client or the server
-            const userInfo = await axios
-                .get('https://www.googleapis.com/oauth2/v3/userinfo', {
-                    headers: {
-                        Authorization: `Bearer ${tokenResponse.access_token}`,
-                    },
-                })
-                .then((res) => res.data)
-
-            console.log(userInfo)
+            console.log('Google Login Success:', tokenResponse)
+            const response = await signIn({
+                accessToken: tokenResponse.access_token,
+            })
+            if (response?.status == 'failed') {
+                toast.push(
+                    <Notification title={response.message} type="danger" />,
+                    {
+                        placement: 'top-center',
+                    }
+                )
+            }
         },
         // flow: 'implicit', // implicit is the default
     })
 
     return (
         <>
-            {/* <GoogleButton style={{ width: '100%' }} onClick={() => login()} /> */}
-            <GoogleLogin
-                type="standard"
-                theme="outline"
-                size="large"
-                width={'100% !important'}
-                containerProps={{
-                    style: {
-                        maxWidth: '2000px',
-                        width: '100% !important',
-                    },
+            <GoogleButton
+                className="google-button"
+                style={{
+                    width: '100%',
+                    borderRadius: '0.375rem',
+                    overflow: 'hidden',
                 }}
-                onSuccess={handleSuccess}
+                label="Continue with Google"
+                type="dark"
+                onClick={() => login()}
             />
         </>
     )

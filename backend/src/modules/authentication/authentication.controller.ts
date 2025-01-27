@@ -23,11 +23,12 @@ import { AuthGuard } from '@nestjs/passport';
 export class AuthenticationController {
   constructor(private authenticationService: AuthenticationService) {}
 
-  
-
   @Post('google/token')
-  async verifyGoogleToken(@Body('tokenId') tokenId: string) {
-    return await this.authenticationService.loginWithGoogle(tokenId)
+  async verifyGoogleToken(
+    @Body('tokenId') tokenId?: string | null,
+    @Body('accessToken') accessToken?: string | null,
+  ) {
+    return await this.authenticationService.loginWithGoogle(tokenId, accessToken);
   }
 
   @Get('google/redirect')

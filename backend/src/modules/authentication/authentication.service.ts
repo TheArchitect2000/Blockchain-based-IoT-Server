@@ -59,13 +59,25 @@ export class AuthenticationService {
     return null;
   }
 
-  async loginWithGoogle(tokenId: string) {
-    const ticket = await this.client.verifyIdToken({
-      idToken: tokenId,
-      audience: process.env.GOOGLE_CLIENT_ID,
-    });
+  async loginWithGoogle(tokenId?: string | null, accessToken?: string | null) {
+    let payload;
+    if (tokenId) {
+      const ticket = await this.client.verifyIdToken({
+        idToken: tokenId,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      });
 
-    const payload = ticket.getPayload();
+      payload = ticket.getPayload();
+    } else {
+      const userInfo = await axios
+        .get('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
+        .then((res) => res.data);
+      payload = userInfo;
+    }
 
     const user = {
       email: payload.email,
@@ -74,10 +86,13 @@ export class AuthenticationService {
       picture: payload.picture,
     };
 
-    return await this.userService.credential({
-      ...user,
-      avatar: user.picture,
-    }, true);
+    return await this.userService.credential(
+      {
+        ...user,
+        avatar: user.picture,
+      },
+      true,
+    );
   }
 
   async login(user: any) {

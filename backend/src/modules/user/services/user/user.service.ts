@@ -36,7 +36,6 @@ import {
 import { MailService } from 'src/modules/utility/services/mail.service';
 import { randomBytes } from 'crypto';
 
-
 const saltRounds = 10;
 
 /**
@@ -47,17 +46,18 @@ export type User = any;
 
 function generatePassword(length: number): string {
   if (length < 1) {
-  throw new Error('Length must be greater than 0');
+    throw new Error('Length must be greater than 0');
   }
-  
+
   const buffer = randomBytes(length);
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const characters =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let password = '';
-  
+
   for (let i = 0; i < length; i++) {
-  password += characters.charAt(buffer[i] % characters.length);
+    password += characters.charAt(buffer[i] % characters.length);
   }
-  
+
   return password;
 }
 
@@ -103,6 +103,15 @@ export class UserService {
 
   async generateAndSaveChangeEmailToken(data) {
     console.log('data.newEmail:', String(data.newEmail));
+
+    await this.findAUserByEmail(data.nowEmail);
+
+    if (this.user.google == true) {
+      throw new GeneralException(
+        ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+        `You can't change the email of an google account.`,
+      );
+    }
 
     const isEmailVerified: boolean = await this.checkUserEmailVerified(
       data.nowEmail,
@@ -278,6 +287,19 @@ export class UserService {
   async sendOTPCodeForVrifyEmail(userEmail: string) {
     console.log('We are in sendOTPCodeForVrifyEmail service ');
 
+    await this.findAUserByEmail(userEmail);
+
+    if (!this.user) {
+      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
+    }
+
+    if (this.user.google == true) {
+      throw new GeneralException(
+        ErrorTypeEnum.CONFLICT,
+        `You can't verify google account.`,
+      );
+    }
+
     this.otp = await this.otpService.findOTPByEmail(
       userEmail,
       OTPTypeEnum.Verify,
@@ -294,15 +316,6 @@ export class UserService {
         ErrorTypeEnum.CONFLICT,
         'Verification email is already sended !',
       );
-    }
-
-    await this.findAUserByEmail(userEmail);
-
-    console.log('this.user', this.user);
-
-    // Check if user found
-    if (!this.user) {
-      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
     }
   }
 
@@ -1299,7 +1312,7 @@ export class UserService {
   async credential(data, createIfNotExist = false) {
     console.log('We are in credential');
 
-    this.user = null
+    this.user = null;
 
     const whereCondition = { isDeleted: false };
     const populateCondition = [
@@ -1321,7 +1334,7 @@ export class UserService {
     );
 
     if (createIfNotExist == true && !this.user) {
-      console.log("Creating User")
+      console.log('Creating User');
       this.user = await this.insertAUserByEmail({
         ...data,
         google: true,
@@ -1329,6 +1342,19 @@ export class UserService {
         password: generatePassword(16),
         StorX: {},
       });
+
+      await this.setActivationStatus(
+        this.user._id,
+        UserActivationStatusEnum.ACTIVE,
+        UserActivationStatusChangeReasonsEnum.ACIVATION_BY_USER_VIA_EMAIL,
+        this.user._id,
+      );
+      await this.setVerificationStatus(
+        this.user._id,
+        UserVerificationStatusEnum.VERIFIED,
+        UserVerificationStatusChangeReasonsEnum.VERIFICATION_BY_EMAIL_VIA_EMAIL,
+        this.user._id,
+      );
     }
 
     if (this.user) {
@@ -1336,7 +1362,10 @@ export class UserService {
 
       if (createIfNotExist == true) {
         if (!this.user.google || this.user.google == false) {
-          throw new GeneralException(ErrorTypeEnum.FORBIDDEN, "This email already have an account ( login via email and password )")
+          throw new GeneralException(
+            ErrorTypeEnum.FORBIDDEN,
+            'This email already have an account ( login via email and password )',
+          );
         }
         isValidPassword = true;
       } else {
@@ -1806,8 +1835,7 @@ export class UserService {
       updateDate: new Date(),
     };
 
-    console.log("newUser:", newUser);
-    
+    console.log('newUser:', newUser);
 
     const insertedUser = await this.userRepository.insertUser(newUser);
     console.log('User inserted!');

@@ -580,26 +580,32 @@ const Profile = ({}: ProfileProps) => {
                                             }
                                             disabled={true}
                                         />
-                                        {(apiData.verificationStatus ==
-                                            'verified' && (
-                                            <Button
-                                                onClick={() =>
-                                                    setEmailModal(true)
-                                                }
-                                                type="button"
-                                                variant="default"
-                                            >
-                                                Change
-                                            </Button>
-                                        )) || (
-                                            <Button
-                                                onClick={requestVerifyAccount}
-                                                type="button"
-                                                variant="solid"
-                                                loading={apiLoading}
-                                            >
-                                                Verify
-                                            </Button>
+                                        {apiData.google == false && (
+                                            <>
+                                                {(apiData.verificationStatus ==
+                                                    'verified' && (
+                                                    <Button
+                                                        onClick={() =>
+                                                            setEmailModal(true)
+                                                        }
+                                                        type="button"
+                                                        variant="default"
+                                                    >
+                                                        Change
+                                                    </Button>
+                                                )) || (
+                                                    <Button
+                                                        onClick={
+                                                            requestVerifyAccount
+                                                        }
+                                                        type="button"
+                                                        variant="solid"
+                                                        loading={apiLoading}
+                                                    >
+                                                        Verify
+                                                    </Button>
+                                                )}
+                                            </>
                                         )}
                                     </section>
                                 </FormRow>
