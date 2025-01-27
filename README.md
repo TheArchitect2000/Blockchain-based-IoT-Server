@@ -68,7 +68,7 @@ sudo certbot certonly --standalone --preferred-challenges http
 After running the command, enter your web app and admin web app domains separated by a space, like this:
 
 ```
-test.com admin.test.com
+test.com admin.test.com panel.test.com
 ```
 
 - After creating certificates, copy `fullchain.pem` and `privkey.pem` files into `/etc/nginx/ssl`.
