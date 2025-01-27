@@ -10,21 +10,18 @@
 <a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
 <a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
 <a href="https://discord.com/invite/NQdM6JGwcs" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://twitter.com/FidesInnova" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
+<a href="https://twitter.com/Fidesinnova" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
 
-To install the back-end and front-end components of the FidesInnova platform, including both the web app and mobile app, you can follow the steps below. These instructions assume that you have a basic understanding of setting up development environments and are familiar with JavaScript, Node.js, and related technologies.
-
-
+To install the back-end and front-end components of the Fidesinnova platform, including both the web app and mobile app, you can follow the steps below. These instructions assume that you have a basic understanding of setting up development environments and are familiar with JavaScript, Node.js, and related technologies.
 
 
-# How to Install BackEnd
 
 
-## 1- Prepare operating system
+# Step A. Prepare operating system
 First of all install Ubuntu 20.04 LTS on your server. 
 
-## 2- Install MongoDB
-### Step 1 — Installing MongoDB
+## A.1. Install MongoDB
+### A.1.1 Installing MongoDB
 Install MongoDB version 4.4
 ```
 curl -fsSL https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
@@ -33,14 +30,14 @@ echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb
 sudo apt update
 sudo apt install -y mongodb-org
 ```
-### Step 2 — Starting the MongoDB Service and Testing the Database
+### A.1.2 Starting the MongoDB Service and Testing the Database
 ```
 sudo systemctl start mongod.service
 sudo systemctl status mongod
 sudo systemctl enable mongod
 ```
 
-### Note: For managing the MongoDB Service you can use the following commands:
+### A.1.3. Note: For managing the MongoDB Service you can use the following commands:
 ```
 sudo systemctl status mongod
 sudo systemctl stop mongod
@@ -50,27 +47,24 @@ sudo systemctl disable mongod
 sudo systemctl enable mongod
 ```
 
-## 3- Install nginx web server 
+## A.2. Install nginx web server 
 ```
 sudo apt update
 sudo apt -y install nginx
 systemctl status nginx
 ```
-### How to Take SSL by Certbot
+## A.3. How to install Certbot
 ```
 sudo apt-get update
 sudo apt-get install certbot
-sudo certbot certonly --standalone --preferred-challenges http
 ```
 
-### Obtain an SSL Certificate
-
+## A.3.1. Obtain an SSL Certificate
 To manually obtain an SSL certificate for your domains without directly modifying your web server configurations, run the following command:
-
 ```
 sudo certbot certonly --standalone --preferred-challenges http
 ```
-
+-  Make sure to create the certificate for domain and all subdomains
 After running the command, enter your web app and admin web app domains separated by a space, like this:
 
 ```
@@ -78,7 +72,7 @@ test.com admin.test.com
 ```
 
 - After creating certificates, copy `fullchain.pem` and `privkey.pem` files into `/etc/nginx/ssl`.
-- Required commands for SSL by Certbot:
+<!-- - Required commands for SSL by Certbot:
   - Check the expiration date of your SSL certificates:
   ```
   sudo certbot certificates
@@ -86,9 +80,9 @@ test.com admin.test.com
   - Renew your SSL certificate:
   ```
   sudo certbot renew
-  ```
+  ``` -->
 
-### Update the `nginx.conf` file in `/etc/nginx/nginx.conf`
+## A.4. Update the `nginx.conf` file in `/etc/nginx/nginx.conf`
 ```
 user www-data;
 worker_processes auto;
@@ -179,7 +173,7 @@ http {
 
 		listen 443 ssl;
 		listen [::]:443 ssl;
-		server_name admin.YOUR_DOMAIN.io;
+		server_name admin.YOUR_DOMAIN.COM;
 
 		index index.html index.htm;
 
@@ -199,15 +193,14 @@ http {
 }
 
 ```
--  Make sure to edit `server_name` to subdomain.yourdomain.com
--  Make sure to create the certificate for domain and all subdomains
+-  Make sure to update and change the `server_name` from admin.YOUR_DOMAIN.COM
   
-### Restart Nginx
+## A.4.1. Restart Nginx
 ```
 systemctl restart nginx
 ```
 
-## 4- Installation of Node.js (Version 20.9.0) and NestJS on Ubuntu
+## A.5. Installation of Node.js (Version 20.9.0) and NestJS on Ubuntu
 ```
 sudo apt update
 sudo apt install nodejs
@@ -217,8 +210,8 @@ n 20.9.0
 npm i -g @nestjs/cli 
 ```
 
-## 5- Configure Firewall 
-### Allow connections
+## A.6. Configure Firewall 
+## A.6.1. Allow connections
 Install `ufw`
 ```
 apt install ufw
@@ -252,47 +245,54 @@ Allow IoT devices to connect to the MQTT web socket through port 8081
 sudo ufw allow 8081
 ```
 
-### Enable firewall 
+## A.6.2. Enable firewall 
 ```
 sudo ufw enable
 ```
-### Check the firewall status
+Check the firewall status
 ```
 sudo ufw status
 ```
-## 6- Clone the project
+## A.7. Install PM2
+```
+sudo npm install -g pm2
+```
+
+
+## A.8. Clone the project
 Install `git`
 ```
 apt install git
 ```
-In the root directory clone the project
+Clone the project
 ```
 cd /home
 git clone https://github.com/FidesInnova/iot_node_backend_web_app_source_source.git
 ```
 
-## 7- Prepare app host configuration
+# Step B. Prepare the app
+## B.1. host configurations
 -  In project root folder, create `.env` file and edit parameters based on your node URL info
 ```
-cd ~/iot_node_backend_web_app_source/backend
+cd /home/iot_node_backend_web_app_source/backend
 sudo nano .env
 ```
 - Inside the `.env` file, past the parameters.
-- Note that your domain must be "panel.NODE_ID". This domain provides access to the node's control and monitoring panel (e.g., "panel.zksensor.tech").
+- Note that your domain must be "panel.YOUR_DOMAIN.COM". This domain provides access to the node's control and monitoring panel (e.g., "panel.zksensor.tech").
 ```
-NODE_ID = "yournode.url" # Set this with your node URL (e.g., "zksensor.tech")
+NODE_ID = "YOUR_DOMAIN.COM" # Set this with your node URL (e.g., "zksensor.tech")
 PORT = 5000
-NODE_NAME = "your_node_name" Set this with your node name (e.g., "zksensor.tech")
+NODE_NAME = "YOUR_NODE_NAME" Set this with your node name (e.g., "zksensor.tech")
 SWAGGER_LOCAL_SERVER = http://localhost:5000
 
-# Rpc Url
+# RPC URL
 RPC_URL = 'https://fidesf1-rpc.fidesinnova.io'
 
 # Smart contract user & pass
 REMIX_USER = 'rmadmin'
 REMIX_PASS = 'rm123'
 
-# Zkp user & pass
+# ZKP user & pass
 ZKP_USER = 'zkpadmin'
 ZKP_PASS = 'zkp123'
 
@@ -362,7 +362,8 @@ SUPER_ADMIN_EMAILS = ["admin.email.@example.com"] # your admins emails that can 
 MULTER_MEDIA_PATH = ./storages/resources
 MULTER_MEDIA_SIZE = 10000000    # 10 MB
 ```
-Update these parameters:
+
+Update these parameters in the file:
 ```
 NODE_NAME = "your-node-name"
 NODE_ID = "your-node-url" # Set this to your node URL
@@ -395,7 +396,7 @@ GOOGLE_BALLBACK_URL=<panel.YOUR-DOMAIN.COM>/app/authentication/google/redirect
 
 ```
 
-## 8- Device Installation Data
+## B.2. Device Installation Data
 
 During the installation process in the mobile app, the following devices will be displayed based on the data provided in the `iot_node_backend_web_app_source/backend/src/data/devices.json` file. Each device is represented by an image, a title, and various parameters.
 
@@ -410,7 +411,7 @@ Parameters specify data points each device supports. These parameters will be pa
 - If a parameter’s `value` is an empty array `[]`, it indicates dynamic data input.
 - If `value` has specific options (e.g., `["Open", "Close"]`), it will show these options in the Blockly dropdown as predefined outputs.
 
-### Example of a Device
+<!-- ### Example of a Device
 ```json
 {
   "fileName": "multisensor.png",
@@ -421,11 +422,11 @@ Parameters specify data points each device supports. These parameters will be pa
     { "label": "Button", "value": ["Pressed", "NOT Pressed"] } // predefined options
   ]
 }
-```
+``` -->
 
 This configuration ensures that each device and its parameters are accessible for service configuration within the Blockly environment.
 
-### A full sample file has been executed (device.json)
+### B.2.1. A full sample file has been executed (device.json)
 ```json
 [
   {
@@ -440,8 +441,8 @@ This configuration ensures that each device and its parameters are accessible fo
   },
   {
     "fileName": "multisensor.png",
-    "title": "Multi Sensor",
-    "type": "MULTI_SENSOR",
+    "title": "MiniSensor",
+    "type": "MINI_SENSOR",
     "parameters": [
       { "label": "Temperature", "value": [] },
       { "label": "Humidity", "value": [] },
@@ -452,7 +453,7 @@ This configuration ensures that each device and its parameters are accessible fo
   },
   {
     "fileName": "zk-multisensor.png",
-    "title": "ZK Multi Sensor",
+    "title": "zk-MultiSensor",
     "type": "ZK_MULTISENSOR",
     "parameters": [
       { "label": "Temperature", "value": [] },
@@ -470,16 +471,12 @@ This configuration ensures that each device and its parameters are accessible fo
 
 ```
 
--------------------------------------------------------------------------------------------------
+# Step C. How to Install WebApp
 
-# How to Install WebApp
-
-### Note:
-  * If you are a Node owner, contact FidesInnova team at info@fidesinnova.io to add your Web App URL address to FidesInnova website.
-## 1- Prepare app configuration
+## C.1. How to Install Panel WebApp
 In project root folder, create `.env` file and edit parameters based on your node URL info
 ```
-cd ~/iot_node_backend_web_app_source/web_app/Source_webapp
+cd /home/iot_node_backend_web_app_source/web_app/Source_webapp
 sudo nano .env
 ```
 Inside the `.env` file, past the parameters.
@@ -487,30 +484,22 @@ Inside the `.env` file, past the parameters.
 *  Enter your node name in `VITE_NODE_NAME` for showing in website
 ```
 VITE_URL='https://panel.YOUR_DOMAIN.COM/app/'
-VITE_NODE_NAME = 'your.node.name'
+VITE_NODE_NAME = 'YOUR_NODE_NAME'
 ```
 In Runner_webapp folder, create `.env` file and edit parameters based on your node URL info
 ```
-cd ~/iot_node_backend_web_app_source/web_app/Runner_webapp
+cd /home/iot_node_backend_web_app_source/web_app/Runner_webapp
 sudo nano .env
 ```
 Inside the `.env` file, past the parameters.
 ```
 PORT=4000
 ```
-## 2- Configure Firewall
-Allow Web App to connect to the server through port 4000 
-```
-sudo ufw allow 4000
-```
 
--------------------------------------------------------------------------------------------------
-
-# How to Install Admin WebApp
-## 1- Prepare app configuration
+## C.2. How to Install Admin WebApp
 In project root folder, create `.env` file and edit parameters based on your node URL info
 ```
-cd ~/iot_node_backend_web_app_source/admin_web_app/Source_webapp
+cd /home/iot_node_backend_web_app_source/admin_web_app/Source_webapp
 sudo nano .env
 ```
 Inside the `.env` file, past the parameters.
@@ -518,71 +507,62 @@ Inside the `.env` file, past the parameters.
 *  Enter your node name in `VITE_NODE_NAME` for showing in website
 ```
 VITE_URL='https://panel.YOUR_DOMAIN.COM/app/'
-VITE_NODE_NAME = 'your.node.name'
+VITE_NODE_NAME = 'YOUR_NODE_NAME'
 ```
 In Runner_webapp folder, create `.env` file and edit parameters based on your node URL info
 ```
-cd ~/iot_node_backend_web_app_source/admin_web_app/Runner_webapp
+cd /home/iot_node_backend_web_app_source/admin_web_app/Runner_webapp
 sudo nano .env
 ```
 Inside the `.env` file, past the parameters.
 ```
 PORT=5000
 ```
-## 2- Configure Firewall
-Allow Admin Web App to connect to the server through port 5000 
-```
-sudo ufw allow 5000
-```
--------------------------------------------------------------------------------------------------
-# Building and Running
 
+## C.3. Building and Running
 To automate the setup and build processes for both the backend and frontend applications, run the `initial_setup.sh` script located in the root directory of the project.
 
-### Steps:
-1. **Set the appropriate permissions** (one-time step):
+### C.3.1. **Set the appropriate permissions** (one-time step):
    Before running the setup script for the first time, ensure it has executable permissions by running the following command in the terminal:
 
    ```
-   cd ~/iot_node_backend_web_app_source/
+   cd /home/iot_node_backend_web_app_source/
    chmod +x initial_setup.sh
    ```
 
-2. **Run the setup script**:
+### C.3.2. **Run the setup script**:
    After setting the permissions, execute the setup script to build the applications and create PM2 services:
 
    ```
-   cd ~/iot_node_backend_web_app_source/
+   cd /home/iot_node_backend_web_app_source/
    ./initial_setup.sh
    ```
 
 This script will handle building both the backend and frontend applications and configuring PM2 services automatically.
 
-## Subsequent Updates
-After the initial setup, you only need to run the update process to keep the applications up to date. Please refer to the `Update Process` section for instructions on how to do this.
-
-
--------------------------------------------------------------------------------------------------
-
-# Update Process
-
+## C.4. Subsequent Updates
+After the initial setup, you only need to run the update process to keep the applications up to date
 To update both the backend and frontend applications, simply run the `update.sh` script located in the root directory of the project. 
 
-### Steps:
-1. **Set the appropriate permissions** (one-time step):
+### C.4.1. **Set the appropriate permissions** (one-time step):
    Before running the update script for the first time, ensure it has executable permissions by running the following command in the terminal:
 
    ```
-   cd ~/iot_node_backend_web_app_source/
+   cd /home/iot_node_backend_web_app_source/
    chmod +x update.sh
    ```
 
-2. **Run the update script**:
+### C.4.2. **Run the update script**:
    After setting the permissions, update the applications automatically by running:
 
    ```
-   cd ~/iot_node_backend_web_app_source/
+   cd /home/iot_node_backend_web_app_source/
    ./update.sh
    ```
 
 This script will handle pulling the latest changes, rebuilding the apps, and restarting services automatically.
+
+
+
+## C.5. Note:
+  * If you are a Node owner, contact Fidesinnova team at info@fidesinnova.io to add your Web App URL address to Fidesinnova website.
