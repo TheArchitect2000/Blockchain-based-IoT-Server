@@ -2,7 +2,7 @@ import classNames from 'classnames'
 import Container from '@/components/shared/Container'
 import { APP_NAME } from '@/constants/app.constant'
 import { PAGE_CONTAINER_GUTTER_X } from '@/constants/theme.constant'
-import packageJson from '@/../package.json';
+import packageJson from '@/../package.json'
 
 export type FooterPageContainerType = 'gutterless' | 'contained'
 
@@ -21,8 +21,8 @@ const FooterContent = () => {
             <div className="">
                 <a
                     className="text-gray"
-                    target='_blank'
-                    href="https://privacy.fidesinnova.io/"
+                    target="_blank"
+                    href="https://fidesinnova.io/Download/docs/privacy-policy.html"
                 >
                     Privacy & Policy
                 </a>

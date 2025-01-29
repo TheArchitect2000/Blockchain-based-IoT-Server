@@ -25,19 +25,18 @@ type SignUpFormSchema = {
 const validationSchema = Yup.object().shape({
     email: Yup.string()
         .email('Invalid email')
-        .required('Please enter your email'),
-    password: Yup.string().required('Please enter your password'),
-    confirmPassword: Yup.string().oneOf(
-        [Yup.ref('password')],
-        'Your passwords do not match'
-    ).required('Please enter your confirm password'),
+        .required('Please enter your email.'),
+    password: Yup.string().required('Please enter your password.'),
+    confirmPassword: Yup.string()
+        .oneOf([Yup.ref('password')], 'Your passwords do not match')
+        .required('Please confirm your password.'),
     captcha: Yup.string(),
 })
 
 const generateCaptcha = () => {
     const characters =
         'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-    const length = 6
+    const length = 8
     let captcha = ''
     for (let i = 0; i < length; i++) {
         captcha += characters.charAt(
@@ -55,12 +54,12 @@ const drawLineThroughText = (canvas: HTMLCanvasElement, text: string) => {
     const y = 25
 
     ctx.clearRect(0, 0, canvas.width, canvas.height)
-    ctx.fillStyle = 'white';
-    ctx.font = '20px Arial'
+    ctx.fillStyle = 'white'
+    ctx.font = '25px Arial'
     ctx.fillText(text, x, y)
 
     const width = ctx.measureText(text).width
-    ctx.strokeStyle = 'black';
+    ctx.strokeStyle = 'black'
     ctx.beginPath()
     ctx.moveTo(x, y - 8)
     ctx.lineTo(x + width, y - 7) // Draw line through text
@@ -92,7 +91,7 @@ const SignUpForm = (props: SignUpFormProps) => {
         const result = await signUp({ email, password })
 
         if (result?.status === 'failed') {
-            setMessage("Error: User with this email exist !")
+            setMessage('Error: User with this email exist !')
         }
 
         setSubmitting(false)
@@ -169,10 +168,10 @@ const SignUpForm = (props: SignUpFormProps) => {
                                     component={PasswordInput}
                                 />
                             </FormItem>
-                            <div className="flex w-full">
+                            <div className="flex justify-between w-full">
                                 <canvas
                                     ref={canvasRef}
-                                    width="175"
+                                    width="200"
                                     height="40"
                                 ></canvas>
                                 <Button
@@ -209,10 +208,6 @@ const SignUpForm = (props: SignUpFormProps) => {
                                     ? 'Creating Account...'
                                     : 'Sign Up'}
                             </Button>
-                            <div className="mt-4 text-center">
-                                <span>Already have an account? </span>
-                                <ActionLink to={signInUrl}>Sign in</ActionLink>
-                            </div>
                         </FormContainer>
                     </Form>
                 )}

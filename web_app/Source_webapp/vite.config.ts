@@ -24,17 +24,15 @@ export default defineConfig({
     ],
     server: {
         https:
-            fileExists('/etc/nginx/ssl/privkey.pem') &&
-            fileExists('/etc/nginx/ssl/fullchain.pem')
+            // fileExists('./localhost-key.pem') && fileExists('./localhost.pem')
+            // fileExists('/etc/nginx/ssl/privkey.pem') && fileExists('/etc/nginx/ssl/fullchain.pem')
+            fileExists('./localhost-key.pem') && fileExists('./localhost.pem')
                 ? {
                       key: fs.readFileSync(
-                          path.resolve(__dirname, '/etc/nginx/ssl/privkey.pem')
+                          path.resolve(__dirname, './localhost-key.pem')
                       ),
                       cert: fs.readFileSync(
-                          path.resolve(
-                              __dirname,
-                              '/etc/nginx/ssl/fullchain.pem'
-                          )
+                          path.resolve(__dirname, './localhost.pem')
                       ),
                   }
                 : false,
