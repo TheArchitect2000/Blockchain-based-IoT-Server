@@ -18,23 +18,26 @@ To install the back-end and front-end components of the Fidesinnova platform, in
 
 
 # Step A. Prepare operating system
-First of all install Ubuntu 20.04 LTS on your server. 
+First of all install Ubuntu 24.04 LTS on your server. 
 
 ## A.1. Install MongoDB
 ### A.1.1 Installing MongoDB
-Install MongoDB version 4.4
+Install MongoDB version 8.0
 ```
-curl -fsSL https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
-apt-key list
-echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
+sudo apt update
+sudo apt upgrade
+sudo apt install -y gnupg curl
+curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc | sudo gpg -o /usr/share/keyrings/mongodb-server-8.0.gpg --dearmor
+echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-8.0.list
 sudo apt update
 sudo apt install -y mongodb-org
 ```
 ### A.1.2 Starting the MongoDB Service and Testing the Database
 ```
+sudo systemctl start mongod
 sudo systemctl start mongod.service
-sudo systemctl status mongod
 sudo systemctl enable mongod
+sudo systemctl status mongod
 ```
 
 ### A.1.3. Note: For managing the MongoDB Service you can use the following commands:
@@ -51,7 +54,7 @@ sudo systemctl enable mongod
 ```
 sudo apt update
 sudo apt -y install nginx
-systemctl status nginx
+sudo systemctl status nginx
 ```
 ## A.3. How to install Certbot
 ```
@@ -68,7 +71,7 @@ sudo certbot certonly --standalone --preferred-challenges http
 After running the command, enter your web app and admin web app domains separated by a space, like this:
 
 ```
-test.com admin.test.com panel.test.com
+panel.test.com admin.test.com
 ```
 
 - After creating certificates, copy `fullchain.pem` and `privkey.pem` files into `/etc/nginx/ssl`.
