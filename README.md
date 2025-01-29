@@ -399,7 +399,7 @@ SUPER_ADMIN_EMAILS = ["admin.email.@example.com"]
 
 GOOGLE_CLIENT_ID=YOUR_GOOGLE_CLIENT_ID
 GOOGLE_CLIENT_SECRET=YOUR_GOOGLE_CLIENT_SECRET
-GOOGLE_CALLBACK_URL=<panel.YOUR-DOMAIN.COM>/app/authentication/google/redirect
+GOOGLE_CALLBACK_URL=panel.YOUR-DOMAIN.COM/app/authentication/google/redirect
 
 ```
 
