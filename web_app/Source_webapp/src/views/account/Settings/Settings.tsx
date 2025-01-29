@@ -28,7 +28,7 @@ const settingsMenu: Record<
     }
 > = {
     profile: { label: 'Profile', path: 'profile', element: <Profile /> },
-    /* wallet: { label: 'Wallet', path: 'wallet', element: <Wallet /> }, */
+    wallet: { label: 'Wallet', path: 'wallet', element: <Wallet /> },
     address: { label: 'Address', path: 'address', element: <Address /> },
     /* verify: { label: 'Verify', path: 'verify' }, */
     subscriptions: {

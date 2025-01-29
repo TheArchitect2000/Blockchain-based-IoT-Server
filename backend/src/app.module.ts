@@ -33,26 +33,8 @@ import { BuildingModule } from './modules/building/building.module';
       isGlobal: true,
       load: [databaseConfig, multerConfig],
     }),
-    MongooseModule.forRoot(
-      process.env.MONGO_CONNECTION,
-      // `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_CONNECTION}`
-      /* {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        useCreateIndex: true,
-        useFindAndModify: false,
-      } */
-      /* {
-        connectionName: 'appDb',
-      } */
-    ),
-    /* MongooseModule.forRoot(
-      process.env.MONGO_CONNECTION_PANEL,
-      // 'mongodb+srv://<username>:<passowrd>@cluster0-igk.mongodb.net/WildLife?retryWrites=true&w=majority'
-      {
-        connectionName: 'panelDb',
-      },
-    ), */
+    MongooseModule.forRoot(process.env.MONGO_CONNECTION),
+
     ServeStaticModule.forRoot({
       rootPath: './uploads',
       serveRoot: '/app/uploads',

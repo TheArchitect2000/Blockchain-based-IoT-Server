@@ -49,9 +49,9 @@ export class MailService {
     // const url = `example.com/auth/confirm?token=${token}`;
     const url = 'https://programming.cpvanda.com/auth/confirm?token=${token}';
 
-    if (await this.isUserUnsubscribed(user.email)) {
+    /* if (await this.isUserUnsubscribed(user.email)) {
       return false;
-    }
+    } */
 
     const userToken = await this.getTokenWithUserEmail(user.email);
 
@@ -117,9 +117,9 @@ export class MailService {
     // const url = `example.com/auth/confirm?token=${token}`;
     const url = 'https://programming.cpvanda.com/auth/confirm?token=${token}';
 
-    if (await this.isUserUnsubscribed(user.email)) {
+    /* if (await this.isUserUnsubscribed(user.email)) {
       return false;
-    }
+    } */
 
     const userToken = await this.getTokenWithUserEmail(user.email);
 
@@ -169,9 +169,9 @@ export class MailService {
 
     console.log('email url: ', url);
 
-    if (await this.isUserUnsubscribed(email)) {
+    /* if (await this.isUserUnsubscribed(email)) {
       return false;
-    }
+    } */
 
     const userToken = await this.getTokenWithUserEmail(email);
 
@@ -238,9 +238,9 @@ export class MailService {
     try {
       console.log('Sending email');
 
-      if (await this.isUserUnsubscribed(email)) {
+      /* if (await this.isUserUnsubscribed(email)) {
         return false;
-      }
+      } */
 
       const userToken = await this.getTokenWithUserEmail(email);
 
@@ -293,9 +293,9 @@ export class MailService {
 
     console.log('url: ', url);
 
-    if (await this.isUserUnsubscribed(email)) {
+    /* if (await this.isUserUnsubscribed(email)) {
       return false;
-    }
+    } */
 
     const userToken = await this.getTokenWithUserEmail(email);
 
@@ -364,9 +364,9 @@ export class MailService {
     );
 
     if (process.env.NOTIFICATION_BY_MAIL == 'enabled') {
-      if (await this.isUserUnsubscribed(email)) {
+      /* if (await this.isUserUnsubscribed(email)) {
         return false;
-      }
+      } */
 
       const userToken = await this.getTokenWithUserEmail(email);
 

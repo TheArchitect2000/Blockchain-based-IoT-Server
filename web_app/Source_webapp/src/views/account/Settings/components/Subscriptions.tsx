@@ -114,8 +114,8 @@ export default function Subscriptions() {
                     title="Email"
                     desc={
                         emailSubscription
-                            ? 'You are currently subscribed to our emails!'
-                            : 'You have not subscribed to our emails!'
+                            ? 'You are subscribed to our email list!'
+                            : 'You are NOT subscribed to our email list!'
                     }
                     color={emailSubscription ? '00aa00' : 'aa0000'}
                     subscription={emailSubscription}

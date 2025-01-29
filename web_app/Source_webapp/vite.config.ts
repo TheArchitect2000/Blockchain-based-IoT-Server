@@ -26,13 +26,13 @@ export default defineConfig({
         https:
             // fileExists('./localhost-key.pem') && fileExists('./localhost.pem')
             // fileExists('/etc/nginx/ssl/privkey.pem') && fileExists('/etc/nginx/ssl/fullchain.pem')
-            fileExists('./localhost-key.pem') && fileExists('./localhost.pem')
+            fileExists('/etc/nginx/ssl/privkey.pem') && fileExists('/etc/nginx/ssl/fullchain.pem')
                 ? {
                       key: fs.readFileSync(
-                          path.resolve(__dirname, './localhost-key.pem')
+                          path.resolve(__dirname, '/etc/nginx/ssl/privkey.pem')
                       ),
                       cert: fs.readFileSync(
-                          path.resolve(__dirname, './localhost.pem')
+                          path.resolve(__dirname, '/etc/nginx/ssl/fullchain.pem')
                       ),
                   }
                 : false,
