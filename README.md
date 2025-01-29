@@ -304,7 +304,7 @@ ADMIN_WALLET_PRIVATE_KEY = 'YOUR_ADMIN_WALLET_PRIVATE_KEY'
 
 GOOGLE_CLIENT_ID=990952057079-r35cambumvgrl8pqcvegi676gplmilq2.apps.googleusercontent.com
 GOOGLE_CLIENT_SECRET=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
-GOOGLE_BALLBACK_URL=<panel.YOUR-DOMAIN.COM>/app/authentication/google/redirect
+GOOGLE_CALLBACK_URL=<panel.YOUR-DOMAIN.COM>/app/authentication/google/redirect
 
 # Server Configuration
 HOST_PROTOCOL = 'https://'
@@ -394,7 +394,7 @@ SUPER_ADMIN_EMAILS = ["admin.email.@example.com"]
 
 GOOGLE_CLIENT_ID=990952057079-r35cambumvgrl8pqcvegi676gplmilq2.apps.googleusercontent.com
 GOOGLE_CLIENT_SECRET=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
-GOOGLE_BALLBACK_URL=<panel.YOUR-DOMAIN.COM>/app/authentication/google/redirect
+GOOGLE_CALLBACK_URL=<panel.YOUR-DOMAIN.COM>/app/authentication/google/redirect
 
 ```
 
