@@ -362,8 +362,10 @@ SUPER_ADMIN_EMAILS = ["admin.email.@example.com"] # your admins emails that can 
 MULTER_MEDIA_PATH = ./storages/resources
 MULTER_MEDIA_SIZE = 10000000    # 10 MB
 ```
+- Create two accounts: one for the admin and one for the faucet. After creation, send only the wallet addresses (excluding private keys) to info@fidesinnova.io. FidesInnova will transfer some tokens to both of your accounts. Additionally, the admin account will be authorized on the network. The faucet account can be used to distribute tokens to your users, while the admin account will be used to manage operations on the global network.
+Never share your account’s private key with anyone.
 
-Update these parameters in the file:
+- Update these parameters in the file:
 ```
 NODE_NAME = "your-node-name"
 NODE_ID = "your-node-url" # Set this to your node URL
