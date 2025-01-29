@@ -200,7 +200,7 @@ http {
   
 ## A.4.1. Restart Nginx
 ```
-systemctl restart nginx
+sudo systemctl restart nginx
 ```
 
 ## A.5. Installation of Node.js (Version 20.9.0) and NestJS on Ubuntu
@@ -210,14 +210,14 @@ sudo apt install nodejs
 sudo apt install npm
 sudo npm install -g n
 n 20.9.0
-npm i -g @nestjs/cli 
+sudo npm i -g @nestjs/cli 
 ```
 
 ## A.6. Configure Firewall 
 ## A.6.1. Allow connections
 Install `ufw`
 ```
-apt install ufw
+sudo apt install ufw
 ```
 Allow OpenSSH connection
 ```
@@ -265,12 +265,12 @@ sudo npm install -g pm2
 ## A.8. Clone the project
 Install `git`
 ```
-apt install git
+sudo apt install git
 ```
 Clone the project
 ```
 cd /home
-git clone https://github.com/FidesInnova/iot_node_backend_web_app_source.git
+sudo git clone https://github.com/FidesInnova/iot_node_backend_web_app_source.git
 ```
 
 # Step B. Prepare the app
@@ -305,9 +305,9 @@ FAUCET_WALLET_PRIVATE_KEY = 'YOUR_FAUCET_WALLET_PRIVATE_KEY'
 # Admin Wallet Private Key
 ADMIN_WALLET_PRIVATE_KEY = 'YOUR_ADMIN_WALLET_PRIVATE_KEY'
 
-GOOGLE_CLIENT_ID=990952057079-r35cambumvgrl8pqcvegi676gplmilq2.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=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
-GOOGLE_CALLBACK_URL=<panel.YOUR-DOMAIN.COM>/app/authentication/google/redirect
+GOOGLE_CLIENT_ID=YOUR_GOOGLE_CLIENT_ID
+GOOGLE_CLIENT_SECRET=YOUR_GOOGLE_CLIENT_SECRET
+GOOGLE_CALLBACK_URL=panel.YOUR-DOMAIN.COM/app/authentication/google/redirect
 
 # Server Configuration
 HOST_PROTOCOL = 'https://'
@@ -397,8 +397,8 @@ RPC_URL = 'your-rpc-url'
 
 SUPER_ADMIN_EMAILS = ["admin.email.@example.com"]
 
-GOOGLE_CLIENT_ID=990952057079-r35cambumvgrl8pqcvegi676gplmilq2.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=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
+GOOGLE_CLIENT_ID=YOUR_GOOGLE_CLIENT_ID
+GOOGLE_CLIENT_SECRET=YOUR_GOOGLE_CLIENT_SECRET
 GOOGLE_CALLBACK_URL=<panel.YOUR-DOMAIN.COM>/app/authentication/google/redirect
 
 ```
@@ -534,7 +534,7 @@ To automate the setup and build processes for both the backend and frontend appl
 
    ```
    cd /home/iot_node_backend_web_app_source/
-   chmod +x initial_setup.sh
+   sudo chmod +x initial_setup.sh
    ```
 
 ### C.3.2. **Run the setup script**:
@@ -542,7 +542,7 @@ To automate the setup and build processes for both the backend and frontend appl
 
    ```
    cd /home/iot_node_backend_web_app_source/
-   ./initial_setup.sh
+   sudo ./initial_setup.sh
    ```
 
 This script will handle building both the backend and frontend applications and configuring PM2 services automatically.
@@ -556,7 +556,7 @@ To update both the backend and frontend applications, simply run the `update.sh`
 
    ```
    cd /home/iot_node_backend_web_app_source/
-   chmod +x update.sh
+   sudo chmod +x update.sh
    ```
 
 ### C.4.2. **Run the update script**:
@@ -564,7 +564,7 @@ To update both the backend and frontend applications, simply run the `update.sh`
 
    ```
    cd /home/iot_node_backend_web_app_source/
-   ./update.sh
+   sudo ./update.sh
    ```
 
 This script will handle pulling the latest changes, rebuilding the apps, and restarting services automatically.
