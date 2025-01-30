@@ -462,9 +462,9 @@ This configuration ensures that each device and its parameters are accessible fo
 
 ```
 
-# Step C. How to Install WebApp
+# Step C. How to Install Web App
 
-## C.1. How to Install Panel WebApp for users
+## C.1. How to Install Panel Web App for users
 In Source_webapp folder, create `.env` file and update and enter the parameters.
 ```
 cd /home/iot_node_backend_web_app_source/web_app/Source_webapp
@@ -486,7 +486,7 @@ PORT=4000
 ```
 Then save and close the `.env`
 
-## C.2. How to Install Admin WebApp for administrator
+## C.2. How to Install Admin Web App for administrator
 In Source_webapp folder, create `.env` file and update and enter the parameters.
 ```
 cd /home/iot_node_backend_web_app_source/admin_web_app/Source_webapp
