@@ -172,8 +172,8 @@ http {
 	server {
 
 
-                ssl_certificate  ssl/fullchainadmin.pem;
-                ssl_certificate_key ssl/privkeyadmin.pem;
+		ssl_certificate  /etc/nginx/ssl/fullchain.pem;
+		ssl_certificate_key /etc/nginx/ssl/privkey.pem;
 
 		listen 443 ssl;
 		listen [::]:443 ssl;
