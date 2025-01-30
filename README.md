@@ -76,10 +76,12 @@ panel.YOUR_DOMAIN.COM admin.YOUR_DOMAIN.COM
 - The 'certbot' command generates `fullchain.pem` and `privkey.pem` in either `/etc/letsencrypt/admin.YOURDOMAIN.COM` or `/etc/letsencrypt/panel.YOURDOMAIN.COM`. Next, create the `ssl` folder inside `/etc/nginx` and copy both `fullchain.pem` and `privkey.pem` into `/etc/nginx/ssl`.
  ```
 sudo cp /etc/letsencrypt/live/panel.YOUR_DOMAIN.COM/fullchain.pem /etc/nginx/ssl/
+sudo cp /etc/letsencrypt/live/panel.YOUR_DOMAIN.COM/privkey.pem /etc/nginx/ssl/
 ```
 or
 ```
-sudo cp /etc/letsencrypt/live/panel.YOUR_DOMAIN.COM/privkey.pem /etc/nginx/ssl/
+sudo cp /etc/letsencrypt/live/admin.YOUR_DOMAIN.COM/fullchain.pem /etc/nginx/ssl/
+sudo cp /etc/letsencrypt/live/admin.YOUR_DOMAIN.COM/privkey.pem /etc/nginx/ssl/
 ```
 <!-- - Required commands for SSL by Certbot:
   - Check the expiration date of your SSL certificates:
