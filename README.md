@@ -286,7 +286,7 @@ sudo nano .env
 ```
 NODE_ID = "YOUR_DOMAIN.COM" # Set this with your node URL (e.g., "zksensor.tech")
 PORT = 5000
-NODE_NAME = "YOUR_NODE_NAME" Set this with your node name (e.g., "zksensor.tech")
+NODE_NAME = "YOUR_NODE_NAME" Set this with your node name (e.g., "zksensor")
 SWAGGER_LOCAL_SERVER = http://localhost:5000
 
 # RPC URL
@@ -482,27 +482,26 @@ This configuration ensures that each device and its parameters are accessible fo
 # Step C. How to Install WebApp
 
 ## C.1. How to Install Panel WebApp
-In project root folder, create `.env` file and edit parameters based on your node URL info
+In Source_webapp folder, create `.env` file and enter the parameters.
 ```
 cd /home/iot_node_backend_web_app_source/web_app/Source_webapp
 sudo nano .env
 ```
-Inside the `.env` file, past the parameters.
-*  Make sure to add `/app/` to the end of the `VITE_URL` path!
-*  Enter your node name in `VITE_NODE_NAME` for showing in website
 ```
 VITE_URL='https://panel.YOUR_DOMAIN.COM/app/'
 VITE_NODE_NAME = 'YOUR_NODE_NAME'
 ```
-In Runner_webapp folder, create `.env` file and edit parameters based on your node URL info
+Then save and close the `.env`
+
+In Runner_webapp folder, create `.env` file and enter the parameters.
 ```
 cd /home/iot_node_backend_web_app_source/web_app/Runner_webapp
 sudo nano .env
 ```
-Inside the `.env` file, past the parameters.
 ```
 PORT=4000
 ```
+Then save and close the `.env`
 
 ## C.2. How to Install Admin WebApp
 In project root folder, create `.env` file and edit parameters based on your node URL info
