@@ -210,7 +210,7 @@ sudo apt update
 sudo apt install nodejs
 sudo apt install npm
 sudo npm install -g n
-n 20.9.0
+sudo n 20.9.0
 sudo npm i -g @nestjs/cli 
 ```
 
