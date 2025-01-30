@@ -511,7 +511,7 @@ Then save and close the `.env`
 ## C.3. Building and Running
 To automate the setup and build processes for both the backend and frontend applications, run the `initial_setup.sh` script located in the root directory of the project.
 
-### C.3.1. **Set the appropriate permissions** (one-time step):
+### C.3.1. **Set the appropriate permissions** (one-time step)
    Before running the setup script for the first time, ensure it has executable permissions by running the following command in the terminal:
 
    ```
@@ -519,7 +519,7 @@ To automate the setup and build processes for both the backend and frontend appl
    sudo chmod +x initial_setup.sh
    ```
 
-### C.3.2. **Run the setup script**:
+### C.3.2. **Run the setup script**
    After setting the permissions, execute the setup script to build the applications and create PM2 services:
 
    ```
@@ -533,7 +533,7 @@ This script will handle building both the backend and frontend applications and 
 After the initial setup, you only need to run the update process to keep the applications up to date
 To update both the backend and frontend applications, simply run the `update.sh` script located in the root directory of the project. 
 
-### C.4.1. **Set the appropriate permissions** (one-time step):
+### C.4.1. **Set the appropriate permissions** (one-time step)
    Before running the update script for the first time, ensure it has executable permissions by running the following command in the terminal:
 
    ```
@@ -541,7 +541,7 @@ To update both the backend and frontend applications, simply run the `update.sh`
    sudo chmod +x update.sh
    ```
 
-### C.4.2. **Run the update script**:
+### C.4.2. **Run the update script**
    After setting the permissions, update the applications automatically by running:
 
    ```
@@ -551,5 +551,5 @@ To update both the backend and frontend applications, simply run the `update.sh`
 Choose option 1 to let the script handles pulling the latest changes, rebuilding the apps, and restarting services automatically.
 
 
-## C.5. Note:
+## C.5. Note
   * If you are a Node owner, contact Fidesinnova team at info@fidesinnova.io to add your Web App URL address to Fidesinnova website.
