@@ -85,7 +85,8 @@ panel.test.com admin.test.com
   sudo certbot renew
   ``` -->
 
-## A.4. Update the `nginx.conf` file in `/etc/nginx/nginx.conf`
+## A.4. Update the `nginx.conf` file
+- Replace the following configuration in your nginx.conf file located at /etc/nginx/nginx.conf.
 ```
 user www-data;
 worker_processes auto;
@@ -197,6 +198,7 @@ http {
 
 ```
 -  Make sure to update and change the `server_name` from admin.YOUR_DOMAIN.COM
+-  Make sure to update and change the `server_name` from panel.YOUR_DOMAIN.COM
   
 ## A.4.1. Restart Nginx
 ```
