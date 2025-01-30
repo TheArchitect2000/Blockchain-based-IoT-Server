@@ -3,7 +3,7 @@
 echo "What do you want to update?"
 echo "1) All"
 echo "2) Admin Web App"
-echo "3) Web App"
+echo "3) Panel Web App"
 echo "4) Backend"
 read -p "Enter your choice (1/2/3/4): " choice
 
