@@ -358,14 +358,13 @@ Never share your account’s private key with anyone.
 
 - Update these parameters in the file:
 ```
-NODE_NAME = "your-node-name"
 NODE_ID = "your-node-url" # Set this to your node URL
-
-HOST_NAME_OR_IP = 'panel.YOUR-DOMAIN.COM'
+NODE_NAME = "your-node-name"
 
 FAUCET_WALLET_PRIVATE_KEY = "your-faucet-wallet-private-key"
 ADMIN_WALLET_PRIVATE_KEY = 'your-admin-wallet-private-key'
 
+HOST_NAME_OR_IP = 'panel.YOUR-DOMAIN.COM'
 
 MAIL_HOST = YOUR-HOST-MAIL-SERVER-PROVIDER
 MAIL_PORT = 465
@@ -374,12 +373,6 @@ MAIL_PASSWORD = YOUR-MAIL-SERVER-PASSWORD
 MAIL_FROM = noreply@YOUR_-DOMAIN.COM
 
 THEME_LOGO = 'your-logo-url'
-
-REMIX_USER = 'your-remix-username'
-REMIX_PASS = 'your-remix-password'
-
-ZKP_USER = 'your-zkp-username'
-ZKP_PASS = 'your-zkp-password'
 
 RPC_URL = 'your-rpc-url'
 
