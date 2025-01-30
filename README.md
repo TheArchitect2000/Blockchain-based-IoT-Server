@@ -268,7 +268,7 @@ sudo git clone https://github.com/FidesInnova/iot_node_backend_web_app_source.gi
 cd /home/iot_node_backend_web_app_source/backend
 sudo nano .env
 ```
-- Inside the `.env` file, past the parameters.
+- Inside the `.env` file, paste the following parameters.
 - Note that your domain must be "panel.YOUR_DOMAIN.COM". This domain provides access to the node's control and monitoring panel (e.g., "panel.zksensor.tech").
 ```
 NODE_ID = "YOUR_DOMAIN.COM" # Set this with your node URL (e.g., "zksensor.tech")
