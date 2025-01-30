@@ -144,7 +144,7 @@ http {
 		listen [::]:443 ssl;
 
 		index index.html index.htm;
-		server_name panel.YOUR_DOMAIN.io;
+		server_name panel.YOUR_DOMAIN.COM;
 
 		root /var/www/html/wikifidesdoc/site;
 
