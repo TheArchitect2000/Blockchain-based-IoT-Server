@@ -71,10 +71,9 @@ sudo certbot certonly --standalone --preferred-challenges http
 After running the command, enter your web app and admin web app domains separated by a space, like this:
 
 ```
-panel.test.com admin.test.com
+panel.YOUR_DOMAIN.COM admin.YOUR_DOMAIN.COM
 ```
-
-- After creating certificates, copy `fullchain.pem` and `privkey.pem` files into `/etc/nginx/ssl`.
+This command generates `fullchain.pem` and `privkey.pem` in either `/etc/letsencrypt/admin.YOURDOMAIN.COM` or `/etc/letsencrypt/panel.YOURDOMAIN.COM`. Next, create an ssl folder inside `/etc/nginx` and copy both `fullchain.pem` and `privkey.pem` into `/etc/nginx/ssl`.
 <!-- - Required commands for SSL by Certbot:
   - Check the expiration date of your SSL certificates:
   ```
