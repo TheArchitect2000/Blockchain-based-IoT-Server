@@ -448,7 +448,6 @@ export class UserController {
 
     if (emails.includes(body.email)) {
       console.log('Included');
-
       const adminRes = await this.userService.makeUserAdmin(body.email, [
         'super',
       ]);

@@ -27,8 +27,9 @@ export class AuthenticationController {
   async verifyGoogleToken(
     @Body('tokenId') tokenId?: string | null,
     @Body('accessToken') accessToken?: string | null,
+    @Body('admin') admin: boolean = false,
   ) {
-    return await this.authenticationService.loginWithGoogle(tokenId, accessToken);
+    return await this.authenticationService.loginWithGoogle(tokenId, accessToken, admin);
   }
 
   @Get('google/redirect')

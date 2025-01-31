@@ -1364,7 +1364,7 @@ export class UserService {
         if (!this.user.google || this.user.google == false) {
           throw new GeneralException(
             ErrorTypeEnum.FORBIDDEN,
-            'This email already have an account ( login via email and password )',
+            'This email already have an account ( try login via email and password )',
           );
         }
         isValidPassword = true;
@@ -1417,7 +1417,7 @@ export class UserService {
     }
   }
 
-  async adminCredential(data) {
+  async adminCredential(data, isGoogle = false) {
     console.log('We are in adminCredential');
 
     const whereCondition = { isDeleted: false };
@@ -1449,10 +1449,23 @@ export class UserService {
         throw new GeneralException(ErrorTypeEnum.FORBIDDEN, 'Access Denied.');
       }
 
-      const isValidPassword = await this.validateUserPassword(
-        data.password,
-        this.user.password,
-      );
+      let isValidPassword;
+
+      if (isGoogle == true) {
+        if (!this.user.google || this.user.google == false) {
+          throw new GeneralException(
+            ErrorTypeEnum.FORBIDDEN,
+            'This email already have an account ( try login via email and password )',
+          );
+        }
+        isValidPassword = true;
+      } else {
+        isValidPassword = await this.validateUserPassword(
+          data.password,
+          this.user.password,
+        );
+      }
+
 
       if (isValidPassword) {
         const payload = { email: this.user.email, sub: this.user._id };

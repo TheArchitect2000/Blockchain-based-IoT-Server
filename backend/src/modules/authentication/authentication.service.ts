@@ -59,7 +59,7 @@ export class AuthenticationService {
     return null;
   }
 
-  async loginWithGoogle(tokenId?: string | null, accessToken?: string | null) {
+  async loginWithGoogle(tokenId?: string | null, accessToken?: string | null, isAdmin = false) {
     let payload;
     if (tokenId) {
       const ticket = await this.client.verifyIdToken({
@@ -84,6 +84,16 @@ export class AuthenticationService {
       lastName: payload.family_name,
       picture: payload.picture,
     };
+
+    if (isAdmin) {
+      return await this.userService.adminCredential(
+        {
+          ...user,
+          avatar: user.picture,
+        },
+        true,
+      );
+    }
 
     return await this.userService.credential(
       {
