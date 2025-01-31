@@ -74,7 +74,7 @@ panel.YOUR_DOMAIN.COM admin.YOUR_DOMAIN.COM
 - The 'certbot' command generates `fullchain.pem` and `privkey.pem` in either `/etc/letsencrypt/admin.YOURDOMAIN.COM` or `/etc/letsencrypt/panel.YOURDOMAIN.COM`.
 - Create the `ssl` folder inside `/etc/nginx` 
 ```
-sudo mkdir /etc/nginx/sll
+sudo mkdir /etc/nginx/ssl
 ```
 - Copy both `fullchain.pem` and `privkey.pem` into `/etc/nginx/ssl`. 
 ```
