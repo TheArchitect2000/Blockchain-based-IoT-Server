@@ -227,7 +227,6 @@ sudo npm i -g @nestjs/cli
 ```
 
 ## A.6. Configure Firewall 
-## A.6.1. Allow connections
 - Install `ufw`, allow OpenSSH connection, allow nginx connection. Then, allow ports 3000, 4000, and 5000 on the server for Mobile App, Web App, and Admin Web App, respectively. Also, open ports 8883 and 8081 to let IoT devices to connect to the MQTT broker and the web socket, respectively.
 ```
 sudo apt install ufw
@@ -239,7 +238,7 @@ sudo ufw allow 5000
 sudo ufw allow 8883
 sudo ufw allow 8081
 ```
-## A.6.2. Enable firewall 
+
 - Enable the firewall
 ```
 sudo ufw enable
