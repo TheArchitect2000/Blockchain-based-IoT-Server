@@ -36,6 +36,23 @@ export async function apiSignOut() {
     })
 }
 
+export async function apiAdminSignInGoogle(
+    tokenId?: string | null,
+    accessToken?: string | null
+) {
+    const res = ApiService.fetchData<SignInResponse>({
+        url: import.meta.env.VITE_URL + 'authentication/google/token',
+        method: 'post',
+        data: {
+            accessToken: accessToken,
+            tokenId: tokenId,
+            admin: true
+        },
+    })
+
+    return res
+}
+
 export async function apiForgotPassword(data: ForgotPassword) {
     return ApiService.fetchData({
         url: '/forgot-password',

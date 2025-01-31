@@ -1,4 +1,4 @@
-import { apiSignIn, apiSignOut, apiSignUp } from '@/services/AuthService'
+import { apiSignIn, apiAdminSignInGoogle, apiSignOut, apiSignUp } from '@/services/AuthService'
 import {
     setUser,
     signInSuccess,
@@ -11,7 +11,6 @@ import { REDIRECT_URL_KEY } from '@/constants/app.constant'
 import { useNavigate } from 'react-router-dom'
 import useQuery from './useQuery'
 import type { SignInCredential, SignUpCredential } from '@/@types/auth'
-import { apiGetUserProfileByEmail } from '@/services/UserApi'
 
 type Status = 'success' | 'failed' | 'permission'
 
@@ -34,7 +33,20 @@ function useAuth() {
         | undefined
     > => {
         try {
-            const resp = await apiSignIn(values)
+            let resp
+
+            if (values.tokenId || values.accessToken) {
+                try {
+                    resp = await apiAdminSignInGoogle(values.tokenId || null, values.accessToken || null)
+                } catch (error: any) {
+                    return {
+                        message: error.response.data.message,
+                        status: 'failed',
+                    }
+                }
+            } else {
+                resp = await apiSignIn(values)
+            }
 
             if (resp.data) {
                 const token = resp.data.data.tokens.accessToken

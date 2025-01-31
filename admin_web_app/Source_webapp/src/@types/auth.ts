@@ -1,7 +1,10 @@
 export type SignInCredential = {
-    email: string
-    password: string
+    email?: string
+    password?: string
+    tokenId?: string
+    accessToken?: string
 }
+
 
 export type SignInResponse = {
     statusCode: number
