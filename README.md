@@ -265,7 +265,18 @@ sudo git clone https://github.com/FidesInnova/iot_node_backend_web_app_source.gi
 ```
 
 # Step B. Prepare the app
-## B.1. Backend configurations
+## B.1. Generate two JWT secret keys  
+- Generate an access secret key (256-bit / 32-byte)
+```
+openssl rand -hex 32
+```
+
+- Generate a refresh secret key (256-bit / 32-byte)
+```
+openssl rand -hex 32
+```
+
+## B.2. Backend configurations
 - In project root folder, create `.env` file and edit parameters based on your node URL info
 ```
 cd /home/iot_node_backend_web_app_source/backend
@@ -275,13 +286,13 @@ sudo nano .env
 - Inside the `.env` file, paste the following parameters. Note that your user web app URL is "panel.YOUR_DOMAIN.COM"  (e.g., "panel.zksensor.tech").
 
 ```
-# Set this with your node URL (e.g., "zksensor.tech")
-NODE_ID = "YOUR_DOMAIN.COM" 
+# Set this with your node URL (e.g., 'zksensor.tech')
+NODE_ID = 'YOUR_DOMAIN.COM' 
 
 PORT = 5000
 
-# Set this with your node name (e.g., "zkSensor")
-NODE_NAME = "YOUR_NODE_NAME"
+# Set this with your node name (e.g., 'zkSensor')
+NODE_NAME = 'YOUR_NODE_NAME'
 
 SWAGGER_LOCAL_SERVER = http://localhost:5000
 
@@ -293,6 +304,11 @@ FAUCET_WALLET_PRIVATE_KEY = 'YOUR_FAUCET_WALLET_PRIVATE_KEY'
 
 # Admin Wallet Private Key
 ADMIN_WALLET_PRIVATE_KEY = 'YOUR_ADMIN_WALLET_PRIVATE_KEY'
+
+# Google OAuth Configuration 
+GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID'
+GOOGLE_CLIENT_SECRET = 'YOUR_GOOGLE_CLIENT_SECRET'
+GOOGLE_CALLBACK_URL = 'panel.YOUR-DOMAIN.COM/app/authentication/google/redirect'
 
 # Server Configuration
 HOST_PROTOCOL = 'https://'
@@ -317,37 +333,39 @@ MONGO_CONNECTION = mongodb://127.0.0.1:27017/fidesinnova
 NOTIFICATION_BY_MAIL = 'enabled'
 NOTIFICATION_BY_NOTIFICATION = 'enabled'
 
-# Mail Server Configuration
-MAIL_HOST = YOUR_HOST_MAIL_SERVER_PROVIDER
+# Email Server Configuration
+MAIL_HOST = 'YOUR_HOST_MAIL_SERVER_PROVIDER'
 # Please check your email server’s mail port number by configuring an email client on your mobile or computer to confirm. On some servers, it may be 587 or a different port.
 MAIL_PORT = 465
-MAIL_USER = noreply@YOUR_DOMAIN.COM
-MAIL_PASSWORD = YOUR_MAIL_SERVER_PASSWORD
-MAIL_FROM = noreply@YOUR_DOMAIN.COM
+MAIL_USER = 'noreply@YOUR_DOMAIN.COM'
+MAIL_PASSWORD = 'YOUR_MAIL_SERVER_PASSWORD'
+MAIL_FROM = 'noreply@YOUR_DOMAIN.COM'
 # optional
 MAIL_TRANSPORT = smtp://${MAIL_USER}:${MAIL_PASSWORD}@${MAIL_HOST}
 
 # Mobile theme ( hex color code without # )
-THEME_LOGO = "www.example.com/image.png"
-THEME_TEXT = "ffffff"
-THEME_BACKGROUND = "212838"
-THEME_BOX = "2d355c"
-THEME_BUTTON = "4e46e7"
+THEME_LOGO = 'YOUR_LOGO_URL'
+THEME_TEXT = 'ffffff'
+THEME_BACKGROUND = '212838'
+THEME_BOX = '2d355c'
+THEME_BUTTON = '4e46e7'
 
 ACCESS_TOKEN_ISSUER = 'https://fidesinnova.io'
 ACCESS_TOKEN_EXPIRATION_TIME = 1200000000     # Miliseconds
-ACCESS_TOKEN_SECRET_KEY = '?#6KRVytq*zn5zhWWLHksL$MJj7Krkan^&^^BzZD?fqUjs4mhWNExZZ8S7CPXXkPGYMEzj2y$bK7@TWwYaja=7j^+ccFqG8#EpM4&4ppmST?A7?F_a3bq=m6B&CwRrb3'
+ACCESS_TOKEN_SECRET_KEY = 'YOUR_ACCESS_SECRET_KEY'
 # ACCESS_TOKEN_ALGORITHM = 'PS384'
 ACCESS_TOKEN_ALGORITHM = 'HS384'
 
 REFRESH_TOKEN_ISSUER = 'https://fidesinnova.io'
 REFRESH_TOKEN_EXPIRATION_TIME = 2400000000    # Miliseconds
-REFRESH_TOKEN_SECRET_KEY = 'Cn3ZU$EQcpc_C9Yyqc*t3pur#Rg_Q9xUt4GUVnf8=Q4ruE?f@8^ngFgKpE7Nh=gytxzY3!tcpBZ4STj-ehCfb2k-&C43sFgYfSfZ&ALP!XJhe3R%hNGTMmHXCMsm9Bfv'
+REFRESH_TOKEN_SECRET_KEY = 'YOUR_REFRESH_SECRET_KEY'
 REFRESH_TOKEN_ALGORITHM = 'HS384'
 
-SUPER_ADMIN_EMAILS = ["server.admin.email@example.com"] # your admins emails that can make other users into admin
+# your admins emails that can make other users into admin
+SUPER_ADMIN_EMAILS = ['SERVER_ADMIN_EMAIL@EXAMPLE.COM'] 
 
-# Multer Configuration     # Multer is a node.js middleware for handling multipart/form-data, which is primarily used for uploading files.
+# Multer Configuration
+# Multer is a node.js middleware for handling multipart/form-data, which is primarily used for uploading files.
 MULTER_MEDIA_PATH = ./storages/resources
 MULTER_MEDIA_SIZE = 10000000    # 10 MB
 ```
@@ -356,35 +374,35 @@ MULTER_MEDIA_SIZE = 10000000    # 10 MB
 Never share your account’s private key with anyone.
 - Update these parameters in the file:
 ```
-NODE_ID = "your-node-url" # Set this to your node URL
-NODE_NAME = "your-node-name"
+# Set this with your node URL (e.g., 'zksensor.tech')
+NODE_ID = 'YOUR_DOMAIN.COM' 
 
-FAUCET_WALLET_PRIVATE_KEY = "your-faucet-wallet-private-key"
-ADMIN_WALLET_PRIVATE_KEY = 'your-admin-wallet-private-key'
+# Set this with your node name (e.g., 'zkSensor')
+NODE_NAME = 'YOUR_NODE_NAME'
+
+FAUCET_WALLET_PRIVATE_KEY = 'YOUR_FAUCET_WALLET_PRIVATE_KEY'
+ADMIN_WALLET_PRIVATE_KEY = 'YOUR_ADMIN_WALLET_PRIVATE_KEY'
 
 HOST_NAME_OR_IP = 'panel.YOUR-DOMAIN.COM'
 
-MAIL_HOST = YOUR-HOST-MAIL-SERVER-PROVIDER
+# Email Server Configuration
+MAIL_HOST = 'YOUR_HOST_MAIL_SERVER_PROVIDER'
+# Please check your email server’s mail port number by configuring an email client on your mobile or computer to confirm. On some servers, it may be 587 or a different port.
 MAIL_PORT = 465
-MAIL_USER = noreply@YOUR-DOMAIN.COM
-MAIL_PASSWORD = YOUR-MAIL-SERVER-PASSWORD
-MAIL_FROM = noreply@YOUR_-DOMAIN.COM
+MAIL_USER = 'noreply@YOUR_DOMAIN.COM'
+MAIL_PASSWORD = 'YOUR_MAIL_SERVER_PASSWORD'
+MAIL_FROM = 'noreply@YOUR_DOMAIN.COM'
 
-THEME_LOGO = 'your-logo-url'
+THEME_LOGO = 'YOUR_LOGO_URL'
 
-RPC_URL = 'your-rpc-url'
+ACCESS_TOKEN_SECRET_KEY = 'YOUR_ACCESS_SECRET_KEY'
+REFRESH_TOKEN_SECRET_KEY = 'YOUR_REFRESH_SECRET_KEY'
 
-SUPER_ADMIN_EMAILS = ["admin.email.@example.com"]
-
-GOOGLE_CLIENT_ID=YOUR_GOOGLE_CLIENT_ID
-GOOGLE_CLIENT_SECRET=YOUR_GOOGLE_CLIENT_SECRET
-GOOGLE_CALLBACK_URL=panel.YOUR-DOMAIN.COM/app/authentication/google/redirect
-
+SUPER_ADMIN_EMAILS = ['SERVER_ADMIN_EMAIL@EXAMPLE.COM'] 
 ```
 
 ## B.2. Device Installation Data
-
-During the installation process in the mobile app, the following devices will be displayed based on the data provided in the `iot_node_backend_web_app_source/backend/src/data/devices.json` file. Each device is represented by an image, a title, and various parameters.
+- During the installation process in the mobile app, the following devices will be displayed based on the data provided in the `iot_node_backend_web_app_source/backend/src/data/devices.json` file. Each device is represented by an image, a title, and various parameters.
 
 Each device in `devices.json` includes:
 - **fileName**: Refers to the image file that should be placed in the `/iot_node_backend_web_app_source/backend/uploads/device` directory. This image will be displayed in the mobile app (e.g., "ecard.png").
