@@ -472,53 +472,53 @@ This configuration ensures that each device and its parameters are accessible fo
 # Step C. How to Install Web App
 
 ## C.1. How to Install Panel Web App for users
-In Source_webapp folder, create `.env` file and update and enter the parameters.
+- In `Source_webapp` folder, create `.env` file.
 ```
 cd /home/iot_node_backend_web_app_source/web_app/Source_webapp
 sudo nano .env
 ```
+- Enter the following lines in the .env file and replace `YOUR_NODE_NAME` with your actual node name.
 ```
 VITE_URL='https://panel.YOUR_DOMAIN.COM/app/'
 VITE_NODE_NAME = 'YOUR_NODE_NAME'
 ```
-Then save and close the `.env`
 
-In Runner_webapp folder, create `.env` file and enter the parameters.
+- In `Runner_webapp` folder, create `.env` file.
 ```
 cd /home/iot_node_backend_web_app_source/web_app/Runner_webapp
 sudo nano .env
 ```
+- Enter the following line in the `.env` file.
 ```
 PORT=4000
 ```
-Then save and close the `.env`
 
 ## C.2. How to Install Admin Web App for administrator
-In Source_webapp folder, create `.env` file and update and enter the parameters.
+- In `Source_webapp` folder, create `.env` file.
 ```
 cd /home/iot_node_backend_web_app_source/admin_web_app/Source_webapp
 sudo nano .env
 ```
+- Enter the following lines in the .env file and replace `YOUR_NODE_NAME` with your actual node name.
 ```
 VITE_URL='https://panel.YOUR_DOMAIN.COM/app/'
 VITE_NODE_NAME = 'YOUR_NODE_NAME'
 ```
-Then save and close the `.env`
 
-In Runner_webapp folder, create `.env` file and enter the parameters.
+- In `Runner_webapp` folder, create `.env` file.
 ```
 cd /home/iot_node_backend_web_app_source/admin_web_app/Runner_webapp
 sudo nano .env
 ```
+- Enter the following line in the `.env` file.
 ```
 PORT=5000
 ```
-Then save and close the `.env`
 
 ## C.3. Building and Running
 To automate the setup and build processes for both the backend and frontend applications, run the `initial_setup.sh` script located in the root directory of the project.
 
-### C.3.1. **Set the appropriate permissions** (one-time step)
+### C.3.1. Set the appropriate permissions** (one-time step)
    Before running the setup script for the first time, ensure it has executable permissions by running the following command in the terminal:
 
    ```
@@ -526,7 +526,7 @@ To automate the setup and build processes for both the backend and frontend appl
    sudo chmod +x initial_setup.sh
    ```
 
-### C.3.2. **Run the setup script**
+### C.3.2. Run the setup script
    After setting the permissions, execute the setup script to build the applications and create PM2 services:
 
    ```
@@ -540,7 +540,7 @@ This script will handle building both the backend and frontend applications and 
 After the initial setup, you only need to run the update process to keep the applications up to date
 To update both the backend and frontend applications, simply run the `update.sh` script located in the root directory of the project. 
 
-### C.4.1. **Set the appropriate permissions** (one-time step)
+### C.4.1. Set the appropriate permissions** (one-time step)
    Before running the update script for the first time, ensure it has executable permissions by running the following command in the terminal:
 
    ```
@@ -548,7 +548,7 @@ To update both the backend and frontend applications, simply run the `update.sh`
    sudo chmod +x update.sh
    ```
 
-### C.4.2. **Run the update script**
+### C.4.2. Run the update script**
    After setting the permissions, update the applications automatically by running:
 
    ```
