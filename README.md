@@ -276,7 +276,7 @@ sudo nano .env
 ```
 NODE_ID = "YOUR_DOMAIN.COM" # Set this with your node URL (e.g., "zksensor.tech")
 PORT = 5000
-NODE_NAME = "YOUR_NODE_NAME" Set this with your node name (e.g., "zksensor")
+NODE_NAME = "YOUR_NODE_NAME" # Set this with your node name (e.g., "zksensor")
 SWAGGER_LOCAL_SERVER = http://localhost:5000
 
 # RPC URL
