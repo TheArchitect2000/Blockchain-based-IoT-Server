@@ -271,38 +271,28 @@ sudo git clone https://github.com/FidesInnova/iot_node_backend_web_app_source.gi
 cd /home/iot_node_backend_web_app_source/backend
 sudo nano .env
 ```
-- Inside the `.env` file, paste the following parameters.
-- Note that your domain must be "panel.YOUR_DOMAIN.COM". This domain provides access to the node's control and monitoring panel (e.g., "panel.zksensor.tech").
-```
 
+- Inside the `.env` file, paste the following parameters. Note that your user web app URL is "panel.YOUR_DOMAIN.COM"  (e.g., "panel.zksensor.tech").
+
+```
 # Set this with your node URL (e.g., "zksensor.tech")
 NODE_ID = "YOUR_DOMAIN.COM" 
+
 PORT = 5000
 
-# Set this with your node name (e.g., "zksensor")
-NODE_NAME = "YOUR_NODE_NAME" 
+# Set this with your node name (e.g., "zkSensor")
+NODE_NAME = "YOUR_NODE_NAME"
+
 SWAGGER_LOCAL_SERVER = http://localhost:5000
 
-# RPC URL - This is the address of a blockchain node in the network that provides RPC sevice.
+# RPC URL - This is the address of a blockchain node in the network that provides RPC sevice to your IoT server
 RPC_URL = 'https://fidesf1-rpc.fidesinnova.io'
-
-# Smart contract user & pass
-REMIX_USER = 'rmadmin'
-REMIX_PASS = 'rm123'
-
-# ZKP user & pass
-ZKP_USER = 'zkpadmin'
-ZKP_PASS = 'zkp123'
 
 # Faucet Wallet Private Key
 FAUCET_WALLET_PRIVATE_KEY = 'YOUR_FAUCET_WALLET_PRIVATE_KEY'
 
 # Admin Wallet Private Key
 ADMIN_WALLET_PRIVATE_KEY = 'YOUR_ADMIN_WALLET_PRIVATE_KEY'
-
-GOOGLE_CLIENT_ID=YOUR_GOOGLE_CLIENT_ID
-GOOGLE_CLIENT_SECRET=YOUR_GOOGLE_CLIENT_SECRET
-GOOGLE_CALLBACK_URL=panel.YOUR-DOMAIN.COM/app/authentication/google/redirect
 
 # Server Configuration
 HOST_PROTOCOL = 'https://'
