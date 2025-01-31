@@ -518,45 +518,38 @@ PORT=5000
 ## C.3. Building and Running
 To automate the setup and build processes for both the backend and frontend applications, run the `initial_setup.sh` script located in the root directory of the project.
 
-### C.3.1. Set the appropriate permissions** (one-time step)
-   Before running the setup script for the first time, ensure it has executable permissions by running the following command in the terminal:
-
+### C.3.1. Set the appropriate permissions
+- Before running the setup script for the first time, ensure it has executable permissions by running the following command in the terminal:
    ```
    cd /home/iot_node_backend_web_app_source/
    sudo chmod +x initial_setup.sh
    ```
 
 ### C.3.2. Run the setup script
-   After setting the permissions, execute the setup script to build the applications and create PM2 services:
-
+- After setting the permissions, execute the setup script to build the applications and create PM2 services.
    ```
    cd /home/iot_node_backend_web_app_source/
    sudo ./initial_setup.sh
    ```
-
-This script will handle building both the backend and frontend applications and configuring PM2 services automatically.
+- This script will handle building both the backend and frontend applications and configuring PM2 services automatically.
 
 ## C.4. Subsequent Updates
-After the initial setup, you only need to run the update process to keep the applications up to date
+- After the initial setup, you only need to run the update process to keep the applications up to date
 To update both the backend and frontend applications, simply run the `update.sh` script located in the root directory of the project. 
 
-### C.4.1. Set the appropriate permissions** (one-time step)
-   Before running the update script for the first time, ensure it has executable permissions by running the following command in the terminal:
-
+### C.4.1. Set the appropriate permissions
+- Before running the update script for the first time, ensure it has executable permissions by running the following command in the terminal:
    ```
    cd /home/iot_node_backend_web_app_source/
    sudo chmod +x update.sh
    ```
-
-### C.4.2. Run the update script**
-   After setting the permissions, update the applications automatically by running:
-
+### C.4.2. Run the update script
+- After setting the permissions, update the applications automatically by running
    ```
    cd /home/iot_node_backend_web_app_source/
    sudo ./update.sh
    ```
-Choose option 1 to let the script handles pulling the latest changes, rebuilding the apps, and restarting services automatically.
-
+- Choose option 1 to let the script handles pulling the latest changes, rebuilding the apps, and restarting services automatically.
 
 ## C.5. Note
 - If you are an IoT server administrator, contact the FidesInnova team at info@fidesinnova.io to add your Web App URL to the FidesInnova website.
