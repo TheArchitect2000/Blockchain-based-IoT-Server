@@ -313,7 +313,7 @@ HOST_NAME_OR_IP = 'panel.YOUR_DOMAIN.COM'
 HOST_PORT = '3000'
 HOST_SUB_DIRECTORY = 'app'
 
-# StorX Config
+# StorX Configuration
 STORX_BUCKET_NAME = 'fidesinnova'
 STORX_HOST = 'https://b2.storx.io'
 STORX_AUTH_HOST = 'https://auth.storx.io'
@@ -330,8 +330,9 @@ MONGO_CONNECTION = mongodb://127.0.0.1:27017/fidesinnova
 NOTIFICATION_BY_MAIL = 'enabled'
 NOTIFICATION_BY_NOTIFICATION = 'enabled'
 
-# Mail server
+# Mail Server Configuration
 MAIL_HOST = YOUR_HOST_MAIL_SERVER_PROVIDER
+# Please check your email server’s mail port number by configuring an email client on your mobile or computer to confirm. On some servers, it may be 587 or a different port.
 MAIL_PORT = 465
 MAIL_USER = noreply@YOUR_DOMAIN.COM
 MAIL_PASSWORD = YOUR_MAIL_SERVER_PASSWORD
