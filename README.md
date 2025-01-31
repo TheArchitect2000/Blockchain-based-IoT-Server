@@ -21,8 +21,7 @@ To install the back-end and front-end components of the Fidesinnova platform, in
 First of all install Ubuntu 24.04 LTS on your server. 
 
 ## A.1. Install MongoDB
-### A.1.1 Installing MongoDB
-Install MongoDB version 8.0
+- Install MongoDB version 8.0
 ```
 sudo apt update
 sudo apt upgrade
@@ -32,7 +31,8 @@ echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-8.0.gp
 sudo apt update
 sudo apt install -y mongodb-org
 ```
-### A.1.2 Starting the MongoDB service and testing the database
+
+- Start the MongoDB service and test the database
 ```
 sudo systemctl start mongod
 sudo systemctl start mongod.service
@@ -40,7 +40,7 @@ sudo systemctl enable mongod
 sudo systemctl status mongod
 ```
 
-### Note: To manage the MongoDB service you can use the following commands
+- Note: To manage the MongoDB service you can use the following commands
 ```
 sudo systemctl status mongod
 sudo systemctl stop mongod
@@ -97,7 +97,7 @@ sudo cp /etc/letsencrypt/live/admin.YOUR_DOMAIN.COM/privkey.pem /etc/nginx/ssl/
   ``` -->
 
 ## A.4. Update the `nginx.conf` file
-- Replace the following configuration in your nginx.conf file located at /etc/nginx/nginx.conf.
+- Replace the following configuration in your `nginx.conf` file located at `/etc/nginx/nginx.conf`.
 ```
 user www-data;
 worker_processes auto;
@@ -208,7 +208,7 @@ http {
 }
 
 ```
--  Please update YOUR_DOMAIN.COM with your actual domain name in admin.YOUR_DOMAIN.COM.
+- Please update YOUR_DOMAIN.COM with your actual domain name in admin.YOUR_DOMAIN.COM.
 - Please update YOUR_DOMAIN.COM with your actual domain name in panel.YOUR_DOMAIN.COM.
   
 ## A.4.1. Restart Nginx
@@ -216,7 +216,7 @@ http {
 sudo systemctl restart nginx
 ```
 
-## A.5. Installation of Node.js (Version 20.9.0) and NestJS on Ubuntu
+## A.5. Instal Node.js and NestJS
 ```
 sudo apt update
 sudo apt install nodejs
@@ -228,7 +228,7 @@ sudo npm i -g @nestjs/cli
 
 ## A.6. Configure Firewall 
 ## A.6.1. Allow connections
-- Install `ufw`, allow OpenSSH connection, allow nginx connection. Then, allow ports 3000, 4000, and 5000 on the server for Mobile App, Web App, and Admin Web App, respectively. Also, open ports 8883 and 8081 to let IoT devices to connect to the MQTT broker and to let IoT devices to connect to the MQTT web socket, respectively.
+- Install `ufw`, allow OpenSSH connection, allow nginx connection. Then, allow ports 3000, 4000, and 5000 on the server for Mobile App, Web App, and Admin Web App, respectively. Also, open ports 8883 and 8081 to let IoT devices to connect to the MQTT broker and the web socket, respectively.
 ```
 sudo apt install ufw
 sudo ufw allow OpenSSH
@@ -248,8 +248,8 @@ sudo ufw enable
 ```
 sudo ufw status
 ```
+
 ## A.7. Install PM2
-- Install `pm2`
 ```
 sudo npm install -g pm2
 ```
@@ -266,7 +266,7 @@ sudo git clone https://github.com/FidesInnova/iot_node_backend_web_app_source.gi
 ```
 
 # Step B. Prepare the app
-## B.1. host configurations
+## B.1. Backend configurations
 - In project root folder, create `.env` file and edit parameters based on your node URL info
 ```
 cd /home/iot_node_backend_web_app_source/backend
