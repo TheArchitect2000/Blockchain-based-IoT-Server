@@ -10,7 +10,6 @@ import {
 import useAuth from '@/utils/hooks/useAuth'
 import { Notification, toast } from '../ui'
 import GoogleButton from 'react-google-button'
-import axios from 'axios'
 
 const GoogleLoginButton: React.FC = () => {
     const { signIn } = useAuth()
