@@ -547,13 +547,12 @@ sudo git fetch
 sudo git pull
 ```  
 
-### Maintenance.1. Set the permissions
 - Before running the update script for the first time, ensure it has executable permissions by running the following command in the terminal:
    ```
    cd /home/iot_node_backend_web_app_source/
    sudo chmod +x update.sh
    ```
-### Maintenance.2. Run the update script
+
 - After setting the permissions, update the applications automatically by running
    ```
    cd /home/iot_node_backend_web_app_source/
