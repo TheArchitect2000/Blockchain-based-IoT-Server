@@ -559,4 +559,3 @@ sudo git pull
    cd /home/iot_node_backend_web_app_source/
    sudo ./update.sh
    ```
-- Choose option 1 to let the script handles pulling the latest changes, rebuilding the apps, and restarting services automatically.
