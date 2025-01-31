@@ -66,7 +66,6 @@ sudo systemctl stop nginx
 sudo apt-get update
 sudo apt-get install certbot
 ```
-## A.3.1. Obtain SSL Certificate
 - To manually obtain an SSL certificate for your domains without directly modifying your web server configurations, run the following command:
 ```
 sudo certbot certonly --standalone --preferred-challenges http
