@@ -278,7 +278,7 @@ export default function ProofPage() {
                     return (
                         <Form>
                             <FormContainer>
-                                <h3>ZKP Proof Submiter</h3>
+                                <h3>ZKP Proof Submitter</h3>
                                 {!checkUserHasRole('company_developer') && (
                                     <p className="mt-4 text-md text-red-400">
                                         * You do not have a developer role

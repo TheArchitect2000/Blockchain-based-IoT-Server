@@ -24,7 +24,7 @@ export const protectedRoutes = [
         authority: [],
     },
     {
-        key: 'commitment-submiter',
+        key: 'commitment-submitter',
         path: '/commitment',
         component: lazy(() => import('@/views/commitment')),
         authority: [],
@@ -61,7 +61,7 @@ export const protectedRoutes = [
     },
     {
         key: 'proof',
-        path: '/proof-submiter',
+        path: '/proof-submitter',
         component: lazy(() => import('@/views/proof-submiter')),
         authority: [],
     },

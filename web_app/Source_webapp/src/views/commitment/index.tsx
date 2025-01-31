@@ -347,7 +347,7 @@ export default function CommitmentPage() {
                             <Form>
                                 <FormContainer>
                                     <h3 className="mb-4">
-                                        ZKP Commitment Submiter
+                                        ZKP Commitment Submitter
                                     </h3>
                                     {!checkUserHasRole('company_developer') && (
                                         <p className="mb-4 text-md text-red-400">
