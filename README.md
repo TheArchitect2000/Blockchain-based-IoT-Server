@@ -420,6 +420,7 @@ SUPER_ADMIN_EMAILS = ['SERVER_ADMIN_EMAIL@EXAMPLE.COM']
 ```
 cd /home/iot_node_backend_web_app_source/backend/src
 sudo mkdir data
+cd data
 sudo nano devices.json
 ```
 
