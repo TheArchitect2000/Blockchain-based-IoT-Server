@@ -544,8 +544,8 @@ To automate the setup and build processes for both the backend and frontend appl
 - Every time Fidesinnova core development team push a new version of the code on GitHub, you can pull the code and  run the Maintenance steps to apply the changes to your production server.
 ```
 cd /home/iot_node_backend_web_app_source/
-git fetch
-git pull
+sudo git fetch
+sudo git pull
 ```  
 
 ### Maintenance.1. Set the appropriate permissions
