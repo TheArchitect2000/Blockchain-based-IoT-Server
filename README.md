@@ -401,7 +401,7 @@ REFRESH_TOKEN_SECRET_KEY = 'YOUR_REFRESH_SECRET_KEY'
 SUPER_ADMIN_EMAILS = ['SERVER_ADMIN_EMAIL@EXAMPLE.COM'] 
 ```
 
-## B.2. Device Installation Data
+## B.2. Device Configuration File
 - During the installation process in the mobile app, the following devices will be displayed based on the data provided in the `iot_node_backend_web_app_source/backend/src/data/devices.json` file. Each device is represented by an image, a title, and various parameters.
 
 Each device in `devices.json` includes:
