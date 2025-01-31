@@ -430,11 +430,18 @@ Parameters specify data points each device supports. These parameters will be pa
 
 This configuration ensures that each device and its parameters are accessible for service configuration within the Blockly environment.
 
-### B.2.1. A full sample file has been executed (device.json)
+### B.2.1. Edit the `devices.json` file
+- Create `devices.json` file in the `backend/src/data/` in the project folder
+```
+cd /home/iot_node_backend_web_app_source/backend/src/data/
+sudo nano devices.json
+```
+
+- Copy the following config in your `devices.json` file if you would like to use zkSensor's devices. Please note that you can edit this file and add your own IoT devices. When you add your new IoT device make sure you upload a `.png` file in `/home/iot_node_backend_web_app_source/backend/uploads/devices`. We hae already copied three `zksensor-ecard.png`, `zksensor-minisensor.png`, and `zksensor-zk-multisensor.png` files in this folder for the following devices.
 ```json
 [
   {
-    "fileName": "ecard.png",
+    "fileName": "zksensor-ecard.png",
     "title": "E-Card",
     "type": "E-CARD",
     "parameters": [
@@ -444,7 +451,7 @@ This configuration ensures that each device and its parameters are accessible fo
     ]
   },
   {
-    "fileName": "multisensor.png",
+    "fileName": "zksensor-minisensor.png",
     "title": "MiniSensor",
     "type": "MINI_SENSOR",
     "parameters": [
@@ -456,7 +463,7 @@ This configuration ensures that each device and its parameters are accessible fo
     ]
   },
   {
-    "fileName": "zk-multisensor.png",
+    "fileName": "zksensor-zk-multisensor.png",
     "title": "zk-MultiSensor",
     "type": "ZK_MULTISENSOR",
     "parameters": [
