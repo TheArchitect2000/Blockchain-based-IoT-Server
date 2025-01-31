@@ -402,33 +402,13 @@ SUPER_ADMIN_EMAILS = ['SERVER_ADMIN_EMAIL@EXAMPLE.COM']
 ```
 
 ## B.2. Device Configuration File
-- During the installation process in the mobile app, the following devices will be displayed based on the data provided in the `iot_node_backend_web_app_source/backend/src/data/devices.json` file. Each device is represented by an image, a title, and various parameters.
-
-Each device in `devices.json` includes:
-- **fileName**: Refers to the image file that should be placed in the `/iot_node_backend_web_app_source/backend/uploads/device` directory. This image will be displayed in the mobile app (e.g., "ecard.png").
-- **title**: The display name for the device (e.g., "E-Card").
-- **type**: Device type identifier (e.g., "E-CARD").
-
-**Device Parameters**:
-Parameters specify data points each device supports. These parameters will be passed to the web app Blockly editor for creating new services. 
-
+- Fidesinnova offers a mobile app to control IoT devices that support the MQTT protocol. The device configuration files, which specify the IoT device types, are stored on the IoT server. In this section, we will review how to create a device configuration file on the server. Each device in the configuration file is represented by an image, a title, a type, and its parameters:
+-- **fileName**: Refers to the image file that should be placed in the `/iot_node_backend_web_app_source/backend/uploads/device` directory. This image will be displayed in the mobile app (e.g., "ecard.png").
+-- **title**: The display name for the device (e.g., "E-Card").
+-- **type**: Device type identifier (e.g., "E-CARD").
+-- **Device Parameters**: Parameters specify data points each device supports. These parameters will be passed to the web app Blockly editor for creating new services. 
 - If a parameter’s `value` is an empty array `[]`, it indicates dynamic data input.
 - If `value` has specific options (e.g., `["Open", "Close"]`), it will show these options in the Blockly dropdown as predefined outputs.
-
-<!-- ### Example of a Device
-```json
-{
-  "fileName": "multisensor.png",
-  "title": "Multi Sensor",
-  "type": "MULTI_SENSOR",
-  "parameters": [
-    { "label": "Temperature", "value": [] },            // dynamic input
-    { "label": "Button", "value": ["Pressed", "NOT Pressed"] } // predefined options
-  ]
-}
-``` -->
-
-This configuration ensures that each device and its parameters are accessible for service configuration within the Blockly environment.
 
 ### B.2.1. Edit the `devices.json` file
 - Create `devices.json` file in the `backend/src/data/` in the project folder
