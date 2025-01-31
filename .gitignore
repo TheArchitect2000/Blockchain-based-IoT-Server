@@ -5,6 +5,7 @@
 /backend/src/data/*
 
 /backend/uploads/*
+!/backend/uploads/devices/
 /backend/uploads/devices/*
 !/backend/uploads/devices/zksensor-ecard.png
 !/backend/uploads/devices/zksensor-minisensor.png
