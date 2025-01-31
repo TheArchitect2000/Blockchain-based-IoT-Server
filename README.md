@@ -32,7 +32,7 @@ echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-8.0.gp
 sudo apt update
 sudo apt install -y mongodb-org
 ```
-### A.1.2 Starting the MongoDB Service and Testing the Database
+### A.1.2 Starting the MongoDB service and testing the database
 ```
 sudo systemctl start mongod
 sudo systemctl start mongod.service
@@ -40,7 +40,7 @@ sudo systemctl enable mongod
 sudo systemctl status mongod
 ```
 
-### A.1.3. Note: For managing the MongoDB Service you can use the following commands:
+### Note: To manage the MongoDB service you can use the following commands
 ```
 sudo systemctl status mongod
 sudo systemctl stop mongod
@@ -56,20 +56,18 @@ sudo apt update
 sudo apt -y install nginx
 sudo systemctl status nginx
 ```
-## A.3. How to install Certbot
+## A.3. Install Certbot
 ```
 sudo apt-get update
 sudo apt-get install certbot
 ```
-
-## A.3.1. Obtain an SSL Certificate
-To manually obtain an SSL certificate for your domains without directly modifying your web server configurations, run the following command:
+## A.3.1. Obtain SSL Certificate
+- To manually obtain an SSL certificate for your domains without directly modifying your web server configurations, run the following command:
 ```
 sudo certbot certonly --standalone --preferred-challenges http
 ```
 -  Make sure to create the certificate for domain and all subdomains
 After running the command, enter your web app and admin web app domains separated by a space, like this:
-
 ```
 panel.YOUR_DOMAIN.COM admin.YOUR_DOMAIN.COM
 ```
