@@ -559,4 +559,5 @@ Choose option 1 to let the script handles pulling the latest changes, rebuilding
 
 
 ## C.5. Note
-  * If you are a Node owner, contact Fidesinnova team at info@fidesinnova.io to add your Web App URL address to Fidesinnova website.
+- If you are an IoT server administrator, contact the FidesInnova team at info@fidesinnova.io to add your Web App URL to the FidesInnova website.
+- Every time you make a change to any `.env` file in the system, you should run Step C.4.2 to apply the changes to your production server.
