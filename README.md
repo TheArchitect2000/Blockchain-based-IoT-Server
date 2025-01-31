@@ -517,7 +517,7 @@ PORT=5000
 ## C.3. Building and Running
 To automate the setup and build processes for both the backend and frontend applications, run the `initial_setup.sh` script located in the root directory of the project.
 
-### C.3.1. Set the appropriate permissions
+### C.3.1. Set the permissions
 - Before running the setup script for the first time, ensure it has executable permissions by running the following command in the terminal:
    ```
    cd /home/iot_node_backend_web_app_source/
@@ -547,7 +547,7 @@ sudo git fetch
 sudo git pull
 ```  
 
-### Maintenance.1. Set the appropriate permissions
+### Maintenance.1. Set the permissions
 - Before running the update script for the first time, ensure it has executable permissions by running the following command in the terminal:
    ```
    cd /home/iot_node_backend_web_app_source/
