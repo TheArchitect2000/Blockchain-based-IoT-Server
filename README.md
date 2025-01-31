@@ -230,7 +230,7 @@ sudo npm i -g @nestjs/cli
 
 ## A.6. Configure Firewall 
 ## A.6.1. Allow connections
-Install `ufw`, allow OpenSSH connection, allow nginx connection. Then, allow ports 3000, 4000, and 5000 on the server for Mobile App, Web App, and Admin Web App, respectively. Also, open ports 8883 and 8081 to let IoT devices to connect to the MQTT broker and to let IoT devices to connect to the MQTT web socket, respectively.
+- Install `ufw`, allow OpenSSH connection, allow nginx connection. Then, allow ports 3000, 4000, and 5000 on the server for Mobile App, Web App, and Admin Web App, respectively. Also, open ports 8883 and 8081 to let IoT devices to connect to the MQTT broker and to let IoT devices to connect to the MQTT web socket, respectively.
 ```
 sudo apt install ufw
 sudo ufw allow OpenSSH
@@ -242,24 +242,26 @@ sudo ufw allow 8883
 sudo ufw allow 8081
 ```
 ## A.6.2. Enable firewall 
+- Enable the firewall
 ```
 sudo ufw enable
 ```
-Check the firewall status
+- Check the firewall status
 ```
 sudo ufw status
 ```
 ## A.7. Install PM2
+- Install `pm2`
 ```
 sudo npm install -g pm2
 ```
 
 ## A.8. Clone the project
-Install `git`
+- Install `git`
 ```
 sudo apt install git
 ```
-Clone the project
+- Clone the project
 ```
 cd /home
 sudo git clone https://github.com/FidesInnova/iot_node_backend_web_app_source.git
@@ -267,7 +269,7 @@ sudo git clone https://github.com/FidesInnova/iot_node_backend_web_app_source.gi
 
 # Step B. Prepare the app
 ## B.1. host configurations
--  In project root folder, create `.env` file and edit parameters based on your node URL info
+- In project root folder, create `.env` file and edit parameters based on your node URL info
 ```
 cd /home/iot_node_backend_web_app_source/backend
 sudo nano .env
@@ -275,6 +277,7 @@ sudo nano .env
 - Inside the `.env` file, paste the following parameters.
 - Note that your domain must be "panel.YOUR_DOMAIN.COM". This domain provides access to the node's control and monitoring panel (e.g., "panel.zksensor.tech").
 ```
+
 # Set this with your node URL (e.g., "zksensor.tech")
 NODE_ID = "YOUR_DOMAIN.COM" 
 PORT = 5000
@@ -360,9 +363,9 @@ SUPER_ADMIN_EMAILS = ["server.admin.email@example.com"] # your admins emails tha
 MULTER_MEDIA_PATH = ./storages/resources
 MULTER_MEDIA_SIZE = 10000000    # 10 MB
 ```
-- Create two accounts: one for the admin and one for the faucet. After creation, send only the wallet addresses (excluding private keys) to info@fidesinnova.io. FidesInnova will transfer some tokens to both of your accounts. Additionally, the admin account will be authorized on the network. The faucet account can be used to distribute tokens to your users, while the admin account will be used to manage operations on the global network.
+- Create two wallets address on Fidesinnova network for the admin and the faucet. To learn how to connect your wallet to fides network, please [watch this video on YouTube](https://www.youtube.com/watch?v=3GVfyu4uzhs) 
+- Email only the wallet addresses (excluding private keys) to info@fidesinnova.io and ask to receive some tokens for your node operation. The admin address will be authorized on the network. The faucet address will be used to distribute tokens to your users on your server.
 Never share your account’s private key with anyone.
-
 - Update these parameters in the file:
 ```
 NODE_ID = "your-node-url" # Set this to your node URL
