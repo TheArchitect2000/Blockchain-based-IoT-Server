@@ -215,7 +215,7 @@ http {
 - Please update YOUR_DOMAIN.COM with your actual domain name in admin.YOUR_DOMAIN.COM.
 - Please update YOUR_DOMAIN.COM with your actual domain name in panel.YOUR_DOMAIN.COM.
   
-## A.4.1. Restart Nginx
+- Restart Nginx 
 ```
 sudo systemctl restart nginx
 ```
