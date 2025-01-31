@@ -12,16 +12,16 @@ export class AppService {
       filePath: path.join(__dirname, '..', 'src/data'),
     },
     {
-      fileName: 'devices.json',
-      content:
-        '[{ "fileName": "ecard.png", "title": "E-Card", "type": "E-CARD" }, { "fileName": "multisensor.png", "title": "Multi Sensor", "type": "MULTI_SENSOR" }, { "fileName": "motionsensor.png", "title": "Motion Sensor", "type": "MOTION_SENSOR" }]',
-      filePath: path.join(__dirname, '..', 'src/data', 'devices.json'),
-    },
-    {
       fileName: '',
       content: null,
       filePath: path.join(__dirname, '..', 'uploads/devices'),
     },
+    /* {
+      fileName: 'devices.json',
+      content:
+        '[{ "fileName": "ecard.png", "title": "E-Card", "type": "E-CARD" }, { "fileName": "multisensor.png", "title": "Multi Sensor", "type": "MULTI_SENSOR" }, { "fileName": "motionsensor.png", "title": "Motion Sensor", "type": "MOTION_SENSOR" }]',
+      filePath: path.join(__dirname, '..', 'src/data', 'devices.json'),
+    }, */
   ];
 
   async loadDeviceList() {
@@ -78,9 +78,9 @@ export class AppService {
       console.log('Device list is empty or not loaded.');
       return null;
     }
-  
+
     const device = this.deviceList.find((d) => d.type === deviceType);
-  
+
     if (device) {
       return `${process.env.HOST_PROTOCOL}${process.env.HOST_NAME_OR_IP}/${process.env.HOST_SUB_DIRECTORY}/uploads/devices/${device.fileName}`;
     } else {
@@ -88,5 +88,4 @@ export class AppService {
       return null;
     }
   }
-  
 }

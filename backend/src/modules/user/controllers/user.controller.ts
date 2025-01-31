@@ -479,7 +479,7 @@ export class UserController {
     return await this.userService.refreshTokens(body);
   }
 
-  @Get('v1/user/validate-smart-contract-console')
+  /* @Get('v1/user/validate-smart-contract-console')
   @HttpCode(200)
   @ApiOperation({
     summary: 'Validates remix IDE user and pass.',
@@ -497,9 +497,9 @@ export class UserController {
     } else {
       return false;
     }
-  }
+  } */
 
-  @Get('v1/user/validate-zkp-commitment-console')
+  /* @Get('v1/user/validate-zkp-commitment-console')
   @HttpCode(200)
   @ApiOperation({
     summary: 'Validates remix IDE user and pass.',
@@ -517,7 +517,7 @@ export class UserController {
     } else {
       return false;
     }
-  }
+  } */
 
   @Get('v1/user/get-my-profile')
   @HttpCode(200)

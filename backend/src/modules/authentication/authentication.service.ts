@@ -66,7 +66,6 @@ export class AuthenticationService {
         idToken: tokenId,
         audience: process.env.GOOGLE_CLIENT_ID,
       });
-
       payload = ticket.getPayload();
     } else {
       const userInfo = await axios
