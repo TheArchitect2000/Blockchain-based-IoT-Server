@@ -514,7 +514,7 @@ sudo nano .env
 PORT=5000
 ```
 
-## C.3. Building and Running
+## C.3. Build and Execute
 To automate the setup and build processes for both the backend and frontend applications, run the `initial_setup.sh` script located in the root directory of the project.
 
 - Before running the setup script for the first time, ensure it has executable permissions by running the following command in the terminal:
