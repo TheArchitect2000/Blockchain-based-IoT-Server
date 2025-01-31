@@ -533,24 +533,31 @@ To automate the setup and build processes for both the backend and frontend appl
    ```
 - This script will handle building both the backend and frontend applications and configuring PM2 services automatically.
 
-## C.4. Subsequent Updates
-- After the initial setup, you only need to run the update process to keep the applications up to date
-To update both the backend and frontend applications, simply run the `update.sh` script located in the root directory of the project. 
+## Congradulations
+- If you are an IoT server administrator, contact the FidesInnova team at info@fidesinnova.io to add your Web App URL to the FidesInnova website.
+- https://panel.YOUR_DOMAIN for your users
+- Create an accont on https://panel.YOUR_DOMAIN with super admin email address and a get password.
+- Login into https://admin.YOUR_DOMAIN with your super admin email address and password. 
 
-### C.4.1. Set the appropriate permissions
+## Maintenance: IoT Server Updates
+- Every time you make a change to any `.env` file in the system, you should run the Maintenance steps to apply the changes to your production server.
+- Every time Fidesinnova core development team push a new version of the code on GitHub, you can pull the code and  run the Maintenance steps to apply the changes to your production server.
+```
+cd /home/iot_node_backend_web_app_source/
+git fetch
+git pull
+```  
+
+### Maintenance.1. Set the appropriate permissions
 - Before running the update script for the first time, ensure it has executable permissions by running the following command in the terminal:
    ```
    cd /home/iot_node_backend_web_app_source/
    sudo chmod +x update.sh
    ```
-### C.4.2. Run the update script
+### Maintenance.2. Run the update script
 - After setting the permissions, update the applications automatically by running
    ```
    cd /home/iot_node_backend_web_app_source/
    sudo ./update.sh
    ```
 - Choose option 1 to let the script handles pulling the latest changes, rebuilding the apps, and restarting services automatically.
-
-## C.5. Note
-- If you are an IoT server administrator, contact the FidesInnova team at info@fidesinnova.io to add your Web App URL to the FidesInnova website.
-- Every time you make a change to any `.env` file in the system, you should run Step C.4.2 to apply the changes to your production server.
