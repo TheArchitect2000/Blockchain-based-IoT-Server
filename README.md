@@ -210,8 +210,8 @@ http {
 }
 
 ```
--  Make sure to update and change the `server_name` from admin.YOUR_DOMAIN.COM
--  Make sure to update and change the `server_name` from panel.YOUR_DOMAIN.COM
+-  Please update YOUR_DOMAIN.COM with your actual domain name in admin.YOUR_DOMAIN.COM.
+- Please update YOUR_DOMAIN.COM with your actual domain name in panel.YOUR_DOMAIN.COM.
   
 ## A.4.1. Restart Nginx
 ```
