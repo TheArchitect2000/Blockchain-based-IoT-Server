@@ -57,6 +57,11 @@ sudo apt -y install nginx
 sudo systemctl status nginx
 ```
 ## A.3. Install Certbot
+- First, stop the `nginx`
+```
+sudo systemctl stop nginx
+```
+- Now, install the `certbot`
 ```
 sudo apt-get update
 sudo apt-get install certbot
