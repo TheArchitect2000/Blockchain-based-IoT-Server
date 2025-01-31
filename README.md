@@ -530,7 +530,7 @@ To automate the setup and build processes for both the backend and frontend appl
    ```
 - This script will handle building both the backend and frontend applications and configuring PM2 services automatically.
 
-## Congradulations
+## Congratulations
 - If you are an IoT server administrator, contact the FidesInnova team at info@fidesinnova.io to add your Web App URL to the FidesInnova website.
 - https://panel.YOUR_DOMAIN for your users
 - Create an accont on https://panel.YOUR_DOMAIN with super admin email address and a get password.
