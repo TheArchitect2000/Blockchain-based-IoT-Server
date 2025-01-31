@@ -252,7 +252,6 @@ sudo ufw status
 sudo npm install -g pm2
 ```
 
-
 ## A.8. Clone the project
 Install `git`
 ```
@@ -274,12 +273,15 @@ sudo nano .env
 - Inside the `.env` file, paste the following parameters.
 - Note that your domain must be "panel.YOUR_DOMAIN.COM". This domain provides access to the node's control and monitoring panel (e.g., "panel.zksensor.tech").
 ```
-NODE_ID = "YOUR_DOMAIN.COM" # Set this with your node URL (e.g., "zksensor.tech")
+# Set this with your node URL (e.g., "zksensor.tech")
+NODE_ID = "YOUR_DOMAIN.COM" 
 PORT = 5000
-NODE_NAME = "YOUR_NODE_NAME" # Set this with your node name (e.g., "zksensor")
+
+# Set this with your node name (e.g., "zksensor")
+NODE_NAME = "YOUR_NODE_NAME" 
 SWAGGER_LOCAL_SERVER = http://localhost:5000
 
-# RPC URL
+# RPC URL - This is the address of a blockchain node in the network that provides RPC sevice.
 RPC_URL = 'https://fidesf1-rpc.fidesinnova.io'
 
 # Smart contract user & pass
