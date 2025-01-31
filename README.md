@@ -468,9 +468,9 @@ sudo nano devices.json
 
 ```
 
-# Step C. How to Install Web App
+# Step C. Install Panel Web App and Admin Web App
 
-## C.1. How to Install Panel Web App for users
+## C.1. Install Panel Web App for users
 - In `Source_webapp` folder, create `.env` file.
 ```
 cd /home/iot_node_backend_web_app_source/web_app/Source_webapp
@@ -492,7 +492,7 @@ sudo nano .env
 PORT=4000
 ```
 
-## C.2. How to Install Admin Web App for administrator
+## C.2. Install Admin Web App for administrator
 - In `Source_webapp` folder, create `.env` file.
 ```
 cd /home/iot_node_backend_web_app_source/admin_web_app/Source_webapp
