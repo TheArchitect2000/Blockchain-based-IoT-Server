@@ -418,8 +418,8 @@ SUPER_ADMIN_EMAILS = ['SERVER_ADMIN_EMAIL@EXAMPLE.COM']
 ### B.2.1. Edit the `devices.json` file
 - Create `devices.json` file in the `backend/src/data/` in the project folder
 ```
-cd /home/iot_node_backend_web_app_source/backend/src/data/
-sudo nano devices.json
+cd /home/iot_node_backend_web_app_source/backend/src
+sudo nano data/devices.json
 ```
 
 - Copy the following config in your `devices.json` file if you would like to use zkSensor's devices. Please note that you can edit this file and add your own IoT devices. When you add your new IoT device make sure you upload a `.png` file in `/home/iot_node_backend_web_app_source/backend/uploads/devices`. We hae already copied three `zksensor-ecard.png`, `zksensor-minisensor.png`, and `zksensor-zk-multisensor.png` files in this folder for the following devices.
