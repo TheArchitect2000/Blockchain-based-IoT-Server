@@ -519,11 +519,16 @@ To automate the setup and build processes for both the backend and frontend appl
    sudo chmod +x initial_setup.sh
    sudo ./initial_setup.sh
    ```
+## Account Setup
+- Goto `https://panel.YOUR_DOMAIN` and go to the 'Sign up' section and create a password for your `super admin email address`.
+- Goto `https://admin.YOUR_DOMAIN` and login with your `super admin email address` and its password.
+  
 ## Congratulations
-- If you are an IoT server administrator, contact the FidesInnova team at info@fidesinnova.io to add your Web App URL to the FidesInnova website.
-- https://panel.YOUR_DOMAIN for your users
-- Create an accont on https://panel.YOUR_DOMAIN with super admin email address and a get password.
-- Login into https://admin.YOUR_DOMAIN with your super admin email address and password. 
+- Panel Web App, `https://panel.YOUR_DOMAIN` is for your regular and IoT Developer users.
+- Panel Web App, `https://admin.YOUR_DOMAIN` is for your super admin users.
+- Contact FidesInnova at info@fidesinnova.io to add your Web App URLs to the FidesInnova website. These are already registered IoT Servers:
+- [https://panel.zksensor.tech](https://panel.zksensor.tech/)
+
 
 ## Maintenance: IoT Server Code or Config Change
 - Every time Fidesinnova core development team push a new version of the code on GitHub.
