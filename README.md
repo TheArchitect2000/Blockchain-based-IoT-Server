@@ -37,7 +37,6 @@ sudo apt install -y mongodb-org
 sudo systemctl start mongod
 sudo systemctl start mongod.service
 sudo systemctl enable mongod
-sudo systemctl status mongod
 ```
 
 - Note: To manage the MongoDB service you can use the following commands
@@ -54,7 +53,6 @@ sudo systemctl enable mongod
 ```
 sudo apt update
 sudo apt -y install nginx
-sudo systemctl status nginx
 ```
 ## A.3. Install Certbot
 - First, stop the `nginx`
