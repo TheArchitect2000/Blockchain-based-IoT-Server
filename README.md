@@ -513,21 +513,12 @@ PORT=5000
 ```
 
 ## C.3. Build and Execute
-To automate the setup and build processes for both the backend and frontend applications, run the `initial_setup.sh` script located in the root directory of the project.
-
-- Before running the setup script for the first time, ensure it has executable permissions by running the following command in the terminal:
+To automate the setup and build processes for both the backend and frontend applications, run the `initial_setup.sh` script located in the root directory of the project. This script will handle building both the backend and frontend applications and configuring PM2 services automatically.
    ```
    cd /home/iot_node_backend_web_app_source/
    sudo chmod +x initial_setup.sh
-   ```
-
-- After setting the permissions, execute the setup script to build the applications and create PM2 services.
-   ```
-   cd /home/iot_node_backend_web_app_source/
    sudo ./initial_setup.sh
    ```
-- This script will handle building both the backend and frontend applications and configuring PM2 services automatically.
-
 ## Congratulations
 - If you are an IoT server administrator, contact the FidesInnova team at info@fidesinnova.io to add your Web App URL to the FidesInnova website.
 - https://panel.YOUR_DOMAIN for your users
