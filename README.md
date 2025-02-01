@@ -536,23 +536,16 @@ To automate the setup and build processes for both the backend and frontend appl
 - Create an accont on https://panel.YOUR_DOMAIN with super admin email address and a get password.
 - Login into https://admin.YOUR_DOMAIN with your super admin email address and password. 
 
-## Maintenance: IoT Server Updates
-- Every time you make a change to any `.env` file in the system, you should run the Maintenance steps to apply the changes to your production server.
-- Every time Fidesinnova core development team push a new version of the code on GitHub, you can pull the code and  run the Maintenance steps to apply the changes to your production server.
+## Maintenance: IoT Server Code or Config Change
+- Every time Fidesinnova core development team push a new version of the code on GitHub.
 ```
 cd /home/iot_node_backend_web_app_source/
 sudo git fetch
 sudo git pull
-```  
-
-- Before running the update script for the first time, ensure it has executable permissions by running the following command in the terminal:
-   ```
-   cd /home/iot_node_backend_web_app_source/
-   sudo chmod +x update.sh
-   ```
-
-- After setting the permissions, update the applications automatically by running
-   ```
-   cd /home/iot_node_backend_web_app_source/
-   sudo ./update.sh
-   ```
+```
+- Every time you pull a new version of the server code from GitHub or you make a change to any `.env` files in the system, you should apply the changes to your production server via update script.
+```
+cd /home/iot_node_backend_web_app_source/
+sudo chmod +x update.sh
+sudo ./update.sh
+```
