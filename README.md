@@ -474,7 +474,7 @@ sudo nano devices.json
 cd /home/iot_node_backend_web_app_source/web_app/Source_webapp
 sudo nano .env
 ```
-- Enter the following lines in the .env file and replace `YOUR_NODE_NAME` with your actual node name.
+Enter the following lines in the .env file and replace `YOUR_NODE_NAME` with your actual node name.
 ```
 VITE_URL='https://panel.YOUR_DOMAIN.COM/app/'
 VITE_NODE_NAME = 'YOUR_NODE_NAME'
@@ -485,7 +485,7 @@ VITE_NODE_NAME = 'YOUR_NODE_NAME'
 cd /home/iot_node_backend_web_app_source/web_app/Runner_webapp
 sudo nano .env
 ```
-- Enter the following line in the `.env` file.
+Enter the following line in the `.env` file.
 ```
 PORT=4000
 ```
@@ -496,7 +496,7 @@ PORT=4000
 cd /home/iot_node_backend_web_app_source/admin_web_app/Source_webapp
 sudo nano .env
 ```
-- Enter the following lines in the .env file and replace `YOUR_NODE_NAME` with your actual node name.
+Enter the following lines in the .env file and replace `YOUR_NODE_NAME` with your actual node name.
 ```
 VITE_URL='https://panel.YOUR_DOMAIN.COM/app/'
 VITE_NODE_NAME = 'YOUR_NODE_NAME'
@@ -507,7 +507,7 @@ VITE_NODE_NAME = 'YOUR_NODE_NAME'
 cd /home/iot_node_backend_web_app_source/admin_web_app/Runner_webapp
 sudo nano .env
 ```
-- Enter the following line in the `.env` file.
+Enter the following line in the `.env` file.
 ```
 PORT=5000
 ```
