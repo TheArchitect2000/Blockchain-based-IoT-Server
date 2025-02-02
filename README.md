@@ -561,20 +561,28 @@ sudo ./update.sh
 ```
 # to make file writable and other permissions :
 chmod +rwx chainthreed
+
 # see busy ports
 sudo netstat -tulpn | grep LISTEN
+
 # something similar to the top one
 sudo ss -ltn
+
 # kill a port
 sudo kill -9 $(sudo lsof -t -i:6060)
+
 # see firewall status
 systemctl status ufw
+
 # restart the firewall
 systemctl restart ufw
+
 # move something into something else:
 mv source target
+
 # delete a directory or file
 rm -rf directoryName
+
 pm2 list                               # Show running processes  
 pm2 show my-app                        # Show details of a specific process  
 pm2 stop my-app                        # Stop a process  
