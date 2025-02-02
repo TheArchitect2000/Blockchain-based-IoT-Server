@@ -477,7 +477,7 @@ sudo nano devices.json
   },
   {
     "fileName": "iot2050.png",
-    "title": "IOT2050",
+    "title": "Siemens IOT2050",
     "type": "IOT2050",
     "parameters": [
       { "label": "Temperature", "value": [] },
