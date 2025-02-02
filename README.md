@@ -345,9 +345,13 @@ MAIL_FROM = 'noreply@YOUR_DOMAIN.COM'
 # optional
 MAIL_TRANSPORT = smtp://${MAIL_USER}:${MAIL_PASSWORD}@${MAIL_HOST}
 
-# Mobile theme ( hex color code without # )
+# Copy your logo on a publicly available URL on the Internet and copy its URL here.
 THEME_LOGO = 'YOUR_LOGO_URL'
-THEME_TEXT = 'ffffff'
+
+# Application color codes in hex. Please write it without '#'. Exmaple: #4e46e7 -> 4e46e7
+# This text color is for Mobile App 
+THEME_TEXT = 'ffffff' 
+# This color is for Web App and Mobile App
 THEME_BACKGROUND = '212838'
 THEME_BOX = '2d355c'
 THEME_BUTTON = '4e46e7'
@@ -395,7 +399,16 @@ MAIL_USER = 'noreply@YOUR_DOMAIN.COM'
 MAIL_PASSWORD = 'YOUR_MAIL_SERVER_PASSWORD'
 MAIL_FROM = 'noreply@YOUR_DOMAIN.COM'
 
+# Copy your logo on a publicly available URL on the Internet and copy its URL here.
 THEME_LOGO = 'YOUR_LOGO_URL'
+
+# Application color codes in hex. Please write it without '#'. Exmaple: #4e46e7 -> 4e46e7
+# This text color is for Mobile App 
+THEME_TEXT = 'ffffff' 
+# This color is for Web App and Mobile App
+THEME_BACKGROUND = '212838'
+THEME_BOX = '2d355c'
+THEME_BUTTON = '4e46e7'
 
 ACCESS_TOKEN_SECRET_KEY = 'YOUR_ACCESS_SECRET_KEY'
 REFRESH_TOKEN_SECRET_KEY = 'YOUR_REFRESH_SECRET_KEY'
