@@ -351,7 +351,7 @@ THEME_LOGO = 'YOUR_LOGO_URL'
 # Application color codes in hex. Please write it without '#'. Exmaple: #4e46e7 -> 4e46e7
 # This text color is for Mobile App 
 THEME_TEXT = 'ffffff' 
-# This color is for Web App and Mobile App
+# These colors are for Web App and Mobile App
 THEME_BACKGROUND = '212838'
 THEME_BOX = '2d355c'
 THEME_BUTTON = '4e46e7'
