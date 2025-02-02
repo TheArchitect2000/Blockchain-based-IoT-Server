@@ -474,9 +474,24 @@ sudo nano devices.json
       { "label": "Movement", "value": ["Scanning...", "Detected"] },
       { "label": "Button", "value": ["Pressed", "NOT Pressed"] }
     ]
+  },
+  {
+    "fileName": "iot2050.png",
+    "title": "IOT2050",
+    "type": "IOT2050",
+    "parameters": [
+      { "label": "Temperature", "value": [] },
+      { "label": "Humidity", "value": [] },
+      { "label": "Noise", "value": [] },
+      { "label": "Pressure", "value": [] },
+      { "label": "eCO2", "value": [] },
+      { "label": "TVOC", "value": [] },
+      { "label": "Door", "value": ["Open", "Close"] },
+      { "label": "Movement", "value": ["Scanning...", "Detected"] },
+      { "label": "Button", "value": ["Pressed", "NOT Pressed"] }
+    ]
   }
 ]
-
 ```
 
 # Step C. Install Panel Web App and Admin Web App
