@@ -340,7 +340,7 @@ export class UserService {
     } else {
       throw new GeneralException(
         ErrorTypeEnum.CONFLICT,
-        'Email already sended.',
+        'Email already sent.',
       );
     }
   }

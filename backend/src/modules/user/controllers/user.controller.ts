@@ -431,6 +431,10 @@ export class UserController {
     description: 'This api requires a user mobile.',
   })
   async credential(@Body() body: credentialDto) {
+
+    console.log("body:", body);
+    
+
     return await this.userService.credential({
       ...body,
       email: body.email.toString().toLocaleLowerCase(),

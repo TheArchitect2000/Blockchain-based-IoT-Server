@@ -88,6 +88,22 @@ export class DeviceService {
   async insertDevice(body) {
     let deviceEncryptedId = null;
 
+    let foundDevice = null;
+
+    foundDevice = await this.findADeviceByMac(
+      body.mac,
+      { isDeleted: false },
+      [],
+      'isDeleted userId deviceName deviceEncryptedId deviceType mac insertedBy insertDate updatedBy updateDate',
+    );
+
+    if (foundDevice) {
+      throw new GeneralException(
+        ErrorTypeEnum.CONFLICT,
+        'This device already exist',
+      );
+    }
+
     if (body.mac) {
       deviceEncryptedId = Buffer.from(body.mac, 'utf8').toString('base64');
     } else {
