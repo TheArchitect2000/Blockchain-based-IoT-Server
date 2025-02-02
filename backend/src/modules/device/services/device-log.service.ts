@@ -334,7 +334,7 @@ export class DeviceLogService {
     return foundDeviceLogs;
   }
 
-  async deleteAllUserDeviceLogsPermanently(deviceEncryptedId) {
+  async deleteAllUserDeviceLogsPermanently(deviceEncryptedId: string) {
     await this.deviceLogRepository
       .deleteAllUserDeviceLogsPermanently(deviceEncryptedId)
       .then((data) => {

@@ -75,10 +75,10 @@ export class DeviceLogRepository {
     return await this.deviceLogModel.find(query);
   }
 
-  async deleteAllUserDeviceLogsPermanently(deviceEncryptedId) {
+  async deleteAllUserDeviceLogsPermanently(deviceEncryptedId: string) {
     await this.deviceLogModel
       .deleteMany()
-      .where({ deviceEncryptedId: deviceEncryptedId })
+      .where({ deviceEncryptedId: String(deviceEncryptedId) })
       .then((data) => {
         this.result = data;
       })
