@@ -240,7 +240,7 @@ sudo ufw allow 5000
 sudo ufw allow 8883
 sudo ufw allow 8081
 ```
-
+- Note: If you’re using Amazon EC2 or a similar platform, ensure that inbound traffic for TCP 8883 is open. This port is required for secure MQTT communication between the IoT server and users’ IoT devices. Additionally, make sure the HTTPS port is open for web access.
 - Enable the firewall
 ```
 sudo ufw enable
@@ -555,4 +555,30 @@ sudo git pull
 cd /home/iot_node_backend_web_app_source/
 sudo chmod +x update.sh
 sudo ./update.sh
+```
+
+- Useful commands for troubleshooting
+```
+# to make file writable and other permissions :
+chmod +rwx chainthreed
+# see busy ports
+sudo netstat -tulpn | grep LISTEN
+# something similar to the top one
+sudo ss -ltn
+# kill a port
+sudo kill -9 $(sudo lsof -t -i:6060)
+# see firewall status
+systemctl status ufw
+# restart the firewall
+systemctl restart ufw
+# move something into something else:
+mv source target
+# delete a directory or file
+rm -rf directoryName
+pm2 list                               # Show running processes  
+pm2 show my-app                        # Show details of a specific process  
+pm2 stop my-app                        # Stop a process  
+pm2 restart my-app                     # Restart a process  
+pm2 delete my-app                      # Remove a process from PM2
+pm2 logs                               # Show logs of all processes  
 ```
