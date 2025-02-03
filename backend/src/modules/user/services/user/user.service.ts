@@ -230,6 +230,12 @@ export class UserService {
   async sendOTPCodeForSignupByEmail(body) {
     console.log('We are in sendOTPCodeForSignupByEmail service');
 
+    const user = await this.checkUserEmailIsExist(body.email)
+
+    if (user) {
+      throw new GeneralException(ErrorTypeEnum.CONFLICT, "This email already exist.")
+    }
+
     this.otp = await this.otpService.findOTPByEmail(
       body.email,
       OTPTypeEnum.REGISTRATION,
