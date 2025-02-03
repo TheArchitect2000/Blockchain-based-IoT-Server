@@ -230,11 +230,16 @@ export class UserService {
   async sendOTPCodeForSignupByEmail(body) {
     console.log('We are in sendOTPCodeForSignupByEmail service');
 
-    const user = await this.checkUserEmailIsExist(body.email)
+    try {
+      const user = await this.checkUserEmailIsExist(body.email);
 
-    if (user) {
-      throw new GeneralException(ErrorTypeEnum.CONFLICT, "This email already exist.")
-    }
+      if (user) {
+        throw new GeneralException(
+          ErrorTypeEnum.CONFLICT,
+          'This email already exist.',
+        );
+      }
+    } catch (error) {}
 
     this.otp = await this.otpService.findOTPByEmail(
       body.email,
@@ -344,10 +349,7 @@ export class UserService {
       );
       return true;
     } else {
-      throw new GeneralException(
-        ErrorTypeEnum.CONFLICT,
-        'Email already sent.',
-      );
+      throw new GeneralException(ErrorTypeEnum.CONFLICT, 'Email already sent.');
     }
   }
 
@@ -1471,7 +1473,6 @@ export class UserService {
           this.user.password,
         );
       }
-
 
       if (isValidPassword) {
         const payload = { email: this.user.email, sub: this.user._id };
