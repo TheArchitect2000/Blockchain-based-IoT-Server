@@ -37,6 +37,29 @@ export class MqttService implements OnModuleInit {
     private readonly deviceService?: DeviceService,
   ) {}
 
+  private deviceCache: Map<string, any> = new Map();
+
+  async getDeviceType(device: string) {
+    // Check if the data is already cached
+    if (this.deviceCache.has(device)) {
+      console.log('Returning cached data for device:', device);
+      return this.deviceCache.get(device);
+    }
+
+    // If not cached, fetch the data
+    const deviceData = await this.deviceService.getDeviceInfoByEncryptedId(
+      String(device),
+      '',
+      true,
+    );
+
+    // Cache the data for future use
+    this.deviceCache.set(device, deviceData);
+    console.log('Data fetched and cached for device:', device);
+
+    return deviceData;
+  }
+
   async onModuleInit() {
     console.log('Initialization of MqttService...');
     await this.brokerStart();
@@ -223,10 +246,11 @@ export class MqttService implements OnModuleInit {
 
           if (parsedPayload.data?.proof) {
             const { proof, ...dataWithoutProof } = parsedPayload.data;
+            const deviceData = await this.getDeviceType(parsedPayload.data)
             await this.contractService.storeZKP(
               String(process.env.NODE_ID),
               String(client.id),
-              dataWithoutProof.Door ? 'MULTI_SENSOR' : 'E_CARD',
+              deviceData.deviceType,
               String(dataWithoutProof.HV),
               String(dataWithoutProof.FV),
               JSON.stringify(dataWithoutProof),
