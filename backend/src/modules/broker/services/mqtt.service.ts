@@ -246,7 +246,7 @@ export class MqttService implements OnModuleInit {
 
           if (parsedPayload.data?.proof) {
             const { proof, ...dataWithoutProof } = parsedPayload.data;
-            const deviceData = await this.getDeviceType(parsedPayload.data)
+            const deviceData = await this.getDeviceType(parsedPayload.from)
             await this.contractService.storeZKP(
               String(process.env.NODE_ID),
               String(client.id),
