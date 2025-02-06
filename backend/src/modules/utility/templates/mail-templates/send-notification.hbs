@@ -133,13 +133,13 @@
                   padding: 0px 30px 15px 30px;
                   color: black;
                   font-family: 'Lato', Helvetica, Arial, sans-serif;
-                  font-size: 18px;
+                  font-size: 16px;
                   font-weight: 400;
                   line-height: 25px;
                 "
               >
                 <p style='margin: 0'>
-                  Hey
+                  Hi
                   {{name}},<br />
                   We received a notification from your device on
                   {{date}}.
@@ -157,7 +157,7 @@
                 max-width: 650px;
                 color: black;
                 font-family: 'Lato', Helvetica, Arial, sans-serif;
-                font-size: 18px;
+                font-size: 16px;
               "
             >
               <tr>
@@ -172,12 +172,7 @@
                       <td style='padding-left: 30px; line-height: 10px;'>
                         <p>Best Regards,</p>
                         <p style='color: black'>{{NodeName}} Team</p>
-                        <p>
-                          <a
-                            href='{{unsubscribeEmailUrl}}'
-                            style='color: black; text-decoration: underline'
-                          >Unsubscribe</a>
-                        </p>
+
                       </td>
                     </tr>
                   </table>
@@ -198,9 +193,10 @@
                           src='https://fidesinnova.io/Download/logo/fidesinnova.png'
                           alt='FidesInnova Logo'
                           style='
-                            width: auto;
-                            height: 120px;
+                            width: 75px !important;
+                            height: auto !important;
                             object-fit: contain;
+                            overflow: hidden;
                           '
                         />
                         <p style='text-align: left'>Powered by Fidesinnova</p>

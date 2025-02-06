@@ -134,15 +134,15 @@
                   padding: 0px 30px 10px 30px;
                   color: black;
                   font-family: 'Lato', Helvetica, Arial, sans-serif;
-                  font-size: 18px;
+                  font-size: 16px;
                   font-weight: 400;
                   line-height: 25px;
                 "
               >
                 <p style='margin: 0'>
-                  Hey
-                  {{name}},<br />Thank you for signing up! Please verify
-                  your email to complete your registration:
+                  Hi
+                  {{name}},<br />Thank you for signing up! Please verify your
+                  email to complete your registration:
                 </p>
               </td>
             </tr>
@@ -162,11 +162,10 @@
                               href='{{url}}'
                               target='_blank'
                               style='
-                                font-size: 25px;
+                                font-size: 17px;
                                 font-family: Helvetica, Arial, sans-serif;
                                 color: black;
-                                text-decoration: none;
-                                font-weight: 600;
+                                text-decoration: underline;
                                 display: inline-block;
                               '
                             >Verify Email</a>
@@ -189,7 +188,7 @@
                 max-width: 650px;
                 color: black;
                 font-family: 'Lato', Helvetica, Arial, sans-serif;
-                font-size: 18px;
+                font-size: 16px;
               "
             >
               <tr>
@@ -200,16 +199,10 @@
                     cellspacing='0'
                     cellpadding='10'
                   >
-                    <tr>
+                    <tr style='font-size: 16px;'>
                       <td style='padding-left: 30px; line-height: 10px;'>
                         <p>Best Regards,</p>
                         <p style='color: black'>{{NodeName}} Team</p>
-                        <p>
-                          <a
-                            href='{{unsubscribeEmailUrl}}'
-                            style='color: black; text-decoration: underline'
-                          >Unsubscribe</a>
-                        </p>
                       </td>
                     </tr>
                   </table>
@@ -230,9 +223,10 @@
                           src='https://fidesinnova.io/Download/logo/fidesinnova.png'
                           alt='FidesInnova Logo'
                           style='
-                            width: auto;
-                            height: 120px;
+                            width: 75px !important;
+                            height: auto !important;
                             object-fit: contain;
+                            overflow: hidden;
                           '
                         />
                         <p style='text-align: left'>Powered by Fidesinnova</p>
