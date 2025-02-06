@@ -86,7 +86,7 @@ export class MailService {
       .sendMail({
         to: user.email,
         // from: '"Support Team" <support@example.com>', // override default from
-        subject: `Your Verification Code for Changing Email Address`,
+        subject: `Confirm Your Email Address Update - ${process.env.NODE_NAME}`,
         template: './change-email-token', // `.hbs` extension is appended automatically
         context: {
           // filling curly brackets with content
@@ -179,7 +179,7 @@ export class MailService {
       .sendMail({
         to: email,
         // from: '"Support Team" <support@example.com>', // override default from
-        subject: `Welcome to ${process.env.NODE_NAME}! Confirm your Email`,
+        subject: `Verify Your Email for ${process.env.NODE_NAME} - ${process.env.NODE_NAME}`,
         template: './signup-with-otp', // `.hbs` extension is appended automatically
         context: {
           // filling curly brackets with content
@@ -247,7 +247,7 @@ export class MailService {
       await this.mailerService
         .sendMail({
           to: email,
-          subject: `${process.env.NODE_NAME}. Password Reset.`,
+          subject: `Password Reset Request - ${process.env.NODE_NAME}`,
           template: './reset-password-with-otp',
           context: {
             name: email,
@@ -303,7 +303,7 @@ export class MailService {
       .sendMail({
         to: email,
         // from: '"Support Team" <support@example.com>', // override default from
-        subject: `${process.env.NODE_NAME}. Confirm Your Email.`,
+        subject: `Please Verify Your Email - ${process.env.NODE_NAME}`,
         template: './verify-email-with-otp.hbs', // `.hbs` extension is appended automatically
         context: {
           // filling curly brackets with content
@@ -376,7 +376,7 @@ export class MailService {
         .sendMail({
           to: email,
           // from: '"Support Team" <support@example.com>', // override default from
-          subject: `${process.env.NODE_NAME}: Device Notification`,
+          subject: `Device Notification Received - ${process.env.NODE_NAME}`,
           template: './send-notification', // `.hbs` extension is appended automatically
           context: {
             // filling curly brackets with content
