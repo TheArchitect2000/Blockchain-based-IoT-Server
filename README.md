@@ -263,7 +263,7 @@ sudo apt install git
 - Clone the project
 ```
 cd /home
-sudo git clone https://github.com/FidesInnova/iot_node_backend_web_app_source.git
+sudo git clone https://github.com/FidesInnova/iot-server.git
 ```
 
 # Step B. Prepare the app
@@ -281,7 +281,7 @@ openssl rand -hex 32
 ## B.2. Backend configurations
 - In project root folder, create `.env` file and edit parameters based on your node URL info
 ```
-cd /home/iot_node_backend_web_app_source/backend
+cd /home/iot-server/backend
 sudo nano .env
 ```
 
@@ -418,7 +418,7 @@ SUPER_ADMIN_EMAILS = ['SERVER_ADMIN_EMAIL@EXAMPLE.COM']
 
 ## B.2. Device Configuration File
 - Fidesinnova offers a mobile app to control IoT devices that support the MQTT protocol. The device configuration files, which specify the IoT device types, are stored on the IoT server. In this section, we will review how to create a device configuration file on the server. Each device in the configuration file is represented by an image, a title, a type, and its parameters:
-- **fileName**: Refers to the image file that should be placed in the `/iot_node_backend_web_app_source/backend/uploads/device` directory. This image will be displayed in the mobile app (e.g., "ecard.png").
+- **fileName**: Refers to the image file that should be placed in the `/iot-server/backend/uploads/device` directory. This image will be displayed in the mobile app (e.g., "ecard.png").
 - **title**: The display name for the device (e.g., "E-Card").
 - **type**: Device type identifier (e.g., "E-CARD").
 - **Device Parameters**: Parameters specify data points each device supports. These parameters will be passed to the web app Blockly editor for creating new services. 
@@ -428,13 +428,13 @@ SUPER_ADMIN_EMAILS = ['SERVER_ADMIN_EMAIL@EXAMPLE.COM']
 ### B.2.1. Edit the `devices.json` file
 - Create `devices.json` file in the `backend/src/data/` in the project folder
 ```
-cd /home/iot_node_backend_web_app_source/backend/src
+cd /home/iot-server/backend/src
 sudo mkdir data
 cd data
 sudo nano devices.json
 ```
 
-- Copy the following config in your `devices.json` file if you would like to use zkSensor's devices. Please note that you can edit this file and add your own IoT devices. When you add your new IoT device make sure you upload a `.png` file in `/home/iot_node_backend_web_app_source/backend/uploads/devices`. We hae already copied three `zksensor-ecard.png`, `zksensor-minisensor.png`, and `zksensor-zk-multisensor.png` files in this folder for the following devices.
+- Copy the following config in your `devices.json` file if you would like to use zkSensor's devices. Please note that you can edit this file and add your own IoT devices. When you add your new IoT device make sure you upload a `.png` file in `/home/iot-server/backend/uploads/devices`. We hae already copied three `zksensor-ecard.png`, `zksensor-minisensor.png`, and `zksensor-zk-multisensor.png` files in this folder for the following devices.
 ```json
 [
   {
@@ -499,7 +499,7 @@ sudo nano devices.json
 ## C.1. Install Panel Web App for users
 - In `Source_webapp` folder, create `.env` file.
 ```
-cd /home/iot_node_backend_web_app_source/web_app/Source_webapp
+cd /home/iot-server/web_app/Source_webapp
 sudo nano .env
 ```
 Enter the following lines in the .env file and replace `YOUR_NODE_NAME` with your actual node name.
@@ -510,7 +510,7 @@ VITE_NODE_NAME = 'YOUR_NODE_NAME'
 
 - In `Runner_webapp` folder, create `.env` file.
 ```
-cd /home/iot_node_backend_web_app_source/web_app/Runner_webapp
+cd /home/iot-server/web_app/Runner_webapp
 sudo nano .env
 ```
 Enter the following line in the `.env` file.
@@ -521,7 +521,7 @@ PORT=4000
 ## C.2. Install Admin Web App for administrator
 - In `Source_webapp` folder, create `.env` file.
 ```
-cd /home/iot_node_backend_web_app_source/admin_web_app/Source_webapp
+cd /home/iot-server/admin_web_app/Source_webapp
 sudo nano .env
 ```
 Enter the following lines in the .env file and replace `YOUR_NODE_NAME` with your actual node name.
@@ -532,7 +532,7 @@ VITE_NODE_NAME = 'YOUR_NODE_NAME'
 
 - In `Runner_webapp` folder, create `.env` file.
 ```
-cd /home/iot_node_backend_web_app_source/admin_web_app/Runner_webapp
+cd /home/iot-server/admin_web_app/Runner_webapp
 sudo nano .env
 ```
 Enter the following line in the `.env` file.
@@ -543,7 +543,7 @@ PORT=5000
 ## C.3. Build and Execute
 To automate the setup and build processes for both the backend and frontend applications, run the `initial_setup.sh` script located in the root directory of the project. This script will handle building both the backend and frontend applications and configuring PM2 services automatically.
    ```
-   cd /home/iot_node_backend_web_app_source/
+   cd /home/iot-server/
    sudo chmod +x initial_setup.sh
    sudo ./initial_setup.sh
    ```
@@ -561,13 +561,13 @@ To automate the setup and build processes for both the backend and frontend appl
 ## Maintenance: IoT Server Code or Config Change
 - Every time Fidesinnova core development team push a new version of the code on GitHub.
 ```
-cd /home/iot_node_backend_web_app_source/
+cd /home/iot-server/
 sudo git fetch
 sudo git pull
 ```
 - Every time you pull a new version of the server code from GitHub or you make a change to any `.env` files in the system, you should apply the changes to your production server via update script.
 ```
-cd /home/iot_node_backend_web_app_source/
+cd /home/iot-server/
 sudo chmod +x update.sh
 sudo ./update.sh
 ```
