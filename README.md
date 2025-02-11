@@ -71,7 +71,7 @@ sudo certbot certonly --standalone --preferred-challenges http
 -  Make sure to create the certificate for domain and all subdomains
 After running the command, enter your web app and admin web app domains separated by a space, like this:
 ```
-panel.YOUR_DOMAIN.COM admin.YOUR_DOMAIN.COM
+panel.YOUR_DOMAIN admin.YOUR_DOMAIN
 ```
 - The 'certbot' command generates `fullchain.pem` and `privkey.pem` in either `/etc/letsencrypt/admin.YOURDOMAIN.COM` or `/etc/letsencrypt/panel.YOURDOMAIN.COM`.
 - Create the `ssl` folder inside `/etc/nginx` 
@@ -80,13 +80,13 @@ sudo mkdir /etc/nginx/ssl
 ```
 - Copy both `fullchain.pem` and `privkey.pem` into `/etc/nginx/ssl`. 
 ```
-sudo cp /etc/letsencrypt/live/panel.YOUR_DOMAIN.COM/fullchain.pem /etc/nginx/ssl/
-sudo cp /etc/letsencrypt/live/panel.YOUR_DOMAIN.COM/privkey.pem /etc/nginx/ssl/
+sudo cp /etc/letsencrypt/live/panel.YOUR_DOMAIN/fullchain.pem /etc/nginx/ssl/
+sudo cp /etc/letsencrypt/live/panel.YOUR_DOMAIN/privkey.pem /etc/nginx/ssl/
 ```
 or
 ```
-sudo cp /etc/letsencrypt/live/admin.YOUR_DOMAIN.COM/fullchain.pem /etc/nginx/ssl/
-sudo cp /etc/letsencrypt/live/admin.YOUR_DOMAIN.COM/privkey.pem /etc/nginx/ssl/
+sudo cp /etc/letsencrypt/live/admin.YOUR_DOMAIN/fullchain.pem /etc/nginx/ssl/
+sudo cp /etc/letsencrypt/live/admin.YOUR_DOMAIN/privkey.pem /etc/nginx/ssl/
 ```
 <!-- - Required commands for SSL by Certbot:
   - Check the expiration date of your SSL certificates:
@@ -157,7 +157,7 @@ http {
 		listen [::]:443 ssl;
 
 		index index.html index.htm;
-		server_name panel.YOUR_DOMAIN.COM;
+		server_name panel.YOUR_DOMAIN;
 
 		root /var/www/html/wikifidesdoc/site;
 
@@ -190,7 +190,7 @@ http {
 
 		listen 443 ssl;
 		listen [::]:443 ssl;
-		server_name admin.YOUR_DOMAIN.COM;
+		server_name admin.YOUR_DOMAIN;
 
 		index index.html index.htm;
 
@@ -210,8 +210,8 @@ http {
 }
 
 ```
-- Please update YOUR_DOMAIN.COM with your actual domain name in admin.YOUR_DOMAIN.COM.
-- Please update YOUR_DOMAIN.COM with your actual domain name in panel.YOUR_DOMAIN.COM.
+- Please update YOUR_DOMAIN with your actual domain name in admin.YOUR_DOMAIN.
+- Please update YOUR_DOMAIN with your actual domain name in panel.YOUR_DOMAIN.
   
 - Restart Nginx 
 ```
@@ -285,11 +285,11 @@ cd /home/iot-server/backend
 sudo nano .env
 ```
 
-- Inside the `.env` file, paste the following parameters. Note that your user web app URL is "panel.YOUR_DOMAIN.COM"  (e.g., "panel.zksensor.tech").
+- Inside the `.env` file, paste the following parameters. Note that your user web app URL is "panel.YOUR_DOMAIN"  (e.g., "panel.zksensor.tech").
 
 ```
 # Set this with your node URL (e.g., 'zksensor.tech')
-NODE_ID = 'YOUR_DOMAIN.COM' 
+NODE_ID = 'YOUR_DOMAIN' 
 
 PORT = 5000
 
@@ -314,7 +314,7 @@ GOOGLE_CALLBACK_URL = 'panel.YOUR-DOMAIN.COM/app/authentication/google/redirect'
 
 # Server Configuration
 HOST_PROTOCOL = 'https://'
-HOST_NAME_OR_IP = 'panel.YOUR_DOMAIN.COM'
+HOST_NAME_OR_IP = 'panel.YOUR_DOMAIN'
 HOST_PORT = '3000'
 HOST_SUB_DIRECTORY = 'app'
 
@@ -339,9 +339,9 @@ NOTIFICATION_BY_NOTIFICATION = 'enabled'
 MAIL_HOST = 'YOUR_HOST_MAIL_SERVER_PROVIDER'
 # Please check your email server’s mail port number by configuring an email client on your mobile or computer to confirm. On some servers, it may be 587 or a different port.
 MAIL_PORT = 465
-MAIL_USER = 'noreply@YOUR_DOMAIN.COM'
+MAIL_USER = 'noreply@YOUR_DOMAIN'
 MAIL_PASSWORD = 'YOUR_MAIL_SERVER_PASSWORD'
-MAIL_FROM = 'noreply@YOUR_DOMAIN.COM'
+MAIL_FROM = 'noreply@YOUR_DOMAIN'
 # optional
 MAIL_TRANSPORT = smtp://${MAIL_USER}:${MAIL_PASSWORD}@${MAIL_HOST} 
 
@@ -352,6 +352,9 @@ THEME_TEXT = 'ffffff'
 THEME_BACKGROUND = '212838'
 THEME_BOX = '2d355c'
 THEME_BUTTON = '4e46e7'
+
+# IoT Server logo path
+THEME_LOGO = 'https://YOUR_DOMAIN/app/uploads/logo.png'
 
 ACCESS_TOKEN_ISSUER = 'https://fidesinnova.io'
 ACCESS_TOKEN_EXPIRATION_TIME = 1200000000     # Miliseconds
@@ -378,7 +381,7 @@ Never share your account’s private key with anyone.
 - Update these parameters in the file:
 ```
 # Set this with your node URL (e.g., 'zksensor.tech')
-NODE_ID = 'YOUR_DOMAIN.COM' 
+NODE_ID = 'YOUR_DOMAIN' 
 
 # Set this with your node name (e.g., 'zkSensor')
 NODE_NAME = 'YOUR_NODE_NAME'
@@ -386,15 +389,15 @@ NODE_NAME = 'YOUR_NODE_NAME'
 FAUCET_WALLET_PRIVATE_KEY = 'YOUR_FAUCET_WALLET_PRIVATE_KEY'
 ADMIN_WALLET_PRIVATE_KEY = 'YOUR_ADMIN_WALLET_PRIVATE_KEY'
 
-HOST_NAME_OR_IP = 'panel.YOUR-DOMAIN.COM'
+HOST_NAME_OR_IP = 'panel.YOUR-DOMAIN'
 
 # Email Server Configuration
 MAIL_HOST = 'YOUR_HOST_MAIL_SERVER_PROVIDER'
 # Please check your email server’s mail port number by configuring an email client on your mobile or computer to confirm. On some servers, it may be 587 or a different port.
 MAIL_PORT = 465
-MAIL_USER = 'noreply@YOUR_DOMAIN.COM'
+MAIL_USER = 'noreply@YOUR_DOMAIN'
 MAIL_PASSWORD = 'YOUR_MAIL_SERVER_PASSWORD'
-MAIL_FROM = 'noreply@YOUR_DOMAIN.COM'
+MAIL_FROM = 'noreply@YOUR_DOMAIN'
 
 # Application color codes in hex. Please write it without '#'. Exmaple: #4e46e7 -> 4e46e7
 # This text color is for Mobile App 
@@ -501,7 +504,7 @@ sudo nano .env
 ```
 Enter the following lines in the .env file and replace `YOUR_NODE_NAME` with your actual node name.
 ```
-VITE_URL='https://panel.YOUR_DOMAIN.COM/app/'
+VITE_URL='https://panel.YOUR_DOMAIN/app/'
 VITE_NODE_NAME = 'YOUR_NODE_NAME'
 ```
 
@@ -523,7 +526,7 @@ sudo nano .env
 ```
 Enter the following lines in the .env file and replace `YOUR_NODE_NAME` with your actual node name.
 ```
-VITE_URL='https://panel.YOUR_DOMAIN.COM/app/'
+VITE_URL='https://panel.YOUR_DOMAIN/app/'
 VITE_NODE_NAME = 'YOUR_NODE_NAME'
 ```
 
