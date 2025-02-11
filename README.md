@@ -354,7 +354,7 @@ THEME_BOX = '2d355c'
 THEME_BUTTON = '4e46e7'
 
 # IoT Server logo path
-THEME_LOGO = 'https://YOUR_DOMAIN/app/uploads/logo.png'
+THEME_LOGO = 'https://panel.YOUR_DOMAIN/app/uploads/logo.png'
 
 ACCESS_TOKEN_ISSUER = 'https://fidesinnova.io'
 ACCESS_TOKEN_EXPIRATION_TIME = 1200000000     # Miliseconds
@@ -414,7 +414,7 @@ SUPER_ADMIN_EMAILS = ['SERVER_ADMIN_EMAIL@EXAMPLE.COM']
 ```
 
 ## B.3. Web App Logo
-- Copy your logo in `.png` format with the `logo` name as `logo.png` in `\home\iot-server\backend\` folder on your server. 
+- Copy your logo in `.png` format with the `logo` name as `logo.png` in `\home\iot-server\backend\uploads` folder on your server. 
 
 ## B.4. Device Configuration File
 - Fidesinnova offers a mobile app to control IoT devices that support the MQTT protocol. The device configuration files, which specify the IoT device types, are stored on the IoT server. In this section, we will review how to create a device configuration file on the server. Each device in the configuration file is represented by an image, a title, a type, and its parameters:
