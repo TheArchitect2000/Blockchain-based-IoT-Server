@@ -343,10 +343,7 @@ MAIL_USER = 'noreply@YOUR_DOMAIN.COM'
 MAIL_PASSWORD = 'YOUR_MAIL_SERVER_PASSWORD'
 MAIL_FROM = 'noreply@YOUR_DOMAIN.COM'
 # optional
-MAIL_TRANSPORT = smtp://${MAIL_USER}:${MAIL_PASSWORD}@${MAIL_HOST}
-
-# Copy your logo on a publicly available URL on the Internet and copy its URL here.
-THEME_LOGO = 'YOUR_LOGO_URL'
+MAIL_TRANSPORT = smtp://${MAIL_USER}:${MAIL_PASSWORD}@${MAIL_HOST} 
 
 # Application color codes in hex. Please write it without '#'. Exmaple: #4e46e7 -> 4e46e7
 # This text color is for Mobile App 
@@ -399,9 +396,6 @@ MAIL_USER = 'noreply@YOUR_DOMAIN.COM'
 MAIL_PASSWORD = 'YOUR_MAIL_SERVER_PASSWORD'
 MAIL_FROM = 'noreply@YOUR_DOMAIN.COM'
 
-# Copy your logo on a publicly available URL on the Internet and copy its URL here.
-THEME_LOGO = 'YOUR_LOGO_URL'
-
 # Application color codes in hex. Please write it without '#'. Exmaple: #4e46e7 -> 4e46e7
 # This text color is for Mobile App 
 THEME_TEXT = 'ffffff' 
@@ -416,7 +410,10 @@ REFRESH_TOKEN_SECRET_KEY = 'YOUR_REFRESH_SECRET_KEY'
 SUPER_ADMIN_EMAILS = ['SERVER_ADMIN_EMAIL@EXAMPLE.COM'] 
 ```
 
-## B.2. Device Configuration File
+## B.3. Web App Logo
+- Copy your logo in `.png` format with the `logo` name as `logo.png` in `\home\iot-server\backend\` folder on your server. 
+
+## B.4. Device Configuration File
 - Fidesinnova offers a mobile app to control IoT devices that support the MQTT protocol. The device configuration files, which specify the IoT device types, are stored on the IoT server. In this section, we will review how to create a device configuration file on the server. Each device in the configuration file is represented by an image, a title, a type, and its parameters:
 - **fileName**: Refers to the image file that should be placed in the `/iot-server/backend/uploads/device` directory. This image will be displayed in the mobile app (e.g., "ecard.png").
 - **title**: The display name for the device (e.g., "E-Card").
@@ -425,7 +422,7 @@ SUPER_ADMIN_EMAILS = ['SERVER_ADMIN_EMAIL@EXAMPLE.COM']
 - If a parameter’s `value` is an empty array `[]`, it indicates dynamic data input.
 - If `value` has specific options (e.g., `["Open", "Close"]`), it will show these options in the Blockly dropdown as predefined outputs.
 
-### B.2.1. Edit the `devices.json` file
+### B.4.1. Edit the `devices.json` file
 - Create `devices.json` file in the `backend/src/data/` in the project folder
 ```
 cd /home/iot-server/backend/src
