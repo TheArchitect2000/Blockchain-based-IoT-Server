@@ -264,6 +264,14 @@ const DeviceTable = ({
                 return <span className="capitalize">{row.deviceType}</span>
             },
         },
+        {
+            header: 'Device Id',
+            accessorKey: 'deviceEncryptedId',
+            cell: (props) => {
+                const row = props.row.original
+                return <span className="capitalize">{row.deviceEncryptedId}</span>
+            },
+        },
         // {
         //     header: 'Use Cost',
         //     accessorKey: 'costOfUse',
@@ -572,11 +580,12 @@ const DeviceTable = ({
                                     loading="lazy"
                                     decoding="async"
                                     width="150"
-                                    src="https://fidesinnova.io/wp-content/uploads/2024/06/gplay-button.png"
+                                    src="/img/stores/gplay-button.png" // 
                                     className="attachment-large size-large wp-image-18033"
                                     alt="FidesInnova google play pic"
                                 />
                             </a>
+                            
                             <a
                                 href="https://apps.apple.com/ca/app/fidesinnova/id6477492757"
                                 target="_blank"
@@ -585,7 +594,7 @@ const DeviceTable = ({
                                     loading="lazy"
                                     decoding="async"
                                     width="150"
-                                    src="https://fidesinnova.io/wp-content/uploads/2024/06/appstore-button.png"
+                                    src="/img/stores/appstore-button.png"
                                     className="attachment-large size-large wp-image-18034"
                                     alt="FidesInnova appstore pic"
                                 />{' '}

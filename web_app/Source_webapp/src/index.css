@@ -20,9 +20,7 @@
     background-color: #374151 !important;
 }
 
-* {
-    user-select: none;
-}
+
 
 .can-select,
 .can-select * {
