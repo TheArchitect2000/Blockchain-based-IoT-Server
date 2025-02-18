@@ -4,15 +4,25 @@ import ThemeApply from '@/components/layouts/ThemeApply'
 import { useAppSelector } from '@/store'
 import GoogleLoginButton from '@/components/GoogleLoginButton/GoogleLoginButton'
 import { ActionLink } from '@/components/shared'
+import { FaUser } from 'react-icons/fa'
 
 const SignIn = () => {
     ThemeApply()
 
     const themeColor = useAppSelector((state) => state.theme.themeBackground)
+    const themeButton = useAppSelector((state) => state.theme.themeColor)
+    const themeButtonLevel = useAppSelector(
+        (state) => state.theme.primaryColorLevel
+    )
 
     return (
         <main className="w-full min-h-[93.5dvh] flex flex-col justify-center">
             <div className="mb-8">
+                <h4
+                    className={`flex gap-2 mb-1 !text-${themeButton}-${themeButtonLevel}`}
+                >
+                    <FaUser /> User Panel
+                </h4>
                 <h3 className="mb-1">
                     Welcome to the Verifiable Computing Platform!
                 </h3>
