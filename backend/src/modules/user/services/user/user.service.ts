@@ -1349,6 +1349,7 @@ export class UserService {
         email: data.email,
         password: generatePassword(16),
         StorX: {},
+        lastLogin: new Date(),
       });
 
       await this.setActivationStatus(
@@ -1412,6 +1413,8 @@ export class UserService {
           accessToken: accessToken,
           refreshToken: refreshToken,
         };
+
+        await this.editUserByUser(this.user._id, { lastLogin: new Date() });
 
         const response: any = await this.myProfileResponse(this.user);
         response.tokens = tokens;

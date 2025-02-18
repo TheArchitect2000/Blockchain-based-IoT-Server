@@ -42,4 +42,5 @@ export interface UserInterface extends Document {
   deletionReason: string;
   updatedBy: string;
   updateDate: string;
+  lastLogin: string;
 }

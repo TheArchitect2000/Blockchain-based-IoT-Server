@@ -168,6 +168,11 @@ const schema = new Schema({
     required: false,
     default: null,
   },
+  lastLogin: {
+    type: Date,
+    required: false,
+    default: null,
+  },
   updatedBy: {
     type: Schema.Types.ObjectId,
     ref: 'user',
