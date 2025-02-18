@@ -272,6 +272,14 @@ const UsersTable: React.FC<UsersTableProps> = ({ setCount }) => {
         },
 
         {
+            header: 'Last Login',
+            accessorKey: 'insertDate',
+            cell: (props) => {
+                const row = props.row.original as any
+                return <span>{row.lastLogin ? formatISODate(row.lastLogin) : "-"}</span>
+            },
+        },
+        {
             header: 'Creation Date',
             accessorKey: 'insertDate',
             cell: (props) => {
