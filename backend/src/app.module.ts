@@ -33,7 +33,10 @@ import { BuildingModule } from './modules/building/building.module';
       isGlobal: true,
       load: [databaseConfig, multerConfig],
     }),
-    MongooseModule.forRoot(process.env.MONGO_CONNECTION),
+
+    MongooseModule.forRoot(
+      `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DATABASE_NAME}`,
+    ),
 
     ServeStaticModule.forRoot({
       rootPath: './uploads',
