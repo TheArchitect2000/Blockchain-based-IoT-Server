@@ -605,6 +605,7 @@ To automate the setup and build processes for both the backend and frontend appl
 
 
 # E. Maintenance
+## E.1. Update IoT Server
 - Every time Fidesinnova core development team push a new version of the code on GitHub.
 ```
 cd /home/iot-server/
@@ -618,14 +619,14 @@ cd /home/iot-server/
 sudo chmod +x update.sh
 sudo ./update.sh
 ```
-
+## E.2. Backup IoT Server
 - Every time you want to get a backup from your server, you should execute the following script and get your backup file in the 'backups' folder.
 ```
 cd /home/iot-server/
 sudo chmod +x backup.sh
 sudo ./backup.sh
 ```
-
+## E.3. Troubleshooting
 - Useful commands for troubleshooting
 ```
 # to make file writable and other permissions :
@@ -659,7 +660,7 @@ pm2 restart my-app                     # Restart a process
 pm2 delete my-app                      # Remove a process from PM2
 pm2 logs                               # Show logs of all processes  
 ```
-
+## E.4. Web App Ports
 - Change the Panel Web App Port
 In `Runner_webapp` folder, create `.env` file.
 ```
