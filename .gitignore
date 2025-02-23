@@ -1,9 +1,17 @@
 
+# env
+*.env
+.env*
+.env
+
 *localhost-key.pem
 *localhost.pem
 
-/backend/src/data/*
+/backups
+/backups/*
 
+
+/backend/src/data/*
 /backend/uploads/*
 !/backend/uploads/devices/
 /backend/uploads/devices/*
@@ -15,9 +23,11 @@
 !/backend/uploads/sprites.png
 
 admin_web_app/Runner_webapp/frontend/*
+!/admin_web_app/Runner_webapp/.env
 !admin_web_app/Runner_webapp/frontend/t.txt
 web_app/Runner_webapp/frontend/*
 !web_app/Runner_webapp/frontend/t.txt
+!/web_app/Runner_webapp/.env
 
 # Project configuration files
 *webprivate.pem
@@ -35,11 +45,6 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
-
-# env
-*.env
-.env*
-.env
 
 
 # Tests
