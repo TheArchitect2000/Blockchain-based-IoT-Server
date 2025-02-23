@@ -11,7 +11,6 @@ import { UserModule } from '../user/user.module';
 import { userFeature } from '../user/features/user.feature';
 import { ConfigModule } from '@nestjs/config';
 import { UtilityModule } from '../utility/utility.module';
-import { GoogleStrategy } from './strategy/google.strategy';
 
 @Module({
   imports: [
@@ -34,7 +33,6 @@ import { GoogleStrategy } from './strategy/google.strategy';
     AuthenticationService,
     LocalStrategy,
     JwtStrategy,
-    GoogleStrategy,
 ],
   controllers: [AuthenticationController],
   exports: [AuthenticationService],

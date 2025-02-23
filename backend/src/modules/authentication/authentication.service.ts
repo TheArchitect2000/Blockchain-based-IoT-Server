@@ -10,7 +10,7 @@ import { UserVerificationStatusEnum } from '../user/enums/user-verification-stat
 import { UserService } from '../user/services/user/user.service';
 import { GeneralException } from '../utility/exceptions/general.exception';
 import { GoogleAuthUserResponseDto } from './data-transfer-objects/google-auth.dto';
-import { OAuth2Client } from 'google-auth-library';
+import { ErrorTypeEnum } from '../utility/enums/error-type.enum';
 var jwt = require('jsonwebtoken');
 
 @Injectable()
@@ -20,7 +20,7 @@ export class AuthenticationService {
     private jwtService: JwtService,
   ) {}
 
-  private client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+  //private client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
   async validateUser(mobile: string, pass: string): Promise<any> {
     const whereCondition = { isDeleted: false };
@@ -62,11 +62,12 @@ export class AuthenticationService {
   async loginWithGoogle(tokenId?: string | null, accessToken?: string | null, isAdmin = false) {
     let payload;
     if (tokenId) {
-      const ticket = await this.client.verifyIdToken({
+      /* const ticket = await this.client.verifyIdToken({
         idToken: tokenId,
         audience: process.env.GOOGLE_CLIENT_ID,
       });
-      payload = ticket.getPayload();
+      payload = ticket.getPayload(); */
+      throw new GeneralException(ErrorTypeEnum.INTERNAL_SERVER_ERROR, "Error Code #10294")
     } else {
       const userInfo = await axios
         .get('https://www.googleapis.com/oauth2/v3/userinfo', {
