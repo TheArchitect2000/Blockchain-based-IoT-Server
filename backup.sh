@@ -19,7 +19,7 @@ set +o allexport
 
 # Define backup directory inside the script's folder
 BACKUP_DIR="$SCRIPT_DIR/backups"
-TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
 BACKUP_FILE="iot_server_backup_$TIMESTAMP.tar.gz"
 MONGO_BACKUP_DIR="$BACKUP_DIR/mongo_backup"
 
