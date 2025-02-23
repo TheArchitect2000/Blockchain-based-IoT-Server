@@ -309,7 +309,9 @@ cd /home
 sudo git clone https://github.com/FidesInnova/iot-server.git
 ```
 
-# Step B. Prepare the app
+- Continue with Step B if you want to install a new node, or Step C if you want to restore your node from a previous backup.
+
+# Step B. Configure a New Node
 ## B.1. Generate two JWT secret keys  
 - Generate an access secret key (256-bit / 32-byte)
 ```
@@ -542,9 +544,7 @@ sudo nano devices.json
 ]
 ```
 
-# Step C. Install Panel Web App and Admin Web App
-
-## C.1. Install Panel Web App for users
+## B.5. Install Panel Web App for users
 - In `Source_webapp` folder, create `.env` file.
 ```
 cd /home/iot-server/web_app/Source_webapp
@@ -556,7 +556,7 @@ VITE_URL='https://panel.YOUR_DOMAIN/app/'
 VITE_NODE_NAME='YOUR_NODE_NAME'
 ```
 
-## C.2. Install Admin Web App for administrator
+## B.6. Install Admin Web App for administrator
 - In `Source_webapp` folder, create `.env` file.
 ```
 cd /home/iot-server/admin_web_app/Source_webapp
@@ -568,25 +568,28 @@ VITE_URL='https://panel.YOUR_DOMAIN/app/'
 VITE_NODE_NAME='YOUR_NODE_NAME'
 ```
 
-## C.3. Build and Execute
+## B.7. Build and Execute
 To automate the setup and build processes for both the backend and frontend applications, run the `initial_setup.sh` script located in the root directory of the project. This script will handle building both the backend and frontend applications and configuring PM2 services automatically.
    ```
    cd /home/iot-server/
    sudo chmod +x initial_setup.sh
    sudo ./initial_setup.sh
    ```
-## Account Setup
+## B.8. Account Setup
 - Goto `https://panel.YOUR_DOMAIN` and go to the 'Sign up' section and create a password for your `super admin email address`.
 - Goto `https://admin.YOUR_DOMAIN` and login with your `super admin email address` and its password.
   
-## Congratulations
-- Panel Web App, `https://panel.YOUR_DOMAIN` is for your regular and IoT Developer users.
+## B.9. Congratulations
+- Panel Web App, `https://panel.YOUR_DOMAIN` is for your regular users.
 - Panel Web App, `https://admin.YOUR_DOMAIN` is for your super admin users.
 - Contact FidesInnova at info@fidesinnova.io to add your Web App URLs to the FidesInnova website. These are already registered IoT Servers:
 - [https://panel.zksensor.tech](https://panel.zksensor.tech/)
 
+# C. Restore Node from Backup
 
-## C.4. Maintenance
+
+
+# D. Maintenance
 - Every time Fidesinnova core development team push a new version of the code on GitHub.
 ```
 cd /home/iot-server/
