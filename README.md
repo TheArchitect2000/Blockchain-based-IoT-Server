@@ -39,7 +39,52 @@ sudo systemctl start mongod.service
 sudo systemctl enable mongod
 ```
 
-- Note: To manage the MongoDB service you can use the following commands
+- Set MongoDB password
+Run `mongosh`
+```
+mongosh
+```
+
+Set `ADMIN_USERNAME` and `ADMIN_PASSWORD`, and type the following lines in the `mongosh` terminal. 
+```
+use admin
+db.createUser({
+  user: "MONGODB_ADMIN_USERNAME",
+  pwd: "MONGODB_ADMIN_PASSWORD",
+  roles: [{ role: "root", db: "admin" }]
+})
+```
+This account can be used later to connect to MongoDB using MongoDB Compass.
+
+Set `FIDESINNOVA_DB_USERNAME` and `FIDESINNOVA_DB_PASSWORD`, and type the following lines in the `mongosh` terminal. 
+```
+use fidesinnova
+db.createUser({
+  user: "FIDESINNOVA_DB_USERNAME",
+  pwd: "FIDESINNOVA_DB_PASSWORD",
+  roles: [{ role: "readWrite", db: "fidesinnova" }]
+})
+```
+This account will be used later to let the system backend connects to the database. Save both credentials in a secure place. 
+
+- Edit the config file
+```
+sudo nano /etc/mongod.conf
+```
+Find the security section and enable authentication:
+```
+security:
+  authorization: enabled
+```
+
+- Restart the MongoDb service
+```
+sudo systemctl restart mongod  
+```
+
+- The MongoDB configuration is done. Please note that:
+** Note 1: To conect to MongoDB, use `mongosh -u 'ADMIN_USERNAME' -p 'ADMIN_PASSWORD' --authenticationDatabase admin`.
+** Note 2: To manage the MongoDB service, use the following commands:
 ```
 sudo systemctl status mongod
 sudo systemctl stop mongod
