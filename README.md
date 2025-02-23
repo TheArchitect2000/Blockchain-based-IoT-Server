@@ -82,9 +82,7 @@ security:
 sudo systemctl restart mongod  
 ```
 
-- The MongoDB configuration is done. Please note that:
-** Note 1: To conect to MongoDB, use `mongosh -u 'ADMIN_USERNAME' -p 'ADMIN_PASSWORD' --authenticationDatabase admin`.
-** Note 2: To manage the MongoDB service, use the following commands:
+- The MongoDB configuration is done. To conect to MongoDB, use `mongosh -u 'ADMIN_USERNAME' -p 'ADMIN_PASSWORD' --authenticationDatabase admin`. Also, to manage the MongoDB service, use the following commands:
 ```
 sudo systemctl status mongod
 sudo systemctl stop mongod
