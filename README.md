@@ -289,91 +289,90 @@ sudo nano .env
 
 ```
 # Set this with your node URL (e.g., 'zksensor.tech')
-NODE_ID = 'YOUR_DOMAIN' 
+NODE_ID='YOUR_DOMAIN' 
 
-PORT = 5000
+PORT=5000
 
 # Set this with your node name (e.g., 'zkSensor')
-NODE_NAME = 'YOUR_NODE_NAME'
+NODE_NAME='YOUR_NODE_NAME'
 
-SWAGGER_LOCAL_SERVER = http://localhost:5000
+SWAGGER_LOCAL_SERVER=http://localhost:5000
 
 # RPC URL - This is the address of a blockchain node in the network that provides RPC sevice to your IoT server
-RPC_URL = 'https://fidesf1-rpc.fidesinnova.io'
+RPC_URL='https://fidesf1-rpc.fidesinnova.io'
 
 # Faucet Wallet Private Key
-FAUCET_WALLET_PRIVATE_KEY = 'YOUR_FAUCET_WALLET_PRIVATE_KEY'
+FAUCET_WALLET_PRIVATE_KEY='YOUR_FAUCET_WALLET_PRIVATE_KEY'
 
 # Admin Wallet Private Key
-ADMIN_WALLET_PRIVATE_KEY = 'YOUR_ADMIN_WALLET_PRIVATE_KEY'
+ADMIN_WALLET_PRIVATE_KEY='YOUR_ADMIN_WALLET_PRIVATE_KEY'
 
 # Google OAuth Configuration 
-GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID'
-GOOGLE_CLIENT_SECRET = 'YOUR_GOOGLE_CLIENT_SECRET'
-GOOGLE_CALLBACK_URL = 'panel.YOUR-DOMAIN.COM/app/authentication/google/redirect'
+GOOGLE_CLIENT_ID='YOUR_GOOGLE_CLIENT_ID'
+GOOGLE_CLIENT_SECRET='YOUR_GOOGLE_CLIENT_SECRET'
+GOOGLE_CALLBACK_URL='panel.YOUR-DOMAIN.COM/app/authentication/google/redirect'
 
 # Server Configuration
-HOST_PROTOCOL = 'https://'
-HOST_NAME_OR_IP = 'panel.YOUR_DOMAIN'
-HOST_PORT = '3000'
-HOST_SUB_DIRECTORY = 'app'
+HOST_PROTOCOL='https://'
+HOST_NAME_OR_IP='panel.YOUR_DOMAIN'
+HOST_PORT='3000'
+HOST_SUB_DIRECTORY='app'
 
 # StorX Configuration
-STORX_BUCKET_NAME = 'fidesinnova'
-STORX_HOST = 'https://b2.storx.io'
-STORX_AUTH_HOST = 'https://auth.storx.io'
+STORX_BUCKET_NAME='fidesinnova'
+STORX_HOST='https://b2.storx.io'
+STORX_AUTH_HOST='https://auth.storx.io'
 
 # Mongo Database Configuration
-MONGO_DATABASE_NAME = fidesinnova
-MONGO_USER = Administrator
-# MONGO_PASSWORD = 'PASSWORD'
-MONGO_PORT = 27017
-MONGO_HOST = mongodb://127.0.0.1
-MONGO_CONNECTION = mongodb://127.0.0.1:27017/fidesinnova
+MONGO_DATABASE_NAME='fidesinnova'
+MONGO_USER='acc_username'
+MONGO_PASSWORD='acc_secure_password'
+MONGO_PORT=27017
+MONGO_HOST=127.0.0.1
 
 # Email Configuration
-NOTIFICATION_BY_MAIL = 'enabled'
-NOTIFICATION_BY_NOTIFICATION = 'enabled'
+NOTIFICATION_BY_MAIL='enabled'
+NOTIFICATION_BY_NOTIFICATION='enabled'
 
 # Email Server Configuration
-MAIL_HOST = 'YOUR_HOST_MAIL_SERVER_PROVIDER'
+MAIL_HOST='YOUR_HOST_MAIL_SERVER_PROVIDER'
 # Please check your email server’s mail port number by configuring an email client on your mobile or computer to confirm. On some servers, it may be 587 or a different port.
-MAIL_PORT = 465
-MAIL_USER = 'noreply@YOUR_DOMAIN'
-MAIL_PASSWORD = 'YOUR_MAIL_SERVER_PASSWORD'
-MAIL_FROM = 'noreply@YOUR_DOMAIN'
+MAIL_PORT=465
+MAIL_USER='noreply@YOUR_DOMAIN'
+MAIL_PASSWORD='YOUR_MAIL_SERVER_PASSWORD'
+MAIL_FROM='noreply@YOUR_DOMAIN'
 # optional
-MAIL_TRANSPORT = smtp://${MAIL_USER}:${MAIL_PASSWORD}@${MAIL_HOST} 
+MAIL_TRANSPORT=smtp://${MAIL_USER}:${MAIL_PASSWORD}@${MAIL_HOST} 
 
 # Application color codes in hex. Please write it without '#'. Exmaple: #4e46e7 -> 4e46e7
 # This text color is for Mobile App 
-THEME_TEXT = 'ffffff' 
+THEME_TEXT='ffffff' 
 # These colors are for Web App and Mobile App
-THEME_BACKGROUND = '212838'
-THEME_BOX = '2d355c'
-THEME_BUTTON = '4e46e7'
+THEME_BACKGROUND='212838'
+THEME_BOX='2d355c'
+THEME_BUTTON='4e46e7'
 
 # IoT Server logo path
-THEME_LOGO = 'https://panel.YOUR_DOMAIN/app/uploads/logo.png'
+THEME_LOGO='https://panel.YOUR_DOMAIN/app/uploads/logo.png'
 
-ACCESS_TOKEN_ISSUER = 'https://fidesinnova.io'
-ACCESS_TOKEN_EXPIRATION_TIME = 1200000000     # Miliseconds
-ACCESS_TOKEN_SECRET_KEY = 'YOUR_ACCESS_SECRET_KEY'
-# ACCESS_TOKEN_ALGORITHM = 'PS384'
-ACCESS_TOKEN_ALGORITHM = 'HS384'
+ACCESS_TOKEN_ISSUER='https://fidesinnova.io'
+ACCESS_TOKEN_EXPIRATION_TIME=1200000000     # Miliseconds
+ACCESS_TOKEN_SECRET_KEY='YOUR_ACCESS_SECRET_KEY'
+# ACCESS_TOKEN_ALGORITHM='PS384'
+ACCESS_TOKEN_ALGORITHM='HS384'
 
-REFRESH_TOKEN_ISSUER = 'https://fidesinnova.io'
-REFRESH_TOKEN_EXPIRATION_TIME = 2400000000    # Miliseconds
-REFRESH_TOKEN_SECRET_KEY = 'YOUR_REFRESH_SECRET_KEY'
-REFRESH_TOKEN_ALGORITHM = 'HS384'
+REFRESH_TOKEN_ISSUER='https://fidesinnova.io'
+REFRESH_TOKEN_EXPIRATION_TIME=2400000000    # Miliseconds
+REFRESH_TOKEN_SECRET_KEY='YOUR_REFRESH_SECRET_KEY'
+REFRESH_TOKEN_ALGORITHM='HS384'
 
 # your admins emails that can make other users into admin
-SUPER_ADMIN_EMAILS = ['SERVER_ADMIN_EMAIL@EXAMPLE.COM'] 
+SUPER_ADMIN_EMAILS=['SERVER_ADMIN_EMAIL@EXAMPLE.COM'] 
 
 # Multer Configuration
 # Multer is a node.js middleware for handling multipart/form-data, which is primarily used for uploading files.
-MULTER_MEDIA_PATH = ./storages/resources
-MULTER_MEDIA_SIZE = 10000000    # 10 MB
+MULTER_MEDIA_PATH=./storages/resources
+MULTER_MEDIA_SIZE=10000000    # 10 MB
 ```
 - Create two wallets address on Fidesinnova network for the admin and the faucet. To learn how to connect your wallet to fides network, please [watch this video on YouTube](https://www.youtube.com/watch?v=3GVfyu4uzhs) 
 - Email only the wallet addresses (excluding private keys) to info@fidesinnova.io and ask to receive some tokens for your node operation. The admin address will be authorized on the network. The faucet address will be used to distribute tokens to your users on your server.
@@ -381,36 +380,36 @@ Never share your account’s private key with anyone.
 - Update these parameters in the file:
 ```
 # Set this with your node URL (e.g., 'zksensor.tech')
-NODE_ID = 'YOUR_DOMAIN' 
+NODE_ID='YOUR_DOMAIN' 
 
 # Set this with your node name (e.g., 'zkSensor')
-NODE_NAME = 'YOUR_NODE_NAME'
+NODE_NAME='YOUR_NODE_NAME'
 
-FAUCET_WALLET_PRIVATE_KEY = 'YOUR_FAUCET_WALLET_PRIVATE_KEY'
-ADMIN_WALLET_PRIVATE_KEY = 'YOUR_ADMIN_WALLET_PRIVATE_KEY'
+FAUCET_WALLET_PRIVATE_KEY='YOUR_FAUCET_WALLET_PRIVATE_KEY'
+ADMIN_WALLET_PRIVATE_KEY='YOUR_ADMIN_WALLET_PRIVATE_KEY'
 
-HOST_NAME_OR_IP = 'panel.YOUR-DOMAIN'
+HOST_NAME_OR_IP='panel.YOUR-DOMAIN'
 
 # Email Server Configuration
-MAIL_HOST = 'YOUR_HOST_MAIL_SERVER_PROVIDER'
+MAIL_HOST='YOUR_HOST_MAIL_SERVER_PROVIDER'
 # Please check your email server’s mail port number by configuring an email client on your mobile or computer to confirm. On some servers, it may be 587 or a different port.
-MAIL_PORT = 465
-MAIL_USER = 'noreply@YOUR_DOMAIN'
-MAIL_PASSWORD = 'YOUR_MAIL_SERVER_PASSWORD'
-MAIL_FROM = 'noreply@YOUR_DOMAIN'
+MAIL_PORT=465
+MAIL_USER='noreply@YOUR_DOMAIN'
+MAIL_PASSWORD='YOUR_MAIL_SERVER_PASSWORD'
+MAIL_FROM='noreply@YOUR_DOMAIN'
 
 # Application color codes in hex. Please write it without '#'. Exmaple: #4e46e7 -> 4e46e7
 # This text color is for Mobile App 
-THEME_TEXT = 'ffffff' 
+THEME_TEXT='ffffff' 
 # These colors are for Web App and Mobile App
-THEME_BACKGROUND = '212838'
-THEME_BOX = '2d355c'
-THEME_BUTTON = '4e46e7'
+THEME_BACKGROUND='212838'
+THEME_BOX='2d355c'
+THEME_BUTTON='4e46e7'
 
-ACCESS_TOKEN_SECRET_KEY = 'YOUR_ACCESS_SECRET_KEY'
-REFRESH_TOKEN_SECRET_KEY = 'YOUR_REFRESH_SECRET_KEY'
+ACCESS_TOKEN_SECRET_KEY='YOUR_ACCESS_SECRET_KEY'
+REFRESH_TOKEN_SECRET_KEY='YOUR_REFRESH_SECRET_KEY'
 
-SUPER_ADMIN_EMAILS = ['SERVER_ADMIN_EMAIL@EXAMPLE.COM'] 
+SUPER_ADMIN_EMAILS=['SERVER_ADMIN_EMAIL@EXAMPLE.COM'] 
 ```
 
 ## B.3. Web App Logo
@@ -505,7 +504,7 @@ sudo nano .env
 Enter the following lines in the .env file and replace `YOUR_NODE_NAME` with your actual node name.
 ```
 VITE_URL='https://panel.YOUR_DOMAIN/app/'
-VITE_NODE_NAME = 'YOUR_NODE_NAME'
+VITE_NODE_NAME='YOUR_NODE_NAME'
 ```
 
 - In `Runner_webapp` folder, create `.env` file.
@@ -527,7 +526,7 @@ sudo nano .env
 Enter the following lines in the .env file and replace `YOUR_NODE_NAME` with your actual node name.
 ```
 VITE_URL='https://panel.YOUR_DOMAIN/app/'
-VITE_NODE_NAME = 'YOUR_NODE_NAME'
+VITE_NODE_NAME='YOUR_NODE_NAME'
 ```
 
 - In `Runner_webapp` folder, create `.env` file.
