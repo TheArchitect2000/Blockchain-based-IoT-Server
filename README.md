@@ -291,8 +291,6 @@ sudo nano .env
 # Set this with your node URL (e.g., 'zksensor.tech')
 NODE_ID='YOUR_DOMAIN' 
 
-PORT=5000
-
 # Set this with your node name (e.g., 'zkSensor')
 NODE_NAME='YOUR_NODE_NAME'
 
