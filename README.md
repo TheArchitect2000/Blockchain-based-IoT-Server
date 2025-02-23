@@ -65,11 +65,11 @@ db.createUser({
   roles: [{ role: "readWrite", db: "fidesinnova" }]
 })
 ```
+This account will be used later to let the system backend connects to the database. Save both credentials in a secure place. 
 Exit from the mongosh environment.
 ```
 exit
 ```
-This account will be used later to let the system backend connects to the database. Save both credentials in a secure place. 
 
 
 - Edit the config file
