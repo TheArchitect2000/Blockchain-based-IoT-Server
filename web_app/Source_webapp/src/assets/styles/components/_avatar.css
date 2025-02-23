@@ -55,16 +55,16 @@
 
 .avatar-badge {
     position: absolute;
-    top: 0; /* Align to the top */
-    left: 0; /* Align to the left */
-    transform: translate(-50%, -30%); /* Fine-tune positioning */
+    bottom: -50%; /* Align to the top */
+    left: 50%; /* Align to the left */
+    transform: translate(-50%, 10%); /* Fine-tune positioning */
     padding: 1px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 30px; /* Adjust width to fit the badge size */
-    height: 30px; /* Adjust height to fit the badge size */
+    width: 25px; /* Adjust width to fit the badge size */
+    height: 25px; /* Adjust height to fit the badge size */
     font-size: 0.75rem; /* Adjust font size */
 }
 

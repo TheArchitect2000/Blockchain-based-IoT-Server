@@ -28,7 +28,7 @@ export default function MakeAdmin() {
         { short: 'service', roleName: 'service_admin' },
         { short: 'request', roleName: 'request_admin' },
         { short: 'notification', roleName: 'notification_admin' },
-        { short: 'cm_developer', roleName: 'company_developer' },
+        //{ short: 'cm_developer', roleName: 'company_developer' },
     ]
 
     const [selected, setSelected] = useState<any>()

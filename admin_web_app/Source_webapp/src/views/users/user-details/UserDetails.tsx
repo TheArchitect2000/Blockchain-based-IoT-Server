@@ -1,5 +1,5 @@
 import { Loading } from '@/components/shared'
-import { Avatar, Checkbox, Input, Notification, toast } from '@/components/ui'
+import { Avatar, Dropdown, Notification, toast } from '@/components/ui'
 import {
     apiGetUserProfileByUserId,
     apiGiveUserAdminRank,
@@ -10,7 +10,7 @@ import { HiBadgeCheck, HiUser } from 'react-icons/hi'
 import { useParams } from 'react-router-dom'
 
 function capitalizeFirstLetter(string: string) {
-    if (!string) return '' // Handle empty strings
+    if (!string) return ''
     return string.charAt(0).toUpperCase() + string.slice(1)
 }
 
@@ -40,42 +40,70 @@ export default function UserDetails() {
         }
     }
 
-    function isDeveloper() {
-        return userData.roles.some(
-            (theRole: any) =>
-                theRole.name == 'company_developer' ||
-                theRole.label == 'company_developer' ||
-                theRole.department == 'company_developer'
-        )
+    function getDeveloperRole() {
+        if (
+            userData.roles.some(
+                (role: any) =>
+                    role.name === 'company_developer_a' ||
+                    role.label === 'company_developer_a'
+            )
+        ) {
+            return 'Developer A'
+        } else if (
+            userData.roles.some(
+                (role: any) =>
+                    role.name === 'company_developer_b' ||
+                    role.label === 'company_developer_b'
+            )
+        ) {
+            return 'Developer B'
+        } else if (
+            userData.roles.some(
+                (role: any) =>
+                    role.name === 'company_developer_c' ||
+                    role.label === 'company_developer_c'
+            )
+        ) {
+            return 'Developer C'
+        }
+        return 'None'
     }
 
-    async function changeUserDeveloper(checked: boolean) {
+    async function changeUserDeveloper(selectedRole: string) {
         setDeveloperLoading(true)
-        if (checked) {
-            await apiGiveUserAdminRank(userData.email, ['cm_developer'])
+        try {
+            if (String(selectedRole) == 'None') {
+                await apiTakeUserAdminRank(userData.email, [
+                    'cm_developer',
+                    'cmd_a',
+                    'cmd_b',
+                    'cmd_c',
+                ])
+            } else {
+                await apiTakeUserAdminRank(userData.email, [
+                    'cm_developer',
+                    'cmd_a',
+                    'cmd_b',
+                    'cmd_c',
+                ])
+                await apiGiveUserAdminRank(userData.email, [
+                    'cm_developer',
+                    selectedRole,
+                ])
+            }
+
             toast.push(
                 <Notification
-                    title={`User has been successfully granted the 'Company Developer' rank.`}
+                    title={`User role changed to '${selectedRole}'.`}
                     type="success"
                 />,
-                {
-                    placement: 'top-center',
-                }
+                { placement: 'top-center' }
             )
-        } else {
-            await apiTakeUserAdminRank(userData.email, ['cm_developer'])
-            toast.push(
-                <Notification
-                    title={`The 'Company Developer' rank has been successfully removed from the user.`}
-                    type="success"
-                />,
-                {
-                    placement: 'top-center',
-                }
-            )
+
+            await fetchData()
+        } finally {
+            setDeveloperLoading(false)
         }
-        await fetchData()
-        setDeveloperLoading(false)
     }
 
     useEffect(() => {
@@ -92,7 +120,7 @@ export default function UserDetails() {
 
     return (
         <div className="p-6 max-w-5xl mx-auto shadow-xl rounded-md">
-            <header className="w-full flex items-center space-x-4 mb-6">
+            <header className="w-full flex items-center  gap-4 mb-6">
                 <Avatar
                     className="!w-[60px] !h-[60px] overflow-hidden border-2 border-white dark:border-gray-800 shadow-lg"
                     size={60}
@@ -122,14 +150,44 @@ export default function UserDetails() {
                         Status: {userData.activationStatus}
                     </p>
                 </div>
+
+                {/* Developer Role Dropdown */}
                 <div className="!ml-auto flex items-center gap-2">
                     <h2 className="text-lg font-semibold">Developer:</h2>
-                    <Checkbox
+                    <Dropdown
                         disabled={developerLoading}
-                        defaultChecked={isDeveloper()}
-                        onChange={changeUserDeveloper}
-                        id="admin_developer_checkbox"
-                    />
+                        renderTitle={
+                            <span className="px-3 py-1 border rounded-md cursor-pointer">
+                                {getDeveloperRole()}
+                            </span>
+                        }
+                        placement="bottom-end"
+                    >
+                        <Dropdown.Item
+                            eventKey="None"
+                            onClick={() => changeUserDeveloper('None')}
+                        >
+                            None
+                        </Dropdown.Item>
+                        <Dropdown.Item
+                            eventKey="Developer A"
+                            onClick={() => changeUserDeveloper('cmd_a')}
+                        >
+                            Developer A
+                        </Dropdown.Item>
+                        <Dropdown.Item
+                            eventKey="Developer B"
+                            onClick={() => changeUserDeveloper('cmd_b')}
+                        >
+                            Developer B
+                        </Dropdown.Item>
+                        <Dropdown.Item
+                            eventKey="Developer C"
+                            onClick={() => changeUserDeveloper('cmd_c')}
+                        >
+                            Developer C
+                        </Dropdown.Item>
+                    </Dropdown>
                 </div>
             </header>
 
@@ -160,23 +218,6 @@ export default function UserDetails() {
                                 .join(', ') || 'N/A'}
                             {userData.address?.zipCode
                                 ? ` - ${userData.address.zipCode}`
-                                : ''}
-                        </p>
-                    </div>
-                    <div>
-                        <p>
-                            <strong>Company:</strong>{' '}
-                            {[
-                                userData.company?.line_1,
-                                userData.company?.line_2,
-                                userData.company?.city,
-                                userData.company?.state,
-                                userData.company?.country,
-                            ]
-                                .filter(Boolean)
-                                .join(', ') || 'N/A'}
-                            {userData.company?.zipCode
-                                ? ` - ${userData.company.zipCode}`
                                 : ''}
                         </p>
                     </div>
@@ -219,33 +260,6 @@ export default function UserDetails() {
                         </ul>
                     </div>
                 ))}
-            </section>
-
-            <section>
-                <h3 className="text-lg font-semibold mb-2">
-                    Additional Information
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                    <p>
-                        <strong>Joined On:</strong>{' '}
-                        {new Date(userData.insertDate).toLocaleDateString()}
-                    </p>
-                    <p>
-                        <strong>Last Updated:</strong>{' '}
-                        {new Date(userData.updateDate).toLocaleDateString()}
-                    </p>
-                    <p>
-                        <strong>Wallet Address:</strong>{' '}
-                        {userData.walletAddress || 'N/A'}
-                    </p>
-                    <p className="flex gap-1 items-center">
-                        <strong>Verification Status:</strong>{' '}
-                        {userData.verificationStatus}{' '}
-                        {userData.verificationStatus == 'verified' && (
-                            <HiBadgeCheck className="text-blue-500" />
-                        )}
-                    </p>
-                </div>
             </section>
         </div>
     )

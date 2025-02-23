@@ -46,9 +46,6 @@ const _UserDropdown = ({ className }: CommonProps) => {
             dispatch(setAvatar(resData.data.data.avatar))
             dispatch(setFirstName(resData.data.data.firstName))
             await fetchUserRoles()
-            if (checkUserHasRole('company_developer')) {
-                setIsDeveloper(true)
-            }
         }
         fetchData()
     }, [])
@@ -61,9 +58,33 @@ const _UserDropdown = ({ className }: CommonProps) => {
                 size={32}
                 shape="circle"
                 badge={
-                    isDeveloper && (
-                        <img className='!w-[80px]' src="/img/others/medal.png" />
-                    ) /* <FaCode className="!text-xl" /> */
+                    <>
+                        {checkUserHasRole('company_developer_a') && (
+                            <div className="relative flex">
+                                <img src="/img/others/medal/bronze.png" />
+                                <p className="absolute bottom-[-5.5px] left-[7px] text-black font-bold">
+                                    A
+                                </p>
+                            </div>
+                        )}
+                        {checkUserHasRole('company_developer_b') && (
+                            <div className="relative flex">
+                                <img src="/img/others/medal/silver.png" />
+                                <p className="absolute bottom-[-5.5px] left-[7.5px] text-black font-bold">
+                                    B
+                                </p>
+                            </div>
+                        )}
+                        {checkUserHasRole('company_developer_c') && (
+                            <div className="relative flex">
+                                <img src="/img/others/medal/gold.png" />
+                                <p className="absolute bottom-[-5.5px] left-[6.5px] text-black font-bold">
+                                    C
+                                </p>
+                            </div>
+                        )}
+                    </>
+                    /* <FaCode className="!text-xl" /> */
                 }
                 icon={
                     (avatarLink && <img src={avatarLink} />) || (
