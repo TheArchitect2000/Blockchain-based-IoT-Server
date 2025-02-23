@@ -601,8 +601,11 @@ To automate the setup and build processes for both the backend and frontend appl
 - Panel Web App, `https://panel.YOUR_DOMAIN` is for your regular users.
 - Admin Web App, `https://admin.YOUR_DOMAIN` is for your super admin users.
 - Contact FidesInnova at info@fidesinnova.io to add your Web App URLs to the FidesInnova website. These are already registered IoT Servers:
+- [https://panel.motioncertified.online](https://panel.motioncertified.online/)
 - [https://panel.zksensor.tech](https://panel.zksensor.tech/)
-
+- [https://panel.trustlearn.xyz](https://panel.trustlearn.xyz/)
+- [https://panel.energywisenetwork.com](https://panel.energywisenetwork.com/)
+- [https://panel.trustsense.tech](https://panel.trustsense.tech/)
 
 # E. Maintenance
 ## E.1. Update IoT Server
