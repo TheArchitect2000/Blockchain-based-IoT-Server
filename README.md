@@ -608,11 +608,19 @@ cd /home/iot-server/
 sudo git fetch
 sudo git pull
 ```
+
 - Every time you pull a new version of the server code from GitHub or you make a change to any `.env` files in the system, you should apply the changes to your production server via update script.
 ```
 cd /home/iot-server/
 sudo chmod +x update.sh
 sudo ./update.sh
+```
+
+- Every time you want to get a backup from your server, you should execute the following script and get your backup file in the 'backups' folder.
+```
+cd /home/iot-server/
+sudo chmod +x backup.sh
+sudo ./backup.sh
 ```
 
 - Useful commands for troubleshooting
