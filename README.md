@@ -682,4 +682,4 @@ Change the port number in the following line.
 ```
 PORT=5000
 ```
-Note: If you change these two ports, please make sure you consulte with the Fides Innova repository manager to avoid any git push conflict in future.
+Note: If you change these two ports, please make sure you consult with the Fides Innova repository manager to avoid any future git push conflicts.
