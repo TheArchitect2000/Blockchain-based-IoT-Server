@@ -455,10 +455,10 @@ SUPER_ADMIN_EMAILS=['SERVER_ADMIN_EMAIL@EXAMPLE.COM']
 
 - Note: Please change only the the necessary values in the 'env' file, and do not add any extra space before or after '='. For exmaple,
 ```
-THEME_BOX='sja02k'  <--- correct
-THEME_BOX ='sja02k'  <--- wrong
-THEME_BOX= 'sja02k'  <--- wrong
-THEME_BOX = 'sja02k'  <--- wrong
+THEME_BOX='0xabcd'  <--- correct
+THEME_BOX ='0xabcd'  <--- wrong
+THEME_BOX= '0xabcd'  <--- wrong
+THEME_BOX = '0xabcd'  <--- wrong
 ```
 
 ## B.3. Web App Logo
