@@ -63,6 +63,27 @@ export class UserRoleService {
       roleDepartment: RoleDepartmentsEnum.DEVELOPMENT,
     },
     {
+      short: 'cmd_a',
+      roleName: 'company_developer_a',
+      roleLabel: 'company_developer_a',
+      permissionName: 'cmd_a',
+      roleDepartment: RoleDepartmentsEnum.DEVELOPMENT,
+    },
+    {
+      short: 'cmd_b',
+      roleName: 'company_developer_b',
+      roleLabel: 'company_developer_b',
+      permissionName: 'cmd_b',
+      roleDepartment: RoleDepartmentsEnum.DEVELOPMENT,
+    },
+    {
+      short: 'cmd_c',
+      roleName: 'company_developer_c',
+      roleLabel: 'company_developer_c',
+      permissionName: 'cmd_c',
+      roleDepartment: RoleDepartmentsEnum.DEVELOPMENT,
+    },
+    {
       short: 'normal',
       roleName: 'ordinary',
       roleLabel: 'ordinary_user',
