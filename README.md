@@ -556,16 +556,6 @@ VITE_URL='https://panel.YOUR_DOMAIN/app/'
 VITE_NODE_NAME='YOUR_NODE_NAME'
 ```
 
-- In `Runner_webapp` folder, create `.env` file.
-```
-cd /home/iot-server/web_app/Runner_webapp
-sudo nano .env
-```
-Enter the following line in the `.env` file.
-```
-PORT=4000
-```
-
 ## C.2. Install Admin Web App for administrator
 - In `Source_webapp` folder, create `.env` file.
 ```
@@ -576,16 +566,6 @@ Enter the following lines in the .env file and replace `YOUR_NODE_NAME` with you
 ```
 VITE_URL='https://panel.YOUR_DOMAIN/app/'
 VITE_NODE_NAME='YOUR_NODE_NAME'
-```
-
-- In `Runner_webapp` folder, create `.env` file.
-```
-cd /home/iot-server/admin_web_app/Runner_webapp
-sudo nano .env
-```
-Enter the following line in the `.env` file.
-```
-PORT=5000
 ```
 
 ## C.3. Build and Execute
@@ -606,7 +586,7 @@ To automate the setup and build processes for both the backend and frontend appl
 - [https://panel.zksensor.tech](https://panel.zksensor.tech/)
 
 
-## Maintenance: IoT Server Code or Config Change
+## C.4. Maintenance
 - Every time Fidesinnova core development team push a new version of the code on GitHub.
 ```
 cd /home/iot-server/
@@ -653,3 +633,26 @@ pm2 restart my-app                     # Restart a process
 pm2 delete my-app                      # Remove a process from PM2
 pm2 logs                               # Show logs of all processes  
 ```
+
+- Change the Panel Web App Port
+In `Runner_webapp` folder, create `.env` file.
+```
+cd /home/iot-server/web_app/Runner_webapp
+sudo nano .env
+```
+Change the port number in the following line.
+```
+PORT=4000
+```
+
+- Change the Admin Web App Port
+- In `Runner_webapp` folder, create `.env` file.
+```
+cd /home/iot-server/admin_web_app/Runner_webapp
+sudo nano .env
+```
+Change the port number in the following line.
+```
+PORT=5000
+```
+Note: If you change these two ports, please make sure you consulte with the Fides Innova repository manager to avoid any git push conflict in future.
