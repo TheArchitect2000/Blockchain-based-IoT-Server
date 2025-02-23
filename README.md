@@ -453,6 +453,14 @@ REFRESH_TOKEN_SECRET_KEY='YOUR_REFRESH_SECRET_KEY'
 SUPER_ADMIN_EMAILS=['SERVER_ADMIN_EMAIL@EXAMPLE.COM'] 
 ```
 
+- Note: Please change only the the necessary values in the 'env' file, and do not add any extra space before or after '='. For exmaple,
+```
+THEME_BOX='sja02k'  <--- correct
+THEME_BOX ='sja02k'  <--- wrong
+THEME_BOX= 'sja02k'  <--- wrong
+THEME_BOX = 'sja02k'  <--- wrong
+```
+
 ## B.3. Web App Logo
 - Copy your logo in `.png` format with the `logo` name as `logo.png` in `\home\iot-server\backend\uploads` folder on your server. 
 
