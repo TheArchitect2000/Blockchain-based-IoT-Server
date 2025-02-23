@@ -309,7 +309,7 @@ cd /home
 sudo git clone https://github.com/FidesInnova/iot-server.git
 ```
 
-- Continue with Step B if you want to install a new node, or Step C if you want to restore your node from a previous backup.
+### Continue with Step B if you want to install a new node, or jump to Step C if you want to restore your node from a previous backup.
 
 # Step B. Configure a New Node
 ## B.1. Generate two JWT secret keys  
@@ -568,28 +568,40 @@ VITE_URL='https://panel.YOUR_DOMAIN/app/'
 VITE_NODE_NAME='YOUR_NODE_NAME'
 ```
 
-## B.7. Build and Execute
+# C. Restore Node from Backup
+- Create the 'backups' folder.
+   ```
+   cd /home/iot-server/
+   sudo mkdir backups
+   ```
+- Copy your backup file (e.g. iot_server_backup_2025-02-12.tar.gz ) to this folder.
+- Execute the restore script file
+```
+   cd /home/iot-server/
+   sudo chmod +x restore.sh
+   sudo ./restore.sh
+```
+
+# D. Build and Execute
+## D.1. Build the System
 To automate the setup and build processes for both the backend and frontend applications, run the `initial_setup.sh` script located in the root directory of the project. This script will handle building both the backend and frontend applications and configuring PM2 services automatically.
    ```
    cd /home/iot-server/
    sudo chmod +x initial_setup.sh
    sudo ./initial_setup.sh
    ```
-## B.8. Account Setup
+## D.2. Account Setup
 - Goto `https://panel.YOUR_DOMAIN` and go to the 'Sign up' section and create a password for your `super admin email address`.
 - Goto `https://admin.YOUR_DOMAIN` and login with your `super admin email address` and its password.
   
-## B.9. Congratulations
+## D.3. Congratulations
 - Panel Web App, `https://panel.YOUR_DOMAIN` is for your regular users.
 - Panel Web App, `https://admin.YOUR_DOMAIN` is for your super admin users.
 - Contact FidesInnova at info@fidesinnova.io to add your Web App URLs to the FidesInnova website. These are already registered IoT Servers:
 - [https://panel.zksensor.tech](https://panel.zksensor.tech/)
 
-# C. Restore Node from Backup
 
-
-
-# D. Maintenance
+# E. Maintenance
 - Every time Fidesinnova core development team push a new version of the code on GitHub.
 ```
 cd /home/iot-server/
