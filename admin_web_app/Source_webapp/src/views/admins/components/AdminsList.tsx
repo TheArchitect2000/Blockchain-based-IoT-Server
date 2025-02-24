@@ -54,6 +54,10 @@ export default function AdminsList() {
         setFilteredData(searchFilteredData)
     }
 
+    function isListSuperAdmin(row: { roles: Array<any> }): boolean {
+        return row.roles.some((role: any) => role.name == 'super_admin')
+    }
+
     const columns: ColumnDef<UserData>[] = [
         {
             header: 'profile',
@@ -107,11 +111,12 @@ export default function AdminsList() {
                 const row = props.row.original
                 return (
                     <span>
-                        {(row.roles.some(
+                        {((row.roles.some(
                             (role: any) => role.name == 'user_admin'
-                        ) && <HiCheck className="text-[1.5rem]" />) || (
-                            <HiX className="text-[1.5rem]" />
-                        )}
+                        ) ||
+                            isListSuperAdmin(row)) && (
+                            <HiCheck className="text-[1.5rem]" />
+                        )) || <HiX className="text-[1.5rem]" />}
                     </span>
                 )
             },
@@ -123,11 +128,12 @@ export default function AdminsList() {
                 const row = props.row.original
                 return (
                     <span>
-                        {(row.roles.some(
+                        {((row.roles.some(
                             (role: any) => role.name == 'device_admin'
-                        ) && <HiCheck className="text-[1.5rem]" />) || (
-                            <HiX className="text-[1.5rem]" />
-                        )}
+                        ) ||
+                            isListSuperAdmin(row)) && (
+                            <HiCheck className="text-[1.5rem]" />
+                        )) || <HiX className="text-[1.5rem]" />}
                     </span>
                 )
             },
@@ -139,11 +145,12 @@ export default function AdminsList() {
                 const row = props.row.original
                 return (
                     <span>
-                        {(row.roles.some(
+                        {((row.roles.some(
                             (role: any) => role.name == 'service_admin'
-                        ) && <HiCheck className="text-[1.5rem]" />) || (
-                            <HiX className="text-[1.5rem]" />
-                        )}
+                        ) ||
+                            isListSuperAdmin(row)) && (
+                            <HiCheck className="text-[1.5rem]" />
+                        )) || <HiX className="text-[1.5rem]" />}
                     </span>
                 )
             },
@@ -155,11 +162,12 @@ export default function AdminsList() {
                 const row = props.row.original
                 return (
                     <span>
-                        {(row.roles.some(
+                        {((row.roles.some(
                             (role: any) => role.name == 'request_admin'
-                        ) && <HiCheck className="text-[1.5rem]" />) || (
-                            <HiX className="text-[1.5rem]" />
-                        )}
+                        ) ||
+                            isListSuperAdmin(row)) && (
+                            <HiCheck className="text-[1.5rem]" />
+                        )) || <HiX className="text-[1.5rem]" />}
                     </span>
                 )
             },
@@ -171,27 +179,12 @@ export default function AdminsList() {
                 const row = props.row.original
                 return (
                     <span>
-                        {(row.roles.some(
+                        {((row.roles.some(
                             (role: any) => role.name == 'notification_admin'
-                        ) && <HiCheck className="text-[1.5rem]" />) || (
-                            <HiX className="text-[1.5rem]" />
-                        )}
-                    </span>
-                )
-            },
-        },
-        {
-            header: 'Company Developer',
-            accessorKey: '',
-            cell: (props) => {
-                const row = props.row.original
-                return (
-                    <span>
-                        {(row.roles.some(
-                            (role: any) => role.name == 'company_developer'
-                        ) && <HiCheck className="text-[1.5rem]" />) || (
-                            <HiX className="text-[1.5rem]" />
-                        )}
+                        ) ||
+                            isListSuperAdmin(row)) && (
+                            <HiCheck className="text-[1.5rem]" />
+                        )) || <HiX className="text-[1.5rem]" />}
                     </span>
                 )
             },

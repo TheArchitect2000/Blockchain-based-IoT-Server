@@ -1,4 +1,11 @@
-import { Button, Checkbox, Input, Notification, toast } from '@/components/ui'
+import {
+    Button,
+    Checkbox,
+    Dropdown,
+    Input,
+    Notification,
+    toast,
+} from '@/components/ui'
 import {
     apiGetUserProfileByEmail,
     apiGiveUserAdminRank,
@@ -22,24 +29,83 @@ function validateEmail(email: string) {
 
 export default function MakeAdmin() {
     const adminRanks = [
-        { short: 'super', roleName: 'super_admin' },
         { short: 'user', roleName: 'user_admin' },
         { short: 'device', roleName: 'device_admin' },
         { short: 'service', roleName: 'service_admin' },
         { short: 'request', roleName: 'request_admin' },
         { short: 'notification', roleName: 'notification_admin' },
+        //{ short: 'super', roleName: 'super_admin' },
         //{ short: 'cm_developer', roleName: 'company_developer' },
     ]
-
+    const reverseDeveloperRoleMap = {
+        None: 'None',
+        'Developer A': 'cmd_a',
+        'Developer B': 'cmd_b',
+        'Developer C': 'cmd_c',
+    }
+    const [developerLoading, setDeveloperLoading] = useState<boolean>(false)
     const [selected, setSelected] = useState<any>()
     const [searching, setSearching] = useState(false)
     const [apiCalling, setApiCalling] = useState(false)
     const [selectedRanks, setSelectedRanks] = useState<Array<string>>([])
+    const [inputValue, setInputValue] = useState('')
     const [notSelectedRanks, setNotSelectedRanks] = useState<Array<string>>(
         adminRanks.map((rank) => rank.short)
     )
+    type DeveloperRole = keyof typeof reverseDeveloperRoleMap
 
-    const [inputValue, setInputValue] = useState('')
+    // Initialize state with the correct type
+    const [tempDeveloperRole, setTempDeveloperRole] =
+        useState<DeveloperRole>('None')
+
+    // Map internal keys to display names
+    const developerRoleMap = {
+        None: 'None',
+        cmd_a: 'Developer A',
+        cmd_b: 'Developer B',
+        cmd_c: 'Developer C',
+    }
+
+    // Map display names back to internal keys
+
+    function getDeveloperRole(customSelected?: any) {
+        let selectedUser
+        if (customSelected) {
+            selectedUser = customSelected
+        } else {
+            selectedUser = selected
+        }
+        if (
+            selectedUser?.roles?.some(
+                (role: any) =>
+                    role.name === 'company_developer_a' ||
+                    role.label === 'company_developer_a'
+            )
+        ) {
+            return 'Developer A'
+        } else if (
+            selectedUser?.roles?.some(
+                (role: any) =>
+                    role.name === 'company_developer_b' ||
+                    role.label === 'company_developer_b'
+            )
+        ) {
+            return 'Developer B'
+        } else if (
+            selectedUser?.roles?.some(
+                (role: any) =>
+                    role.name === 'company_developer_c' ||
+                    role.label === 'company_developer_c'
+            )
+        ) {
+            return 'Developer C'
+        }
+        return 'None'
+    }
+
+    async function changeUserDeveloper(selectedRole: DeveloperRole) {
+        setTempDeveloperRole(selectedRole) // Update temporary state with display name
+    }
 
     const handleInputChange = (e: any) => {
         setInputValue(e.target.value)
@@ -50,62 +116,77 @@ export default function MakeAdmin() {
         setInputValue('')
         setSelectedRanks([])
         setNotSelectedRanks(adminRanks.map((rank) => rank.short))
+        setTempDeveloperRole('None') // Reset temporary developer role
     }
 
     async function handleSearch() {
         if (!validateEmail(inputValue)) {
             return toast.push(
                 <Notification title={'Enter a valid email'} type="danger" />,
-                {
-                    placement: 'top-center',
-                }
+                { placement: 'top-center' }
             )
         }
         try {
             setSearching(true)
             const res = (await apiGetUserProfileByEmail(inputValue)) as any
-            if (
-                !res ||
-                !res.data ||
-                !res.data.data ||
-                res.data.data == null ||
-                res.data.data == undefined
-            ) {
+
+            if (!res?.data?.data) {
                 setSearching(false)
                 return toast.push(
                     <Notification title={'User not found'} type="danger" />,
-                    {
-                        placement: 'top-center',
-                    }
+                    { placement: 'top-center' }
                 )
             }
 
-            const userDatas = res?.data?.data
+            const userDatas = res.data.data
             setSelected(userDatas)
 
-            // Map full role names to short names
             const userRoles = userDatas.roles || []
-            const userRolesShortNames = userRoles
-                .map(
-                    (role: any) =>
-                        adminRanks.find((r) => r.roleName === role.name)?.short
-                )
-                .filter(Boolean) as string[]
-            setSelectedRanks(userRolesShortNames)
-            setNotSelectedRanks(
-                adminRanks
-                    .map((rank) => rank.short)
-                    .filter((rank) => !userRolesShortNames.includes(rank))
+
+            console.log('userRoles:', userRoles)
+            console.log('adminRanks:', adminRanks)
+
+            // Check if user has 'super_admin' role
+            const isSuperAdmin = userRoles.some(
+                (role: any) => role.name === 'super_admin'
             )
+
+            if (isSuperAdmin) {
+                // Select all ranks if super_admin
+                setSelectedRanks(adminRanks.map((rank) => rank.short))
+                setNotSelectedRanks([]) // Nothing left unselected
+            } else {
+                // Map assigned roles to short names
+                const userRolesShortNames = userRoles
+                    .map(
+                        (role: any) =>
+                            adminRanks.find((r) => r.roleName === role.name)
+                                ?.short
+                    )
+                    .filter(Boolean) as string[]
+
+                setSelectedRanks(userRolesShortNames)
+                setNotSelectedRanks(
+                    adminRanks
+                        .map((rank) => rank.short)
+                        .filter((rank) => !userRolesShortNames.includes(rank))
+                )
+            }
+
+            // Set the temporary developer role based on the user's current role
+            setTempDeveloperRole(getDeveloperRole(userDatas))
+
+            toast.push(<Notification title={'User selected'} type="info" />, {
+                placement: 'top-center',
+            })
 
             setSearching(false)
         } catch (error) {
             toast.push(
                 <Notification title={'User not found'} type="danger" />,
-                {
-                    placement: 'top-center',
-                }
+                { placement: 'top-center' }
             )
+            setSearching(false)
         }
     }
 
@@ -130,9 +211,37 @@ export default function MakeAdmin() {
             setApiCalling(true)
             await apiGiveUserAdminRank(selected.email, selectedRanks)
             await apiTakeUserAdminRank(selected.email, notSelectedRanks)
+
+            // Handle developer role change
+            if (tempDeveloperRole !== getDeveloperRole()) {
+                setDeveloperLoading(true)
+                const selectedRoleKey =
+                    reverseDeveloperRoleMap[tempDeveloperRole]
+
+                if (selectedRoleKey === 'None') {
+                    await apiTakeUserAdminRank(selected.email, [
+                        'cm_developer',
+                        'cmd_a',
+                        'cmd_b',
+                        'cmd_c',
+                    ])
+                } else {
+                    await apiTakeUserAdminRank(selected.email, [
+                        'cmd_a',
+                        'cmd_b',
+                        'cmd_c',
+                    ])
+                    await apiGiveUserAdminRank(selected.email, [
+                        'cm_developer',
+                        selectedRoleKey,
+                    ])
+                }
+                setDeveloperLoading(false)
+            }
+
             toast.push(
                 <Notification
-                    title={`Ranks successfully gived to ${selected.email}`}
+                    title={`Ranks successfully applied to ${selected.email}`}
                     type="success"
                 />,
                 {
@@ -142,7 +251,7 @@ export default function MakeAdmin() {
         } catch (error) {
             toast.push(
                 <Notification
-                    title={'Error while giving admin ranks'}
+                    title={'Error while applying admin ranks'}
                     type="danger"
                 />,
                 {
@@ -156,7 +265,7 @@ export default function MakeAdmin() {
     return (
         <section className="w-full p-6 flex flex-col gap-4">
             <h3>Manage Roles</h3>
-            <div className="flex flex-col lg:flex-row gap-10 ">
+            <div className="flex flex-col-reverse lg:flex-row gap-10 ">
                 <div className="w-full lg:w-1/2 flex flex-col gap-4">
                     <Input
                         className="w-full"
@@ -199,7 +308,7 @@ export default function MakeAdmin() {
                         </Button>
                     </div>
                 </div>
-                <div className="w-full lg:w-1/2 grid grid-cols-2 gap-4 px-4 py-6 border border-gray-600 rounded-lg">
+                <div className="w-full lg:w-1/2 flex flex-col sm:grid sm:grid-cols-2 gap-4 px-4 py-6 border border-gray-600 rounded-lg">
                     <h4 className="col-span-2 mb-2 mx-auto">Role Selection</h4>
                     {adminRanks.map((rank, index) => (
                         <div
@@ -222,6 +331,58 @@ export default function MakeAdmin() {
                             />
                         </div>
                     ))}
+                    <br />
+                    <h4 className="col-span-2 mb-2 mx-auto">Developer Role</h4>
+                    <div className="w-full flex items-center justify-center col-span-2">
+                        <Dropdown
+                            disabled={
+                                developerLoading || selected ? false : true
+                            }
+                            renderTitle={
+                                <span
+                                    className={`text-[0.95rem] font-bold px-3 py-1 border rounded-md ${
+                                        selected
+                                            ? 'cursor-pointer'
+                                            : 'cursor-not-allowed'
+                                    }`}
+                                >
+                                    {tempDeveloperRole}
+                                </span>
+                            }
+                            placement="bottom-end"
+                        >
+                            <Dropdown.Item
+                                eventKey="None"
+                                onClick={() => changeUserDeveloper('None')}
+                            >
+                                None
+                            </Dropdown.Item>
+                            <Dropdown.Item
+                                eventKey="Developer A"
+                                onClick={() =>
+                                    changeUserDeveloper('Developer A')
+                                }
+                            >
+                                Developer A
+                            </Dropdown.Item>
+                            <Dropdown.Item
+                                eventKey="Developer B"
+                                onClick={() =>
+                                    changeUserDeveloper('Developer B')
+                                }
+                            >
+                                Developer B
+                            </Dropdown.Item>
+                            <Dropdown.Item
+                                eventKey="Developer C"
+                                onClick={() =>
+                                    changeUserDeveloper('Developer C')
+                                }
+                            >
+                                Developer C
+                            </Dropdown.Item>
+                        </Dropdown>
+                    </div>
                 </div>
             </div>
         </section>

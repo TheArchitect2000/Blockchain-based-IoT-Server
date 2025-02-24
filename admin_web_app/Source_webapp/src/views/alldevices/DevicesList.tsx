@@ -1,12 +1,8 @@
 import reducer from './store'
 import { injectReducer } from '@/store'
 import AdaptableCard from '@/components/shared/AdaptableCard'
-import ProductTableTools from './components/ProductTableTools'
-import { useGetDevices } from '@/utils/hooks/useGetDevices'
-import TableRowSkeleton from '@/components/shared/loaders/TableRowSkeleton'
 import { Loading } from '@/components/shared'
-import { useEffect, useState } from 'react'
-
+import { useState } from 'react'
 import DevicesTable from './components/DeviceTable'
 import { useCheckPage } from '../security/CheckPage'
 import { useNavigate } from 'react-router-dom'

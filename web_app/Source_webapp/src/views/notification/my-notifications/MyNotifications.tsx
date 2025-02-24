@@ -133,11 +133,40 @@ export default function MyNotifications() {
                                             'hover:shadow-2xl cursor-pointer '
                                         } rounded-xl`}
                                     >
-                                        <h4 className="text-[1.3rem]">
-                                            {notif.title}
-                                        </h4>
                                         <p className="text-[1rem]">
-                                            <strong>message:</strong>{' '}
+                                            <strong>From:</strong>{' '}
+                                            <span
+                                                className={`${
+                                                    notReaded && 'text-white'
+                                                }`}
+                                            >
+                                                System admin
+                                            </span>
+                                        </p>
+                                        <p className="text-[1rem]">
+                                            <strong>To:</strong>{' '}
+                                            <span
+                                                className={`${
+                                                    notReaded && 'text-white'
+                                                }`}
+                                            >
+                                                {(notif?.expiryDate && 'All') ||
+                                                    'You'}
+                                            </span>
+                                        </p>
+                                        <p className="text-[1rem]">
+                                            <strong>Subject:</strong>{' '}
+                                            <span
+                                                className={`${
+                                                    notReaded && 'text-white'
+                                                }`}
+                                            >
+                                                {notif.title}
+                                            </span>
+                                        </p>
+
+                                        <p className="text-[1rem]">
+                                            <strong>Message:</strong>{' '}
                                             <span
                                                 className={`${
                                                     notReaded && 'text-white'
@@ -146,18 +175,19 @@ export default function MyNotifications() {
                                                 {notif.message}
                                             </span>
                                         </p>
-                                        <p className="text-[1rem]">
-                                            <strong>to:</strong>{' '}
-                                            {(notif?.expiryDate && 'Public') ||
-                                                'You'}
-                                        </p>
                                         <p>
                                             <strong>Date:</strong>{' '}
-                                            {formatToCustomDateTime(
-                                                convertToUserTimeZone(
-                                                    notif.insertDate
-                                                )
-                                            )}
+                                            <span
+                                                className={`${
+                                                    notReaded && 'text-white'
+                                                }`}
+                                            >
+                                                {formatToCustomDateTime(
+                                                    convertToUserTimeZone(
+                                                        notif.insertDate
+                                                    )
+                                                )}
+                                            </span>
                                         </p>
                                     </Card>
                                 )

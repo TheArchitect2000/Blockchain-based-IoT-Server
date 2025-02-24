@@ -16,7 +16,7 @@ function capitalizeFirstLetter(string: string) {
 
 export default function UserDetails() {
     const [apiLoading, setApiLoading] = useState<boolean>(true)
-    const [developerLoading, setDeveloperLoading] = useState<boolean>(false)
+
     const [userData, setUserData] = useState<any>()
     const { userId } = useParams()
 
@@ -37,72 +37,6 @@ export default function UserDetails() {
             )
         } finally {
             setApiLoading(false)
-        }
-    }
-
-    function getDeveloperRole() {
-        if (
-            userData.roles.some(
-                (role: any) =>
-                    role.name === 'company_developer_a' ||
-                    role.label === 'company_developer_a'
-            )
-        ) {
-            return 'Developer A'
-        } else if (
-            userData.roles.some(
-                (role: any) =>
-                    role.name === 'company_developer_b' ||
-                    role.label === 'company_developer_b'
-            )
-        ) {
-            return 'Developer B'
-        } else if (
-            userData.roles.some(
-                (role: any) =>
-                    role.name === 'company_developer_c' ||
-                    role.label === 'company_developer_c'
-            )
-        ) {
-            return 'Developer C'
-        }
-        return 'None'
-    }
-
-    async function changeUserDeveloper(selectedRole: string) {
-        setDeveloperLoading(true)
-        try {
-            if (String(selectedRole) == 'None') {
-                await apiTakeUserAdminRank(userData.email, [
-                    'cm_developer',
-                    'cmd_a',
-                    'cmd_b',
-                    'cmd_c',
-                ])
-            } else {
-                await apiTakeUserAdminRank(userData.email, [
-                    'cm_developer',
-                    'cmd_a',
-                    'cmd_b',
-                    'cmd_c',
-                ])
-                await apiGiveUserAdminRank(userData.email, [
-                    'cm_developer',
-                    selectedRole,
-                ])
-            }
-
-            toast.push(
-                <Notification
-                    title={`User role changed to '${selectedRole}'.`}
-                    type="success"
-                />,
-                { placement: 'top-center' }
-            )
-
-            await fetchData()
-        } finally {
-            setDeveloperLoading(false)
         }
     }
 
@@ -152,43 +86,6 @@ export default function UserDetails() {
                 </div>
 
                 {/* Developer Role Dropdown */}
-                <div className="!ml-auto flex items-center gap-2">
-                    <h2 className="text-lg font-semibold">Developer:</h2>
-                    <Dropdown
-                        disabled={developerLoading}
-                        renderTitle={
-                            <span className="px-3 py-1 border rounded-md cursor-pointer">
-                                {getDeveloperRole()}
-                            </span>
-                        }
-                        placement="bottom-end"
-                    >
-                        <Dropdown.Item
-                            eventKey="None"
-                            onClick={() => changeUserDeveloper('None')}
-                        >
-                            None
-                        </Dropdown.Item>
-                        <Dropdown.Item
-                            eventKey="Developer A"
-                            onClick={() => changeUserDeveloper('cmd_a')}
-                        >
-                            Developer A
-                        </Dropdown.Item>
-                        <Dropdown.Item
-                            eventKey="Developer B"
-                            onClick={() => changeUserDeveloper('cmd_b')}
-                        >
-                            Developer B
-                        </Dropdown.Item>
-                        <Dropdown.Item
-                            eventKey="Developer C"
-                            onClick={() => changeUserDeveloper('cmd_c')}
-                        >
-                            Developer C
-                        </Dropdown.Item>
-                    </Dropdown>
-                </div>
             </header>
 
             <section className="mb-6">

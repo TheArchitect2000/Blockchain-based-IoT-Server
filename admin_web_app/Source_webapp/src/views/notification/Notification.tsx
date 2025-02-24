@@ -317,7 +317,7 @@ export default function NotificationPage() {
                                         <Form>
                                             <FormContainer>
                                                 <h2 className="mb-1">
-                                                    Send public notification
+                                                    Send notification to all
                                                 </h2>
                                                 <p>
                                                     Provide the details for the

@@ -60,6 +60,39 @@ const UsersTable: React.FC<UsersTableProps> = ({ setCount }) => {
     const [deleteDialog, setDeleteDialog] = useState(false)
     const [deleteData, setDeleteData] = useState<any>({})
 
+    type DeveloperRole = 'None' | 'Developer A' | 'Developer B' | 'Developer C'
+
+    function getDeveloperRole(
+        userRoles: Array<{ name: string; label?: string }>
+    ): DeveloperRole {
+        if (
+            userRoles.some(
+                (role) =>
+                    role.name === 'company_developer_a' ||
+                    role.label === 'company_developer_a'
+            )
+        ) {
+            return 'Developer A'
+        } else if (
+            userRoles.some(
+                (role) =>
+                    role.name === 'company_developer_b' ||
+                    role.label === 'company_developer_b'
+            )
+        ) {
+            return 'Developer B'
+        } else if (
+            userRoles.some(
+                (role) =>
+                    role.name === 'company_developer_c' ||
+                    role.label === 'company_developer_c'
+            )
+        ) {
+            return 'Developer C'
+        }
+        return 'None'
+    }
+
     const { textTheme } = useThemeClass()
 
     const navigateTo = useNavigate()
@@ -130,7 +163,10 @@ const UsersTable: React.FC<UsersTableProps> = ({ setCount }) => {
                 >
                     <HiTrash />
                 </span>
-                <span onClick={() => navigateTo(`/users/${row._id}`)} className={`cursor-pointer p-2 hover:${textTheme}`}>
+                <span
+                    onClick={() => navigateTo(`/users/${row._id}`)}
+                    className={`cursor-pointer p-2 hover:${textTheme}`}
+                >
                     <HiEye />
                 </span>
             </div>
@@ -258,6 +294,14 @@ const UsersTable: React.FC<UsersTableProps> = ({ setCount }) => {
         },
 
         {
+            header: 'Developer',
+
+            cell: (props) => {
+                const row = props.row.original
+                return <span>{getDeveloperRole(row.roles)}</span>
+            },
+        },
+        {
             header: 'status',
             accessorKey: 'activationStatus',
             cell: (props) => {
@@ -273,10 +317,14 @@ const UsersTable: React.FC<UsersTableProps> = ({ setCount }) => {
 
         {
             header: 'Last Login',
-            accessorKey: 'insertDate',
+            accessorKey: 'lastLogin',
             cell: (props) => {
                 const row = props.row.original as any
-                return <span>{row.lastLogin ? formatISODate(row.lastLogin) : "-"}</span>
+                return (
+                    <span>
+                        {row.lastLogin ? formatISODate(row.lastLogin) : '-'}
+                    </span>
+                )
             },
         },
         {
