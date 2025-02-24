@@ -62,7 +62,7 @@ const _UserDropdown = ({ className }: CommonProps) => {
                         {checkUserHasRole('company_developer_a') && (
                             <div className="relative flex">
                                 <img src="/img/others/medal/bronze.png" />
-                                <p className="absolute bottom-[-5.5px] left-[7px] text-black font-bold">
+                                <p className="absolute bottom-[-5.5px] left-[5.75px] text-black font-bold text-[1rem]">
                                     A
                                 </p>
                             </div>
@@ -70,7 +70,7 @@ const _UserDropdown = ({ className }: CommonProps) => {
                         {checkUserHasRole('company_developer_b') && (
                             <div className="relative flex">
                                 <img src="/img/others/medal/silver.png" />
-                                <p className="absolute bottom-[-5.5px] left-[7.5px] text-black font-bold">
+                                <p className="absolute bottom-[-5.5px] left-[6.5px] text-black font-bold text-[1rem]">
                                     B
                                 </p>
                             </div>
@@ -78,7 +78,7 @@ const _UserDropdown = ({ className }: CommonProps) => {
                         {checkUserHasRole('company_developer_c') && (
                             <div className="relative flex">
                                 <img src="/img/others/medal/gold.png" />
-                                <p className="absolute bottom-[-5.5px] left-[6.5px] text-black font-bold">
+                                <p className="absolute bottom-[-5.5px] left-[5.5px] text-black font-bold text-[1rem]">
                                     C
                                 </p>
                             </div>
