@@ -409,7 +409,7 @@ REFRESH_TOKEN_EXPIRATION_TIME=2400000000    # Miliseconds
 REFRESH_TOKEN_SECRET_KEY='YOUR_REFRESH_SECRET_KEY'
 REFRESH_TOKEN_ALGORITHM='HS384'
 
-# your admins emails that can make other users into admin
+# your admins emails that can make other users into admin or developer
 SUPER_ADMIN_EMAILS=['SERVER_ADMIN_EMAIL@EXAMPLE.COM'] 
 
 # Multer Configuration
