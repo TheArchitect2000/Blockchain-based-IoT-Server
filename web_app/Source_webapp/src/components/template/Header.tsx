@@ -23,7 +23,6 @@ import { PasswordInput } from '../shared'
 import './style.css'
 import { useRoleStore } from '@/store/user/userRoleStore'
 
-
 interface HeaderProps extends CommonProps {
     headerStart?: ReactNode
     headerEnd?: ReactNode
@@ -80,7 +79,7 @@ const Header = (props: HeaderProps) => {
                 )}
 
                 <div className="flex flex-row">
-                    <div className="gap-4 mt-1 justify-end hidden sm:flex">
+                    <div className="gap-4 mt-1 justify-end max-sm:hidden flex">
                         <Dropdown
                             onSelect={dropDownSelectHandler}
                             renderTitle={
@@ -120,6 +119,7 @@ const Header = (props: HeaderProps) => {
                             Create New Service
                         </Button>{' '}
                     </div>
+                    
                     <div className="header-action header-action-end">
                         {headerEnd}
                     </div>
