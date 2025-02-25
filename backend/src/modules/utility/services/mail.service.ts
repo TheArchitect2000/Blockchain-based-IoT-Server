@@ -68,6 +68,13 @@ export class MailService {
           url,
           unsubscribeEmailUrl: `${this.validateTokenUrl}${userToken}`,
         },
+        attachments: [
+          {
+            filename: 'fides_logo.png',
+            path: `${process.cwd()}/assets/images/fides_logo.png`, // Relative path
+            cid: 'fidesinnova_logo',
+          },
+        ],
       })
       .then((data) => {
         console.log(data);
@@ -98,13 +105,20 @@ export class MailService {
           token_4: token[3],
           token_5: token[4],
         },
+        attachments: [
+          {
+            filename: 'fides_logo.png',
+            path: `${process.cwd()}/assets/images/fides_logo.png`, // Relative path
+            cid: 'fidesinnova_logo',
+          },
+        ],
       })
       .then((data) => {
         console.log(data);
       })
       .catch((error) => {
-        console.log("Erorrrrrrrrrrrrr:", error);
-        
+        console.log('Erorrrrrrrrrrrrr:', error);
+
         let errorMessage = 'Some errors occurred while sending email';
         throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
@@ -136,6 +150,13 @@ export class MailService {
           url,
           unsubscribeEmailUrl: `${this.validateTokenUrl}${userToken}`,
         },
+        attachments: [
+          {
+            filename: 'fides_logo.png',
+            path: `${process.cwd()}/assets/images/fides_logo.png`, // Relative path
+            cid: 'fidesinnova_logo',
+          },
+        ],
       })
       .then((data) => {
         console.log(data);
@@ -178,28 +199,22 @@ export class MailService {
     await this.mailerService
       .sendMail({
         to: email,
-        // from: '"Support Team" <support@example.com>', // override default from
         subject: `Verify Your Email for ${process.env.NODE_NAME} - ${process.env.NODE_NAME}`,
         template: './signup-with-otp', // `.hbs` extension is appended automatically
         context: {
-          // filling curly brackets with content
           name: email,
           NodeName: process.env.NODE_NAME,
           NodeImageSrc: process.env.THEME_LOGO,
           url: url,
           unsubscribeEmailUrl: `${this.validateTokenUrl}${userToken}`,
         },
-        /*attachments: [
+        attachments: [
           {
-            filename: 'logo-fidesinnova-black.png',
-            // path: __dirname +'../../../../../assets/images/logo-fidesinnova-black.png',
-            path: join(
-              __dirname,
-              '../../../../assets/images/logo-fidesinnova-black.png',
-            ),
-            cid: 'logo',
+            filename: 'fides_logo.png',
+            path: `${process.cwd()}/assets/images/fides_logo.png`, // Relative path
+            cid: 'fidesinnova_logo',
           },
-        ],*/
+        ],
       })
       .then((data) => {
         console.log(data);
@@ -256,6 +271,13 @@ export class MailService {
             url: url,
             unsubscribeEmailUrl: `${this.validateTokenUrl}${userToken}`,
           },
+          attachments: [
+            {
+              filename: 'fides_logo.png',
+              path: `${process.cwd()}/assets/images/fides_logo.png`, // Relative path
+              cid: 'fidesinnova_logo',
+            },
+          ],
         })
         .then((data) => {
           console.log(data);
@@ -313,17 +335,13 @@ export class MailService {
           url: url,
           unsubscribeEmailUrl: `${this.validateTokenUrl}${userToken}`,
         },
-        /*attachments: [
+        attachments: [
           {
-            filename: 'logo-fidesinnova-black.png',
-            // path: __dirname +'../../../../../assets/images/logo-fidesinnova-black.png',
-            path: join(
-              __dirname,
-              '../../../../assets/images/logo-fidesinnova-black.png',
-            ),
-            cid: 'logo',
+            filename: 'fides_logo.png',
+            path: `${process.cwd()}/assets/images/fides_logo.png`, // Relative path
+            cid: 'fidesinnova_logo',
           },
-        ],*/
+        ],
       })
       .then((data) => {
         console.log(data);
@@ -370,7 +388,7 @@ export class MailService {
 
       const userToken = await this.getTokenWithUserEmail(email);
 
-      const currentTime = await this.getCurrentTimeFormatted()
+      const currentTime = await this.getCurrentTimeFormatted();
 
       await this.mailerService
         .sendMail({
@@ -388,17 +406,13 @@ export class MailService {
             date: currentTime,
             unsubscribeEmailUrl: `${this.validateTokenUrl}${userToken}`,
           },
-          /*attachments: [
+          attachments: [
             {
-              filename: 'logo-fidesinnova-black.png',
-              // path: __dirname +'../../../../../assets/images/logo-fidesinnova-black.png',
-              path: join(
-                __dirname,
-                '../../../../assets/images/logo-fidesinnova-black.png',
-              ),
-              cid: 'logo',
+              filename: 'fides_logo.png',
+              path: `${process.cwd()}/assets/images/fides_logo.png`, // Relative path
+              cid: 'fidesinnova_logo',
             },
-          ],*/
+          ],
         })
         .then((data) => {
           console.log(data);

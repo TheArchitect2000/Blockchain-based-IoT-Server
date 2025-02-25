@@ -1,590 +1,522 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title></title>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-		<style type="text/css">
-			@media screen {
-				@font-face {
-					font-family: "Lato";
-					font-style: normal;
-					font-weight: 400;
-					src: local("Lato Regular"), local("Lato-Regular"),
-						url(https://fonts.gstatic.com/s/lato/v11/qIIYRU-oROkIk8vfvxw6QvesZW2xOQ-xsNqO47m55DA.woff)
-							format("woff");
-				}
+  <head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <style type="text/css">
+      @media screen {
+        @font-face {
+          font-family: 'Lato';
+          font-style: normal;
+          font-weight: 400;
+          src: local('Lato Regular'), local('Lato-Regular'),
+            url(https://fonts.gstatic.com/s/lato/v11/qIIYRU-oROkIk8vfvxw6QvesZW2xOQ-xsNqO47m55DA.woff)
+              format('woff');
+        }
 
-				@font-face {
-					font-family: "Lato";
-					font-style: normal;
-					font-weight: 700;
-					src: local("Lato Bold"), local("Lato-Bold"),
-						url(https://fonts.gstatic.com/s/lato/v11/qdgUG4U09HnJwhYI-uK18wLUuEpTyoUstqEm5AMlJo4.woff)
-							format("woff");
-				}
+        @font-face {
+          font-family: 'Lato';
+          font-style: normal;
+          font-weight: 700;
+          src: local('Lato Bold'), local('Lato-Bold'),
+            url(https://fonts.gstatic.com/s/lato/v11/qdgUG4U09HnJwhYI-uK18wLUuEpTyoUstqEm5AMlJo4.woff)
+              format('woff');
+        }
 
-				@font-face {
-					font-family: "Lato";
-					font-style: italic;
-					font-weight: 400;
-					src: local("Lato Italic"), local("Lato-Italic"),
-						url(https://fonts.gstatic.com/s/lato/v11/RYyZNoeFgb0l7W3Vu1aSWOvvDin1pK8aKteLpeZ5c0A.woff)
-							format("woff");
-				}
+        @font-face {
+          font-family: 'Lato';
+          font-style: italic;
+          font-weight: 400;
+          src: local('Lato Italic'), local('Lato-Italic'),
+            url(https://fonts.gstatic.com/s/lato/v11/RYyZNoeFgb0l7W3Vu1aSWOvvDin1pK8aKteLpeZ5c0A.woff)
+              format('woff');
+        }
 
-				@font-face {
-					font-family: "Lato";
-					font-style: italic;
-					font-weight: 700;
-					src: local("Lato Bold Italic"), local("Lato-BoldItalic"),
-						url(https://fonts.gstatic.com/s/lato/v11/HkF_qI1x_noxlxhrhMQYELO3LdcAZYWl9Si6vvxL-qU.woff)
-							format("woff");
-				}
-			}
+        @font-face {
+          font-family: 'Lato';
+          font-style: italic;
+          font-weight: 700;
+          src: local('Lato Bold Italic'), local('Lato-BoldItalic'),
+            url(https://fonts.gstatic.com/s/lato/v11/HkF_qI1x_noxlxhrhMQYELO3LdcAZYWl9Si6vvxL-qU.woff)
+              format('woff');
+        }
+      }
 
-			/* CLIENT-SPECIFIC STYLES */
-			body,
-			table,
-			td,
-			a {
-				-webkit-text-size-adjust: 100%;
-				-ms-text-size-adjust: 100%;
-			}
+      /* CLIENT-SPECIFIC STYLES */
+      body,
+      table,
+      td,
+      a {
+        -webkit-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+      }
 
-			table,
-			img {
-				-ms-interpolation-mode: bicubic;
-			}
+      table,
+      img {
+        -ms-interpolation-mode: bicubic;
+      }
 
-			/* RESET STYLES */
-			img {
-				border: 0;
-				height: auto;
-				line-height: 100%;
-				outline: none;
-				text-decoration: none;
-			}
+      /* RESET STYLES */
+      img {
+        border: 0;
+        height: auto;
+        line-height: 100%;
+        outline: none;
+        text-decoration: none;
+      }
 
-			table {
-				border-collapse: collapse !important;
-			}
+      table {
+        border-collapse: collapse !important;
+      }
 
-			body {
-				height: 100% !important;
-				margin: 0 !important;
-				padding: 0 !important;
-				width: 100% !important;
-			}
+      body {
+        height: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+      }
 
-			/* iOS BLUE LINKS */
-			a[x-apple-data-detectors] {
-				color: inherit !important;
-				text-decoration: none !important;
-				font-size: inherit !important;
-				font-family: inherit !important;
-				font-weight: inherit !important;
-				line-height: inherit !important;
-			}
+      /* iOS BLUE LINKS */
+      a[x-apple-data-detectors] {
+        color: inherit !important;
+        text-decoration: none !important;
+        font-size: inherit !important;
+        font-family: inherit !important;
+        font-weight: inherit !important;
+        line-height: inherit !important;
+      }
 
-			/* MOBILE STYLES */
-			@media screen and (max-width: 600px) {
-				h1 {
-					font-size: 32px !important;
-					line-height: 32px !important;
-				}
-			}
+      /* MOBILE STYLES */
+      @media screen and (max-width: 600px) {
+        h1 {
+          font-size: 32px !important;
+          line-height: 32px !important;
+        }
+      }
 
-			/* ANDROID CENTER FIX */
-			div[style*="margin: 16px 0;"] {
-				margin: 0 !important;
-			}
+      /* ANDROID CENTER FIX */
+      div[style*='margin: 16px 0;'] {
+        margin: 0 !important;
+      }
 
-			.form-group {
-				display: flex;
-				flex-direction: column;
-				gap: 2px;
-			}
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
 
-			/* INLINE CSS FOR THE PASSWORD VALIDATION */
-			.form-control {
-				padding: 10px;
-				border-radius: 10px;
-			}
+      /* INLINE CSS FOR THE PASSWORD VALIDATION */
+      .form-control {
+        padding: 10px;
+        border-radius: 10px;
+      }
 
-			.password-container {
-				position: relative;
-				margin-bottom: 10px;
-			}
-			.password-container input {
-				width: 100%;
-				padding-right: 150px;
-				box-sizing: border-box;
-			}
-			.hidden {
-				display: none;
-			}
-			.row {
-				width: 100%;
-				display: flex;
-				flex-direction: column;
-				gap: 10px;
-			}
-			.inputs {
-				width: 100%;
-			}
-			#submitBtn {
-				background: #4f46e5;
-				font-size: 20px;
-				font-family: Helvetica, Arial, sans-serif;
-				color: #ffffff;
-				text-decoration: none;
-				padding: 15px 30px;
-				border-radius: 2px;
-				border: 0;
-				display: inline-block;
-				cursor: pointer;
-			}
-			.conditions {
-				padding-top: 15px;
-				font-size: 16px;
-				display: flex;
-				flex-direction: column;
-			}
-			.condition {
-				display: flex;
-				align-items: center;
-			}
-			.condition span {
-				margin-left: 5px;
-			}
-			.icon {
-				width: 20px;
-				height: 20px;
-				display: inline-block;
-				background-size: contain;
-			}
-			.icon-check {
-				background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="green" d="M9 16.2l-4.2-4.2L3 13.8 9 20 21 8l-1.8-1.8L9 16.2z"/></svg>');
-			}
-			.icon-x {
-				background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="red" d="M19 6.4l-1.4-1.4L12 10.6 6.4 5 5 6.4 10.6 12 5 17.6l1.4 1.4L12 13.4l5.6 5.6 1.4-1.4-5.6-5.6L19 6.4z"/></svg>');
-			}
-		</style>
-	</head>
+      .password-container {
+        position: relative;
+        margin-bottom: 10px;
+      }
+      .password-container input {
+        width: 100%;
+        padding-right: 150px;
+        box-sizing: border-box;
+      }
+      .hidden {
+        display: none;
+      }
+      .row {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .inputs {
+        width: 100%;
+      }
+      #submitBtn {
+        background: #4f46e5;
+        font-size: 20px;
+        font-family: Helvetica, Arial, sans-serif;
+        color: #ffffff;
+        text-decoration: none;
+        padding: 15px 30px;
+        border-radius: 2px;
+        border: 0;
+        display: inline-block;
+        cursor: pointer;
+      }
+      .conditions {
+        padding-top: 15px;
+        font-size: 16px;
+        display: flex;
+        flex-direction: column;
+      }
+      .condition {
+        display: flex;
+        align-items: center;
+      }
+      .condition span {
+        margin-left: 5px;
+      }
+      .icon {
+        width: 20px;
+        height: 20px;
+        display: inline-block;
+        background-size: contain;
+      }
+      .icon-check {
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="green" d="M9 16.2l-4.2-4.2L3 13.8 9 20 21 8l-1.8-1.8L9 16.2z"/></svg>');
+      }
+      .icon-x {
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="red" d="M19 6.4l-1.4-1.4L12 10.6 6.4 5 5 6.4 10.6 12 5 17.6l1.4 1.4L12 13.4l5.6 5.6 1.4-1.4-5.6-5.6L19 6.4z"/></svg>');
+      }
+    </style>
+  </head>
 
-	<body
-		style="
-			background-color: #f4f4f4;
-			margin: 0 !important;
-			padding: 0 !important;
-		"
-	>
-		<!-- HIDDEN PREHEADER TEXT -->
-		<div
-			style="
-				display: none;
-				font-size: 1px;
-				color: #fefefe;
-				line-height: 1px;
-				font-family: 'Lato', Helvetica, Arial, sans-serif;
-				max-height: 0px;
-				max-width: 0px;
-				opacity: 0;
-				overflow: hidden;
-			"
-		>
-			We're thrilled to have you here! Get ready to dive into your new
-			account.
-		</div>
-		<table border="0" cellpadding="0" cellspacing="0" width="100%">
-			<tr>
-				<td bgcolor="#1F2937" align="center">
-					<table
-						border="0"
-						cellpadding="0"
-						cellspacing="0"
-						width="100%"
-						style="max-width: 600px"
-					>
-						<tr>
-							<td
-								align="center"
-								valign="top"
-								style="padding: 40px 10px 40px 10px"
-							></td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-			<tr>
-				<td
-					bgcolor="#1F2937"
-					align="center"
-					style="padding: 0px 10px 0px 10px"
-				>
-					<table
-						border="0"
-						cellpadding="0"
-						cellspacing="0"
-						width="100%"
-						style="max-width: 600px"
-					>
-						<tr>
-							<td
-								bgcolor="#ffffff"
-								align="center"
-								valign="top"
-								style="
-									padding: 40px 20px 20px 20px;
-									border-radius: 4px 4px 0px 0px;
-									color: #111111;
-									font-family: 'Lato', Helvetica, Arial,
-										sans-serif;
-									font-size: 48px;
-									font-weight: 400;
-									letter-spacing: 4px;
-									line-height: 48px;
-								"
-							>
-								<img
-									style="
-										width: 400px;
-										height: 400px;
-										margin-inline: auto;
-										object-fit: contain;
-									"
-									src="{{NodeImageSrc}}"
-									alt="Node Logo"
-								/>
-								<h1
-									style="
-										font-size: 48px;
-										font-weight: 400;
-										margin: 2;
-									"
-								>
-									Password reset
-								</h1>
-							</td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-			<tr>
-				<td
-					bgcolor="#f4f4f4"
-					align="center"
-					style="padding: 0px 10px 0px 10px"
-				>
-					<table
-						border="0"
-						cellpadding="0"
-						cellspacing="0"
-						width="100%"
-						style="max-width: 600px"
-					>
-						<tr>
-							<td
-								bgcolor="#ffffff"
-								align="left"
-								style="
-									padding: 20px 30px 40px 30px;
-									color: #666666;
-									font-family: 'Lato', Helvetica, Arial,
-										sans-serif;
-									font-size: 18px;
-									font-weight: 400;
-									line-height: 25px;
-								"
-							>
-								<!-- Password validation inputs start here -->
+  <body
+    style="
+      background-color: #f4f4f4;
+      margin: 0 !important;
+      padding: 0 !important;
+    "
+  >
+    <!-- HIDDEN PREHEADER TEXT -->
+    <div
+      style="
+        display: none;
+        font-size: 1px;
+        color: #fefefe;
+        line-height: 1px;
+        font-family: 'Lato', Helvetica, Arial, sans-serif;
+        max-height: 0px;
+        max-width: 0px;
+        opacity: 0;
+        overflow: hidden;
+      "
+    >
+      We're thrilled to have you here! Get ready to dive into your new account.
+    </div>
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr>
+        <td bgcolor="#1F2937" align="center">
+          <table
+            border="0"
+            cellpadding="0"
+            cellspacing="0"
+            width="100%"
+            style="max-width: 600px"
+          >
+            <tr>
+              <td
+                align="center"
+                valign="top"
+                style="padding: 40px 10px 40px 10px"
+              ></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td bgcolor="#1F2937" align="center" style="padding: 0px 10px 0px 10px">
+          <table
+            border="0"
+            cellpadding="0"
+            cellspacing="0"
+            width="100%"
+            style="max-width: 600px"
+          >
+            <tr>
+              <td
+                bgcolor="#ffffff"
+                align="center"
+                valign="top"
+                style="
+                  padding: 40px 20px 20px 20px;
+                  border-radius: 4px 4px 0px 0px;
+                  color: #111111;
+                  font-family: 'Lato', Helvetica, Arial, sans-serif;
+                  font-size: 48px;
+                  font-weight: 400;
+                  letter-spacing: 4px;
+                  line-height: 48px;
+                "
+              >
+                <img
+                  style="
+                    width: 400px;
+                    height: 400px;
+                    margin-inline: auto;
+                    object-fit: contain;
+                  "
+                  src="{{NodeImageSrc}}"
+                  alt="Node Logo"
+                />
+                <h1 style="font-size: 48px; font-weight: 400; margin: 2">
+                  Password reset
+                </h1>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td bgcolor="#f4f4f4" align="center" style="padding: 0px 10px 0px 10px">
+          <table
+            border="0"
+            cellpadding="0"
+            cellspacing="0"
+            width="100%"
+            style="max-width: 600px"
+          >
+            <tr>
+              <td
+                bgcolor="#ffffff"
+                align="left"
+                style="
+                  padding: 20px 30px 40px 30px;
+                  color: #666666;
+                  font-family: 'Lato', Helvetica, Arial, sans-serif;
+                  font-size: 18px;
+                  font-weight: 400;
+                  line-height: 25px;
+                "
+              >
+                <!-- Password validation inputs start here -->
 
-								<div id="success" class="hidden">
-									<p style="text-align: center">
-										Your password has been successfully
-										changed
-									</p>
-								</div>
+                <div id="success" class="hidden">
+                  <p style="text-align: center">
+                    Your password has been successfully changed
+                  </p>
+                </div>
 
-								<div id="container">
-									<div class="row">
-										<div class="inputs">
-											<div class="form-group">
-												<label for="password"
-													>Password:</label
-												>
-												<div class="password-container">
-													<input
-														type="password"
-														id="password"
-														class="form-control"
-														placeholder="Enter your new password"
-														required
-													/>
-												</div>
-											</div>
-											<div class="form-group">
-												<label for="confirm-password"
-													>Confirm Password:</label
-												>
-												<input
-													type="password"
-													id="confirm-password"
-													class="form-control"
-													placeholder="Confirm your password"
-													required
-												/>
-											</div>
-										</div>
-										<div class="conditions">
-											<div class="condition" id="length">
-												<span
-													class="icon icon-x"
-												></span>
-												<span>8-20 characters</span>
-											</div>
-											<div
-												class="condition"
-												id="uppercase"
-											>
-												<span
-													class="icon icon-x"
-												></span>
-												<span
-													>At least one uppercase
-													letter</span
-												>
-											</div>
-											<div
-												class="condition"
-												id="icon-number"
-											>
-												<span
-													class="icon icon-x"
-												></span>
-												<span>At least one number</span>
-											</div>
-											<div class="condition" id="special">
-												<span
-													class="icon icon-x"
-												></span>
-												<span
-													>At least one special
-													character</span
-												>
-											</div>
-										</div>
-									</div>
-								</div>
-								<!-- Password validation inputs end here -->
-							</td>
-						</tr>
+                <div id="container">
+                  <div class="row">
+                    <div class="inputs">
+                      <div class="form-group">
+                        <label for="password">Password:</label>
+                        <div class="password-container">
+                          <input
+                            type="password"
+                            id="password"
+                            class="form-control"
+                            placeholder="Enter your new password"
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label for="confirm-password">Confirm Password:</label>
+                        <input
+                          type="password"
+                          id="confirm-password"
+                          class="form-control"
+                          placeholder="Confirm your password"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div class="conditions">
+                      <div class="condition" id="length">
+                        <span class="icon icon-x"></span>
+                        <span>8-20 characters</span>
+                      </div>
+                      <div class="condition" id="uppercase">
+                        <span class="icon icon-x"></span>
+                        <span>At least one uppercase letter</span>
+                      </div>
+                      <div class="condition" id="icon-number">
+                        <span class="icon icon-x"></span>
+                        <span>At least one number</span>
+                      </div>
+                      <div class="condition" id="special">
+                        <span class="icon icon-x"></span>
+                        <span>At least one special character</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Password validation inputs end here -->
+              </td>
+            </tr>
 
-						<tr>
-							<td bgcolor="#ffffff" align="left">
-								<table
-									width="100%"
-									border="0"
-									cellspacing="0"
-									cellpadding="0"
-								>
-									<tr>
-										<td
-											bgcolor="#ffffff"
-											align="center"
-											style="padding: 20px 30px 60px 30px"
-										>
-											<table
-												border="0"
-												cellspacing="0"
-												cellpadding="0"
-											>
-												<tr>
-													<td
-														align="center"
-														style="
-															border-radius: 3px;
-														"
-														bgcolor="#4F46E5"
-													>
-														<button id="submitBtn">
-															Submit New Password
-														</button>
-													</td>
-												</tr>
-											</table>
-										</td>
-									</tr>
-								</table>
-							</td>
-						</tr>
-						<tr>
-							<td
-								bgcolor="#ffffff"
-								align="left"
-								style="
-									max-height: 150px;
-									display: flex;
-									justify-content: space-between;
-									padding: 0px 30px 40px 30px;
-									border-radius: 0px 0px 4px 4px;
-									color: #666666;
-									font-family: 'Lato', Helvetica, Arial,
-										sans-serif;
-									font-size: 18px;
-									font-weight: 400;
-									line-height: 25px;
-								"
-							>
-								<div style="width: 100%; margin-bottom: 15px">
-									<img
-										style="
-											width: 100%;
-											height: 100%;
-											object-fit: contain;
-											margin-inline: auto;
-										"
-										src="https://fidesinnova.io/Download/logo/fidesinnova.png"
-										alt=""
-									/>
-									<p style="text-align: center">
-										Powered by FidesInnova
-									</p>
-								</div>
-							</td>
-						</tr>
-						<tr>
-							<td
-								bgcolor="#ffffff"
-								align="left"
-								style="
-									padding: 0px 30px 40px 30px;
-									border-radius: 0px 0px 4px 4px;
-									color: #666666;
-									font-family: 'Lato', Helvetica, Arial,
-										sans-serif;
-									font-size: 18px;
-									font-weight: 400;
-									line-height: 25px;
-								"
-							></td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-			<tr>
-				<td align="center">
-					<table
-						border="0"
-						cellpadding="0"
-						cellspacing="0"
-						width="100%"
-						style="max-width: 600px"
-					>
-						<tr>
-							<td
-								align="center"
-								valign="top"
-								style="padding: 10px"
-							></td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-		</table>
-		<script>
-			const password = document.getElementById("password");
-			const confirmPassword = document.getElementById("confirm-password");
-			const submitBtn = document.getElementById("submitBtn");
-			const conditions = {
-				length: document.getElementById("length"),
-				uppercase: document.getElementById("uppercase"),
-				number: document.getElementById("icon-number"),
-				special: document.getElementById("special"),
-			};
+            <tr>
+              <td bgcolor="#ffffff" align="left">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td
+                      bgcolor="#ffffff"
+                      align="center"
+                      style="padding: 20px 30px 60px 30px"
+                    >
+                      <table border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                          <td
+                            align="center"
+                            style="border-radius: 3px"
+                            bgcolor="#4F46E5"
+                          >
+                            <button id="submitBtn">Submit New Password</button>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td
+                bgcolor="#ffffff"
+                align="left"
+                style="
+                  max-height: 150px;
+                  display: flex;
+                  justify-content: space-between;
+                  padding: 0px 30px 40px 30px;
+                  border-radius: 0px 0px 4px 4px;
+                  color: #666666;
+                  font-family: 'Lato', Helvetica, Arial, sans-serif;
+                  font-size: 18px;
+                  font-weight: 400;
+                  line-height: 25px;
+                "
+              >
+                <div style="width: 100%; margin-bottom: 15px">
+                  <img
+                    style="
+                      width: 100%;
+                      height: 100%;
+                      object-fit: contain;
+                      margin-inline: auto;
+                    "
+                    src="/assets/images/fides_logo.png"
+                    alt=""
+                  />
+                  <p style="text-align: center">Powered by FidesInnova</p>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td
+                bgcolor="#ffffff"
+                align="left"
+                style="
+                  padding: 0px 30px 40px 30px;
+                  border-radius: 0px 0px 4px 4px;
+                  color: #666666;
+                  font-family: 'Lato', Helvetica, Arial, sans-serif;
+                  font-size: 18px;
+                  font-weight: 400;
+                  line-height: 25px;
+                "
+              ></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td align="center">
+          <table
+            border="0"
+            cellpadding="0"
+            cellspacing="0"
+            width="100%"
+            style="max-width: 600px"
+          >
+            <tr>
+              <td align="center" valign="top" style="padding: 10px"></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+    <script>
+      const password = document.getElementById('password');
+      const confirmPassword = document.getElementById('confirm-password');
+      const submitBtn = document.getElementById('submitBtn');
+      const conditions = {
+        length: document.getElementById('length'),
+        uppercase: document.getElementById('uppercase'),
+        number: document.getElementById('icon-number'),
+        special: document.getElementById('special'),
+      };
 
-			let loading = false;
+      let loading = false;
 
-			const validatePassword = () => {
-				const value = password.value;
-				conditions.length.firstElementChild.className =
-					value.length >= 8 && value.length <= 20
-						? "icon icon-check"
-						: "icon icon-x";
-				conditions.uppercase.firstElementChild.className = /[A-Z]/.test(
-					value
-				)
-					? "icon icon-check"
-					: "icon icon-x";
+      const validatePassword = () => {
+        const value = password.value;
+        conditions.length.firstElementChild.className =
+          value.length >= 8 && value.length <= 20
+            ? 'icon icon-check'
+            : 'icon icon-x';
+        conditions.uppercase.firstElementChild.className = /[A-Z]/.test(value)
+          ? 'icon icon-check'
+          : 'icon icon-x';
 
-				conditions.number.firstElementChild.className = /\d/.test(value)
-					? "icon icon-check"
-					: "icon icon-x";
-				conditions.special.firstElementChild.className =
-					/[^A-Za-z0-9]/.test(value)
-						? "icon icon-check"
-						: "icon icon-x";
-			};
+        conditions.number.firstElementChild.className = /\d/.test(value)
+          ? 'icon icon-check'
+          : 'icon icon-x';
+        conditions.special.firstElementChild.className = /[^A-Za-z0-9]/.test(
+          value,
+        )
+          ? 'icon icon-check'
+          : 'icon icon-x';
+      };
 
-			const validateMatch = () => {
-				return password.value === confirmPassword.value ? true : false;
-			};
+      const validateMatch = () => {
+        return password.value === confirmPassword.value ? true : false;
+      };
 
-			password.addEventListener("input", () => {
-				validatePassword();
-			});
+      password.addEventListener('input', () => {
+        validatePassword();
+      });
 
-			confirmPassword.addEventListener("input", validateMatch);
+      confirmPassword.addEventListener('input', validateMatch);
 
-			submitBtn.addEventListener("click", (e) => {
-				e.preventDefault();
+      submitBtn.addEventListener('click', (e) => {
+        e.preventDefault();
 
-				if (loading == true) {
-					return window.alert("please wait");
-				}
+        if (loading == true) {
+          return window.alert('please wait');
+        }
 
-				validatePassword();
-				const isValid = Object.values(conditions).every((condition) =>
-					condition.firstElementChild.classList.contains("icon-check")
-				);
-				if (isValid) {
-					if (validateMatch() == false) {
-						return window.alert("Passwords do not match");
-					} else {
-						console.log("New password: ", password.value);
-						document.getElementById("submitBtn").disabled = true;
-						loading = true;
-						fetch("{{ url }}", {
-							method: "PATCH",
-							headers: {
-								"Content-Type": "application/json",
-							},
-							body: JSON.stringify({
-								password: password.value,
-								otp: "{{ otp }}",
-								email: "{{ email }}",
-							}),
-						})
-							.then((response) => response.json())
-							.then((data) => {
-								document.getElementById("success").className =
-									"";
-								document.getElementById("container").remove();
-								document.getElementById("submitBtn").remove();
-							})
-							.catch((error) => {
-								alert(
-									"Error submitting password: " +
-										error.message
-								);
-							});
-					}
-				} else {
-					alert("Please meet all password conditions.");
-				}
-			});
-		</script>
-	</body>
+        validatePassword();
+        const isValid = Object.values(conditions).every((condition) =>
+          condition.firstElementChild.classList.contains('icon-check'),
+        );
+        if (isValid) {
+          if (validateMatch() == false) {
+            return window.alert('Passwords do not match');
+          } else {
+            console.log('New password: ', password.value);
+            document.getElementById('submitBtn').disabled = true;
+            loading = true;
+            fetch('{{ url }}', {
+              method: 'PATCH',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                password: password.value,
+                otp: '{{ otp }}',
+                email: '{{ email }}',
+              }),
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                document.getElementById('success').className = '';
+                document.getElementById('container').remove();
+                document.getElementById('submitBtn').remove();
+              })
+              .catch((error) => {
+                alert('Error submitting password: ' + error.message);
+              });
+          }
+        } else {
+          alert('Please meet all password conditions.');
+        }
+      });
+    </script>
+  </body>
 </html>
