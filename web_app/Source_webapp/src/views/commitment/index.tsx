@@ -469,7 +469,7 @@ export default function CommitmentPage() {
                                                     </div>
                                                     <div>
                                                         <strong>
-                                                            IoT Device Name:
+                                                            IoT Device Type:
                                                         </strong>{' '}
                                                         {iotDeviceName}
                                                     </div>

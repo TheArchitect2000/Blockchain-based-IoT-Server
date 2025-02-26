@@ -122,7 +122,7 @@ const CommitmentTable = ({
             },
         },
         {
-            header: 'IoT Device Name',
+            header: 'IoT Device Type',
             accessorKey: 'deviceName',
             cell: (props) => {
                 const row = props.row.original
