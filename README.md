@@ -391,9 +391,9 @@ MAIL_TRANSPORT=smtp://${MAIL_USER}:${MAIL_PASSWORD}@${MAIL_HOST}
 # This text color is for Mobile App 
 THEME_TEXT='ffffff' 
 # These colors are for Web App and Mobile App
-THEME_BACKGROUND='212838'
-THEME_BOX='2d355c'
-THEME_BUTTON='4e46e7'
+THEME_BACKGROUND='1D293D'
+THEME_BOX='1D293D'
+THEME_BUTTON='33658A'
 
 # IoT Server logo path
 THEME_LOGO='https://panel.YOUR_DOMAIN/app/uploads/logo.png'
@@ -447,9 +447,9 @@ MAIL_FROM='noreply@YOUR_DOMAIN'
 # This text color is for Mobile App 
 THEME_TEXT='ffffff' 
 # These colors are for Web App and Mobile App
-THEME_BACKGROUND='212838'
-THEME_BOX='2d355c'
-THEME_BUTTON='4e46e7'
+THEME_BACKGROUND='1D293D'
+THEME_BOX='1D293D'
+THEME_BUTTON='33658A'
 
 ACCESS_TOKEN_SECRET_KEY='YOUR_ACCESS_SECRET_KEY'
 REFRESH_TOKEN_SECRET_KEY='YOUR_REFRESH_SECRET_KEY'
