@@ -24,7 +24,7 @@ const FooterContent = () => {
                     target="_blank"
                     href="https://fidesinnova.io/Download/docs/privacy-policy.html"
                 >
-                    Privacy & Policy
+                    Privacy Policy
                 </a>
             </div>
         </div>

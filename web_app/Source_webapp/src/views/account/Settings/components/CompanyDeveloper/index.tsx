@@ -137,11 +137,11 @@ export default function CompanyDeveloperPage() {
                             {(!loading && !roleLoading && (
                                 <FormContainer>
                                     <div className="flex justify-between">
-                                        <FormDesription
+                                        {/* <FormDesription
                                             className=""
                                             title="IoT Developer"
                                             desc="Please fill out all the fields about your company."
-                                        />
+                                        /> */}
                                     </div>
 
                                     <p
@@ -174,8 +174,8 @@ export default function CompanyDeveloperPage() {
                                         name="name"
                                         label={
                                             (
-                                                <div className="flex items-center gap-2">
-                                                    <span>Company Name</span>
+                                                <div className="flex items-center">
+                                                    <span className='mr-1'>Company Name</span>
                                                     <span>(</span>
                                                     <p>
                                                         {!isDeveloper && 'Not'}{' '}
@@ -197,7 +197,7 @@ export default function CompanyDeveloperPage() {
                                             type="text"
                                             autoComplete="off"
                                             name="name"
-                                            placeholder="Enter Company name"
+                                            placeholder="Enter company name"
                                             component={Input}
                                             prefix={
                                                 <HiUser className="text-xl" />
@@ -207,7 +207,7 @@ export default function CompanyDeveloperPage() {
 
                                     <FormRow
                                         name="line_1"
-                                        label="Address line 1"
+                                        label="Address Line 1"
                                         {...validatorProps}
                                     >
                                         <Field
@@ -224,7 +224,7 @@ export default function CompanyDeveloperPage() {
                                     </FormRow>
                                     <FormRow
                                         name="line_2"
-                                        label="Address line 2 (optional)"
+                                        label="Address Line 2 (optional)"
                                         {...validatorProps}
                                     >
                                         <Field
@@ -309,12 +309,13 @@ export default function CompanyDeveloperPage() {
                                         />
                                     </FormRow>
 
-                                    <div className="flex gap-3 mt-4 ltr:text-right">
+                                    <div className="flex gap-3 justify-end mt-4 ltr:text-right">
                                         <Button
                                             disabled={isDeveloper}
                                             variant="solid"
                                             loading={isSubmitting}
                                             type="submit"
+                                            size='sm'
                                         >
                                             {isSubmitting
                                                 ? 'Updating'
@@ -324,6 +325,7 @@ export default function CompanyDeveloperPage() {
                                             disabled={isDeveloper}
                                             className="ltr:mr-2 rtl:ml-2"
                                             type="button"
+                                            size='sm'
                                             onClick={() => {
                                                 resetForm()
                                                 setSelectedCountry(null)

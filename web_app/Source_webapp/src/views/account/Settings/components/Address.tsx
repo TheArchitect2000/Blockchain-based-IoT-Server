@@ -103,22 +103,22 @@ const Address = () => {
                 return (
                     <Form>
                         {(loading == false && (
-                            <FormContainer>
-                                <FormDesription
+                            <FormContainer >
+                                {/* <FormDesription
                                     className=""
                                     title="Personal"
-                                    desc="Your personal information that is hidden"
-                                />
+                                    desc=""
+                                /> */}
                                 <FormRow
                                     name="name"
-                                    label="Home name"
+                                    label="Location Name"
                                     {...validatorProps}
                                 >
                                     <Field
                                         type="text"
                                         autoComplete="off"
                                         name="name"
-                                        placeholder="Enter home name"
+                                        placeholder="Enter location name"
                                         component={Input}
                                         prefix={
                                             <HiHashtag className="text-xl" />
@@ -127,7 +127,7 @@ const Address = () => {
                                 </FormRow>
                                 <FormRow
                                     name="line_1"
-                                    label="Address line 1"
+                                    label="Address Line 1"
                                     {...validatorProps}
                                 >
                                     <Field
@@ -143,7 +143,7 @@ const Address = () => {
                                 </FormRow>
                                 <FormRow
                                     name="line_2"
-                                    label="Address line 2 (optional)"
+                                    label="Address Line 2 (optional)"
                                     {...validatorProps}
                                 >
                                     <Field
@@ -218,9 +218,10 @@ const Address = () => {
                                         }
                                     />
                                 </FormRow>
-                                <div className="flex gap-3 mt-4 ltr:text-right">
+                                <div className="flex gap-3 mt-4 justify-end ltr:text-right">
                                     <Button
                                         variant="solid"
+                                        size='sm'
                                         loading={isSubmitting}
                                         type="submit"
                                     >
@@ -229,6 +230,7 @@ const Address = () => {
                                     <Button
                                         className="ltr:mr-2 rtl:ml-2"
                                         type="button"
+                                        size='sm'
                                         onClick={() => {
                                             resetForm()
                                             setSelectedCountry(null)

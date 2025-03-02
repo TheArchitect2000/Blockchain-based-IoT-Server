@@ -11,8 +11,7 @@ import { HiCheck } from 'react-icons/hi'
 import { components } from 'react-select'
 import type { ColorLevel } from '@/@types/theme'
 import type { ControlProps, OptionProps } from 'react-select'
-import { useEffect } from 'react'
-import { apiGetNodeTheme } from '@/services/UserApi'
+
 
 const { Control } = components
 

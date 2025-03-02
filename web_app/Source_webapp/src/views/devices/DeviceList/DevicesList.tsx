@@ -147,6 +147,7 @@ const ProductList = () => {
                         share: true,
                         delete: true,
                         edit: true,
+                        nft: true
                     }}
                     deviceList={allDevices}
                     payloads={allDevicesData}
@@ -159,8 +160,8 @@ const ProductList = () => {
             path: 'local-share-devices',
             element: (
                 <DeviceTable
-                    key={`local-share-${refreshComponents}`}
-                    type="local share"
+                    key={`local-shared-${refreshComponents}`}
+                    type="local shared"
                     options={{ sharedUsers: true }}
                     deviceList={allDevices.filter(
                         (item) => item.sharedWith.length > 0
@@ -176,7 +177,7 @@ const ProductList = () => {
             element: (
                 <DeviceTable
                     key={`global-share-${refreshComponents}`}
-                    type="global share"
+                    type="global shared"
                     options={{ unshare: true }}
                     deviceList={allDevices.filter(
                         (item) => item.isShared == true
@@ -192,7 +193,7 @@ const ProductList = () => {
             element: (
                 <DeviceTable
                     key={`share-${refreshComponents}`}
-                    type="share"
+                    type="shared"
                     options={{ view: true }}
                     deviceList={sharedData}
                     payloads={sharedDevicesData}
@@ -259,7 +260,7 @@ const ProductList = () => {
                     deviceMenu.map((menuItem, index) => {
                         if (currentTab == menuItem.path) {
                             return (
-                                <div className="w-full h-full pt-4">
+                                <div className="w-full h-full pt-4 text-white">
                                     {menuItem.element}
                                 </div>
                             )

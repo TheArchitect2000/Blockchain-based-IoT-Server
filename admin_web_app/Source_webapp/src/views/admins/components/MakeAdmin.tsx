@@ -241,7 +241,7 @@ export default function MakeAdmin() {
 
             toast.push(
                 <Notification
-                    title={`Ranks successfully applied to ${selected.email}`}
+                    title={`Roles successfully applied to ${selected.email}`}
                     type="success"
                 />,
                 {
@@ -251,7 +251,7 @@ export default function MakeAdmin() {
         } catch (error) {
             toast.push(
                 <Notification
-                    title={'Error while applying admin ranks'}
+                    title={'Error while applying admin roles'}
                     type="danger"
                 />,
                 {

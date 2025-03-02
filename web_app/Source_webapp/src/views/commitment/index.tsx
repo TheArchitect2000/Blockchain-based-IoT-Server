@@ -377,18 +377,14 @@ export default function CommitmentPage() {
                                                     )
                                                 }
                                             >
-                                                <p className="text-lg">
+                                                <p className="text-md">
                                                     Status:{' '}
                                                     <span
-                                                        className={
-                                                            values.commitmentData
-                                                                ? 'text-green-500 ml-1'
-                                                                : 'text-red-500 ml-1'
-                                                        }
+                                                        
                                                     >
                                                         {values.commitmentData
                                                             ? 'File Selected'
-                                                            : 'No Commitment File Selected'}
+                                                            : 'No commitment file was selected!'}
                                                     </span>
                                                 </p>
                                                 <Button
@@ -398,6 +394,7 @@ export default function CommitmentPage() {
                                                         ) || txHash.length > 0
                                                     }
                                                     variant="twoTone"
+                                                    size='sm'
                                                     type="button"
                                                 >
                                                     <p className="flex items-center gap-2">
@@ -517,9 +514,9 @@ export default function CommitmentPage() {
                                         <p className={`mt-4 text-[#EAF4FF]`}>
                                             * This transaction will be processed
                                             using the{' '}
-                                            <strong className="text-green-400">
+                                            <span className={`underline`}>
                                                 Node Admin Wallet
-                                            </strong>
+                                            </span>
                                             . If you prefer to process it with
                                             your own wallet, please{' '}
                                             <strong
@@ -528,7 +525,7 @@ export default function CommitmentPage() {
                                                         '/account/settings/wallet'
                                                     )
                                                 }
-                                                className="underline cursor-pointer text-[#0056b3]"
+                                                className={`underline cursor-pointer text-${themeColor}-500`}
                                             >
                                                 click here
                                             </strong>{' '}
@@ -538,9 +535,9 @@ export default function CommitmentPage() {
                                         <p className={`mt-4 text-[#EAF4FF]`}>
                                             * This transaction will be processed
                                             using{' '}
-                                            <strong className="text-red-400">
+                                            <span className="underline">
                                                 your connected wallet
-                                            </strong>
+                                            </span>
                                             . If you prefer to process it with
                                             Node Admin Wallet instead, please{' '}
                                             <strong
@@ -549,7 +546,7 @@ export default function CommitmentPage() {
                                                         '/account/settings/wallet'
                                                     )
                                                 }
-                                                className="underline cursor-pointer text-[#0056b3]"
+                                                className={`underline cursor-pointer text-${themeColor}-500`}
                                             >
                                                 click here
                                             </strong>{' '}
@@ -573,6 +570,7 @@ export default function CommitmentPage() {
                                                     isSubmitting ||
                                                     commitmentLoading
                                                 }
+                                                size='sm'
                                                 type="submit"
                                             >
                                                 {isSubmitting

@@ -30,7 +30,7 @@ const GlobalUnshareDeviceDialog: React.FC<GlobalUnshareDeviceDialogProps> = ({
             </p>
 
             <div className="flex w-2/3 mx-auto justify-between">
-                <Button loading={loading} onClick={onUnshare} variant="solid" color="red">
+                <Button loading={loading} onClick={onUnshare} variant="solid" >
                     Unshare
                 </Button>
                 <Button loading={loading} onClick={onClose} variant="default">

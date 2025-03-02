@@ -22,12 +22,11 @@ const SubscriptionComponent = ({
     onSubscribeChange: Function
     loadingState: any
 }) => {
-
     return (
-        <div className="flex items-center flex-col md:flex-row gap-4 w-full p-4 border rounded-xl">
-            <h5 className="text-[1.25rem] text-center">{title}:</h5>
+        <div className="flex items-center flex-col md:flex-row gap-4 w-full p-4 rounded-xl">
+            {/* <h5 className="text-[1rem] text-center">{title}:</h5> */}
             <p
-                className={`text-[1rem] text-center text-[#${
+                className={`text-[0.9rem] text-center text-[#${
                     (color && color) || 'ffffff'
                 }]`}
             >
@@ -36,11 +35,11 @@ const SubscriptionComponent = ({
             <Button
                 className="ms-auto mr-4 md: mr-auto"
                 variant="solid"
+                size="sm"
                 loading={loadingState}
                 onClick={() => onSubscribeChange(!subscription)}
-                color={subscription ? 'red-500' : 'green-500'}
             >
-                {subscription ? 'Unsubscribe' : 'subscribe'}
+                {subscription ? 'Unsubscribe' : 'Subscribe'}
             </Button>
         </div>
     )
@@ -59,8 +58,8 @@ export default function Subscriptions() {
     }
 
     async function handleChangeEmailSubscribe(state: boolean) {
-        console.log("state:", state);
-        
+        console.log('state:', state)
+
         try {
             setApiLoading(true)
             const res = await apiSetMyEmailSubscription(state)
@@ -105,10 +104,10 @@ export default function Subscriptions() {
 
     return (
         <main className="flex flex-col gap-6 w-full">
-            <FormDesription
+            {/* <FormDesription
                 title="Manage Your Subscriptions"
                 desc="Stay updated with our latest news and offers. You can manage your email subscriptions below."
-            />
+            /> */}
             <div className="flex flex-col w-full gap-3">
                 <SubscriptionComponent
                     title="Email"

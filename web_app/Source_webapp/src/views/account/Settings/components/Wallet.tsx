@@ -13,6 +13,7 @@ import {
     useAppKitProvider,
     useAppKitAccount,
     useDisconnect,
+    useAppKit,
 } from '@reown/appkit/react'
 import { BrowserProvider, formatUnits } from 'ethers'
 
@@ -26,6 +27,7 @@ const WalletSettings = () => {
     })
     const { _id: userId } = useAppSelector((state) => state.auth.user)
     const { address, isConnected } = useAppKitAccount()
+    const { open } = useAppKit()
     const { walletProvider } = useAppKitProvider('eip155')
     const { disconnect } = useDisconnect()
 
@@ -121,14 +123,17 @@ const WalletSettings = () => {
         <>
             {(loading == false && (
                 <main>
-                    <div className="flex text-[1rem] flex-col gap-4">
-                        <div className="flex items-center flex-col md:flex-row gap-4">
-                            <p className=" font-bold no-wrap">
-                                {!isConnected ? 'Connect your' : 'Your'} wallet:
+                    <div className="flex flex-col gap-4">
+                        <div className="flex items-center flex-col md:flex-row">
+                            <p className="font-bold no-wrap mr-2">
+                                {!isConnected ? 'Connect your' : 'Your'}{' '}
+                                identity wallet:
                             </p>
                             {(isConnected && (
                                 <>
-                                    <p className="text-white">{address}</p>
+                                    <p className="text-white ml-1 mr-4">
+                                        {address}
+                                    </p>
                                     <Button
                                         variant="solid"
                                         color="red"
@@ -138,8 +143,52 @@ const WalletSettings = () => {
                                         Disconnect
                                     </Button>
                                 </>
-                            )) || <appkit-button balance="hide" />}
+                            )) || (
+                                <Button
+                                    variant="solid"
+                                    size="sm"
+                                    onClick={() => open()}
+                                >
+                                    Connect
+                                </Button>
+                            )}
                         </div>
+
+                        <div className="flex items-center flex-col md:flex-row">
+                            <p className="font-bold no-wrap mr-2">
+                                Connect your ownership wallet:
+                            </p>
+                            <Button variant="solid" size="sm">
+                                Connect
+                            </Button>
+                        </div>
+
+                        <Button size="sm" variant="solid" className="w-fit">
+                            Link Your Ownership Wallet to Your Identity Wallet
+                        </Button>
+
+                        <span className="w-full border-t border-gray-600 my-4"></span>
+
+                        <Button size="sm" variant="solid" className="w-fit">
+                            Create IoT Device NFT
+                        </Button>
+
+                        <Button
+                            className="w-fit"
+                            loading={requestLoading}
+                            onClick={handleRequestFaucet}
+                            variant="solid"
+                            size="sm"
+                        >
+                            Receive Test FDS Token
+                        </Button>
+
+                        <Button size="sm" variant="solid" className="w-fit">
+                            Show Your Asset (IoT Device NFT, Token) in Your
+                            Ownership Wallet
+                        </Button>
+
+                        <span className="w-full border-t border-gray-600 my-4"></span>
 
                         {isConnected && (
                             <div className="flex items-center gap-8">
@@ -169,18 +218,8 @@ const WalletSettings = () => {
                                 more tokens, contact your node administrator.
                             </p>
                         </div> */}
-                        <div className="flex items-center w-full">
-                            <Button
-                                className="w-full sm:w-auto"
-                                loading={requestLoading}
-                                onClick={handleRequestFaucet}
-                                variant="solid"
-                                color="green"
-                                size="md"
-                            >
-                                Request Tokens From the Faucet
-                            </Button>
-                        </div>
+
+                        <span className="w-full border-t border-gray-600 my-4"></span>
                     </div>
                 </main>
             )) || (

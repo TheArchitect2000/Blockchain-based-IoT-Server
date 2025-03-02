@@ -127,10 +127,10 @@ const Password = () => {
                     return (
                         <Form>
                             <FormContainer>
-                                <FormDesription
+                                {/* <FormDesription
                                     title="Password"
                                     desc="Enter your current & new password to reset your password"
-                                />
+                                /> */}
                                 <FormRow
                                     name="password"
                                     label="Current Password"
@@ -139,7 +139,7 @@ const Password = () => {
                                     <Field
                                         autoComplete="off"
                                         name="password"
-                                        placeholder="Current Password"
+                                        placeholder="Current password"
                                         component={PasswordInput}
                                     />
                                 </FormRow>
@@ -151,7 +151,7 @@ const Password = () => {
                                     <Field
                                         autoComplete="off"
                                         name="newPassword"
-                                        placeholder="New Password"
+                                        placeholder="New password"
                                         component={PasswordInput}
                                     />
                                 </FormRow>
@@ -163,15 +163,16 @@ const Password = () => {
                                     <Field
                                         autoComplete="off"
                                         name="confirmNewPassword"
-                                        placeholder="Confirm Password"
+                                        placeholder="Confirm password"
                                         component={PasswordInput}
                                     />
                                 </FormRow>
-                                <div className="flex gap-4 flex-col xs:flex-row mt-4 ltr:text-right">
+                                <div className="flex gap-4 flex-col justify-end xs:flex-row mt-4 ltr:text-right">
                                     <Button
                                         variant="solid"
                                         loading={isSubmitting}
                                         type="submit"
+                                        size='sm'
                                     >
                                         {isSubmitting
                                             ? 'Updating'
@@ -181,6 +182,7 @@ const Password = () => {
                                         className="ltr:mr-2 rtl:ml-2"
                                         type="button"
                                         onClick={() => resetForm()}
+                                        size='sm'
                                     >
                                         Reset
                                     </Button>

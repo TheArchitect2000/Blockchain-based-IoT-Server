@@ -32,7 +32,6 @@ const SureDialog = ({
                 <div className="flex justify-center gap-12">
                     <Button
                         variant="solid"
-                        color="red-500"
                         onClick={() => {
                             if (onConfirm) {
                                 onConfirm()

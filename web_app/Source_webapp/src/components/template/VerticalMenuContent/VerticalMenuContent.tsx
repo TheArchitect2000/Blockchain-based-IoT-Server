@@ -22,7 +22,6 @@ import useMenuActive from '@/utils/hooks/useMenuActive'
 import { useTranslation } from 'react-i18next'
 import { Direction, NavMode } from '@/@types/theme'
 import type { NavigationTree } from '@/@types/navigation'
-import { apiGetNodeTheme } from '@/services/UserApi'
 import Logo from '../Logo'
 import { setSideNavCollapse, useAppDispatch, useAppSelector } from '@/store'
 

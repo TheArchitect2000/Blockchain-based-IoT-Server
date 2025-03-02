@@ -407,6 +407,7 @@ export default function ProofPage() {
                                                             ) ||
                                                             transactionLoading
                                                         }
+                                                        size='sm'
                                                         variant={
                                                             values.proof
                                                                 ? 'solid'
@@ -437,9 +438,9 @@ export default function ProofPage() {
                                     <p className={`mt-4 text-[#EAF4FF]`}>
                                         * This transaction will be processed
                                         using the{' '}
-                                        <strong className="text-green-400">
+                                        <span className="underline">
                                             Node Admin Wallet
-                                        </strong>
+                                        </span>
                                         . If you'd prefer to pay with your own
                                         wallet, please{' '}
                                         <strong
@@ -448,7 +449,7 @@ export default function ProofPage() {
                                                     '/account/settings/wallet'
                                                 )
                                             }
-                                            className="underline cursor-pointer text-[#0056b3]"
+                                            className={`underline cursor-pointer text-${themeColor}-500`}
                                         >
                                             click here
                                         </strong>{' '}
@@ -458,9 +459,9 @@ export default function ProofPage() {
                                     <p className={`mt-4 text-[#EAF4FF]`}>
                                         * This transaction will be processed
                                         using{' '}
-                                        <strong className="text-red-400">
+                                        <span className="underline">
                                             your connected wallet
-                                        </strong>
+                                        </span>
                                         . If you'd like to pay with the Node
                                         Admin Wallet instead, please{' '}
                                         <strong
@@ -469,7 +470,7 @@ export default function ProofPage() {
                                                     '/account/settings/wallet'
                                                 )
                                             }
-                                            className="underline cursor-pointer text-[#0056b3]"
+                                            className={`underline cursor-pointer text-${themeColor}-500`}
                                         >
                                             click here
                                         </strong>{' '}
@@ -502,7 +503,7 @@ export default function ProofPage() {
                                     )}
                                 </AdaptableCard>
 
-                                <div className="flex items-center justify-center mt-4">
+                                <div className="flex items-center justify-end mt-4">
                                     {txHash.length == 0 ? (
                                         <>
                                             <Button
@@ -512,6 +513,7 @@ export default function ProofPage() {
                                                     )
                                                 }
                                                 variant="solid"
+                                                size='sm'
                                                 loading={
                                                     isSubmitting ||
                                                     transactionLoading
@@ -528,6 +530,7 @@ export default function ProofPage() {
                                                         'company_developer'
                                                     ) || transactionLoading
                                                 }
+                                                size='sm'
                                                 variant="default"
                                                 className="ml-2"
                                                 onClick={() => {

@@ -67,13 +67,12 @@ function Services() {
                         darkModeSrc="/img/others/img-2-dark.png"
                         alt="No product found!"
                     />
-                    <h3>No services created!</h3>
+                    <h3>No services were found!</h3>
                     <Button
                         onClick={() => {
                             navigateTo('/services/new')
                         }}
                         variant="solid"
-                        color="green-600"
                     >
                         Create New Service
                     </Button>

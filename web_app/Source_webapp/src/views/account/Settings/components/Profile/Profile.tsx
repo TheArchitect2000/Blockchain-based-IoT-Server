@@ -527,10 +527,10 @@ const Profile = ({}: ProfileProps) => {
                         </Dialog>
                         {(loading === false && (
                             <FormContainer>
-                                <FormDesription
+                                {/* <FormDesription
                                     title="General"
                                     desc="Basic info, like your name and avatar that will displayed in public"
-                                />
+                                /> */}
                                 <FormRow
                                     name="firstName"
                                     label="First Name"
@@ -588,6 +588,7 @@ const Profile = ({}: ProfileProps) => {
                                                         onClick={() =>
                                                             setEmailModal(true)
                                                         }
+                                                        size='sm'
                                                         type="button"
                                                         variant="default"
                                                     >
@@ -598,6 +599,7 @@ const Profile = ({}: ProfileProps) => {
                                                         onClick={
                                                             requestVerifyAccount
                                                         }
+                                                        size='sm'
                                                         type="button"
                                                         variant="solid"
                                                         loading={apiLoading}
@@ -752,7 +754,7 @@ const Profile = ({}: ProfileProps) => {
                                             type="button"
                                             variant="solid"
                                             color="red"
-                                            size="md"
+                                            size="sm"
                                             disabled={
                                                 (!imageSrc && true) || false
                                             }
@@ -776,6 +778,7 @@ const Profile = ({}: ProfileProps) => {
                                         variant="solid"
                                         loading={isSubmitting}
                                         type="submit"
+                                        size='sm'
                                     >
                                         {isSubmitting ? 'Updating' : 'Update'}
                                     </Button>

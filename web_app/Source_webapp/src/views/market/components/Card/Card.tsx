@@ -315,7 +315,7 @@ const ServiceCard = ({
                     >
                         Close
                     </Button>
-                    <Button 
+                    <Button
                         variant="solid"
                         size="sm"
                         className="w-fit px-8"
@@ -589,7 +589,6 @@ const ServiceCard = ({
                             <Button
                                 className=""
                                 variant="solid"
-                                color="green"
                                 size="sm"
                                 onClick={() => setInstallModal(true)}
                             >

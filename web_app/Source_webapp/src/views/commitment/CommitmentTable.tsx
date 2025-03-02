@@ -356,7 +356,7 @@ const CommitmentTable = ({
                         darkModeSrc="/img/others/img-2-dark.png"
                         alt="No product found!"
                     />
-                    <h3>No commitments found yet!</h3>
+                    <h3>No commitments were found!</h3>
                 </section>
             )}
         </>

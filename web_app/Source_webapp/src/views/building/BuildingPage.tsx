@@ -115,13 +115,12 @@ export default function BuildingPage() {
                         darkModeSrc="/img/others/img-2-dark.png"
                         alt="No product found!"
                     />
-                    <h3>No building found!</h3>
+                    <h3>No buildings were found!</h3>
                     <Button
                         onClick={() => {
                             navigateTo('/buildings/new')
                         }}
                         variant="solid"
-                        color="green-600"
                     >
                         Create New Building
                     </Button>

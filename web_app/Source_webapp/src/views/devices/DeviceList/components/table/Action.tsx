@@ -6,6 +6,7 @@ import useThemeClass from '@/utils/hooks/useThemeClass'
 import { useEffect, useState } from 'react'
 import { FiPackage } from 'react-icons/fi'
 import {
+    HiFingerPrint,
     HiOutlineEye,
     HiOutlinePencil,
     HiOutlineTrash,
@@ -111,7 +112,7 @@ export const DeviceActionColumn: React.FC<DeviceActionColumnProps> = ({
     }
 
     return (
-        <div className="flex justify-end text-lg">
+        <div className="flex justify-start text-xl">
             {sharedLoading == false && options.sharedUsers && (
                 <span
                     className={`cursor-pointer p-2 hover:text-yellow-500`}
@@ -143,10 +144,15 @@ export const DeviceActionColumn: React.FC<DeviceActionColumnProps> = ({
             )}
             {options.view && (
                 <span
-                    className={`cursor-pointer p-2 hover:text-white`}
+                    className={`cursor-pointer p-2 hover:text-gray-400`}
                     onClick={onView}
                 >
                     <HiOutlineEye />
+                </span>
+            )}
+            {options.nft && (
+                <span className={`cursor-pointer p-2 hover:${textTheme}`}>
+                    <HiFingerPrint />
                 </span>
             )}
             {options.delete && (

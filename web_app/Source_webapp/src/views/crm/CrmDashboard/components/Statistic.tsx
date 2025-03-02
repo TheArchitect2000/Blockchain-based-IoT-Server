@@ -111,7 +111,7 @@ const StatisticCard = ({
                         <h3 className="font-bold leading-none">{data.value}</h3>
                         <p
                             className={`${
-                                data.desc && 'text-[1rem] text-white'
+                                data.desc && 'text-[1rem] text-red-400'
                             } font-bold`}
                         >
                             {data.label}
@@ -125,7 +125,7 @@ const StatisticCard = ({
                     )}
                     {data.desc && (
                         <p className="flex items-center gap-1">
-                            <span className="text-red-200">{data.desc}</span>
+                            <span className="text-red-300">{data.desc}</span>
                         </p>
                     )}
                 </div>

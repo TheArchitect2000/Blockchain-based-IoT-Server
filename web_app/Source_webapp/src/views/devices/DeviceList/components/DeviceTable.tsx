@@ -48,6 +48,7 @@ export interface DeviceListOptionsInterface {
     delete?: boolean
     sharedUsers?: boolean
     unshare?: boolean
+    nft?: boolean
 }
 
 const DeviceTable = ({
@@ -269,7 +270,9 @@ const DeviceTable = ({
             accessorKey: 'deviceEncryptedId',
             cell: (props) => {
                 const row = props.row.original
-                return <span className="capitalize">{row.deviceEncryptedId}</span>
+                return (
+                    <span className="capitalize">{row.deviceEncryptedId}</span>
+                )
             },
         },
         // {
@@ -278,15 +281,15 @@ const DeviceTable = ({
         //     sortable: true,
         // },
         {
-            header: 'Use Cost',
+            header: 'Usage Cost',
             accessorKey: 'costOfUse',
             cell: (props) => {
                 const { costOfUse } = props.row.original
-                return <span>${costOfUse}</span>
+                return <span>{costOfUse} FDS</span>
             },
         },
         {
-            header: 'Creation Date',
+            header: 'Installation',
             accessorKey: 'insertDate',
             enableSorting: false,
             cell: (props) => {
@@ -297,17 +300,34 @@ const DeviceTable = ({
                 const month: number = dateObj.getMonth() + 1 // Add 1 because getMonth() returns a zero-based index
                 const day: number = dateObj.getDate()
 
+                // Extract the hours, minutes, and seconds from the Date object
+                const hours: number = dateObj.getHours()
+                const minutes: number = dateObj.getMinutes()
+                const seconds: number = dateObj.getSeconds()
+
                 // Format the date in YYYY-MM-DD format
                 const formattedDate = `${year}-${month
                     .toString()
                     .padStart(2, '0')}-${day.toString().padStart(2, '0')}`
 
-                return <span>{formattedDate}</span>
+                // Format the time in HH:MM:SS format
+                const formattedTime = `${hours
+                    .toString()
+                    .padStart(2, '0')}:${minutes
+                    .toString()
+                    .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+
+                // Return the formatted date and time
+                return (
+                    <span>
+                        {formattedDate}, {formattedTime}
+                    </span>
+                )
             },
         },
 
         {
-            header: '',
+            header: 'Actions',
             id: 'action',
             cell: (props) => {
                 return (
@@ -564,11 +584,15 @@ const DeviceTable = ({
                         darkModeSrc="/img/others/img-2-dark.png"
                         alt="No product found!"
                     />
-                    {type !== 'all' && <h4 className='text-center'>No {type} devices were found.</h4>}
+                    {type !== 'all' && (
+                        <h4 className="text-center">
+                            No {type} devices were found!
+                        </h4>
+                    )}
 
                     {type === 'all' && (
                         <>
-                            <p className='text-center text-lg'>
+                            <p className="text-center text-lg">
                                 To add your device to this account, please use
                                 the FidesInnova mobile app.
                             </p>
@@ -580,12 +604,12 @@ const DeviceTable = ({
                                     loading="lazy"
                                     decoding="async"
                                     width="150"
-                                    src="/img/stores/gplay-button.png" // 
+                                    src="/img/stores/gplay-button.png" //
                                     className="attachment-large size-large wp-image-18033"
                                     alt="FidesInnova google play pic"
                                 />
                             </a>
-                            
+
                             <a
                                 href="https://apps.apple.com/ca/app/fidesinnova/id6477492757"
                                 target="_blank"
@@ -603,6 +627,42 @@ const DeviceTable = ({
                     )}
                 </section>
             )}
+
+            <div className="flex flex-col items-center w-full gap-3 mt-12">
+                <p className="text-center text-md text-gray-400">
+                    To add your device to this account, please use the
+                    FidesInnova mobile app.
+                </p>
+                <div className="flex gap-2">
+                    <a
+                        href="https://play.google.com/store/apps/details?id=io.fidesinnova.front"
+                        target="_blank"
+                    >
+                        <img
+                            loading="lazy"
+                            decoding="async"
+                            width="150"
+                            src="/img/stores/gplay-button.png" //
+                            className="attachment-large size-large wp-image-18033"
+                            alt="FidesInnova google play pic"
+                        />
+                    </a>
+
+                    <a
+                        href="https://apps.apple.com/ca/app/fidesinnova/id6477492757"
+                        target="_blank"
+                    >
+                        <img
+                            loading="lazy"
+                            decoding="async"
+                            width="150"
+                            src="/img/stores/appstore-button.png"
+                            className="attachment-large size-large wp-image-18034"
+                            alt="FidesInnova appstore pic"
+                        />{' '}
+                    </a>
+                </div>
+            </div>
         </>
     )
 }

@@ -59,10 +59,10 @@ export default function StorX() {
                             <div className="mt-4 ltr:text-right">
                                 <Button
                                     variant="solid"
-                                    color="green-500"
-                                    className="w-fit mx-auto"
+                                    size='sm'
+                                    className="w-fit ms-auto"
                                 >
-                                    Login in StorX
+                                    Login to StorX
                                 </Button>
                             </div>
                         </FormContainer>
