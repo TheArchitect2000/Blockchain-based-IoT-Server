@@ -124,19 +124,6 @@ export async function apiGetUserProfileByUserId<T>(userId: string) {
 }
 
 export async function apiGetNodeTheme<T>() {
-
-    return {
-        data: {
-            data: {
-                logo: "https://developer.fidesinnova.io/app/uploads/logo.png",
-                text: "ffffff",
-                background: "1D293D",
-                box: "1D293D",
-                button: "33658A",
-            }
-        }
-    }
-
     return ApiService.fetchData<T>({
         url: import.meta.env.VITE_URL + `v1/theme`,
         method: 'get',
@@ -167,7 +154,8 @@ export async function apiVerifyChangeEmailWithToken<T>(token: string) {
 export async function apiPermanentDeleteUserAccount<T>(userId: string) {
     return ApiService.fetchData<T>({
         url:
-            import.meta.env.VITE_URL + `v1/user/delete-all-user-data?userId=${userId}`,
+            import.meta.env.VITE_URL +
+            `v1/user/delete-all-user-data?userId=${userId}`,
         method: 'delete',
     })
 }
