@@ -60,6 +60,12 @@ export const protectedRoutes = [
         authority: [],
     },
     {
+        key: 'explorer',
+        path: '/explorer',
+        component: lazy(() => import('@/views/explorer')),
+        authority: [],
+    },
+    {
         key: 'proof',
         path: '/proof-submitter',
         component: lazy(() => import('@/views/proof-submiter')),

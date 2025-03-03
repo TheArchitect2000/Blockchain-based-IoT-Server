@@ -33,6 +33,7 @@ export type DeviceData = {
     costOfUse: number
     insertedBy: string
     insertDate: string
+    lastLog?: string
     isDeleted: boolean
     updatedBy: string
     updateDate: string

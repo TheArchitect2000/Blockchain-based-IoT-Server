@@ -4,6 +4,7 @@ import { DeviceData } from '@/utils/hooks/useGetDevices'
 import { useEffect, useState } from 'react'
 import { Loading } from '@/components/shared'
 import './style.scss'
+import LiveAnimation from '@/components/animations/Heart/HeartAnimation'
 
 export function formatDate(isoDate: string) {
     const date = new Date(isoDate)
@@ -63,7 +64,10 @@ export default function DevicePayload({
             bodyClass="flex flex-col gap-10 p-10"
             className=" w-full min-h-[40dvh] mt-10 card card-border"
         >
-            <h1>Device Live Payload</h1>
+            <h1 className="w-fit flex gap-2">
+                <LiveAnimation className="!flex !items-center !justify-center" />
+                Device Live Payload
+            </h1>
 
             {(logLoading && (
                 <div className="flex items-center justify-center w-full h-[40dvh]">

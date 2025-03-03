@@ -51,7 +51,7 @@ const Header = (props: HeaderProps) => {
         } else if (eventKey == 'ZKP Commitment Generator') {
             window.open('https://github.com/FidesInnova/zkiot', '_blank')
         } else if (eventKey == 'Network ZKP Explorer') {
-            window.open('https://explorer.fidesinnova.io/', '_blank')
+            navigate('/explorer')
         }
     }
 

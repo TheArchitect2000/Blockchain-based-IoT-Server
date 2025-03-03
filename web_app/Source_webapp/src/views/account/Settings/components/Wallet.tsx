@@ -49,7 +49,6 @@ const WalletSettings = () => {
             await getBalance()
             const resfaucetAddress = (await apiGetFaucetWalletData()) as any
             setFaucetData(resfaucetAddress.data.data)
-            const resData = (await apiGetCurUserProfile()) as any
             setLoading(false)
         }
         fetchData()

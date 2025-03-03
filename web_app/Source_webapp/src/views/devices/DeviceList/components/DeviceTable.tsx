@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { memo, useEffect, useState } from 'react'
 import Table from '@/components/ui/Table'
 import {
     flexRender,
@@ -50,6 +50,36 @@ export interface DeviceListOptionsInterface {
     unshare?: boolean
     nft?: boolean
 }
+
+const LastLogCell = memo(({ lastLog, deviceEncryptedId, payloads }: any) => {
+    const [formattedDate, setFormattedDate] = useState('')
+
+    useEffect(() => {
+        let theDate
+
+        if (payloads[deviceEncryptedId]?.date) {
+            theDate = new Date(payloads[deviceEncryptedId]?.date)
+        } else {
+            theDate = new Date(lastLog)
+        }
+
+        const year = theDate.getFullYear()
+        const month = (theDate.getMonth() + 1).toString().padStart(2, '0')
+        const day = theDate.getDate().toString().padStart(2, '0')
+        const hours = theDate.getHours().toString().padStart(2, '0')
+        const minutes = theDate.getMinutes().toString().padStart(2, '0')
+        const seconds = theDate.getSeconds().toString().padStart(2, '0')
+
+        const formattedDate = `${year}-${month}-${day}`
+        const formattedTime = `${hours}:${minutes}:${seconds}`
+
+        setFormattedDate(`${formattedDate}, ${formattedTime}`)
+    }, [lastLog, deviceEncryptedId, payloads])
+
+    return <span>{formattedDate}</span>
+})
+
+LastLogCell.displayName = 'LastLogCell'
 
 const DeviceTable = ({
     type,
@@ -322,6 +352,21 @@ const DeviceTable = ({
                     <span>
                         {formattedDate}, {formattedTime}
                     </span>
+                )
+            },
+        },
+        {
+            header: 'Last Log',
+            accessorKey: 'lastLog',
+            enableSorting: true,
+            cell: (props) => {
+                const { lastLog, deviceEncryptedId } = props.row.original
+                return (
+                    <LastLogCell
+                        lastLog={lastLog}
+                        deviceEncryptedId={deviceEncryptedId}
+                        payloads={payloads}
+                    />
                 )
             },
         },
@@ -628,41 +673,43 @@ const DeviceTable = ({
                 </section>
             )}
 
-            <div className="flex flex-col items-center w-full gap-3 mt-12">
-                <p className="text-center text-md text-gray-400">
-                    To add your device to this account, please use the
-                    FidesInnova mobile app.
-                </p>
-                <div className="flex gap-2">
-                    <a
-                        href="https://play.google.com/store/apps/details?id=io.fidesinnova.front"
-                        target="_blank"
-                    >
-                        <img
-                            loading="lazy"
-                            decoding="async"
-                            width="150"
-                            src="/img/stores/gplay-button.png" //
-                            className="attachment-large size-large wp-image-18033"
-                            alt="FidesInnova google play pic"
-                        />
-                    </a>
+            {loading === false && data.length > 0 && (
+                <div className="flex flex-col items-center w-full gap-3 mt-12">
+                    <p className="text-center text-md text-gray-400">
+                        To add your device to this account, please use the
+                        FidesInnova mobile app.
+                    </p>
+                    <div className="flex gap-2">
+                        <a
+                            href="https://play.google.com/store/apps/details?id=io.fidesinnova.front"
+                            target="_blank"
+                        >
+                            <img
+                                loading="lazy"
+                                decoding="async"
+                                width="150"
+                                src="/img/stores/gplay-button.png" //
+                                className="attachment-large size-large wp-image-18033"
+                                alt="FidesInnova google play pic"
+                            />
+                        </a>
 
-                    <a
-                        href="https://apps.apple.com/ca/app/fidesinnova/id6477492757"
-                        target="_blank"
-                    >
-                        <img
-                            loading="lazy"
-                            decoding="async"
-                            width="150"
-                            src="/img/stores/appstore-button.png"
-                            className="attachment-large size-large wp-image-18034"
-                            alt="FidesInnova appstore pic"
-                        />{' '}
-                    </a>
+                        <a
+                            href="https://apps.apple.com/ca/app/fidesinnova/id6477492757"
+                            target="_blank"
+                        >
+                            <img
+                                loading="lazy"
+                                decoding="async"
+                                width="150"
+                                src="/img/stores/appstore-button.png"
+                                className="attachment-large size-large wp-image-18034"
+                                alt="FidesInnova appstore pic"
+                            />{' '}
+                        </a>
+                    </div>
                 </div>
-            </div>
+            )}
         </>
     )
 }

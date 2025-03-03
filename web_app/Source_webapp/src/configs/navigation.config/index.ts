@@ -68,6 +68,17 @@ const navigationConfig: NavigationTree[] = [
         subMenu: [],
     },
 
+    {
+        key: 'explorer',
+        path: '/explorer',
+        title: 'Network ZKP Explorer',
+        translateKey: 'Network ZKP Explorer',
+        icon: 'explorer',
+        type: NAV_ITEM_TYPE_ITEM,
+        authority: [],
+        subMenu: [],
+    },
+
     // {
     //     key: 'collapseMenu',
     //     path: '',

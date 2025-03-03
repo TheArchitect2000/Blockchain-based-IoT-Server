@@ -1,5 +1,5 @@
 import { Loading } from '@/components/shared'
-import { Avatar, Notification, toast } from '@/components/ui'
+import { Avatar, Notification, toast, Tooltip } from '@/components/ui'
 import { apiGetLocalShareUsersWithDeviceId } from '@/services/DeviceApi'
 import { DeviceData } from '@/utils/hooks/useGetDevices'
 import useThemeClass from '@/utils/hooks/useThemeClass'
@@ -131,7 +131,9 @@ export const DeviceActionColumn: React.FC<DeviceActionColumnProps> = ({
                     className="cursor-pointer p-2 hover:text-green-500"
                     onClick={onShare}
                 >
-                    <HiShare />
+                    <Tooltip title="Global/Local Share" placement="top">
+                        <HiShare />
+                    </Tooltip>
                 </span>
             )}
             {options.edit && (
@@ -139,7 +141,9 @@ export const DeviceActionColumn: React.FC<DeviceActionColumnProps> = ({
                     className={`cursor-pointer p-2 hover:${textTheme}`}
                     onClick={onEdit}
                 >
-                    <HiOutlinePencil />
+                    <Tooltip title="Rename" placement="top">
+                        <HiOutlinePencil />
+                    </Tooltip>
                 </span>
             )}
             {options.view && (
@@ -147,12 +151,16 @@ export const DeviceActionColumn: React.FC<DeviceActionColumnProps> = ({
                     className={`cursor-pointer p-2 hover:text-gray-400`}
                     onClick={onView}
                 >
-                    <HiOutlineEye />
+                    <Tooltip title="Details" placement="top">
+                        <HiOutlineEye />
+                    </Tooltip>
                 </span>
             )}
             {options.nft && (
                 <span className={`cursor-pointer p-2 hover:${textTheme}`}>
-                    <HiFingerPrint />
+                    <Tooltip title="NFT" placement="top">
+                        <HiFingerPrint />
+                    </Tooltip>
                 </span>
             )}
             {options.delete && (
@@ -160,7 +168,9 @@ export const DeviceActionColumn: React.FC<DeviceActionColumnProps> = ({
                     className="cursor-pointer p-2 hover:text-red-500"
                     onClick={onDelete}
                 >
-                    <HiOutlineTrash />
+                    <Tooltip title="Delete" placement="top">
+                        <HiOutlineTrash />
+                    </Tooltip>
                 </span>
             )}
             {options.unshare && (
