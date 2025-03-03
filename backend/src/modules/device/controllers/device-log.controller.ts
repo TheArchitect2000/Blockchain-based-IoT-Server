@@ -406,12 +406,6 @@ export class DeviceLogController {
     description: 'device encrypted ID',
   })
   @ApiQuery({
-    name: 'fieldName',
-    type: String,
-    required: true,
-    description: 'Field Name',
-  })
-  @ApiQuery({
     name: 'daysBefore',
     type: Number,
     required: true,
@@ -419,7 +413,6 @@ export class DeviceLogController {
   })
   async getDeviceLogByEncryptedDeviceIdAndFieldNameAndNumberOfDaysBefore(
     @Query('deviceEncryptedId') deviceEncryptedId: string,
-    @Query('fieldName') fieldName: string,
     @Query('daysBefore') daysBefore: number,
     @Request() request?,
   ) {
@@ -473,4 +466,75 @@ export class DeviceLogController {
 
     return this.result;
   }
+  
+  @Get('v1/device-log/get-device-log-by-encrypted-deviceid-and-date-range')
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Gets device activity by encrypted device ID and date range.',
+    description:
+      'This API requires a device ID, date range, and type (day/hour) and returns aggregated device logs for the specified period.',
+  })
+  @ApiQuery({
+    name: 'deviceEncryptedId',
+    type: String,
+    required: true,
+    description: 'Device encrypted ID',
+  })
+  @ApiQuery({
+    name: 'startDate',
+    type: Date,
+    required: true,
+    description: 'Start date of the range (YYYY-MM-DD)',
+  })
+  @ApiQuery({
+    name: 'endDate',
+    type: Date,
+    required: true,
+    description: 'End date of the range (YYYY-MM-DD)',
+  })
+  @ApiQuery({
+    name: 'type',
+    enum: ['day', 'hour'],
+    required: true,
+    description: 'Type of aggregation (day or hour)',
+  })
+  async getDeviceLogByEncryptedDeviceIdAndDateRange(
+    @Query('deviceEncryptedId') deviceEncryptedId: string,
+    @Query('startDate') startDate: Date,
+    @Query('endDate') endDate: Date,
+    @Query('type') type: 'day' | 'hour',
+    @Request() request?,
+  ) {
+    // Check if the device is shared with the user
+    const isSharedWithUser =
+      await this.deviceService.isDeviceEncryptedSharedWithUser(
+        deviceEncryptedId,
+        request.user.userId,
+      );
+
+    // Check if the user is an admin
+    const isAdmin = await this.isAdmin(request.user.userId);
+
+    try {
+      const result = await this.deviceLogService.getDeviceLogByEncryptedDeviceIdAndDateRange(
+        deviceEncryptedId,
+        new Date(startDate),
+        new Date(endDate),
+        type,
+        request.user.userId,
+        (isSharedWithUser || isAdmin),
+      );
+
+      return result;
+    } catch (error) {
+      const errorMessage = 'Some errors occurred while fetching device logs!';
+      throw new GeneralException(
+        ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+        errorMessage,
+      );
+    }
+  }
+
 }

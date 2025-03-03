@@ -173,13 +173,33 @@ export class DeviceService {
 
     //console.log('Found devices are: ', foundDevices);
 
+    const lastLogs =
+      await this.deviceLogService.getLastDevicesLogByUserIdAndFieldName(
+        userId,
+        foundDevices,
+      );
+
+    console.log('lastLogs devices are: ', lastLogs);
+
     const updatedDevices = foundDevices.map((item: any) => {
       const imageUrl = this.appService.getDeviceUrlByType(
         item.deviceType.toString(),
       );
+
+      let lastLog = '';
+
+      lastLogs.map((logDevice: any) => {
+        if (
+          String(logDevice.deviceEncryptedId) == String(item.deviceEncryptedId)
+        ) {
+          lastLog = logDevice.insertDate;
+        }
+      });
+
       return {
         ...item._doc,
         image: imageUrl.toString() as string,
+        lastLog: lastLog,
       };
     });
 
