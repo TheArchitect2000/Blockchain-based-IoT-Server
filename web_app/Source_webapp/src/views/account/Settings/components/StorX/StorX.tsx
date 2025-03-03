@@ -59,7 +59,7 @@ export default function StorX() {
                             <div className="mt-4 ltr:text-right">
                                 <Button
                                     variant="solid"
-                                    size='sm'
+                                    size="sm"
                                     className="w-fit ms-auto"
                                 >
                                     Login to StorX
