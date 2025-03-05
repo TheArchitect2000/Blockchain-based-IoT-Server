@@ -344,7 +344,7 @@ NODE_NAME='YOUR_NODE_NAME'
 SWAGGER_LOCAL_SERVER=http://localhost:5000
 
 # RPC URL - This is the address of a blockchain node in the network that provides RPC sevice to your IoT server
-RPC_URL='https://fidesf1-rpc.fidesinnova.io'
+RPC_URL='https://rpc1.fidesinnova.io'
 
 # Faucet Wallet Private Key
 FAUCET_WALLET_PRIVATE_KEY='YOUR_FAUCET_WALLET_PRIVATE_KEY'
