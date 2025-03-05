@@ -14,9 +14,6 @@
 
 To install the back-end and front-end components of the Fidesinnova platform, including both the web app and mobile app, you can follow the steps below. These instructions assume that you have a basic understanding of setting up development environments and are familiar with JavaScript, Node.js, and related technologies.
 
-
-
-
 # Step A. Prepare operating system
 First of all install Ubuntu 24.04 LTS on your server. 
 
