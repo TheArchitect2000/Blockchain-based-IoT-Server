@@ -235,10 +235,10 @@ const ServiceCard = ({
                 contentClassName="w-1/3 h-1/3"
                 closable={false}
             >
-                <h3 className="mb-8">Delete Confirm</h3>
-                <h4 className="mb-6 text-center">
+                <h4 className="mb-8">Delete Confirm</h4>
+                <p className="mb-6 text-center text-white text-lg">
                     Are you sure you want to delete the "{name}" Service ?
-                </h4>
+                </p>
                 <div className="flex justify-center w-3/5 justify-between mx-auto">
                     <Button
                         className="px-6"

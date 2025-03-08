@@ -77,7 +77,7 @@ const PhoneNumberSelector: React.FC<PhoneNumberSelectorProps> = ({
                 <Input
                     type="number"
                     id="phoneNumber"
-                    placeholder="Enter your tel number"
+                    placeholder="Enter your phone number"
                     value={state.phoneNumber}
                     onChange={handlePhoneNumberChange}
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"

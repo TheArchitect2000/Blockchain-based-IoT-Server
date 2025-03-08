@@ -27,7 +27,7 @@ export default function StorX() {
                     <Form>
                         <FormContainer>
                             <div className="flex items-center gap-4">
-                                <h4>StorX Authentication</h4>
+                                <h5>StorX Authentication</h5>
                                 <StorXLogo />
                             </div>
                             <FormRow
@@ -38,7 +38,7 @@ export default function StorX() {
                                 <Field
                                     autoComplete="off"
                                     name="username"
-                                    placeholder="username..."
+                                    placeholder="Username"
                                     component={Input}
                                     disabled={true}
                                 />
@@ -51,7 +51,7 @@ export default function StorX() {
                                 <Field
                                     autoComplete="off"
                                     name="password"
-                                    placeholder="password..."
+                                    placeholder="Password"
                                     component={PasswordInput}
                                     disabled={true}
                                 />

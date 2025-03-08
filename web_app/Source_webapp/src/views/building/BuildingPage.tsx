@@ -78,16 +78,18 @@ export default function BuildingPage() {
         <main className="w-full gap-4 flex flex-col">
             <Dialog
                 closable={false}
-                contentClassName="flex flex-col gap-10"
+                contentClassName="flex flex-col gap-4"
                 isOpen={deleteModal}
                 onClose={() => setDeleteModal(false)}
             >
-                <h3 className="text-center mt-6">
+                <h4>Delete Confirmation</h4>
+                <p className="text-lg text-center text-white">
                     Are you certain about deleting {deleteData?.name} building ?
-                </h3>
+                </p>
 
                 <div className="flex w-full justify-around">
                     <Button
+                        size="sm"
                         onClick={handleBuildingDelete}
                         variant="solid"
                         color="red"
@@ -95,11 +97,11 @@ export default function BuildingPage() {
                         Delete
                     </Button>
                     <Button
-                        variant="solid"
-                        color="green"
+                        size="sm"
+                        variant="default"
                         onClick={() => setDeleteModal(false)}
                     >
-                        Back
+                        Cancel
                     </Button>
                 </div>
             </Dialog>
@@ -115,7 +117,9 @@ export default function BuildingPage() {
                         darkModeSrc="/img/others/img-2-dark.png"
                         alt="No product found!"
                     />
-                    <h3>No buildings were found!</h3>
+                    <p className="text-center text-lg text-white">
+                        No buildings were found!
+                    </p>
                     <Button
                         onClick={() => {
                             navigateTo('/buildings/new')

@@ -58,7 +58,7 @@ const UserInfo = ({ profileData }: { profileData: any }) => {
                         value={profileData?.email || 'Not provided'}
                     />
                     <CustomerInfoField
-                        title="Tel"
+                        title="Phone"
                         value={number || 'Not provided'}
                     />
                     <CustomerInfoField

@@ -298,8 +298,8 @@ const createService = ({
         <>
             {(pageLoaded && (
                 <main className="w-100 h-full flex flex-col">
-                    {(isNew && <h1>Create Service</h1>) || (
-                        <h1>Edit Service</h1>
+                    {(isNew && <h3>Create Service Contract</h3>) || (
+                        <h3>Edit Service Contract</h3>
                     )}
                     <Formik
                         enableReinitialize
@@ -325,7 +325,7 @@ const createService = ({
                                     <FormContainer>
                                         <FormRow
                                             name="serviceName"
-                                            label="Service Name :"
+                                            label="Name"
                                             {...validatorProps}
                                         >
                                             <Field
@@ -338,7 +338,7 @@ const createService = ({
                                         </FormRow>
                                         <FormRow
                                             name="serviceType"
-                                            label="Service Type :"
+                                            label="Type"
                                             {...validatorProps}
                                         >
                                             <Field name="serviceType">
@@ -373,7 +373,7 @@ const createService = ({
                                         </FormRow>
                                         <FormRow
                                             name="description"
-                                            label="Service Description :"
+                                            label="Description"
                                             {...validatorProps}
                                         >
                                             <Field
@@ -387,7 +387,7 @@ const createService = ({
                                         </FormRow>
                                         <FormRow
                                             name="serviceImage"
-                                            label="Service Image :"
+                                            label="Image"
                                             {...validatorProps}
                                         >
                                             <div
@@ -470,9 +470,10 @@ const createService = ({
                                             </div>
                                         </FormRow>
 
-                                        <div className="mt-4 ltr:text-right">
+                                        <div className="mt-4 ltr:text-right flex justify-end">
                                             {(isNew && (
                                                 <Button
+                                                    size="sm"
                                                     className="max-sm:w-full"
                                                     variant="solid"
                                                     loading={isSubmitting}
@@ -484,6 +485,7 @@ const createService = ({
                                                 </Button>
                                             )) || (
                                                 <Button
+                                                    size="sm"
                                                     className="max-sm:w-full"
                                                     variant="solid"
                                                     loading={isSubmitting}

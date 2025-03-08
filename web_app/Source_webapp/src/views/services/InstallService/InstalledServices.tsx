@@ -153,7 +153,7 @@ const CollapseMenuItemView1: React.FC = () => {
                         darkModeSrc="/img/others/img-2-dark.png"
                         alt="No product found!"
                     />
-                    <h3>No services were installed!</h3>
+                    <p className='text-center text-lg text-white'>No services were installed!</p>
                     <Button
                         onClick={() => {
                             navigateTo('/market')

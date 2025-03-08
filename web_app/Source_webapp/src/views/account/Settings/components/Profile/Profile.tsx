@@ -540,7 +540,7 @@ const Profile = ({}: ProfileProps) => {
                                         type="text"
                                         autoComplete="off"
                                         name="firstName"
-                                        placeholder="first name"
+                                        placeholder="First name"
                                         component={Input}
                                         prefix={
                                             <HiOutlineUserCircle className="text-xl" />
@@ -556,7 +556,7 @@ const Profile = ({}: ProfileProps) => {
                                         type="text"
                                         autoComplete="off"
                                         name="lastName"
-                                        placeholder="last name"
+                                        placeholder="Last name"
                                         component={Input}
                                         prefix={
                                             <HiOutlineUserCircle className="text-xl" />
@@ -613,7 +613,7 @@ const Profile = ({}: ProfileProps) => {
                                 </FormRow>
                                 <FormRow
                                     name="tel"
-                                    label="Tel"
+                                    label="Phone"
                                     {...validatorProps}
                                 >
                                     <Field

@@ -67,7 +67,7 @@ function Services() {
                         darkModeSrc="/img/others/img-2-dark.png"
                         alt="No product found!"
                     />
-                    <h3>No services were found!</h3>
+                    <p className='text-center text-lg text-white'>No services were found!</p>
                     <Button
                         onClick={() => {
                             navigateTo('/services/new')

@@ -259,8 +259,8 @@ const CommitmentTable = ({
                 closable={false}
                 contentClassName="flex flex-col gap-4"
             >
-                <h3>Delete Confirmation</h3>
-                <p className="text-[1.2rem] text-center text-white">
+                <h4>Delete Confirmation</h4>
+                <p className="text-lg text-center text-white">
                     Are you sure you want to delete this commitment? This action
                     cannot be undone.
                 </p>
