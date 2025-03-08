@@ -266,49 +266,7 @@ export default function MakeAdmin() {
         <section className="w-full p-6 flex flex-col gap-4">
             <h3>Manage Roles</h3>
             <div className="flex flex-col-reverse lg:flex-row gap-10 ">
-                <div className="w-full lg:w-1/2 flex flex-col gap-4">
-                    <Input
-                        className="w-full"
-                        type="email"
-                        placeholder="admin.email@example.com"
-                        value={inputValue}
-                        onChange={handleInputChange}
-                        disabled={searching || selected ? true : false}
-                    />
-
-                    <div className="w-full flex flex-col lg:flex-row gap-2 overflow-hidden">
-                        <Button
-                            onClick={handleSearch}
-                            className="xl:w-1/3 w-full"
-                            variant="solid"
-                            disabled={selected ? true : false}
-                            loading={searching}
-                        >
-                            Search
-                        </Button>
-                        <Button
-                            onClick={handleRankApply}
-                            className="xl:w-1/3 w-full"
-                            variant="solid"
-                            color="green"
-                            disabled={selected ? false : true}
-                            loading={apiCalling}
-                        >
-                            Apply
-                        </Button>
-                        <Button
-                            onClick={cancelSearch}
-                            className="xl:w-1/3 w-full"
-                            variant="solid"
-                            color="yellow"
-                            disabled={selected ? false : true}
-                            loading={apiCalling}
-                        >
-                            Cancel
-                        </Button>
-                    </div>
-                </div>
-                <div className="w-full lg:w-1/2 flex flex-col sm:grid sm:grid-cols-2 gap-4 px-4 py-6 border border-gray-600 rounded-lg">
+                <div className="w-full xl:w-3/5 max-w-[800px] flex flex-col sm:grid sm:grid-cols-2 gap-4 px-4 py-6 border border-gray-600 rounded-lg">
                     <h4 className="col-span-2 mb-2 mx-auto">Role Selection</h4>
                     {adminRanks.map((rank, index) => (
                         <div
@@ -382,6 +340,48 @@ export default function MakeAdmin() {
                                 Developer C
                             </Dropdown.Item>
                         </Dropdown>
+                    </div>
+                    <div className="col-span-2 w-full flex flex-col gap-4">
+                        <Input
+                            className="w-full"
+                            type="email"
+                            placeholder="admin.email@example.com"
+                            value={inputValue}
+                            onChange={handleInputChange}
+                            disabled={searching || selected ? true : false}
+                        />
+
+                        <div className="w-full flex flex-col lg:flex-row gap-2 overflow-hidden">
+                            <Button
+                                onClick={handleSearch}
+                                className="xl:w-1/3 w-full"
+                                variant="solid"
+                                disabled={selected ? true : false}
+                                loading={searching}
+                            >
+                                Search
+                            </Button>
+                            <Button
+                                onClick={handleRankApply}
+                                className="xl:w-1/3 w-full"
+                                variant="solid"
+                                color="green"
+                                disabled={selected ? false : true}
+                                loading={apiCalling}
+                            >
+                                Apply
+                            </Button>
+                            <Button
+                                onClick={cancelSearch}
+                                className="xl:w-1/3 w-full"
+                                variant="solid"
+                                color="yellow"
+                                disabled={selected ? false : true}
+                                loading={apiCalling}
+                            >
+                                Cancel
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </div>

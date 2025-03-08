@@ -15,7 +15,7 @@ import {
 } from '@/services/NotificationService'
 import { Card, DatePicker, Dialog, Notification, toast } from '@/components/ui'
 import useApiData from '@/utils/hooks/useApi'
-import { Loading } from '@/components/shared'
+import { DoubleSidedImage, Loading } from '@/components/shared'
 import PaginatedList from '../market/components/PaginationList'
 import { HiPencil, HiTrash } from 'react-icons/hi'
 import { useNavigate } from 'react-router-dom'
@@ -227,9 +227,9 @@ export default function NotificationPage() {
                                     return (
                                         <Form>
                                             <FormContainer>
-                                                <h2 className="mb-1">
-                                                    Send notification to user
-                                                </h2>
+                                                <h4 className="mb-1">
+                                                    Send Notification to User
+                                                </h4>
                                                 <p>
                                                     Provide the details for the
                                                     notification
@@ -316,9 +316,10 @@ export default function NotificationPage() {
                                     return (
                                         <Form>
                                             <FormContainer>
-                                                <h2 className="mb-1">
-                                                    Send notification to all
-                                                </h2>
+                                                <h4 className="mb-1">
+                                                    Send a Notification to All
+                                                    Users
+                                                </h4>
                                                 <p>
                                                     Provide the details for the
                                                     public notification
@@ -390,7 +391,7 @@ export default function NotificationPage() {
                     </section>
                     <section className="w-full flex flex-col">
                         <div className="flex justify-between">
-                            <h1 className="mb-6">Public Notifications</h1>
+                            <h3 className="mb-6">Public Notifications</h3>
                             <Button
                                 onClick={refreshNotifications}
                                 disabled={publicLoading}
@@ -402,263 +403,280 @@ export default function NotificationPage() {
                             <Loading loading={true} />
                         )) || (
                             <section className="w-full">
-                                <PaginatedList
-                                    className="flex flex-col gap-4"
-                                    itemsPerPage={10}
-                                >
-                                    {publicNotifications.map(
-                                        (
-                                            notif: NotificationProps,
-                                            index: any
-                                        ) => {
-                                            return (
-                                                <Card
-                                                    bodyClass="flex w-full"
-                                                    className="w-full p-4 rounded-xl"
-                                                >
-                                                    <div className="flex flex-col gap-1 w-11/12">
-                                                        <h4 className="text-[1.3rem]">
-                                                            {notif.title}
-                                                        </h4>
-                                                        <p className="text-[1rem]">
-                                                            <strong>
-                                                                message:
-                                                            </strong>{' '}
-                                                            {notif.message}
-                                                        </p>
-                                                        <p>
-                                                            <strong>
-                                                                Expiry Date:
-                                                            </strong>{' '}
-                                                            {formatISODate(
-                                                                notif.expiryDate
-                                                            )}
-                                                        </p>
-                                                    </div>
-                                                    <div className="flex text-[1.5rem] gap-2 items-center justify-center w-1/12">
-                                                        <HiPencil
-                                                            onClick={() => {
-                                                                const editDate =
-                                                                    new Date(
-                                                                        notif.expiryDate
-                                                                    )
-                                                                editDate.setDate(
-                                                                    editDate.getDate() -
-                                                                        1
-                                                                )
-                                                                setEditPublicDatas(
-                                                                    (
-                                                                        pervState: any
-                                                                    ) => ({
-                                                                        ...pervState,
-                                                                        ...notif,
-                                                                        expiryDate:
-                                                                            editDate,
-                                                                    })
-                                                                )
-                                                                setEditNotifModal(
-                                                                    true
-                                                                )
-                                                            }}
-                                                            className="cursor-pointer"
-                                                        />
-                                                        <Dialog
-                                                            isOpen={
-                                                                editNotifModal
-                                                            }
-                                                            onClose={() =>
-                                                                setEditNotifModal(
-                                                                    false
-                                                                )
-                                                            }
-                                                        >
-                                                            <Formik
-                                                                initialValues={{
-                                                                    title: editPublicDatas.title,
+                                {(publicNotifications.length > 0 && (
+                                    <PaginatedList
+                                        className="flex flex-col gap-4"
+                                        itemsPerPage={10}
+                                    >
+                                        {publicNotifications.map(
+                                            (
+                                                notif: NotificationProps,
+                                                index: any
+                                            ) => {
+                                                return (
+                                                    <Card
+                                                        bodyClass="flex w-full"
+                                                        className="w-full p-4 rounded-xl"
+                                                    >
+                                                        <div className="flex flex-col gap-1 w-11/12">
+                                                            <h4 className="text-[1.3rem]">
+                                                                {notif.title}
+                                                            </h4>
+                                                            <p className="text-[1rem]">
+                                                                <strong>
                                                                     message:
-                                                                        editPublicDatas.message,
-                                                                    expiryDate:
-                                                                        editPublicDatas.expiryDate,
-                                                                }}
-                                                                validationSchema={
-                                                                    publicNotifSchema
-                                                                }
-                                                                onSubmit={(
-                                                                    values,
-                                                                    {
-                                                                        setSubmitting,
-                                                                    }
-                                                                ) => {
-                                                                    setSubmitting(
+                                                                </strong>{' '}
+                                                                {notif.message}
+                                                            </p>
+                                                            <p>
+                                                                <strong>
+                                                                    Expiry Date:
+                                                                </strong>{' '}
+                                                                {formatISODate(
+                                                                    notif.expiryDate
+                                                                )}
+                                                            </p>
+                                                        </div>
+                                                        <div className="flex text-[1.5rem] gap-2 items-center justify-center w-1/12">
+                                                            <HiPencil
+                                                                onClick={() => {
+                                                                    const editDate =
+                                                                        new Date(
+                                                                            notif.expiryDate
+                                                                        )
+                                                                    editDate.setDate(
+                                                                        editDate.getDate() -
+                                                                            1
+                                                                    )
+                                                                    setEditPublicDatas(
+                                                                        (
+                                                                            pervState: any
+                                                                        ) => ({
+                                                                            ...pervState,
+                                                                            ...notif,
+                                                                            expiryDate:
+                                                                                editDate,
+                                                                        })
+                                                                    )
+                                                                    setEditNotifModal(
                                                                         true
                                                                     )
-                                                                    editPublicNotif(
-                                                                        {
-                                                                            ...values,
-                                                                            expiryDate:
-                                                                                editPublicDatas.expiryDate,
-                                                                        },
-                                                                        setSubmitting
-                                                                    )
                                                                 }}
+                                                                className="cursor-pointer"
+                                                            />
+                                                            <Dialog
+                                                                isOpen={
+                                                                    editNotifModal
+                                                                }
+                                                                onClose={() =>
+                                                                    setEditNotifModal(
+                                                                        false
+                                                                    )
+                                                                }
                                                             >
-                                                                {({
-                                                                    isSubmitting,
-                                                                    touched,
-                                                                    errors,
-                                                                }) => {
-                                                                    const validatorProps =
+                                                                <Formik
+                                                                    initialValues={{
+                                                                        title: editPublicDatas.title,
+                                                                        message:
+                                                                            editPublicDatas.message,
+                                                                        expiryDate:
+                                                                            editPublicDatas.expiryDate,
+                                                                    }}
+                                                                    validationSchema={
+                                                                        publicNotifSchema
+                                                                    }
+                                                                    onSubmit={(
+                                                                        values,
                                                                         {
-                                                                            touched,
-                                                                            errors,
+                                                                            setSubmitting,
                                                                         }
-                                                                    return (
-                                                                        <Form>
-                                                                            <FormContainer>
-                                                                                <h2 className="mb-1">
-                                                                                    Edit
-                                                                                    public
-                                                                                    notification
-                                                                                </h2>
-                                                                                <FormRow
-                                                                                    name="title"
-                                                                                    label="Title"
-                                                                                    {...validatorProps}
-                                                                                >
-                                                                                    <Field
-                                                                                        type="text"
-                                                                                        autoComplete="off"
+                                                                    ) => {
+                                                                        setSubmitting(
+                                                                            true
+                                                                        )
+                                                                        editPublicNotif(
+                                                                            {
+                                                                                ...values,
+                                                                                expiryDate:
+                                                                                    editPublicDatas.expiryDate,
+                                                                            },
+                                                                            setSubmitting
+                                                                        )
+                                                                    }}
+                                                                >
+                                                                    {({
+                                                                        isSubmitting,
+                                                                        touched,
+                                                                        errors,
+                                                                    }) => {
+                                                                        const validatorProps =
+                                                                            {
+                                                                                touched,
+                                                                                errors,
+                                                                            }
+                                                                        return (
+                                                                            <Form>
+                                                                                <FormContainer>
+                                                                                    <h2 className="mb-1">
+                                                                                        Edit
+                                                                                        public
+                                                                                        notification
+                                                                                    </h2>
+                                                                                    <FormRow
                                                                                         name="title"
-                                                                                        placeholder="Title"
-                                                                                        component={
-                                                                                            Input
-                                                                                        }
-                                                                                    />
-                                                                                </FormRow>
-                                                                                <FormRow
-                                                                                    name="message"
-                                                                                    label="Message"
-                                                                                    {...validatorProps}
-                                                                                >
-                                                                                    <Field
-                                                                                        type="text"
-                                                                                        autoComplete="off"
-                                                                                        name="message"
-                                                                                        placeholder="Message"
-                                                                                        textArea={
-                                                                                            true
-                                                                                        }
-                                                                                        component={
-                                                                                            Input
-                                                                                        }
-                                                                                    />
-                                                                                </FormRow>
-                                                                                <FormRow
-                                                                                    name="expiryDate"
-                                                                                    label="Expiry Date"
-                                                                                    {...validatorProps}
-                                                                                >
-                                                                                    <Field
-                                                                                        autoComplete="off"
-                                                                                        name="expiryDate"
-                                                                                        placeholder="Expiry Date"
-                                                                                        onChange={
-                                                                                            handleEditDateChange as any
-                                                                                        }
-                                                                                        clearable={
-                                                                                            false
-                                                                                        }
-                                                                                        defaultValue={
-                                                                                            editPublicDatas.expiryDate
-                                                                                        }
-                                                                                        component={
-                                                                                            DatePicker
-                                                                                        }
-                                                                                    />
-                                                                                </FormRow>
-                                                                                <div className="flex mt-4 ltr:text-right">
-                                                                                    <Button
-                                                                                        className="w-1/2 mx-auto"
-                                                                                        type="submit"
-                                                                                        disabled={
-                                                                                            isSubmitting
-                                                                                        }
+                                                                                        label="Title"
+                                                                                        {...validatorProps}
                                                                                     >
-                                                                                        {isSubmitting
-                                                                                            ? 'Editing'
-                                                                                            : 'Edit'}
-                                                                                    </Button>
-                                                                                </div>
-                                                                            </FormContainer>
-                                                                        </Form>
+                                                                                        <Field
+                                                                                            type="text"
+                                                                                            autoComplete="off"
+                                                                                            name="title"
+                                                                                            placeholder="Title"
+                                                                                            component={
+                                                                                                Input
+                                                                                            }
+                                                                                        />
+                                                                                    </FormRow>
+                                                                                    <FormRow
+                                                                                        name="message"
+                                                                                        label="Message"
+                                                                                        {...validatorProps}
+                                                                                    >
+                                                                                        <Field
+                                                                                            type="text"
+                                                                                            autoComplete="off"
+                                                                                            name="message"
+                                                                                            placeholder="Message"
+                                                                                            textArea={
+                                                                                                true
+                                                                                            }
+                                                                                            component={
+                                                                                                Input
+                                                                                            }
+                                                                                        />
+                                                                                    </FormRow>
+                                                                                    <FormRow
+                                                                                        name="expiryDate"
+                                                                                        label="Expiry Date"
+                                                                                        {...validatorProps}
+                                                                                    >
+                                                                                        <Field
+                                                                                            autoComplete="off"
+                                                                                            name="expiryDate"
+                                                                                            placeholder="Expiry Date"
+                                                                                            onChange={
+                                                                                                handleEditDateChange as any
+                                                                                            }
+                                                                                            clearable={
+                                                                                                false
+                                                                                            }
+                                                                                            defaultValue={
+                                                                                                editPublicDatas.expiryDate
+                                                                                            }
+                                                                                            component={
+                                                                                                DatePicker
+                                                                                            }
+                                                                                        />
+                                                                                    </FormRow>
+                                                                                    <div className="flex mt-4 ltr:text-right">
+                                                                                        <Button
+                                                                                            className="w-1/2 mx-auto"
+                                                                                            type="submit"
+                                                                                            disabled={
+                                                                                                isSubmitting
+                                                                                            }
+                                                                                        >
+                                                                                            {isSubmitting
+                                                                                                ? 'Editing'
+                                                                                                : 'Edit'}
+                                                                                        </Button>
+                                                                                    </div>
+                                                                                </FormContainer>
+                                                                            </Form>
+                                                                        )
+                                                                    }}
+                                                                </Formik>
+                                                            </Dialog>
+                                                            <HiTrash
+                                                                onClick={() => {
+                                                                    setEditPublicDatas(
+                                                                        (
+                                                                            pervState: any
+                                                                        ) => ({
+                                                                            ...pervState,
+                                                                            ...notif,
+                                                                        })
+                                                                    )
+                                                                    setDeleteDialog(
+                                                                        true
                                                                     )
                                                                 }}
-                                                            </Formik>
-                                                        </Dialog>
-                                                        <HiTrash
-                                                            onClick={() => {
-                                                                setEditPublicDatas(
-                                                                    (
-                                                                        pervState: any
-                                                                    ) => ({
-                                                                        ...pervState,
-                                                                        ...notif,
-                                                                    })
-                                                                )
-                                                                setDeleteDialog(
-                                                                    true
-                                                                )
-                                                            }}
-                                                            className="cursor-pointer"
-                                                        />
-                                                        <Dialog
-                                                            isOpen={
-                                                                deleteDialog
-                                                            }
-                                                            onClose={() =>
-                                                                setDeleteDialog(
-                                                                    false
-                                                                )
-                                                            }
-                                                        >
-                                                            <h3 className="mb-8">
-                                                                Delete Confirm
-                                                            </h3>
-                                                            <p className="text-center mb-4 text-[1.2rem]">
-                                                                Are you sure
-                                                                about deleting
-                                                                this
-                                                                notification ?
-                                                            </p>
-                                                            <div className="w-2/3 mx-auto flex justify-between">
-                                                                <Button
-                                                                    variant="solid"
-                                                                    color="red"
-                                                                    onClick={
-                                                                        handleDeleteNotification
-                                                                    }
-                                                                >
-                                                                    Yes
-                                                                </Button>
-                                                                <Button
-                                                                    variant="solid"
-                                                                    color="green"
-                                                                    onClick={() =>
-                                                                        setDeleteDialog(
-                                                                            false
-                                                                        )
-                                                                    }
-                                                                >
-                                                                    No
-                                                                </Button>
-                                                            </div>
-                                                        </Dialog>
-                                                    </div>
-                                                </Card>
-                                            )
-                                        }
-                                    )}
-                                </PaginatedList>
+                                                                className="cursor-pointer"
+                                                            />
+                                                            <Dialog
+                                                                isOpen={
+                                                                    deleteDialog
+                                                                }
+                                                                onClose={() =>
+                                                                    setDeleteDialog(
+                                                                        false
+                                                                    )
+                                                                }
+                                                            >
+                                                                <h3 className="mb-8">
+                                                                    Delete
+                                                                    Confirm
+                                                                </h3>
+                                                                <p className="text-center mb-4 text-[1.2rem]">
+                                                                    Are you sure
+                                                                    about
+                                                                    deleting
+                                                                    this
+                                                                    notification
+                                                                    ?
+                                                                </p>
+                                                                <div className="w-2/3 mx-auto flex justify-between">
+                                                                    <Button
+                                                                        variant="solid"
+                                                                        color="red"
+                                                                        onClick={
+                                                                            handleDeleteNotification
+                                                                        }
+                                                                    >
+                                                                        Yes
+                                                                    </Button>
+                                                                    <Button
+                                                                        variant="solid"
+                                                                        color="green"
+                                                                        onClick={() =>
+                                                                            setDeleteDialog(
+                                                                                false
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        No
+                                                                    </Button>
+                                                                </div>
+                                                            </Dialog>
+                                                        </div>
+                                                    </Card>
+                                                )
+                                            }
+                                        )}
+                                    </PaginatedList>
+                                )) || (
+                                    <section className="w-full h-[50dvh] flex flex-col gap-3 items-center justify-center">
+                                        <DoubleSidedImage
+                                            className="w-2/12 max-w-[200px]"
+                                            src="/img/others/img-2.png"
+                                            darkModeSrc="/img/others/img-2-dark.png"
+                                            alt="No Notifications were found!"
+                                        />
+                                        <p className="text-center text-lg text-white">
+                                            No notifications were found!
+                                        </p>
+                                    </section>
+                                )}
                             </section>
                         )}
                     </section>
