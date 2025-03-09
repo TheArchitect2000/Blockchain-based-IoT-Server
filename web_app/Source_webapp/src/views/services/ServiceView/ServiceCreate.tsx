@@ -332,7 +332,7 @@ const createService = ({
                                                 type="text"
                                                 autoComplete="off"
                                                 name="serviceName"
-                                                placeholder="service name..."
+                                                placeholder="Service Name"
                                                 component={Input}
                                             />
                                         </FormRow>
@@ -348,7 +348,7 @@ const createService = ({
                                                 }: FieldProps) => (
                                                     <Select<ServiceTypeOption>
                                                         field={field}
-                                                        placeholder="select service type..."
+                                                        placeholder="Select Service Type"
                                                         form={form}
                                                         options={serviceOptions}
                                                         components={{
@@ -381,7 +381,7 @@ const createService = ({
                                                 type="text"
                                                 autoComplete="off"
                                                 name="description"
-                                                placeholder="service description..."
+                                                placeholder="Service Description"
                                                 component={Input}
                                             />
                                         </FormRow>

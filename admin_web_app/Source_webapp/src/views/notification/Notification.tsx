@@ -228,7 +228,7 @@ export default function NotificationPage() {
                                         <Form>
                                             <FormContainer>
                                                 <h4 className="mb-1">
-                                                    Send Notification to User
+                                                    Send Notification to a User
                                                 </h4>
                                                 <p>
                                                     Provide the details for the
@@ -276,6 +276,7 @@ export default function NotificationPage() {
                                                 </FormRow>
                                                 <div className="flex mt-4 ltr:text-right">
                                                     <Button
+                                                        size="sm"
                                                         className="w-1/2 mx-auto"
                                                         type="submit"
                                                         disabled={isSubmitting}
@@ -317,7 +318,7 @@ export default function NotificationPage() {
                                         <Form>
                                             <FormContainer>
                                                 <h4 className="mb-1">
-                                                    Send a Notification to All
+                                                    Send Notification to All
                                                     Users
                                                 </h4>
                                                 <p>
@@ -373,6 +374,7 @@ export default function NotificationPage() {
                                                 </FormRow>
                                                 <div className="flex mt-4 ltr:text-right">
                                                     <Button
+                                                        size="sm"
                                                         className="w-1/2 mx-auto"
                                                         type="submit"
                                                         disabled={isSubmitting}
@@ -580,6 +582,7 @@ export default function NotificationPage() {
                                                                                     </FormRow>
                                                                                     <div className="flex mt-4 ltr:text-right">
                                                                                         <Button
+                                                                                            size="sm"
                                                                                             className="w-1/2 mx-auto"
                                                                                             type="submit"
                                                                                             disabled={
