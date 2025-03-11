@@ -39,7 +39,10 @@ import { changePasswordByEmailDto } from '../data-transfer-objects/user/change-p
 import { signupByEmailDto } from '../data-transfer-objects/user/signup-by-email.dto';
 import { Response as Res } from 'express';
 import { join } from 'path';
-import { editUserByUserDto } from '../data-transfer-objects/user/edit-user-by-user.dto';
+import {
+  editUserByUserDto,
+  setUserIdentityWalletDto,
+} from '../data-transfer-objects/user/edit-user-by-user.dto';
 import { verifyEmailDto } from '../data-transfer-objects/user/verify-email.dto';
 import { VirtualMachineHandlerService } from 'src/modules/virtual-machine/services/service-handler.service';
 import { makeUserAdminDto } from '../data-transfer-objects/user/make-user-admin.dto';
@@ -431,9 +434,7 @@ export class UserController {
     description: 'This api requires a user mobile.',
   })
   async credential(@Body() body: credentialDto) {
-
-    console.log("body:", body);
-    
+    console.log('body:', body);
 
     return await this.userService.credential({
       ...body,
@@ -585,6 +586,36 @@ export class UserController {
       });
 
     return this.result;
+  }
+
+  @Post('v1/user/set-my-identitity-wallet')
+  @HttpCode(200)
+  @ApiOperation({
+    summary: 'Set user identity wallet.',
+    description: '',
+  })
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  async setMyIdentityWallet(
+    @Body() body: setUserIdentityWalletDto,
+    @Request() request,
+  ) {
+    return await this.userService.setUserIdentityWallet(request.user.userId, body.wallet);
+  }
+
+  @Post('v1/user/set-my-ownership-wallet')
+  @HttpCode(200)
+  @ApiOperation({
+    summary: 'Set user ownership wallet.',
+    description: '',
+  })
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  async setMyOwnerShipWallet(
+    @Body() body: setUserIdentityWalletDto,
+    @Request() request,
+  ) {
+    return await this.userService.setUserOwnerShipWallet(request.user.userId, body.wallet);
   }
 
   @Patch('v1/user/edit-user-by-user/:userId')

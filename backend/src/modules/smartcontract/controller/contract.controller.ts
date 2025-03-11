@@ -30,6 +30,7 @@ import {
   removeCommitmentDto,
   removeDeviceDto,
   removeServiceDto,
+  RequestFaucetDto,
   storeCommitmentDto,
   verifyProofDto,
 } from '../dto/contract-dto';
@@ -188,19 +189,38 @@ export class contractController {
     description:
       'This api give some faucet to user wallet address entered in website.',
   })
-  async requestFaucet(@Request() request) {
+  async requestFaucet(@Request() request, @Body() body: RequestFaucetDto) {
     const userRes = await this.userService.getUserProfileByIdFromUser(
       request.user.userId || '',
     );
 
-    const walletAddress = userRes.walletAddress || '';
+    let walletAddress = userRes.walletAddress || '';
+    const faucetOwnerShip = body.ownerShipWalletAddress;
+
+    if (body.type == 'ownership') {
+      if (
+        faucetOwnerShip === null ||
+        faucetOwnerShip === undefined ||
+        faucetOwnerShip === ''
+      ) {
+        let errorMessage = 'Ownership wallet address is not valid!';
+        throw new GeneralException(
+          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+          errorMessage,
+        );
+      }
+
+      if (userRes.ownerShipWallets.includes(faucetOwnerShip)) {
+        walletAddress = faucetOwnerShip
+      }
+    }
 
     if (
       walletAddress === null ||
       walletAddress === undefined ||
       walletAddress === ''
     ) {
-      let errorMessage = 'walletAddress is not valid!';
+      let errorMessage = `${body.type} wallet address is not valid!`;
       throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         errorMessage,

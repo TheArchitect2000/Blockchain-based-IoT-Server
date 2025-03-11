@@ -61,6 +61,14 @@ function generatePassword(length: number): string {
   return password;
 }
 
+export function isValidEthereumAddress(address) {
+  // Regular expression to match Ethereum addresses
+  const ethAddressRegex = /^0x[a-fA-F0-9]{40}$/;
+
+  // Test the address against the regex
+  return ethAddressRegex.test(address);
+}
+
 @Injectable()
 export class UserService {
   private result;
@@ -790,6 +798,113 @@ export class UserService {
       message: 'User admin ranks revoked.',
       date: new Date(),
     };
+  }
+
+  async setUserIdentityWallet(userId: string, wallet: string) {
+    if (isValidEthereumAddress(wallet) == false) {
+      throw new GeneralException(
+        ErrorTypeEnum.INVALID_INPUT,
+        'Wallet address is invalid.',
+      );
+    }
+
+    const isExist1 = await this.userRepository.checkIfOwnerShipWalletExist(wallet)
+    const isExist2 = await this.userRepository.checkIfIdentityWalletExist(wallet)
+
+    if (isExist1 == true || isExist2 == true) {
+      throw new GeneralException(
+        ErrorTypeEnum.CONFLICT,
+        'Wallet address is already used by a user.',
+      );
+    }
+
+    const whereCondition = { isDeleted: false };
+    const populateCondition = [];
+    const selectCondition = '';
+
+    this.user = await this.userRepository.findUserById(
+      userId,
+      whereCondition,
+      populateCondition,
+      selectCondition,
+    );
+
+    let data: any = {};
+
+    if (this.user) {
+      if (
+        this.user.identityWallet &&
+        String(this.user.identityWallet).length > 0
+      ) {
+        throw new GeneralException(
+          ErrorTypeEnum.CONFLICT,
+          'You have already set your identity wallet.',
+        );
+      }
+
+      data.identityWallet = wallet;
+
+      data.updatedBy = userId;
+      data.updateDate = new Date();
+      console.log('Edited Data:', data);
+
+      await this.userRepository.editUser(userId, data);
+      return await this.findAUserById(userId);
+    } else {
+      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
+    }
+  }
+
+  async setUserOwnerShipWallet(userId: string, wallet: string) {
+    if (isValidEthereumAddress(wallet) == false) {
+      throw new GeneralException(
+        ErrorTypeEnum.INVALID_INPUT,
+        'Wallet address is invalid.',
+      );
+    }
+    
+    const isExist1 = await this.userRepository.checkIfOwnerShipWalletExist(wallet)
+    const isExist2 = await this.userRepository.checkIfIdentityWalletExist(wallet)
+
+    if (isExist1 == true || isExist2 == true) {
+      throw new GeneralException(
+        ErrorTypeEnum.CONFLICT,
+        'Wallet address is already used by a user.',
+      );
+    }
+
+    const whereCondition = { isDeleted: false };
+    const populateCondition = [];
+    const selectCondition = '';
+
+    this.user = await this.userRepository.findUserById(
+      userId,
+      whereCondition,
+      populateCondition,
+      selectCondition,
+    );
+
+    let data: any = {};
+
+    if (this.user) {
+      if (String(this.user.ownerShipWallets[0]) == wallet) {
+        throw new GeneralException(
+          ErrorTypeEnum.CONFLICT,
+          'You have already set your ownership wallet.',
+        );
+      }
+
+      data.ownerShipWallets = [String(wallet)];
+
+      data.updatedBy = userId;
+      data.updateDate = new Date();
+      console.log('Edited Data:', data);
+
+      await this.userRepository.editUser(userId, data);
+      return await this.findAUserById(userId);
+    } else {
+      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
+    }
   }
 
   async editUserByUser(userId, data) {

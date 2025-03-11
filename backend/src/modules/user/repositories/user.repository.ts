@@ -4,7 +4,10 @@ import { Types } from 'mongoose';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { ChangeEmailTokenModel, UserModel } from '../models/user.model';
-import { UserChangeEmailTokenInterface, UserInterface } from '../interfaces/user.interface';
+import {
+  UserChangeEmailTokenInterface,
+  UserInterface,
+} from '../interfaces/user.interface';
 import { changeEmailTokenSchema, userSchema } from '../schemas/user.schema';
 
 @Injectable()
@@ -157,6 +160,26 @@ export class UserRepository {
       });
 
     return this.result;
+  }
+
+  async checkIfOwnerShipWalletExist(wallet: string) {
+    return (
+      (await this.userModel
+        .find({
+          ownerShipWallets: wallet,
+        })
+        .count()) > 0
+    );
+  }
+
+  async checkIfIdentityWalletExist(wallet: string) {
+    return (
+      (await this.userModel
+        .find({
+          identityWallet: { $exists: true, $eq: wallet },
+        })
+        .count()) > 0
+    );
   }
 
   async findUserById(_id, whereCondition, populateCondition, selectCondition) {

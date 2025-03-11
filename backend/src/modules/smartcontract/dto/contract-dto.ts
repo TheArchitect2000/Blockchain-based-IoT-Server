@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsIn, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class verifyProofDto {
@@ -79,6 +79,18 @@ export class removeCommitmentDto {
   @IsString({ message: 'nodeId must be string.' })
   @ApiProperty({ required: true })
   nodeId: string;
+}
+
+export class RequestFaucetDto {
+  @ApiProperty({ required: true })
+  @IsIn(['identity', 'ownership'], {
+    message: 'Type must be either "identity" or "ownership"',
+  })
+  type: 'identity' | 'ownership'
+
+  @IsString({ message: 'ownerShipWalletAddress must be string.' })
+  @ApiProperty({ required: false })
+  ownerShipWalletAddress: string;
 }
 
 export class publishProofDto {

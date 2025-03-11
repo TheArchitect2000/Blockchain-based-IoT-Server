@@ -59,3 +59,11 @@ export class editUserByUserDto {
   @ApiProperty({ required: false })
   lang: string;
 }
+
+
+export class setUserIdentityWalletDto {
+  @IsNotEmpty({ message: 'wallet is required and must be entered.' })
+  @IsString({ message: 'wallet must be string.' })
+  @ApiProperty({ required: true })
+  wallet: string;
+}

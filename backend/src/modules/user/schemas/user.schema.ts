@@ -70,6 +70,16 @@ const schema = new Schema({
     required: false,
     default: null,
   },
+  identityWallet: {
+    type: String,
+    required: false,
+    default: null,
+  },
+  ownerShipWallets: {
+    type: [String],
+    required: false,
+    default: [],
+  },
   firebaseToken: String,
   roles: [
     {
