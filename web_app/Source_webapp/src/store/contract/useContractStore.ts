@@ -1,4 +1,4 @@
-import { apiGetCurUserProfile } from '@/services/UserApi'
+import { apiGetMyProfile } from '@/services/UserApi'
 import { useAppKitAccount } from '@reown/appkit-core/react'
 import { useAppKitProvider } from '@reown/appkit/react'
 import { BrowserProvider, Contract, ethers, JsonRpcProvider } from 'ethers'

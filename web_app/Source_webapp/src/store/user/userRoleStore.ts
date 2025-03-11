@@ -1,4 +1,4 @@
-import { apiGetCurUserProfile } from '@/services/UserApi'
+import { apiGetMyProfile } from '@/services/UserApi'
 import { create } from 'zustand'
 
 interface Role {
@@ -32,7 +32,7 @@ export const useRoleStore = create<RoleStore>((set, get) => ({
     fetchUserRoles: async () => {
         try {
             set({ loading: true })
-            const res = (await apiGetCurUserProfile()) as any
+            const res = (await apiGetMyProfile()) as any
             const roles = res.data.data.roles
             set({ useRoles: roles, loading: false })
         } catch (error) {

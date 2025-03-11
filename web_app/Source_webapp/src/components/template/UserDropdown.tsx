@@ -13,7 +13,7 @@ import {
     useAppSelector,
 } from '@/store'
 import { useEffect, useState } from 'react'
-import { apiGetCurUserProfile } from '@/services/UserApi'
+import { apiGetMyProfile } from '@/services/UserApi'
 import { FaCode } from 'react-icons/fa'
 import { useRoleStore } from '@/store/user/userRoleStore'
 
@@ -41,7 +41,7 @@ const _UserDropdown = ({ className }: CommonProps) => {
 
     useEffect(() => {
         async function fetchData() {
-            const resData = (await apiGetCurUserProfile()) as any
+            const resData = (await apiGetMyProfile()) as any
             setProfileData(resData.data.data)
             dispatch(setAvatar(resData.data.data.avatar))
             dispatch(setFirstName(resData.data.data.firstName))

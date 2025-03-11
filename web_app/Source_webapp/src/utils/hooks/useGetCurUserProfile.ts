@@ -1,4 +1,4 @@
-import { apiGetCurUserProfile } from '@/services/UserApi'
+import { apiGetMyProfile } from '@/services/UserApi'
 import { useQuery } from '@tanstack/react-query'
 
 // Define the main response type
@@ -76,7 +76,7 @@ type RolePermission = {
 export function useGetCurUserProfile() {
     const { data: curUser, status } = useQuery({
         queryKey: ['curUser'],
-        queryFn: apiGetCurUserProfile<ApiResponse>,
+        queryFn: apiGetMyProfile<ApiResponse>,
     })
 
     return { curUser, status }

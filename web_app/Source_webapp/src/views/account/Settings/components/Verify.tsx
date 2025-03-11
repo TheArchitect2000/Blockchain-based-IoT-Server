@@ -1,7 +1,7 @@
 import Button from '@/components/ui/Button'
 import Notification from '@/components/ui/Notification'
 import toast from '@/components/ui/toast'
-import { apiGetCurUserProfile, apiRequestVerifyEmail } from '@/services/UserApi'
+import { apiGetMyProfile, apiRequestVerifyEmail } from '@/services/UserApi'
 import { useEffect, useState } from 'react'
 import { Loading } from '@/components/shared'
 import FormDesription from './FormDesription'
@@ -13,7 +13,7 @@ const Verify = () => {
 
     useEffect(() => {
         async function fetchData() {
-            const resData = (await apiGetCurUserProfile()) as any
+            const resData = (await apiGetMyProfile()) as any
             setApiData(resData.data.data)
             console.log(resData.data.data)
             setLoading(false)

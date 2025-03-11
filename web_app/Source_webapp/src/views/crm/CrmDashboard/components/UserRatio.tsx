@@ -2,7 +2,7 @@ import Card from '@/components/ui/Card'
 import Progress from '@/components/ui/Progress'
 import type { Emails } from '../store'
 import { useEffect, useState } from 'react'
-import { apiGetCurUserProfile } from '@/services/UserApi'
+import { apiGetMyProfile } from '@/services/UserApi'
 import { useNavigate } from 'react-router-dom'
 
 type EmailSentProps = {
@@ -37,7 +37,7 @@ const EmailSent = ({ data = {}, className }: EmailSentProps) => {
     useEffect(() => {
         async function fetchData() {
             let nowPercent = 2.5
-            const resData = (await apiGetCurUserProfile()) as any
+            const resData = (await apiGetMyProfile()) as any
             if (resData?.data && resData?.data?.data) {
                 profileValues?.forEach((item) => {
                     if (resData?.data?.data[item]) {
@@ -90,7 +90,8 @@ const EmailSent = ({ data = {}, className }: EmailSentProps) => {
             </div>
             <div className="text-center mt-6">
                 <h4 className="w-2/3 mx-auto font-bold">
-                    Complete Your Profile and Get a <span className='text-[#00ff00]'>Free</span> E-Card!
+                    Complete Your Profile and Get a{' '}
+                    <span className="text-[#00ff00]">Free</span> E-Card!
                 </h4>
                 <p className="font-semibold">
                     Finish filling out your profile, and we'll send a

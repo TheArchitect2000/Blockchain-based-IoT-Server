@@ -16,10 +16,7 @@ import {
 } from 'react-icons/hi'
 import dayjs from 'dayjs'
 import * as Yup from 'yup'
-import {
-    apiChangePasswordByEmail,
-    apiGetCurUserProfile,
-} from '@/services/UserApi'
+import { apiChangePasswordByEmail, apiGetMyProfile } from '@/services/UserApi'
 import { apiCheckPassword } from '@/services/AuthService'
 import { useEffect, useState } from 'react'
 import { PasswordInput } from '@/components/shared'
@@ -52,7 +49,7 @@ const Password = () => {
 
     useEffect(() => {
         async function fetchData() {
-            const resData = (await apiGetCurUserProfile()) as any
+            const resData = (await apiGetMyProfile()) as any
             setApiData(resData.data.data)
             console.log(resData.data.data)
         }
@@ -172,7 +169,7 @@ const Password = () => {
                                         variant="solid"
                                         loading={isSubmitting}
                                         type="submit"
-                                        size='sm'
+                                        size="sm"
                                     >
                                         {isSubmitting
                                             ? 'Updating'
@@ -182,7 +179,7 @@ const Password = () => {
                                         className="ltr:mr-2 rtl:ml-2"
                                         type="button"
                                         onClick={() => resetForm()}
-                                        size='sm'
+                                        size="sm"
                                     >
                                         Reset
                                     </Button>

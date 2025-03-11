@@ -41,7 +41,7 @@ import {
 } from '@/store'
 import {
     apiEditUserProfile,
-    apiGetCurUserProfile,
+    apiGetMyProfile,
     apiRequestChangeEmail,
     apiRequestVerifyEmail,
     apiVerifyChangeEmailWithToken,
@@ -187,7 +187,7 @@ const Profile = ({}: ProfileProps) => {
 
     useEffect(() => {
         async function fetchData() {
-            const resData = (await apiGetCurUserProfile()) as any
+            const resData = (await apiGetMyProfile()) as any
             setApiData(resData.data.data)
             setPhoneNumber(
                 resData.data.data.tel || {
@@ -588,7 +588,7 @@ const Profile = ({}: ProfileProps) => {
                                                         onClick={() =>
                                                             setEmailModal(true)
                                                         }
-                                                        size='sm'
+                                                        size="sm"
                                                         type="button"
                                                         variant="default"
                                                     >
@@ -599,7 +599,7 @@ const Profile = ({}: ProfileProps) => {
                                                         onClick={
                                                             requestVerifyAccount
                                                         }
-                                                        size='sm'
+                                                        size="sm"
                                                         type="button"
                                                         variant="solid"
                                                         loading={apiLoading}
@@ -778,7 +778,7 @@ const Profile = ({}: ProfileProps) => {
                                         variant="solid"
                                         loading={isSubmitting}
                                         type="submit"
-                                        size='sm'
+                                        size="sm"
                                     >
                                         {isSubmitting ? 'Updating' : 'Update'}
                                     </Button>

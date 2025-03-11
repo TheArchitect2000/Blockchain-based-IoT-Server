@@ -14,7 +14,7 @@ import {
 } from 'react-icons/hi'
 import * as Yup from 'yup'
 import { useEffect, useState } from 'react'
-import { apiEditUserProfile, apiGetCurUserProfile } from '@/services/UserApi'
+import { apiEditUserProfile, apiGetMyProfile } from '@/services/UserApi'
 import CountrySelector from './CountrySelector'
 import { Button } from '@/components/ui'
 import { Loading } from '@/components/shared'
@@ -46,7 +46,7 @@ const Address = () => {
     useEffect(() => {
         async function fetchData() {
             setLoading(true)
-            const resData = (await apiGetCurUserProfile()) as any
+            const resData = (await apiGetMyProfile()) as any
             const datas = resData.data.data
             setApiData(datas)
             if (datas?.address?.country) {
@@ -103,7 +103,7 @@ const Address = () => {
                 return (
                     <Form>
                         {(loading == false && (
-                            <FormContainer >
+                            <FormContainer>
                                 {/* <FormDesription
                                     className=""
                                     title="Personal"
@@ -221,7 +221,7 @@ const Address = () => {
                                 <div className="flex gap-3 mt-4 justify-end ltr:text-right">
                                     <Button
                                         variant="solid"
-                                        size='sm'
+                                        size="sm"
                                         loading={isSubmitting}
                                         type="submit"
                                     >
@@ -230,7 +230,7 @@ const Address = () => {
                                     <Button
                                         className="ltr:mr-2 rtl:ml-2"
                                         type="button"
-                                        size='sm'
+                                        size="sm"
                                         onClick={() => {
                                             resetForm()
                                             setSelectedCountry(null)

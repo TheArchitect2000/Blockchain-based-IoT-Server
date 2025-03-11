@@ -16,7 +16,7 @@ import JsonDisplay from '@/components/ui/JsonDisplay'
 import { apiRemoveCommitment } from '@/services/ContractServices'
 import { formatDate } from '../devices/DeviceDetails/componetns/DevicePayload/DevicePayload'
 import { FaGlobe } from 'react-icons/fa'
-import { apiGetCurUserProfile } from '@/services/UserApi'
+import { apiGetMyProfile } from '@/services/UserApi'
 import { convertToTimeZone } from '../account/Settings/components/TimezoneSelector'
 import { formatToCustomDateTime } from '../devices/DeviceDetails/DeviceDetails'
 import { formatISODate } from '../services/Services/components/Card'
@@ -44,7 +44,7 @@ const CommitmentTable = ({
 
     useEffect(() => {
         async function fetchProfile() {
-            const res = (await apiGetCurUserProfile()) as any
+            const res = (await apiGetMyProfile()) as any
             setUserProfile(res.data.data)
         }
         fetchProfile()

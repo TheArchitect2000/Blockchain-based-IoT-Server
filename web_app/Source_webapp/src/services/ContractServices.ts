@@ -7,10 +7,17 @@ export async function apiGetWalletBalance() {
     })
 }
 
-export async function apiRequestFaucet() {
+export async function apiRequestFaucet(
+    type: 'identity' | 'ownership',
+    walletAddress?: string
+) {
     return ApiService.fetchData({
         url: import.meta.env.VITE_URL + 'v1/contract/request-faucet',
         method: 'post',
+        data: {
+            type: type,
+            ownerShipWalletAddress: walletAddress,
+        },
     })
 }
 

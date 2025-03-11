@@ -1,6 +1,6 @@
 import ApiService from './ApiService'
 
-export async function apiGetCurUserProfile<T>() {
+export async function apiGetMyProfile<T>() {
     return ApiService.fetchData<T>({
         url: import.meta.env.VITE_URL + 'v1/user/get-my-profile',
         method: 'get',
@@ -15,6 +15,21 @@ export async function apiEditUserProfile<T>(
         url: `${import.meta.env.VITE_URL}v1/user/edit-user-by-user/${userId}`,
         method: 'patch',
         data: userProfileData,
+    })
+}
+
+export async function apiSetMyIdentityWallet<T>(wallet: string) {
+    return ApiService.fetchData<T>({
+        url: `${import.meta.env.VITE_URL}v1/user/set-my-identitity-wallet`,
+        method: 'post',
+        data: { wallet },
+    })
+}
+export async function apiSetMyOwnerShipWallet<T>(wallet: string) {
+    return ApiService.fetchData<T>({
+        url: `${import.meta.env.VITE_URL}v1/user/set-my-ownership-wallet`,
+        method: 'post',
+        data: { wallet },
     })
 }
 

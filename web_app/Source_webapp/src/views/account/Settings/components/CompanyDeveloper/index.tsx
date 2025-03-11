@@ -18,7 +18,7 @@ import {
 } from 'react-icons/hi'
 import * as Yup from 'yup'
 import { useEffect, useState } from 'react'
-import { apiEditUserProfile, apiGetCurUserProfile } from '@/services/UserApi'
+import { apiEditUserProfile, apiGetMyProfile } from '@/services/UserApi'
 import { Button } from '@/components/ui'
 import { Loading } from '@/components/shared'
 import { useAppSelector } from '@/store'
@@ -61,7 +61,7 @@ export default function CompanyDeveloperPage() {
         async function fetchData() {
             setLoading(true)
             await fetchUserRoles()
-            const resData = (await apiGetCurUserProfile()) as any
+            const resData = (await apiGetMyProfile()) as any
             const datas = resData.data.data
             setApiData(datas)
             if (datas?.company?.country) {
@@ -175,7 +175,9 @@ export default function CompanyDeveloperPage() {
                                         label={
                                             (
                                                 <div className="flex items-center">
-                                                    <span className='mr-1'>Company Name</span>
+                                                    <span className="mr-1">
+                                                        Company Name
+                                                    </span>
                                                     <span>(</span>
                                                     <p>
                                                         {!isDeveloper && 'Not'}{' '}
@@ -315,7 +317,7 @@ export default function CompanyDeveloperPage() {
                                             variant="solid"
                                             loading={isSubmitting}
                                             type="submit"
-                                            size='sm'
+                                            size="sm"
                                         >
                                             {isSubmitting
                                                 ? 'Updating'
@@ -325,7 +327,7 @@ export default function CompanyDeveloperPage() {
                                             disabled={isDeveloper}
                                             className="ltr:mr-2 rtl:ml-2"
                                             type="button"
-                                            size='sm'
+                                            size="sm"
                                             onClick={() => {
                                                 resetForm()
                                                 setSelectedCountry(null)

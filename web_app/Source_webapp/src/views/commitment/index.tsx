@@ -18,7 +18,7 @@ import { useRoleStore } from '@/store/user/userRoleStore'
 import { AdaptableCard, Loading } from '@/components/shared'
 import CommitmentTable from './CommitmentTable'
 import { useAppSelector } from '@/store'
-import { apiGetCurUserProfile } from '@/services/UserApi'
+import { apiGetMyProfile } from '@/services/UserApi'
 import { useAppKitAccount } from '@reown/appkit-core/react'
 import { useNavigate } from 'react-router-dom'
 import { useContractStore } from '@/provider/contract-provider'
@@ -67,7 +67,7 @@ export default function CommitmentPage() {
     }
 
     async function getUserData() {
-        const res = (await apiGetCurUserProfile()) as any
+        const res = (await apiGetMyProfile()) as any
         if (res.data?.data?.company?.name) {
             setCompanyName(res.data?.data?.company?.name)
         }
@@ -379,9 +379,7 @@ export default function CommitmentPage() {
                                             >
                                                 <p className="text-md">
                                                     Status:{' '}
-                                                    <span
-                                                        
-                                                    >
+                                                    <span>
                                                         {values.commitmentData
                                                             ? 'File Selected'
                                                             : 'No commitment file was selected!'}
@@ -394,7 +392,7 @@ export default function CommitmentPage() {
                                                         ) || txHash.length > 0
                                                     }
                                                     variant="twoTone"
-                                                    size='sm'
+                                                    size="sm"
                                                     type="button"
                                                 >
                                                     <p className="flex items-center gap-2">
@@ -570,7 +568,7 @@ export default function CommitmentPage() {
                                                     isSubmitting ||
                                                     commitmentLoading
                                                 }
-                                                size='sm'
+                                                size="sm"
                                                 type="submit"
                                             >
                                                 {isSubmitting
