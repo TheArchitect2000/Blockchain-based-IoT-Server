@@ -14,7 +14,8 @@ const Verify = lazy(() => import('./components/Verify'))
 const Subscriptions = lazy(() => import('./components/Subscriptions'))
 const StorX = lazy(() => import('./components/StorX/StorX'))
 const DeleteAccount = lazy(() => import('./components/DeleteAccount'))
-const Wallet = lazy(() => import('./components/Wallet'))
+const DigitalIdentity = lazy(() => import('./components/DigitalIdentity'))
+const DigitalTwin = lazy(() => import('./components/DigitalTwin'))
 
 const { TabNav, TabList } = Tabs
 
@@ -28,7 +29,16 @@ const settingsMenu: Record<
     }
 > = {
     profile: { label: 'Profile', path: 'profile', element: <Profile /> },
-    wallet: { label: 'Wallet', path: 'wallet', element: <Wallet /> },
+    'digital-identity': {
+        label: 'Digital Identity',
+        path: 'digital-identity',
+        element: <DigitalIdentity />,
+    },
+    'digital-twin': {
+        label: 'Digital Twin',
+        path: 'digital-twin',
+        element: <DigitalTwin />,
+    },
     address: { label: 'Address', path: 'address', element: <Address /> },
     /* verify: { label: 'Verify', path: 'verify' }, */
     subscriptions: {
@@ -38,7 +48,11 @@ const settingsMenu: Record<
     },
     storx: { label: 'StorX', path: 'storx', element: <StorX /> },
     password: { label: 'Password', path: 'password', element: <Password /> },
-    developer: { label: 'IoT Developer (optional)', path: 'developer', element: <CompanyDeveloperPage /> },
+    developer: {
+        label: 'IoT Developer (optional)',
+        path: 'developer',
+        element: <CompanyDeveloperPage />,
+    },
     deleteaccount: {
         label: 'Delete Account',
         path: 'deleteaccount',

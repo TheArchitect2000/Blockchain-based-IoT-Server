@@ -2,7 +2,6 @@ import Button from '@/components/ui/Button'
 import Notification from '@/components/ui/Notification'
 import toast from '@/components/ui/toast'
 import {
-    apiEditUserProfile,
     apiGetMyProfile,
     apiSetMyIdentityWallet,
     apiSetMyOwnerShipWallet,
@@ -14,45 +13,41 @@ import {
     apiGetFaucetWalletData,
     apiRequestFaucet,
 } from '@/services/ContractServices'
-import {
-    useAppKitProvider,
-    useAppKitAccount,
-    useDisconnect,
-    useAppKit,
-} from '@reown/appkit/react'
-import { BrowserProvider, formatUnits } from 'ethers'
-import { useWalletStore } from '@/store/user/useWalletStore'
+import { useAppKitAccount, useDisconnect } from '@reown/appkit/react'
 import { useConnectWallet } from '@/hooks/useConnectWallet'
+import { FaIdCard } from 'react-icons/fa'
+import { FaWallet } from 'react-icons/fa'
 
 const WalletSettings = () => {
     const [loading, setLoading] = useState(true)
+    const [walletBalance, setWalletBalance] = useState<string | number>()
     const [userProfile, setUserProfile] = useState<any>({})
     const [requestIdentityLoading, setRequestIdentityLoading] = useState(false)
     const [requestOwnershipLoading, setRequestOwnershipLoading] =
         useState(false)
-    const [walletBalance, setWalletBalance] = useState<null | string>(null)
     const [faucetData, setFaucetData] = useState<any>({
         address: '',
         balance: 0,
     })
-    const { _id: userId } = useAppSelector((state) => state.auth.user)
     const { address, isConnected } = useAppKitAccount()
-    const { walletProvider } = useAppKitProvider('eip155')
     const { disconnect } = useDisconnect()
-
-    const { connectWallet, walletType } = useConnectWallet()
+    const {
+        connectWallet,
+        walletType,
+        getBalance: getWalletBalance,
+    } = useConnectWallet()
+    const themeColor = useAppSelector((state) => state.theme.themeBackground)
 
     async function getBalance() {
-        if (!isConnected) return
-        const ethersProvider = new BrowserProvider(walletProvider as any)
-        const balanceWei = await ethersProvider.getBalance(String(address))
-        setWalletBalance(formatUnits(balanceWei, 18).slice(0, 7))
+        const balance = await getWalletBalance()
+        setWalletBalance(balance || 0)
     }
 
     async function fetchData() {
         const userProfile = (await apiGetMyProfile()) as any
         const theProfile = userProfile.data.data
         setUserProfile(theProfile)
+        getBalance()
     }
     useEffect(() => {
         fetchData()
@@ -63,7 +58,6 @@ const WalletSettings = () => {
 
     useEffect(() => {
         async function fetchData() {
-            await getBalance()
             const resfaucetAddress = (await apiGetFaucetWalletData()) as any
             setFaucetData(resfaucetAddress.data.data)
             setLoading(false)
@@ -263,6 +257,7 @@ const WalletSettings = () => {
                 }
             )
         }
+        await fetchData()
         setRequestIdentityLoading(false)
         setRequestOwnershipLoading(false)
     }
@@ -272,139 +267,180 @@ const WalletSettings = () => {
             {(loading == false && (
                 <main>
                     <div className="flex flex-col gap-4">
-                        <div className="flex items-center flex-col md:flex-row">
-                            <p className="font-bold no-wrap mr-2">
-                                {isConnected && walletType == 'identity'
-                                    ? 'Your'
-                                    : 'Connect your'}{' '}
-                                identity wallet{' '}
-                                {userProfile.identityWallet && (
-                                    <small className="text-gray-300">
-                                        ({userProfile.identityWallet})
-                                    </small>
+                        <div className="flex flex-wrap justify-around gap-6">
+                            <section
+                                className={`flex flex-col gap-4 bg-${themeColor} rounded-lg p-4 shadow-[0_0_7px_2px_rgba(31,41,55,0.9)] max-w-[500px]`}
+                            >
+                                <div className="flex items-center gap-3">
+                                    <FaIdCard className="text-xl" />
+                                    <h5>Identity Wallet</h5>
+                                </div>
+
+                                {(userProfile.identityWallet && (
+                                    <>
+                                        <p className="break-all">
+                                            Address:{' '}
+                                            <span className="text-white">
+                                                {userProfile.identityWallet}
+                                            </span>
+                                        </p>
+                                        {isConnected &&
+                                            walletType == 'identity' && (
+                                                <p className="break-all">
+                                                    Balance:{' '}
+                                                    <span className="text-white">
+                                                        {walletBalance}
+                                                    </span>
+                                                </p>
+                                            )}
+                                    </>
+                                )) || (
+                                    <p className="text-white">
+                                        You are not registered with your
+                                        identity wallet yet. Please register by
+                                        clicking the 'Register' button.
+                                    </p>
                                 )}
-                                :
-                            </p>
-                            {(isConnected && walletType == 'identity' && (
-                                <>
-                                    <p className="text-white ml-1 mr-4">
-                                        {address}
-                                    </p>
-                                    <Button
-                                        variant="solid"
-                                        color="red"
-                                        size="sm"
-                                        onClick={disconnect}
-                                    >
-                                        Disconnect
-                                    </Button>
-                                </>
-                            )) || (
-                                <Button
-                                    variant="solid"
-                                    size="sm"
-                                    disabled={
-                                        isConnected && walletType == 'ownership'
-                                    }
-                                    onClick={() => connectWallet('identity')}
-                                >
-                                    Connect
-                                </Button>
-                            )}
-                        </div>
-                        <Button
-                            className="w-fit"
-                            loading={requestIdentityLoading}
-                            onClick={() => handleRequestFaucet('identity')}
-                            variant="solid"
-                            size="sm"
-                        >
-                            Receive Test FDS Token in Identity Wallet
-                        </Button>
 
-                        <div className="flex items-center flex-col md:flex-row">
-                            <p className="font-bold no-wrap mr-2">
-                                {isConnected && walletType == 'ownership'
-                                    ? 'Your'
-                                    : 'Connect your'}{' '}
-                                ownership wallet{' '}
-                                {userProfile.ownerShipWallets &&
+                                <div className="flex w-full gap-2 mt-auto">
+                                    <Button
+                                        className="w-full"
+                                        loading={requestIdentityLoading}
+                                        onClick={() =>
+                                            handleRequestFaucet('identity')
+                                        }
+                                        variant="solid"
+                                        size="sm"
+                                    >
+                                        Receive Test Token
+                                    </Button>
+                                    {(isConnected &&
+                                        walletType == 'identity' && (
+                                            <>
+                                                <Button
+                                                    className="w-full"
+                                                    variant="solid"
+                                                    color="red"
+                                                    size="sm"
+                                                    onClick={disconnect}
+                                                >
+                                                    Disconnect
+                                                </Button>
+                                            </>
+                                        )) || (
+                                        <Button
+                                            className="w-full"
+                                            variant="solid"
+                                            size="sm"
+                                            disabled={
+                                                isConnected &&
+                                                walletType == 'ownership'
+                                            }
+                                            onClick={() =>
+                                                connectWallet('identity')
+                                            }
+                                        >
+                                            {userProfile.identityWallet
+                                                ? 'Connect'
+                                                : 'Register'}
+                                        </Button>
+                                    )}
+                                </div>
+                            </section>
+
+                            <section
+                                className={`flex flex-col gap-4 bg-${themeColor} rounded-lg p-4 shadow-[0_0_7px_2px_rgba(31,41,55,0.9)] max-w-[500px]`}
+                            >
+                                <div className="flex items-center gap-3">
+                                    <FaWallet className="text-xl" />
+                                    <h5>Digital Ownership</h5>
+                                </div>
+
+                                {(userProfile.ownerShipWallets &&
                                     userProfile.ownerShipWallets.length > 0 && (
-                                        <small className="text-gray-300">
-                                            ({userProfile.ownerShipWallets[0]})
-                                        </small>
-                                    )}
-                                :
-                            </p>
-                            {(isConnected && walletType == 'ownership' && (
-                                <>
-                                    <p className="text-white ml-1 mr-4">
-                                        {address}
+                                        <>
+                                            <p className="break-all">
+                                                Address:{' '}
+                                                <span className="text-white">
+                                                    {
+                                                        userProfile
+                                                            .ownerShipWallets[0]
+                                                    }
+                                                </span>
+                                            </p>
+                                            {isConnected &&
+                                                walletType == 'ownership' && (
+                                                    <p className="break-all">
+                                                        Balance:{' '}
+                                                        <span className="text-white">
+                                                            {walletBalance}
+                                                        </span>
+                                                    </p>
+                                                )}
+                                        </>
+                                    )) || (
+                                    <p className="text-white">
+                                        You are not registered with your digital
+                                        ownership yet. Please register by
+                                        clicking the 'Register' button.
                                     </p>
+                                )}
+
+                                <div className="flex w-full gap-2 mt-auto">
                                     <Button
+                                        className="w-full"
+                                        loading={requestOwnershipLoading}
+                                        onClick={() =>
+                                            handleRequestFaucet('ownership')
+                                        }
                                         variant="solid"
-                                        color="red"
                                         size="sm"
-                                        onClick={disconnect}
                                     >
-                                        Disconnect
+                                        Receive Test Token
                                     </Button>
-                                </>
-                            )) || (
-                                <Button
-                                    variant="solid"
-                                    size="sm"
-                                    disabled={
-                                        isConnected && walletType == 'identity'
-                                    }
-                                    onClick={() => connectWallet('ownership')}
-                                >
-                                    Connect
-                                </Button>
-                            )}
+                                    {(isConnected &&
+                                        walletType == 'ownership' && (
+                                            <>
+                                                <Button
+                                                    className="w-full"
+                                                    variant="solid"
+                                                    color="red"
+                                                    size="sm"
+                                                    onClick={disconnect}
+                                                >
+                                                    Disconnect
+                                                </Button>
+                                            </>
+                                        )) || (
+                                        <Button
+                                            className="w-full"
+                                            variant="solid"
+                                            size="sm"
+                                            disabled={
+                                                isConnected &&
+                                                walletType == 'identity'
+                                            }
+                                            onClick={() =>
+                                                connectWallet('ownership')
+                                            }
+                                        >
+                                            {userProfile.ownerShipWallets &&
+                                            userProfile.ownerShipWallets
+                                                .length > 0
+                                                ? 'Connect'
+                                                : 'Register'}
+                                        </Button>
+                                    )}
+                                </div>
+                            </section>
                         </div>
 
-                        <Button
-                            className="w-fit"
-                            loading={requestOwnershipLoading}
-                            onClick={() => handleRequestFaucet('ownership')}
-                            variant="solid"
-                            size="sm"
-                        >
-                            Receive Test FDS Token in OwnerShip Wallet
-                        </Button>
-
-                        <Button size="sm" variant="solid" className="w-fit">
-                            Link Your Ownership Wallet to Your Identity Wallet
+                        <Button size="sm" variant="solid" className="w-fit mx-auto mt-1">
+                            Bind Digital Ownership and Identity
                         </Button>
 
                         <span className="w-full border-t border-gray-600 my-4"></span>
 
-                        <Button size="sm" variant="solid" className="w-fit">
-                            Create IoT Device NFT
-                        </Button>
-
-                        <Button size="sm" variant="solid" className="w-fit">
-                            Show Your Asset (IoT Device NFT, Token) in Your
-                            Ownership Wallet
-                        </Button>
-
-                        <span className="w-full border-t border-gray-600 my-4"></span>
-
-                        {isConnected && (
-                            <div className="flex items-center gap-8">
-                                <p className="font-bold">
-                                    {(walletBalance == null &&
-                                        'Wallet address not found!') ||
-                                        `Your wallet balance: `}
-                                    {walletBalance != null && (
-                                        <span className="text-white font-normal">
-                                            {walletBalance} FDS
-                                        </span>
-                                    )}
-                                </p>
-                            </div>
-                        )}
                         <div className="flex items-center gap-4">
                             <p className="font-bold">
                                 {'Network faucet address: '}
@@ -413,14 +449,6 @@ const WalletSettings = () => {
                                 </span>
                             </p>
                         </div>
-                        {/* <div className="flex items-center">
-                            <p>
-                                Note: You can receive 5 tokens daily. To obtain
-                                more tokens, contact your node administrator.
-                            </p>
-                        </div> */}
-
-                        <span className="w-full border-t border-gray-600 my-4"></span>
                     </div>
                 </main>
             )) || (

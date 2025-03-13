@@ -1,11 +1,18 @@
 import { useWalletStore, WalletType } from '@/store/user/useWalletStore'
-import { useAppKit, useAppKitAccount, useDisconnect } from '@reown/appkit/react'
+import {
+    useAppKit,
+    useAppKitAccount,
+    useAppKitProvider,
+    useDisconnect,
+} from '@reown/appkit/react'
+import { BrowserProvider, formatUnits } from 'ethers'
 
 export const useConnectWallet = () => {
     const { walletType, setWalletType } = useWalletStore()
-    const { isConnected } = useAppKitAccount()
+    const { isConnected, address } = useAppKitAccount()
     const { open } = useAppKit()
     const { disconnect } = useDisconnect()
+    const { walletProvider } = useAppKitProvider('eip155')
 
     const connectWallet = async (type: WalletType) => {
         if (!type) {
@@ -25,5 +32,12 @@ export const useConnectWallet = () => {
         }
     }
 
-    return { connectWallet, walletType }
+    async function getBalance() {
+        if (!isConnected || !walletProvider) return null
+        const ethersProvider = new BrowserProvider(walletProvider as any)
+        const balanceWei = await ethersProvider.getBalance(String(address))
+        return formatUnits(balanceWei, 18).slice(0, 7)
+    }
+
+    return { getBalance, connectWallet, walletType }
 }

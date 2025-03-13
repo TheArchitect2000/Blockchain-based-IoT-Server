@@ -64,7 +64,7 @@ export function createContractStore(walletProvider: any) {
                 set({ loading: true })
                 const signer = await provider.getSigner()
                 const unixTimestamp = Math.floor(Date.now() / 1000)
-
+                
                 const tx = await (zkpContract.connect(signer) as any).storeZKP(
                     nodeId,
                     deviceId,
@@ -96,7 +96,7 @@ export function createContractStore(walletProvider: any) {
             try {
                 set({ loading: true })
                 const signer = await provider.getSigner()
-
+                
                 const tx = await (
                     commitmentContract.connect(signer) as any
                 ).storeCommitment(

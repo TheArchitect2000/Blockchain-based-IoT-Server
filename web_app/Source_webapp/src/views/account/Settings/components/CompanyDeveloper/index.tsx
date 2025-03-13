@@ -27,7 +27,7 @@ import FormRow from '../FormRow'
 import CountrySelector from '../CountrySelector'
 import { useRoleStore } from '@/store/user/userRoleStore'
 import { clipboard } from 'blockly'
-import WalletSettings from '../Wallet'
+import WalletSettings from '../DigitalIdentity'
 
 type AddressFormModel = {
     line_1: string
