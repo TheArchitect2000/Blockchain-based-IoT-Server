@@ -38,8 +38,8 @@ const customNetwork = defineChain({
     },
     rpcUrls: {
         default: {
-            http: ['https://rpc1.fidesinnova.io'],
-            webSocket: ['https://rpc1.fidesinnova.io'],
+            http: ['https://fidesf1-rpc.fidesinnova.io'],
+            webSocket: ['https://fidesf1-rpc.fidesinnova.io'],
         },
     },
     blockExplorers: {
