@@ -215,6 +215,8 @@ export class ContractService {
 
     const balance = await this.getWalletBalance(walletAddress);
 
+    console.log(`Wallet: ${walletAddress}, Balance: `, balance)
+
     if (balance < this.faucetAmount) {
       const amountToSend = this.faucetAmount - balance;
 
@@ -242,12 +244,14 @@ export class ContractService {
       }
 
       return `Success: Topped up ${amountToSend} FDS to ${walletAddress}.`;
+    } else {
+      throw new GeneralException(
+        ErrorTypeEnum.INTERNAL_SERVER_ERROR,
+        `already has a balance of ${this.faucetAmount} FDS or more.`,
+      );
     }
 
-    throw new GeneralException(
-      ErrorTypeEnum.INTERNAL_SERVER_ERROR,
-      `already has a balance of ${this.faucetAmount} FDS or more.`,
-    );
+    
   }
 
   async shareDevice(
