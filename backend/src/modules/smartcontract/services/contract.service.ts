@@ -145,23 +145,29 @@ export class ContractService {
     });
 
     this.contracts.serviceDevice.on('DeviceCreated', (id, device) => {
-      let newDevice = {
-        nodeId: device[0],
-        nodeDeviceId: device[1],
-        isShared: true,
-        deviceName: device[2],
-        deviceType: device[2],
-        deviceEncryptedId: device[3],
-        hardwareVersion: String(device[4]).split('/')[0],
-        firmwareVersion: String(device[4]).split('/')[1],
-        parameters: device[6].map((str) => JSON.parse(str)),
-        costOfUse: device[7],
-        location: { coordinates: device[8] },
-        insertDate: new Date(device[10]).toISOString(),
-        updateDate: new Date(device[10]).toISOString(),
-      };
-
-      this.deviceService.insertDevice(newDevice);
+      console.log("DeviceCreated",device);
+      try {
+        let newDevice = {
+          nodeId: device[0],
+          nodeDeviceId: device[1],
+          isShared: true,
+          deviceName: device[2],
+          deviceType: device[2],
+          deviceEncryptedId: device[3],
+          hardwareVersion: String(device[4]).split('/')[0],
+          firmwareVersion: String(device[4]).split('/')[1],
+          parameters: device[6].map((str) => JSON.parse(str)),
+          costOfUse: device[7],
+          location: { coordinates: device[8] },
+          insertDate: new Date(device[10]).toISOString(),
+          updateDate: new Date(device[10]).toISOString(),
+        };
+        
+        this.deviceService.insertDevice(newDevice);
+      } catch (error) {
+        console.log("DeviceCreated",error);
+      }
+      
     });
 
     this.contracts.serviceDevice.on('DeviceRemoved', (id, device) => {
