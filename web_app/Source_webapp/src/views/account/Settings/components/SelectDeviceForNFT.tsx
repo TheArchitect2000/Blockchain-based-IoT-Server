@@ -210,7 +210,7 @@ export default function SelectDeviceForNFT() {
                 variant="solid"
                 className="w-fit"
             >
-                Assign IoT Device Digital Twin to Digital Ownership
+                Your Physical Devices
             </Button>
         </div>
     )

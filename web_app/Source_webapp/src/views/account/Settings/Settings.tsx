@@ -30,7 +30,7 @@ const settingsMenu: Record<
 > = {
     profile: { label: 'Profile', path: 'profile', element: <Profile /> },
     'digital-identity': {
-        label: 'Digital Identity',
+        label: 'Decentralized Identifier',
         path: 'digital-identity',
         element: <DigitalIdentity />,
     },

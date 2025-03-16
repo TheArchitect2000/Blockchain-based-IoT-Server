@@ -4,11 +4,15 @@ import { useAppKitProvider } from '@reown/appkit/react'
 import { BrowserProvider, Contract, ethers, JsonRpcProvider } from 'ethers'
 import { create } from 'zustand'
 import * as ContractData from './contract-data'
+import { toast, Notification } from '@/components/ui'
 
 interface ContractStore {
     loading: boolean
     zkpContract: Contract
     commitmentContract: Contract
+    identityOwnershipRegisterationContract: Contract
+    getErrorMessage: (error: any) => string
+    RegisterIdentity: (nodeId: string) => Promise<{status: boolean, tx?: any, error?: string}>
     storeZKP: (
         nodeId: string,
         deviceId: string,
@@ -41,14 +45,49 @@ export function createContractStore(walletProvider: any) {
         loading: false,
         zkpContract: new Contract(
             ContractData.storeZkpContractAddress,
-            ContractData.storeZkpContractABI,
+            ContractData.zkpStorageABI,
             provider
         ),
         commitmentContract: new Contract(
             ContractData.commitmentContractAddress,
-            ContractData.commitmentContractABI,
+            ContractData.commitmentManagementABI,
             provider
         ),
+
+        identityOwnershipRegisterationContract: new Contract(
+            ContractData.identityOwnershipRegisterationContractAddress,
+            ContractData.identityOwnershipRegisterationABI,
+            provider
+        ),
+
+        getErrorMessage: (error: any) => {
+            let errorMessage = 'An unknown error occurred'
+            if (error?.reason) {
+                errorMessage = error.reason
+            } else if (error?.message) {
+                errorMessage = error.message
+            }
+
+            return errorMessage
+        },
+
+        RegisterIdentity: async (nodeId: string): Promise<{status: boolean, tx?: any, error?: string}> => {
+            const { identityOwnershipRegisterationContract, getErrorMessage } =
+                get()
+            try {
+                set({ loading: true })
+                const signer = await provider.getSigner()
+                const tx = await (
+                    identityOwnershipRegisterationContract.connect(
+                        signer
+                    ) as any
+                ).registerIdentity(nodeId)
+                return { status: true, tx: tx }
+            } catch (error) {
+                set({ loading: false })
+                return { status: false, error: getErrorMessage(error) }
+            }
+        },
 
         storeZKP: async (
             nodeId,
@@ -64,7 +103,7 @@ export function createContractStore(walletProvider: any) {
                 set({ loading: true })
                 const signer = await provider.getSigner()
                 const unixTimestamp = Math.floor(Date.now() / 1000)
-                
+
                 const tx = await (zkpContract.connect(signer) as any).storeZKP(
                     nodeId,
                     deviceId,
@@ -96,7 +135,7 @@ export function createContractStore(walletProvider: any) {
             try {
                 set({ loading: true })
                 const signer = await provider.getSigner()
-                
+
                 const tx = await (
                     commitmentContract.connect(signer) as any
                 ).storeCommitment(

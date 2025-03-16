@@ -3,7 +3,7 @@ import { DeviceData, useGetDevices } from '@/utils/hooks/useGetDevices'
 import DeviceTable from './components/DeviceTable'
 import { Loading } from '@/components/shared'
 import { Tabs } from '@/components/ui'
-import { ReactNode, useEffect, useState } from 'react'
+import { ReactNode, useEffect, useState, useMemo, memo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { apiGetDevices, apiGetSharedWithMeDevices } from '@/services/DeviceApi'
 import { useAppSelector } from '@/store'
@@ -12,7 +12,6 @@ const { TabNav, TabList } = Tabs
 
 const ProductList = () => {
     const [refreshData, setRefreshData] = useState<number>(0)
-    const [refreshComponents, setRefreshComponents] = useState<number>(0)
     const [sharedData, setSharedData] = useState<Array<DeviceData>>([])
     const [allDevices, setAllDevices] = useState<Array<DeviceData>>([])
     const [apiLoading, setApiLoading] = useState<boolean>(true)
@@ -30,6 +29,49 @@ const ProductList = () => {
 
     useEffect(() => {
         const unsubscribeFunctions: (() => void)[] = []
+        const deviceDataMap = new Map()
+
+        const updateDeviceData = (
+            deviceId: string,
+            data: any,
+            isShared: boolean
+        ) => {
+            const stateUpdater = isShared
+                ? setSharedDevicesData
+                : setAllDevicesData
+            const tempData = { ...data }
+            delete tempData.HV
+            delete tempData.FV
+            delete tempData.proof
+
+            stateUpdater((prevData) => ({
+                ...prevData,
+                [deviceId]: {
+                    received: true,
+                    data: tempData,
+                    date: new Date(),
+                },
+            }))
+
+            // Clear any existing timeout
+            const existingTimeout = deviceDataMap.get(deviceId)
+            if (existingTimeout) {
+                clearTimeout(existingTimeout)
+            }
+
+            // Set new timeout
+            const timeoutId = setTimeout(() => {
+                stateUpdater((prevData) => ({
+                    ...prevData,
+                    [deviceId]: {
+                        ...prevData[deviceId],
+                        received: false,
+                    },
+                }))
+            }, 2000)
+
+            deviceDataMap.set(deviceId, timeoutId)
+        }
 
         sharedData.forEach((item) => {
             if (item?.deviceEncryptedId) {
@@ -37,34 +79,15 @@ const ProductList = () => {
                     undefined,
                     item?.deviceEncryptedId,
                     (message: any) => {
-                        let tempData = message.data
-                        delete tempData.HV
-                        delete tempData.FV
-                        if (tempData.proof) {
-                            delete tempData.proof
-                        }
                         if (
                             String(message.from) ===
                             String(item.deviceEncryptedId)
                         ) {
-                            console.log('Shared devices set')
-                            setSharedDevicesData((prevData) => ({
-                                ...prevData,
-                                [String(message.from)]: {
-                                    received: true,
-                                    data: { ...tempData },
-                                    date: new Date(),
-                                },
-                            }))
-                            setTimeout(() => {
-                                setSharedDevicesData((prevData) => ({
-                                    ...prevData,
-                                    [String(message.from)]: {
-                                        ...prevData[String(message.from)],
-                                        received: false,
-                                    },
-                                }))
-                            }, 2000)
+                            updateDeviceData(
+                                String(message.from),
+                                message.data,
+                                true
+                            )
                         }
                     },
                     true
@@ -79,34 +102,15 @@ const ProductList = () => {
                     undefined,
                     item?.deviceEncryptedId,
                     (message: any) => {
-                        let tempData = message.data
-                        delete tempData.HV
-                        delete tempData.FV
-                        if (tempData.proof) {
-                            delete tempData.proof
-                        }
                         if (
                             String(message.from) ===
                             String(item.deviceEncryptedId)
                         ) {
-                            console.log('All devices set')
-                            setAllDevicesData((pervData) => ({
-                                ...pervData,
-                                [String(message.from)]: {
-                                    received: true,
-                                    data: { ...tempData },
-                                    date: new Date(),
-                                },
-                            }))
-                            setTimeout(() => {
-                                setAllDevicesData((prevData) => ({
-                                    ...prevData,
-                                    [String(message.from)]: {
-                                        ...prevData[String(message.from)],
-                                        received: false,
-                                    },
-                                }))
-                            }, 2000)
+                            updateDeviceData(
+                                String(message.from),
+                                message.data,
+                                false
+                            )
                         }
                     },
                     true
@@ -115,93 +119,93 @@ const ProductList = () => {
             }
         })
 
-        // Cleanup function to unsubscribe all
         return () => {
+            // Clear all timeouts
+            deviceDataMap.forEach((timeoutId) => clearTimeout(timeoutId))
+            deviceDataMap.clear()
+            // Unsubscribe all
             unsubscribeFunctions.forEach((unsubscribe) => unsubscribe())
         }
     }, [sharedData, allDevices])
 
     function refreshPage() {
-        setRefreshData(refreshData + 1)
+        setRefreshData((prev) => prev + 1)
     }
 
-    function refreshDeviceComponents() {
-        setRefreshComponents(refreshComponents + 1)
-    }
+    const deviceMenu = useMemo(() => {
+        interface DeviceMenuItem {
+            label: string
+            path: string
+            className?: string
+            element: ReactNode
+        }
 
-    const deviceMenu: Array<{
-        label: string
-        path: string
-        className?: string
-        element: ReactNode
-    }> = [
-        {
-            label: 'All Devices',
-            path: 'my-devices',
-            element: (
-                <DeviceTable
-                    key={`all-${refreshComponents}`}
-                    type="all"
-                    options={{
-                        view: true,
-                        share: true,
-                        delete: true,
-                        edit: true,
-                        nft: true
-                    }}
-                    deviceList={allDevices}
-                    payloads={allDevicesData}
-                    refreshPage={refreshPage}
-                />
-            ),
-        },
-        {
-            label: 'Local Device Sharing',
-            path: 'local-share-devices',
-            element: (
-                <DeviceTable
-                    key={`local-shared-${refreshComponents}`}
-                    type="local shared"
-                    options={{ sharedUsers: true }}
-                    deviceList={allDevices.filter(
-                        (item) => item.sharedWith.length > 0
-                    )}
-                    payloads={allDevicesData}
-                    refreshPage={refreshPage}
-                />
-            ),
-        },
-        {
-            label: 'Global Device Sharing',
-            path: 'global-share-devices',
-            element: (
-                <DeviceTable
-                    key={`global-share-${refreshComponents}`}
-                    type="global shared"
-                    options={{ unshare: true }}
-                    deviceList={allDevices.filter(
-                        (item) => item.isShared == true
-                    )}
-                    payloads={allDevicesData}
-                    refreshPage={refreshPage}
-                />
-            ),
-        },
-        {
-            label: 'Shared With Me',
-            path: 'shared-devices',
-            element: (
-                <DeviceTable
-                    key={`share-${refreshComponents}`}
-                    type="shared"
-                    options={{ view: true }}
-                    deviceList={sharedData}
-                    payloads={sharedDevicesData}
-                    refreshPage={refreshPage}
-                />
-            ),
-        },
-    ]
+        const menu: DeviceMenuItem[] = [
+            {
+                label: 'All Devices',
+                path: 'my-devices',
+                element: (
+                    <DeviceTable
+                        type="all"
+                        options={{
+                            view: true,
+                            share: true,
+                            delete: true,
+                            edit: true,
+                            nft: true,
+                        }}
+                        deviceList={allDevices}
+                        payloads={allDevicesData}
+                        refreshPage={refreshPage}
+                    />
+                ),
+            },
+            {
+                label: 'Local Device Sharing',
+                path: 'local-share-devices',
+                element: (
+                    <DeviceTable
+                        type="local shared"
+                        options={{ sharedUsers: true }}
+                        deviceList={allDevices.filter(
+                            (item) => item.sharedWith.length > 0
+                        )}
+                        payloads={allDevicesData}
+                        refreshPage={refreshPage}
+                    />
+                ),
+            },
+            {
+                label: 'Global Device Sharing',
+                path: 'global-share-devices',
+                element: (
+                    <DeviceTable
+                        type="global shared"
+                        options={{ unshare: true }}
+                        deviceList={allDevices.filter(
+                            (item) => item.isShared == true
+                        )}
+                        payloads={allDevicesData}
+                        refreshPage={refreshPage}
+                    />
+                ),
+            },
+            {
+                label: 'Shared With Me',
+                path: 'shared-devices',
+                element: (
+                    <DeviceTable
+                        type="shared"
+                        options={{ view: true }}
+                        deviceList={sharedData}
+                        payloads={sharedDevicesData}
+                        refreshPage={refreshPage}
+                    />
+                ),
+            },
+        ]
+        return menu
+    }, [allDevices, sharedData, allDevicesData, sharedDevicesData])
 
     const [currentTab, setCurrentTab] = useState(deviceMenu[0].path)
 
@@ -222,7 +226,6 @@ const ProductList = () => {
         setAllDevices(allDevices.data.data)
         setApiLoading(false)
         setCurrentTab(path)
-        refreshDeviceComponents()
     }
 
     useEffect(() => {
@@ -271,4 +274,4 @@ const ProductList = () => {
     )
 }
 
-export default ProductList
+export default memo(ProductList)

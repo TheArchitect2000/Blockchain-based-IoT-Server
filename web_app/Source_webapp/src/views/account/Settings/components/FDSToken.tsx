@@ -2,7 +2,7 @@ import { Loading } from '@/components/shared'
 import { Button, Dropdown, Input, Notification, toast } from '@/components/ui'
 import { useAppSelector } from '@/store'
 import { SyntheticEvent, useEffect, useState } from 'react'
-import { FaCoins, FaWallet } from 'react-icons/fa'
+import { FaCoins, FaMobile, FaWallet } from 'react-icons/fa'
 import { GiWallet } from 'react-icons/gi'
 import { MdOutlineKeyboardArrowDown } from 'react-icons/md'
 import { useAppKitProvider } from '@reown/appkit/react'
@@ -135,9 +135,7 @@ export default function FDSToken() {
     return (
         <>
             {(loading == false && (
-                <section className="flex flex-col gap-4">
-                    <h4>FDS Token</h4>
-
+                <section className="flex flex-wrap justify-around">
                     <div
                         className={`flex flex-col gap-4 bg-${themeColor} rounded-lg p-4 shadow-[0_0_7px_2px_rgba(31,41,55,0.9)] max-w-[500px]`}
                     >
@@ -191,6 +189,93 @@ export default function FDSToken() {
                                 type="text"
                                 placeholder="Amount"
                                 prefix={<FaCoins className="text-[1rem]" />}
+                                value={amount}
+                                onChange={(e) =>
+                                    handleAmountChange(e.target.value)
+                                }
+                                disabled={isPending}
+                            />
+                        </div>
+
+                        {transactionId && (
+                            <p className="text-white break-all text-justify">
+                                Transaction ID:{' '}
+                                <span
+                                    className="text-green-500 hover:underline cursor-pointer"
+                                    onClick={() =>
+                                        window.open(
+                                            `https://explorer.fidesinnova.io/tx/${transactionId}`,
+                                            '_blank'
+                                        )
+                                    }
+                                >
+                                    {transactionId}
+                                </span>
+                            </p>
+                        )}
+
+                        <Button
+                            variant="solid"
+                            size="sm"
+                            onClick={handleTransfer}
+                            loading={isPending}
+                        >
+                            {isPending ? 'Processing...' : 'Transfer'}
+                        </Button>
+                    </div>
+                    <div
+                        className={`flex flex-col gap-4 bg-${themeColor} rounded-lg p-4 shadow-[0_0_7px_2px_rgba(31,41,55,0.9)] max-w-[500px]`}
+                    >
+                        <h5>Transfer Device NFT</h5>
+
+                        <div className="flex items-center gap-3">
+                            <p className="text-white">From:</p>
+                            <Dropdown
+                                activeKey={selectedWallet}
+                                toggleClassName="!border border-gray-500 rounded-lg"
+                                renderTitle={
+                                    <p className="flex items-center p-3 gap-2 cursor-pointer">
+                                        <FaWallet /> {selectedWallet}{' '}
+                                        <MdOutlineKeyboardArrowDown />
+                                    </p>
+                                }
+                                onSelect={(eventKey, event) =>
+                                    handleSelect(eventKey, event)
+                                }
+                                disabled={isPending}
+                            >
+                                {wallets.length > 0 &&
+                                    wallets.map((address) => (
+                                        <Dropdown.Item
+                                            eventKey={address}
+                                            key={address}
+                                        >
+                                            {address}
+                                        </Dropdown.Item>
+                                    ))}
+                            </Dropdown>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                            <p className="text-white">To:</p>
+                            <Input
+                                type="text"
+                                placeholder="Destination Wallet"
+                                prefix={<GiWallet className="text-[1rem]" />}
+                                value={destinationWallet}
+                                onChange={(e) =>
+                                    handleDestinationChange(e.target.value)
+                                }
+                                disabled={isPending}
+                            />
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                            <p className="text-white">Device NFT:</p>
+                            <Input
+                                type="text"
+                                placeholder="Select Device NFT"
+                                prefix={<FaMobile className="text-[1rem]" />}
                                 value={amount}
                                 onChange={(e) =>
                                     handleAmountChange(e.target.value)

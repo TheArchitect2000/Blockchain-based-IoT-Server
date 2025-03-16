@@ -3,6 +3,7 @@ import Notification from '@/components/ui/Notification'
 import toast from '@/components/ui/toast'
 import {
     apiGetMyProfile,
+    apiGetNodeTheme,
     apiSetMyIdentityWallet,
     apiSetMyOwnerShipWallet,
 } from '@/services/UserApi' // Assuming you have an API function to save the address
@@ -17,11 +18,13 @@ import { useAppKitAccount, useDisconnect } from '@reown/appkit/react'
 import { useConnectWallet } from '@/hooks/useConnectWallet'
 import { FaIdCard } from 'react-icons/fa'
 import { FaWallet } from 'react-icons/fa'
+import { useContractStore } from '@/provider/contract-provider'
 
 const WalletSettings = () => {
     const [loading, setLoading] = useState(true)
     const [walletBalance, setWalletBalance] = useState<string | number>()
     const [userProfile, setUserProfile] = useState<any>({})
+    const [nodeId, setNodeId] = useState<string>('')
     const [requestIdentityLoading, setRequestIdentityLoading] = useState(false)
     const [requestOwnershipLoading, setRequestOwnershipLoading] =
         useState(false)
@@ -38,6 +41,9 @@ const WalletSettings = () => {
     } = useConnectWallet()
     const themeColor = useAppSelector((state) => state.theme.themeBackground)
 
+    const contractStore = useContractStore()
+    const { RegisterIdentity } = contractStore((state) => state)
+
     async function getBalance() {
         const balance = await getWalletBalance()
         setWalletBalance(balance || 0)
@@ -46,6 +52,8 @@ const WalletSettings = () => {
     async function fetchData() {
         const userProfile = (await apiGetMyProfile()) as any
         const theProfile = userProfile.data.data
+        const res = (await apiGetNodeTheme()) as any
+        setNodeId(res?.data?.data.nodeId)
         setUserProfile(theProfile)
         getBalance()
     }
@@ -53,7 +61,10 @@ const WalletSettings = () => {
         fetchData()
         if (isConnected == false) return
         if (loading == true) return
-        handleSaveWalletAddress()
+
+        setTimeout(() => {
+            handleSaveWalletAddress()
+        }, 2000)
     }, [isConnected])
 
     useEffect(() => {
@@ -126,6 +137,7 @@ const WalletSettings = () => {
     }
 
     const handleSaveWalletAddress = async () => {
+        if (isConnected == false) return
         const userProfile = (await apiGetMyProfile()) as any
         const theProfile = userProfile.data.data
 
@@ -157,16 +169,28 @@ const WalletSettings = () => {
                 setRequestIdentityLoading(true)
 
                 try {
-                    await apiSetMyIdentityWallet(String(address))
-                    toast.push(
-                        <Notification
-                            title={'Ownership wallet set successfully'}
-                            type="success"
-                        />,
-                        {
-                            placement: 'top-center',
-                        }
-                    )
+                    console.log('Maghol:', address)
+                    console.log('Maghol 2:', nodeId)
+                    const res = await RegisterIdentity(nodeId)
+                    if (res.status == true) {
+                        await apiSetMyIdentityWallet(String(address))
+                        toast.push(
+                            <Notification
+                                title={'Identity wallet set successfully'}
+                                type="success"
+                            />,
+                            {
+                                placement: 'top-center',
+                            }
+                        )
+                    } else {
+                        toast.push(
+                            <Notification title={res.error} type="danger" />,
+                            {
+                                placement: 'top-center',
+                            }
+                        )
+                    }
                 } catch (error: any) {
                     setRequestIdentityLoading(false)
                     disconnect()
@@ -237,15 +261,6 @@ const WalletSettings = () => {
             setTimeout(() => {
                 getBalance()
             }, 1000)
-            toast.push(
-                <Notification
-                    title="Wallet address saved successfully!"
-                    type="success"
-                />,
-                {
-                    placement: 'top-center',
-                }
-            )
         } catch (error) {
             console.error('Error saving wallet address:', error)
             toast.push(
@@ -296,24 +311,12 @@ const WalletSettings = () => {
                                     </>
                                 )) || (
                                     <p className="text-white">
-                                        You are not registered with your
-                                        identity wallet yet. Please register by
-                                        clicking the 'Register' button.
+                                        You have not registered your identity
+                                        wallet.
                                     </p>
                                 )}
 
                                 <div className="flex w-full gap-2 mt-auto">
-                                    <Button
-                                        className="w-full"
-                                        loading={requestIdentityLoading}
-                                        onClick={() =>
-                                            handleRequestFaucet('identity')
-                                        }
-                                        variant="solid"
-                                        size="sm"
-                                    >
-                                        Receive Test Token
-                                    </Button>
                                     {(isConnected &&
                                         walletType == 'identity' && (
                                             <>
@@ -345,6 +348,17 @@ const WalletSettings = () => {
                                                 : 'Register'}
                                         </Button>
                                     )}
+                                    <Button
+                                        className="w-full"
+                                        loading={requestIdentityLoading}
+                                        onClick={() =>
+                                            handleRequestFaucet('identity')
+                                        }
+                                        variant="solid"
+                                        size="xs"
+                                    >
+                                        Receive Test Token
+                                    </Button>
                                 </div>
                             </section>
 
@@ -353,7 +367,7 @@ const WalletSettings = () => {
                             >
                                 <div className="flex items-center gap-3">
                                     <FaWallet className="text-xl" />
-                                    <h5>Digital Ownership</h5>
+                                    <h5>Ownership Wallet</h5>
                                 </div>
 
                                 {(userProfile.ownerShipWallets &&
@@ -380,24 +394,12 @@ const WalletSettings = () => {
                                         </>
                                     )) || (
                                     <p className="text-white">
-                                        You are not registered with your digital
-                                        ownership yet. Please register by
-                                        clicking the 'Register' button.
+                                        You have not registered your ownership
+                                        wallet.
                                     </p>
                                 )}
 
                                 <div className="flex w-full gap-2 mt-auto">
-                                    <Button
-                                        className="w-full"
-                                        loading={requestOwnershipLoading}
-                                        onClick={() =>
-                                            handleRequestFaucet('ownership')
-                                        }
-                                        variant="solid"
-                                        size="sm"
-                                    >
-                                        Receive Test Token
-                                    </Button>
                                     {(isConnected &&
                                         walletType == 'ownership' && (
                                             <>
@@ -431,12 +433,27 @@ const WalletSettings = () => {
                                                 : 'Register'}
                                         </Button>
                                     )}
+                                    <Button
+                                        className="w-full"
+                                        loading={requestOwnershipLoading}
+                                        onClick={() =>
+                                            handleRequestFaucet('ownership')
+                                        }
+                                        variant="solid"
+                                        size="xs"
+                                    >
+                                        Receive Test Token
+                                    </Button>
                                 </div>
                             </section>
                         </div>
 
-                        <Button size="sm" variant="solid" className="w-fit mx-auto mt-1">
-                            Bind Digital Ownership and Identity
+                        <Button
+                            size="sm"
+                            variant="solid"
+                            className="w-fit mx-auto mt-1"
+                        >
+                            Bind Identity and Ownership Wallets
                         </Button>
 
                         <span className="w-full border-t border-gray-600 my-4"></span>
