@@ -287,7 +287,7 @@ export class ContractService {
   }
 
   async removeSharedDevice(nodeId: string, deviceId: string) {
-    return this.contracts.serviceDevice.removeDevice(nodeId, deviceId);
+    return this.contracts.serviceDevice.removeDevice(nodeId, deviceId, nodeId);
   }
 
   async createService(
@@ -321,7 +321,7 @@ export class ContractService {
   }
 
   async removeService(nodeId: string, serviceId: string) {
-    return this.contracts.serviceDevice.removeService(nodeId, serviceId);
+    return this.contracts.serviceDevice.removeService(nodeId, serviceId, nodeId);
   }
 
   async fetchAllDevices() {
