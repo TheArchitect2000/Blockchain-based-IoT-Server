@@ -1,12 +1,13 @@
-import { forwardRef, Module } from '@nestjs/common';
-import { contractController } from './controller/contract.controller';
+import { Module, forwardRef } from '@nestjs/common';
 import { ContractService } from './services/contract.service';
-import { UserModule } from '../user/user.module';
 import { DeviceModule } from '../device/device.module';
 import { ServiceModule } from '../service/service.module';
+import { ContractDataService } from './contract-data';
+import { contractController } from './controller/contract.controller';
+import { ContractRepository } from './repository/contract.repository';
+import { UserModule } from '../user/user.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { contractFeature } from './feature/contract.feature';
-import { ContractRepository } from './repository/contract.repository';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { ContractRepository } from './repository/contract.repository';
     forwardRef(() => ServiceModule),
   ],
   controllers: [contractController],
-  providers: [ContractService, ContractRepository],
+  providers: [ContractService, ContractRepository, ContractDataService],
   exports: [ContractService],
 })
 export class ContractModule {}

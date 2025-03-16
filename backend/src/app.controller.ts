@@ -72,6 +72,7 @@ export class AppController {
       background: process.env.THEME_BACKGROUND,
       box: process.env.THEME_BOX,
       button: process.env.THEME_BUTTON,
+      nodeId: process.env.NODE_ID,
     };
   }
 

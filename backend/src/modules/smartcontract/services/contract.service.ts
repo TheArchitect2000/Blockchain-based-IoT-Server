@@ -1,12 +1,17 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { ContractTransaction, ethers } from 'ethers';
-import * as contractData from '../contract-data';
 import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { DeviceService } from 'src/modules/device/services/device.service';
 import { ServiceService } from 'src/modules/service/services/service.service';
 import { StoreCommitmentData } from '../dto/contract-dto';
 import { ContractRepository } from '../repository/contract.repository';
+import { ContractDataService } from '../contract-data';
+
+// Import JSON files with type assertions
+const serviceDeviceABI = require('../ABI/ServiceDeviceABI.json') as any[];
+const zkpStorageABI = require('../ABI/ZKPStorageABI.json') as any[];
+const commitmentManagementABI = require('../ABI/CommitmentManagemantABI.json') as any[];
 
 function parseProofString(proofString) {
   let cleanedString = proofString.substring(1, proofString.length - 1);
@@ -47,6 +52,8 @@ export class ContractService {
     serviceDevice: null,
     storeZkp: null,
     commitment: null,
+    identityOwnershipRegisteration: null,
+    deviceNft: null,
   };
 
   constructor(
@@ -55,6 +62,7 @@ export class ContractService {
     private readonly deviceService?: DeviceService,
     @Inject(forwardRef(() => ServiceService))
     private readonly serviceService?: ServiceService,
+    private readonly contractData?: ContractDataService,
   ) {
     this.provider = new ethers.JsonRpcProvider(this.rpcUrl, {
       name: 'FidesInnova',
@@ -71,27 +79,26 @@ export class ContractService {
       this.provider,
     );
 
-    /* this.contracts.zkp = new ethers.Contract(
-      contractData.zkpContractAddress,
-      contractData.zkpContractABI,
-      this.adminWallet,
-    ); */
+    // Add debug logging
+    console.log("Service Device ABI loaded:", Array.isArray(serviceDeviceABI), serviceDeviceABI?.length);
 
-    this.contracts.serviceDevice = new ethers.Contract(
-      contractData.serviceDeviceContractAddress,
-      contractData.serviceDeviceContractABI,
-      this.adminWallet,
-    );
+    if (this.contractData.serviceDeviceContractAddress) {
+      this.contracts.serviceDevice = new ethers.Contract(
+        this.contractData.serviceDeviceContractAddress,
+        serviceDeviceABI,
+        this.adminWallet,
+      );
+    }
 
     this.contracts.storeZkp = new ethers.Contract(
-      contractData.storeZkpContractAddress,
-      contractData.storeZkpContractABI,
+      this.contractData.storeZkpContractAddress,
+      zkpStorageABI,
       this.adminWallet,
     );
 
     this.contracts.commitment = new ethers.Contract(
-      contractData.commitmentContractAddress,
-      contractData.commitmentContractABI,
+      this.contractData.commitmentContractAddress,
+      commitmentManagementABI,
       this.adminWallet,
     );
 
@@ -141,18 +148,17 @@ export class ContractService {
       let newDevice = {
         nodeId: device[0],
         nodeDeviceId: device[1],
-        userId: device[2],
         isShared: true,
-        deviceName: device[3],
-        deviceType: device[4],
-        deviceEncryptedId: device[5],
-        hardwareVersion: device[6],
-        firmwareVersion: device[7],
-        parameters: device[8].map((str) => JSON.parse(str)),
-        costOfUse: device[9],
-        location: { coordinates: device[10] },
-        insertDate: device[11],
-        updateDate: device[11],
+        deviceName: device[2],
+        deviceType: device[2],
+        deviceEncryptedId: device[3],
+        hardwareVersion: String(device[4]).split('/')[0],
+        firmwareVersion: String(device[4]).split('/')[1],
+        parameters: device[6].map((str) => JSON.parse(str)),
+        costOfUse: device[7],
+        location: { coordinates: device[8] },
+        insertDate: new Date(device[10]).toISOString(),
+        updateDate: new Date(device[10]).toISOString(),
       };
 
       this.deviceService.insertDevice(newDevice);
@@ -162,7 +168,7 @@ export class ContractService {
       this.deviceService.deleteOtherNodeDeviceByNodeIdAndDeviceId(
         device[0],
         device[1],
-        device[5],
+        device[3],
       );
     });
   }
@@ -267,16 +273,16 @@ export class ContractService {
     return this.contracts.serviceDevice.createDevice(
       nodeId,
       deviceId,
-      ownerId,
-      name,
       deviceType,
       encryptedID,
-      hardwareVersion,
-      firmwareVersion,
+      `${firmwareVersion}/${hardwareVersion}`,
+      "FidesInnova",
       parameters,
       useCost,
       locationGPS,
-      installationDate,
+      "ownerShipId",
+      new Date(installationDate).getTime(),
+      firmwareVersion
     );
   }
 

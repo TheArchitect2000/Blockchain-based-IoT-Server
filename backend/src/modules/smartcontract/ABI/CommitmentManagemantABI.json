@@ -1,0 +1,380 @@
+[
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "commitmentId",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "nodeId",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "timestamp",
+				"type": "uint256"
+			}
+		],
+		"name": "CommitmentRemoved",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "commitmentId",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "nodeId",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "deviceType",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "deviceIdType",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "deviceModel",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "manufacturer",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "softwareVersion",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "commitment",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "timestamp",
+				"type": "uint256"
+			}
+		],
+		"name": "CommitmentStored",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"name": "commitmentIds",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "commitments",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "commitmentId",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "nodeId",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "deviceType",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "deviceIdType",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "deviceModel",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "manufacturer",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "softwareVersion",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "commitment",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "timestamp",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getAllCommitmentsData",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "string",
+						"name": "commitmentId",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "nodeId",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "deviceType",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "deviceIdType",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "deviceModel",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "manufacturer",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "softwareVersion",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "commitment",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct CommitmentStorage.Commitment[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "commitmentId",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "nodeId",
+				"type": "string"
+			}
+		],
+		"name": "getCommitment",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getCommitmentCount",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "commitmentId",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "nodeId",
+				"type": "string"
+			}
+		],
+		"name": "removeCommitment",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "commitmentId",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "nodeId",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "deviceType",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "deviceIdType",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "deviceModel",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "manufacturer",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "softwareVersion",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "commitment",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "timestamp",
+				"type": "uint256"
+			}
+		],
+		"name": "storeCommitment",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}
+]
