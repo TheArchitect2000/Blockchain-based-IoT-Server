@@ -22,6 +22,7 @@ export interface UserInterface extends Document {
   newPassword: string;
   walletAddress: string;
   ownerShipWallets: string[];
+  walletsBounded: boolean;
   identityWallet: string;
   roles: string[];
   StorX: Object;

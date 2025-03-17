@@ -80,6 +80,11 @@ const schema = new Schema({
     required: false,
     default: [],
   },
+  walletsBounded: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
   firebaseToken: String,
   roles: [
     {
