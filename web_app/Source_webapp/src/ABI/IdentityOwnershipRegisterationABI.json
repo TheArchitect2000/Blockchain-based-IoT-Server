@@ -29,9 +29,9 @@
 			},
 			{
 				"indexed": false,
-				"internalType": "uint256",
+				"internalType": "string",
 				"name": "nodeId",
-				"type": "uint256"
+				"type": "string"
 			}
 		],
 		"name": "IdentityRegistered",
@@ -90,9 +90,9 @@
 				"type": "address"
 			},
 			{
-				"internalType": "uint256",
+				"internalType": "string",
 				"name": "nodeId",
-				"type": "uint256"
+				"type": "string"
 			},
 			{
 				"internalType": "bool",
@@ -106,9 +106,9 @@
 	{
 		"inputs": [
 			{
-				"internalType": "uint256",
+				"internalType": "string",
 				"name": "",
-				"type": "uint256"
+				"type": "string"
 			}
 		],
 		"name": "nodeExists",
@@ -125,9 +125,9 @@
 	{
 		"inputs": [
 			{
-				"internalType": "uint256",
+				"internalType": "string",
 				"name": "_nodeId",
-				"type": "uint256"
+				"type": "string"
 			}
 		],
 		"name": "registerIdentity",

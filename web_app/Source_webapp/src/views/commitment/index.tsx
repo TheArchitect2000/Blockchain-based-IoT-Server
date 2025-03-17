@@ -35,13 +35,13 @@ export default function CommitmentPage() {
     const [commitments, setCommitments] = useState<any[]>([])
 
     // Fields extracted from JSON file
-    const [commitmentID, setCommitmentID] = useState<string>('')
+    const [commitmentId, setCommitmentId] = useState<string>('')
     const [companyName, setCompanyName] = useState<string>('')
-    const [iotManufacturerName, setIotManufacturerName] = useState<string>('')
-    const [iotDeviceName, setIotDeviceName] = useState<string>('')
-    const [deviceHardwareVersion, setDeviceHardwareVersion] =
-        useState<string>('')
-    const [firmwareVersion, setFirmwareVersion] = useState<string>('')
+    const [manufacturer, setManufacturer] = useState<string>('')
+    const [deviceType, setDeviceType] = useState<string>('')
+    const [deviceIdType, setDeviceIdType] = useState<string>('')
+    const [deviceModel, setDeviceModel] = useState<string>('')
+    const [softwareVersion, setSoftwareVersion] = useState<string>('')
     const { isConnected } = useAppKitAccount()
     const navigateTo = useNavigate()
     const contractStore = useContractStore()
@@ -132,16 +132,18 @@ export default function CommitmentPage() {
                 const parsedJson = JSON.parse(jsonText)
 
                 if (
-                    !parsedJson.commitment_id ||
-                    !parsedJson.iot_developer_name ||
-                    !parsedJson.iot_device_name ||
-                    !parsedJson.device_hardware_version ||
-                    !parsedJson.firmware_version ||
-                    parsedJson.commitment_id.trim() === '' ||
-                    parsedJson.iot_developer_name.trim() === '' ||
-                    parsedJson.iot_device_name.trim() === '' ||
-                    parsedJson.device_hardware_version.trim() === '' ||
-                    parsedJson.firmware_version.trim() === ''
+                    !parsedJson.commitmentId ||
+                    !parsedJson.deviceType ||
+                    !parsedJson.deviceIdType ||
+                    !parsedJson.deviceModel ||
+                    !parsedJson.manufacturer ||
+                    !parsedJson.softwareVersion ||
+                    parsedJson.commitmentId.trim() === '' ||
+                    parsedJson.deviceType.trim() === '' ||
+                    parsedJson.deviceIdType.trim() === '' ||
+                    parsedJson.deviceModel.trim() === '' ||
+                    parsedJson.manufacturer.trim() === '' ||
+                    parsedJson.softwareVersion.trim() === ''
                 ) {
                     toast.push(
                         <Notification type="danger">
@@ -156,13 +158,12 @@ export default function CommitmentPage() {
                 }
 
                 // If these fields are missing, handle accordingly
-                setCommitmentID(parsedJson.commitment_id || '')
-                setIotManufacturerName(parsedJson.iot_developer_name || '')
-                setIotDeviceName(parsedJson.iot_device_name || '')
-                setDeviceHardwareVersion(
-                    parsedJson.device_hardware_version || ''
-                )
-                setFirmwareVersion(parsedJson.firmware_version || '')
+                setCommitmentId(parsedJson.commitmentId || '')
+                setManufacturer(parsedJson.manufacturer || '')
+                setDeviceType(parsedJson.deviceType || '')
+                setDeviceIdType(parsedJson.deviceIdType || '')
+                setDeviceModel(parsedJson.deviceModel || '')
+                setSoftwareVersion(parsedJson.softwareVersion || '')
 
                 toast.push(
                     <Notification type="success">
@@ -242,12 +243,12 @@ export default function CommitmentPage() {
 
                 if (isConnected) {
                     const frontTx = (await storeCommitment(
-                        commitmentID,
+                        commitmentId,
                         nodeId,
-                        iotManufacturerName,
-                        iotDeviceName,
-                        deviceHardwareVersion,
-                        firmwareVersion,
+                        manufacturer,
+                        deviceType,
+                        deviceModel,
+                        softwareVersion,
                         jsonText
                     )) as any
                     if (frontTx == false) {
@@ -271,22 +272,22 @@ export default function CommitmentPage() {
                     txHash = String(frontTx.hash)
 
                     await apiStoreCommitment(
-                        commitmentID,
-                        iotManufacturerName,
-                        iotDeviceName,
-                        deviceHardwareVersion,
-                        firmwareVersion,
+                        commitmentId,
+                        manufacturer,
+                        deviceType,
+                        deviceModel,
+                        softwareVersion,
                         jsonText,
                         txHash,
                         true
                     )
                 } else {
                     const tx = (await apiStoreCommitment(
-                        commitmentID,
-                        iotManufacturerName,
-                        iotDeviceName,
-                        deviceHardwareVersion,
-                        firmwareVersion,
+                        commitmentId,
+                        manufacturer,
+                        deviceType,
+                        deviceModel,
+                        softwareVersion,
                         jsonText,
                         null,
                         false
@@ -417,7 +418,7 @@ export default function CommitmentPage() {
                                                 <div
                                                     className={`p-4 mb-4 border border-${
                                                         companyName !=
-                                                        iotManufacturerName
+                                                        manufacturer
                                                             ? 'red'
                                                             : 'green'
                                                     }-400 rounded-lg space-y-2`}
@@ -426,35 +427,28 @@ export default function CommitmentPage() {
                                                         <strong>
                                                             Commitment ID:
                                                         </strong>{' '}
-                                                        {commitmentID}
+                                                        {commitmentId}
                                                     </div>
                                                     <div className="flex max-sm:flex-wrap items-center gap-2">
                                                         <strong className="text-nowrap">
-                                                            IoT Developer Name:
+                                                            Manufacturer:
                                                         </strong>{' '}
                                                         <p className="text-nowrap">
-                                                            {
-                                                                iotManufacturerName
-                                                            }
+                                                            {manufacturer}
                                                         </p>
                                                         {companyName !=
-                                                            iotManufacturerName && (
+                                                            manufacturer && (
                                                             <p className="text-red-400 text-wrap">
-                                                                ( The IoT
-                                                                Developer Name
-                                                                in your JSON
-                                                                file, "
-                                                                {
-                                                                    iotManufacturerName
-                                                                }
-                                                                " , does not
-                                                                match the IoT
-                                                                Developer Name
+                                                                ( The
+                                                                Manufacturer in
+                                                                your JSON file,
+                                                                "{manufacturer}"
+                                                                , does not match
+                                                                the Company Name
                                                                 in your profile,
                                                                 "{companyName}".
                                                                 Please update
-                                                                the IoT
-                                                                Developer Name
+                                                                the Manufacturer
                                                                 in your JSON
                                                                 file to "
                                                                 {companyName}"{' '}
@@ -464,21 +458,27 @@ export default function CommitmentPage() {
                                                     </div>
                                                     <div>
                                                         <strong>
-                                                            IoT Device Type:
+                                                            Device Type:
                                                         </strong>{' '}
-                                                        {iotDeviceName}
+                                                        {deviceType}
                                                     </div>
                                                     <div>
                                                         <strong>
-                                                            Hardware Version:
+                                                            Device ID Type:
                                                         </strong>{' '}
-                                                        {deviceHardwareVersion}
+                                                        {deviceIdType}
                                                     </div>
                                                     <div>
                                                         <strong>
-                                                            Firmware Version:
+                                                            Device Model:
                                                         </strong>{' '}
-                                                        {firmwareVersion}
+                                                        {deviceModel}
+                                                    </div>
+                                                    <div>
+                                                        <strong>
+                                                            Software Version:
+                                                        </strong>{' '}
+                                                        {softwareVersion}
                                                     </div>
                                                 </div>
                                             )}
@@ -560,7 +560,7 @@ export default function CommitmentPage() {
                                                         'company_developer'
                                                     ) ||
                                                     companyName !=
-                                                        iotManufacturerName ||
+                                                        manufacturer ||
                                                     commitmentLoading
                                                 }
                                                 variant="solid"

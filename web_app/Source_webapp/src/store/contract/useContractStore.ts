@@ -12,7 +12,12 @@ interface ContractStore {
     commitmentContract: Contract
     identityOwnershipRegisterationContract: Contract
     getErrorMessage: (error: any) => string
-    RegisterIdentity: (nodeId: string) => Promise<{status: boolean, tx?: any, error?: string}>
+    RegisterIdentity: (
+        nodeId: string
+    ) => Promise<{ status: boolean; tx?: any; error?: string }>
+    RegisterOwnership: (
+        identityAddress: string
+    ) => Promise<{ status: boolean; tx?: any; error?: string }>
     storeZKP: (
         nodeId: string,
         deviceId: string,
@@ -31,6 +36,9 @@ interface ContractStore {
         firmwareVersion: string,
         commitmentData: string
     ) => Promise<boolean | string>
+    bindIdentityOwnership: (
+        ownershipAddress: string
+    ) => Promise<{ status: boolean; tx?: any; error?: string }>
 }
 
 export function createContractStore(walletProvider: any) {
@@ -71,17 +79,63 @@ export function createContractStore(walletProvider: any) {
             return errorMessage
         },
 
-        RegisterIdentity: async (nodeId: string): Promise<{status: boolean, tx?: any, error?: string}> => {
+        RegisterIdentity: async (
+            nodeId: string
+        ): Promise<{ status: boolean; tx?: any; error?: string }> => {
             const { identityOwnershipRegisterationContract, getErrorMessage } =
                 get()
             try {
                 set({ loading: true })
                 const signer = await provider.getSigner()
+                console.log('Signer wallet address:', await signer.getAddress())
                 const tx = await (
                     identityOwnershipRegisterationContract.connect(
                         signer
                     ) as any
                 ).registerIdentity(nodeId)
+                return { status: true, tx: tx }
+            } catch (error) {
+                set({ loading: false })
+                return { status: false, error: getErrorMessage(error) }
+            }
+        },
+
+        RegisterOwnership: async (
+            identityAddress: string
+        ): Promise<{ status: boolean; tx?: any; error?: string }> => {
+            const { identityOwnershipRegisterationContract, getErrorMessage } =
+                get()
+            try {
+                set({ loading: true })
+                const signer = await provider.getSigner()
+                console.log('Signer wallet address:', await signer.getAddress())
+                const tx = await (
+                    identityOwnershipRegisterationContract.connect(
+                        signer
+                    ) as any
+                ).registerOwnership(identityAddress)
+                return { status: true, tx: tx }
+            } catch (error) {
+                set({ loading: false })
+                return { status: false, error: getErrorMessage(error) }
+            }
+        },
+
+        bindIdentityOwnership: async (
+            ownershipAddress: string
+        ): Promise<{ status: boolean; tx?: any; error?: string }> => {
+            const { identityOwnershipRegisterationContract, getErrorMessage } =
+                get()
+            try {
+                set({ loading: true })
+                const signer = await provider.getSigner()
+                console.log('Signer wallet address:', await signer.getAddress())
+                console.log('ownershipAddress wallet address:', ownershipAddress)
+                const tx = await (
+                    identityOwnershipRegisterationContract.connect(
+                        signer
+                    ) as any
+                ).bindIdentityOwnership(ownershipAddress)
                 return { status: true, tx: tx }
             } catch (error) {
                 set({ loading: false })

@@ -2,6 +2,7 @@ import Button from '@/components/ui/Button'
 import Notification from '@/components/ui/Notification'
 import toast from '@/components/ui/toast'
 import {
+    apiEditUserProfile,
     apiGetMyProfile,
     apiGetNodeTheme,
     apiSetMyIdentityWallet,
@@ -28,6 +29,7 @@ const WalletSettings = () => {
     const [requestIdentityLoading, setRequestIdentityLoading] = useState(false)
     const [requestOwnershipLoading, setRequestOwnershipLoading] =
         useState(false)
+    const [bindWalletsLoading, setBindWalletsLoading] = useState(false)
     const [faucetData, setFaucetData] = useState<any>({
         address: '',
         balance: 0,
@@ -42,7 +44,8 @@ const WalletSettings = () => {
     const themeColor = useAppSelector((state) => state.theme.themeBackground)
 
     const contractStore = useContractStore()
-    const { RegisterIdentity } = contractStore((state) => state)
+    const { RegisterIdentity, RegisterOwnership, bindIdentityOwnership } =
+        contractStore((state) => state)
 
     async function getBalance() {
         const balance = await getWalletBalance()
@@ -169,8 +172,6 @@ const WalletSettings = () => {
                 setRequestIdentityLoading(true)
 
                 try {
-                    console.log('Maghol:', address)
-                    console.log('Maghol 2:', nodeId)
                     const res = await RegisterIdentity(nodeId)
                     if (res.status == true) {
                         await apiSetMyIdentityWallet(String(address))
@@ -233,17 +234,39 @@ const WalletSettings = () => {
                 }
 
                 setRequestOwnershipLoading(true)
-                try {
-                    await apiSetMyOwnerShipWallet(String(address))
-                    toast.push(
-                        <Notification
-                            title={'Ownership wallet set successfully'}
-                            type="success"
-                        />,
-                        {
-                            placement: 'top-center',
-                        }
+
+                if (theProfile.identityWallet == null) {
+                    return toast.push(
+                        <Notification title="Error" type="danger">
+                            Please register your identity wallet first.
+                        </Notification>
                     )
+                }
+
+                try {
+                    const res = await RegisterOwnership(
+                        String(theProfile.identityWallet)
+                    )
+
+                    if (res.status == true) {
+                        await apiSetMyOwnerShipWallet(String(address))
+                        toast.push(
+                            <Notification
+                                title={'Ownership wallet set successfully'}
+                                type="success"
+                            />,
+                            {
+                                placement: 'top-center',
+                            }
+                        )
+                    } else {
+                        toast.push(
+                            <Notification title={res.error} type="danger" />,
+                            {
+                                placement: 'top-center',
+                            }
+                        )
+                    }
                 } catch (error: any) {
                     setRequestOwnershipLoading(false)
                     disconnect()
@@ -275,6 +298,65 @@ const WalletSettings = () => {
         await fetchData()
         setRequestIdentityLoading(false)
         setRequestOwnershipLoading(false)
+    }
+
+    async function handleBindIdentityAndOwnerShip() {
+        setBindWalletsLoading(true)
+        try {
+            if (
+                !userProfile.ownerShipWallets &&
+                userProfile.ownerShipWallets.length == 0
+            ) {
+                toast.push(
+                    <Notification title="Error" type="danger">
+                        Please register your ownership wallet first.
+                    </Notification>,
+                    { placement: 'top-center' }
+                )
+                setBindWalletsLoading(false)
+                return
+            }
+
+            const res = await bindIdentityOwnership(
+                String(userProfile.ownerShipWallets[0])
+            )
+            if (res.status == true) {
+                toast.push(
+                    <Notification
+                        title="Identity and ownership wallets bound successfully"
+                        type="success"
+                    />,
+                    { placement: 'top-center' }
+                )
+                try {
+                    await apiEditUserProfile(userProfile.id, {
+                        walletsBounded: true,
+                    })
+                } catch (error) {
+                    console.error('Error updating wallet bound status:', error)
+                    toast.push(
+                        <Notification title="Error" type="danger">
+                            Failed to update wallet bound status. Please try
+                            again.
+                        </Notification>,
+                        {
+                            placement: 'top-center',
+                        }
+                    )
+                }
+            } else {
+                toast.push(<Notification title={res.error} type="danger" />, {
+                    placement: 'top-center',
+                })
+            }
+        } catch (error) {
+            console.error('Error binding wallets:', error)
+            toast.push(
+                <Notification title="Error binding wallets" type="danger" />,
+                { placement: 'top-center' }
+            )
+        }
+        setBindWalletsLoading(false)
     }
 
     return (
@@ -354,6 +436,10 @@ const WalletSettings = () => {
                                         onClick={() =>
                                             handleRequestFaucet('identity')
                                         }
+                                        disabled={
+                                            isConnected == false ||
+                                            walletType == 'ownership'
+                                        }
                                         variant="solid"
                                         size="xs"
                                     >
@@ -419,8 +505,9 @@ const WalletSettings = () => {
                                             variant="solid"
                                             size="sm"
                                             disabled={
-                                                isConnected &&
-                                                walletType == 'identity'
+                                                (isConnected &&
+                                                    walletType == 'identity') ||
+                                                !userProfile.identityWallet
                                             }
                                             onClick={() =>
                                                 connectWallet('ownership')
@@ -439,6 +526,10 @@ const WalletSettings = () => {
                                         onClick={() =>
                                             handleRequestFaucet('ownership')
                                         }
+                                        disabled={
+                                            isConnected == false ||
+                                            walletType == 'identity'
+                                        }
                                         variant="solid"
                                         size="xs"
                                     >
@@ -452,6 +543,14 @@ const WalletSettings = () => {
                             size="sm"
                             variant="solid"
                             className="w-fit mx-auto mt-1"
+                            disabled={
+                                !userProfile.identityWallet ||
+                                !userProfile.ownerShipWallets ||
+                                userProfile.ownerShipWallets.length == 0 ||
+                                (isConnected && walletType == 'ownership')
+                            }
+                            loading={bindWalletsLoading}
+                            onClick={handleBindIdentityAndOwnerShip}
                         >
                             Bind Identity and Ownership Wallets
                         </Button>
