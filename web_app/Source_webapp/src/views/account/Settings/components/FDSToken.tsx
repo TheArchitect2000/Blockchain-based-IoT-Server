@@ -7,7 +7,9 @@ import { GiWallet } from 'react-icons/gi'
 import { MdOutlineKeyboardArrowDown } from 'react-icons/md'
 import { useAppKitProvider } from '@reown/appkit/react'
 import { BrowserProvider, ethers, isAddress, parseEther } from 'ethers'
-import { HiCurrencyDollar } from 'react-icons/hi'
+import { FiPackage } from 'react-icons/fi'
+import { Avatar, Dialog } from '@/components/ui'
+import { apiGetDevices } from '@/services/DeviceApi'
 
 export default function FDSToken() {
     const [loading, setLoading] = useState<boolean>(true)
@@ -22,6 +24,12 @@ export default function FDSToken() {
     const [selectedWallet, setSelectedWallet] = useState<string>(
         walletProvider ? 'Select Wallet' : 'No Wallet Connected'
     )
+    const [devices, setDevices] = useState<any[]>([])
+    const [isLoadingDevices, setIsLoadingDevices] = useState(true)
+    const [selectedDevice, setSelectedDevice] = useState<any>(null)
+    const [showDeviceDialog, setShowDeviceDialog] = useState(false)
+
+    const { _id: userId } = useAppSelector((state) => state.auth.user)
 
     async function fetchData() {
         setLoading(true)
@@ -40,8 +48,25 @@ export default function FDSToken() {
         return accounts || []
     }
 
+    async function fetchDevices() {
+        try {
+            setIsLoadingDevices(true)
+            const deviceRes = (await apiGetDevices(userId || '')) as any
+            setDevices(deviceRes.data.data)
+        } catch (error) {
+            console.error('Error fetching devices:', error)
+            toast.push(
+                <Notification title={'Failed to load devices'} type="danger" />,
+                { placement: 'top-center' }
+            )
+        } finally {
+            setIsLoadingDevices(false)
+        }
+    }
+
     useEffect(() => {
         fetchData()
+        fetchDevices()
     }, [])
 
     const handleSelect = (eventKey: string, event: SyntheticEvent) => {
@@ -132,6 +157,55 @@ export default function FDSToken() {
         }
     }
 
+    const DeviceSelectionDialog = () => (
+        <Dialog
+            contentClassName="max-w-[400px]"
+            isOpen={showDeviceDialog}
+            onClose={() => setShowDeviceDialog(false)}
+            onRequestClose={() => setShowDeviceDialog(false)}
+        >
+            <h5 className="mb-4">Select Device</h5>
+            {isLoadingDevices ? (
+                <div className="flex items-center justify-center h-[200px]">
+                    <Loading loading={true} />
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 gap-4 max-h-[400px] overflow-y-auto">
+                    {devices.map((device) => (
+                        <div
+                            key={device.deviceEncryptedId}
+                            onClick={() => {
+                                setSelectedDevice(device)
+                                setShowDeviceDialog(false)
+                            }}
+                            className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-700"
+                        >
+                            <Avatar
+                                imgClass="!object-contain p-1"
+                                className={`!w-[70px] !h-[70px] overflow-hidden border-2 shadow-lg`}
+                                style={{
+                                    borderColor: '#1f2937',
+                                }}
+                                size={60}
+                                shape="circle"
+                                src={device.image}
+                                icon={!device.image && <FiPackage />}
+                            />
+                            <div>
+                                <p className="font-medium">
+                                    {device.deviceName}
+                                </p>
+                                <p className="text-sm text-gray-400">
+                                    {device.deviceType}
+                                </p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+        </Dialog>
+    )
+
     return (
         <>
             {(loading == false && (
@@ -186,7 +260,7 @@ export default function FDSToken() {
                         <div className="flex items-center gap-3">
                             <p className="text-white">Amount:</p>
                             <Input
-                                type="text"
+                                type="number"
                                 placeholder="Amount"
                                 prefix={<FaCoins className="text-[1rem]" />}
                                 value={amount}
@@ -242,7 +316,6 @@ export default function FDSToken() {
                                 onSelect={(eventKey, event) =>
                                     handleSelect(eventKey, event)
                                 }
-                                disabled={isPending}
                             >
                                 {wallets.length > 0 &&
                                     wallets.map((address) => (
@@ -260,52 +333,51 @@ export default function FDSToken() {
                             <p className="text-white">To:</p>
                             <Input
                                 type="text"
-                                placeholder="Destination Wallet"
+                                placeholder="Destination OwnerShip Wallet"
                                 prefix={<GiWallet className="text-[1rem]" />}
                                 value={destinationWallet}
                                 onChange={(e) =>
                                     handleDestinationChange(e.target.value)
                                 }
-                                disabled={isPending}
                             />
                         </div>
 
                         <div className="flex items-center gap-3">
                             <p className="text-white">Device NFT:</p>
-                            <Input
-                                type="text"
-                                placeholder="Select Device NFT"
-                                prefix={<FaMobile className="text-[1rem]" />}
-                                value={amount}
-                                onChange={(e) =>
-                                    handleAmountChange(e.target.value)
-                                }
-                                disabled={isPending}
-                            />
-                        </div>
-
-                        {transactionId && (
-                            <p className="text-white break-all text-justify">
-                                Transaction ID:{' '}
-                                <span
-                                    className="text-green-500 hover:underline cursor-pointer"
-                                    onClick={() =>
-                                        window.open(
-                                            `https://explorer.fidesinnova.io/tx/${transactionId}`,
-                                            '_blank'
-                                        )
+                            <div className="flex-1">
+                                <Input
+                                    type="text"
+                                    placeholder="Select Device NFT"
+                                    prefix={
+                                        <FaMobile className="text-[1rem]" />
                                     }
-                                >
-                                    {transactionId}
-                                </span>
-                            </p>
-                        )}
+                                    value={
+                                        selectedDevice
+                                            ? selectedDevice.deviceName
+                                            : ''
+                                    }
+                                    readOnly
+                                    suffix={
+                                        <Button
+                                            size="xs"
+                                            variant="twoTone"
+                                            onClick={() =>
+                                                setShowDeviceDialog(true)
+                                            }
+                                            disabled={isPending}
+                                        >
+                                            Select
+                                        </Button>
+                                    }
+                                />
+                            </div>
+                        </div>
 
                         <Button
                             variant="solid"
                             size="sm"
                             onClick={handleTransfer}
-                            loading={isPending}
+                            className="mt-auto"
                         >
                             {isPending ? 'Processing...' : 'Transfer'}
                         </Button>
@@ -316,6 +388,7 @@ export default function FDSToken() {
                     <Loading loading={true} />
                 </section>
             )}
+            <DeviceSelectionDialog />
         </>
     )
 }
