@@ -196,9 +196,9 @@
 						"type": "string"
 					},
 					{
-						"internalType": "uint256",
-						"name": "sharedTimestamp",
-						"type": "uint256"
+						"internalType": "string",
+						"name": "sharedDateTime",
+						"type": "string"
 					},
 					{
 						"internalType": "string",
@@ -277,9 +277,9 @@
 						"type": "string"
 					},
 					{
-						"internalType": "uint256",
-						"name": "sharedTimestamp",
-						"type": "uint256"
+						"internalType": "string",
+						"name": "sharedDateTime",
+						"type": "string"
 					},
 					{
 						"internalType": "string",
@@ -580,9 +580,9 @@
 				"type": "string"
 			},
 			{
-				"internalType": "uint256",
-				"name": "sharedTimestamp",
-				"type": "uint256"
+				"internalType": "string",
+				"name": "sharedDateTime",
+				"type": "string"
 			},
 			{
 				"internalType": "string",
@@ -732,9 +732,9 @@
 						"type": "string"
 					},
 					{
-						"internalType": "uint256",
-						"name": "sharedTimestamp",
-						"type": "uint256"
+						"internalType": "string",
+						"name": "sharedDateTime",
+						"type": "string"
 					},
 					{
 						"internalType": "string",
@@ -807,9 +807,9 @@
 						"type": "string"
 					},
 					{
-						"internalType": "uint256",
-						"name": "sharedTimestamp",
-						"type": "uint256"
+						"internalType": "string",
+						"name": "sharedDateTime",
+						"type": "string"
 					},
 					{
 						"internalType": "string",

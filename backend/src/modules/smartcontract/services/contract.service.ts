@@ -159,8 +159,8 @@ export class ContractService {
           parameters: device[6].map((str) => JSON.parse(str)),
           costOfUse: device[7],
           location: { coordinates: device[8] },
-          insertDate: new Date(String(device[10])).toISOString(),
-          updateDate: new Date(String(device[10])).toISOString(),
+          insertDate: new Date(String(device[10])),
+          updateDate: new Date(String(device[10])),
         };
         
         this.deviceService.insertDevice(newDevice);
@@ -287,7 +287,7 @@ export class ContractService {
       useCost,
       locationGPS,
       "ownerShipId",
-      new Date(installationDate).getTime(),
+      installationDate,
       firmwareVersion
     );
   }
