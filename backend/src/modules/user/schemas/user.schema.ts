@@ -85,6 +85,16 @@ const schema = new Schema({
     required: false,
     default: false,
   },
+  identityBounded: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+  ownershipBounded: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
   firebaseToken: String,
   roles: [
     {

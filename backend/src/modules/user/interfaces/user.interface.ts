@@ -23,6 +23,8 @@ export interface UserInterface extends Document {
   walletAddress: string;
   ownerShipWallets: string[];
   walletsBounded: boolean;
+  identityBounded: boolean;
+  ownershipBounded: boolean;
   identityWallet: string;
   roles: string[];
   StorX: Object;

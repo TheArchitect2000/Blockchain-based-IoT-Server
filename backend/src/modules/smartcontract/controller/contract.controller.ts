@@ -194,7 +194,7 @@ export class contractController {
       request.user.userId || '',
     );
 
-    let walletAddress = userRes.walletAddress || '';
+    let walletAddress = userRes.identityWallet || '';
     const faucetOwnerShip = body.ownerShipWalletAddress;
 
     if (body.type == 'ownership') {
