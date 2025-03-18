@@ -5,7 +5,7 @@ export const commitmentContractAddress =
     '0x96259fba1f845b42c257f72088dd38c7e8540504'
 
 export const identityOwnershipRegisterationContractAddress =
-    '0xeda2f758e39cd6fbde49924bb4d8f1a8a07ed4a3'
+    '0xb02c53d07b2b40cb9edf3f7531ab9735bfa5eded'
 
 import commitmentManagementABI from '../../ABI/CommitmentManagemantABI.json'
 import identityOwnershipRegisterationABI from '../../ABI/IdentityOwnershipRegisterationABI.json'

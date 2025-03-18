@@ -17,9 +17,10 @@ import {
 } from '@/services/ContractServices'
 import { useAppKitAccount, useDisconnect } from '@reown/appkit/react'
 import { useConnectWallet } from '@/hooks/useConnectWallet'
-import { FaIdCard } from 'react-icons/fa'
+import { FaIdCard, FaLink, FaLinkedinIn } from 'react-icons/fa'
 import { FaWallet } from 'react-icons/fa'
 import { useContractStore } from '@/provider/contract-provider'
+import { FaSync } from 'react-icons/fa'
 
 const WalletSettings = () => {
     const [loading, setLoading] = useState(true)
@@ -30,6 +31,7 @@ const WalletSettings = () => {
     const [requestOwnershipLoading, setRequestOwnershipLoading] =
         useState(false)
     const [bindWalletsLoading, setBindWalletsLoading] = useState(false)
+    const [refreshBalanceLoading, setRefreshBalanceLoading] = useState(false)
     const [faucetData, setFaucetData] = useState<any>({
         address: '',
         balance: 0,
@@ -47,9 +49,14 @@ const WalletSettings = () => {
     const { RegisterIdentity, RegisterOwnership, bindIdentityOwnership } =
         contractStore((state) => state)
 
+    const [identityTokenLoading, setIdentityTokenLoading] = useState(false)
+    const [ownershipTokenLoading, setOwnershipTokenLoading] = useState(false)
+
     async function getBalance() {
+        setRefreshBalanceLoading(true)
         const balance = await getWalletBalance()
         setWalletBalance(balance || 0)
+        setRefreshBalanceLoading(false)
     }
 
     async function fetchData() {
@@ -82,9 +89,9 @@ const WalletSettings = () => {
     async function handleRequestFaucet(type: 'identity' | 'ownership') {
         try {
             if (type == 'identity') {
-                setRequestIdentityLoading(true)
+                setIdentityTokenLoading(true)
             } else {
-                setRequestOwnershipLoading(true)
+                setOwnershipTokenLoading(true)
             }
 
             const userProfile = (await apiGetMyProfile()) as any
@@ -122,11 +129,94 @@ const WalletSettings = () => {
                 )
             }
 
-            setRequestIdentityLoading(false)
+            setIdentityTokenLoading(false)
+            setOwnershipTokenLoading(false)
+        } catch (error: any) {
+            setIdentityTokenLoading(false)
+            setOwnershipTokenLoading(false)
+            toast.push(
+                <Notification
+                    title={error.response.data.message}
+                    type="danger"
+                />,
+                {
+                    placement: 'top-center',
+                }
+            )
+        }
+    }
+
+    async function registerOwnership() {
+        setRequestOwnershipLoading(true)
+
+        try {
+            const res = await RegisterOwnership(
+                String(userProfile.identityWallet)
+            )
+
+            if (res.status == true) {
+                toast.push(
+                    <Notification
+                        title={
+                            'Ownership wallet registered on network successfully'
+                        }
+                        type="success"
+                    />,
+                    { placement: 'top-center' }
+                )
+                await apiEditUserProfile(userProfile._id, {
+                    ownershipBounded: true,
+                })
+                fetchData()
+                setRequestOwnershipLoading(false)
+            } else {
+                toast.push(<Notification title={res.error} type="danger" />, {
+                    placement: 'top-center',
+                })
+                setRequestOwnershipLoading(false)
+            }
+        } catch (error: any) {
             setRequestOwnershipLoading(false)
+            toast.push(
+                <Notification
+                    title={error.response.data.message}
+                    type="danger"
+                />,
+                {
+                    placement: 'top-center',
+                }
+            )
+        }
+    }
+
+    async function registerIdentity() {
+        setRequestIdentityLoading(true)
+
+        try {
+            const res = await RegisterIdentity(nodeId)
+            if (res.status == true) {
+                toast.push(
+                    <Notification
+                        title={
+                            'Identity wallet registered on network successfully'
+                        }
+                        type="success"
+                    />,
+                    { placement: 'top-center' }
+                )
+                await apiEditUserProfile(userProfile._id, {
+                    identityBounded: true,
+                })
+                setRequestIdentityLoading(false)
+                fetchData()
+            } else {
+                toast.push(<Notification title={res.error} type="danger" />, {
+                    placement: 'top-center',
+                })
+                setRequestIdentityLoading(false)
+            }
         } catch (error: any) {
             setRequestIdentityLoading(false)
-            setRequestOwnershipLoading(false)
             toast.push(
                 <Notification
                     title={error.response.data.message}
@@ -169,42 +259,17 @@ const WalletSettings = () => {
                     }
                     return
                 }
-                setRequestIdentityLoading(true)
 
-                try {
-                    const res = await RegisterIdentity(nodeId)
-                    if (res.status == true) {
-                        await apiSetMyIdentityWallet(String(address))
-                        toast.push(
-                            <Notification
-                                title={'Identity wallet set successfully'}
-                                type="success"
-                            />,
-                            {
-                                placement: 'top-center',
-                            }
-                        )
-                    } else {
-                        toast.push(
-                            <Notification title={res.error} type="danger" />,
-                            {
-                                placement: 'top-center',
-                            }
-                        )
+                await apiSetMyIdentityWallet(String(address))
+                toast.push(
+                    <Notification
+                        title={'Identity wallet set successfully'}
+                        type="success"
+                    />,
+                    {
+                        placement: 'top-center',
                     }
-                } catch (error: any) {
-                    setRequestIdentityLoading(false)
-                    disconnect()
-                    toast.push(
-                        <Notification
-                            title={error.response.data.message}
-                            type="danger"
-                        />,
-                        {
-                            placement: 'top-center',
-                        }
-                    )
-                }
+                )
             } else {
                 if (
                     theProfile.ownerShipWallets &&
@@ -233,8 +298,6 @@ const WalletSettings = () => {
                     return
                 }
 
-                setRequestOwnershipLoading(true)
-
                 if (theProfile.identityWallet == null) {
                     return toast.push(
                         <Notification title="Error" type="danger">
@@ -243,43 +306,16 @@ const WalletSettings = () => {
                     )
                 }
 
-                try {
-                    const res = await RegisterOwnership(
-                        String(theProfile.identityWallet)
-                    )
-
-                    if (res.status == true) {
-                        await apiSetMyOwnerShipWallet(String(address))
-                        toast.push(
-                            <Notification
-                                title={'Ownership wallet set successfully'}
-                                type="success"
-                            />,
-                            {
-                                placement: 'top-center',
-                            }
-                        )
-                    } else {
-                        toast.push(
-                            <Notification title={res.error} type="danger" />,
-                            {
-                                placement: 'top-center',
-                            }
-                        )
+                await apiSetMyOwnerShipWallet(String(address))
+                toast.push(
+                    <Notification
+                        title={'Ownership wallet set successfully'}
+                        type="success"
+                    />,
+                    {
+                        placement: 'top-center',
                     }
-                } catch (error: any) {
-                    setRequestOwnershipLoading(false)
-                    disconnect()
-                    toast.push(
-                        <Notification
-                            title={error.response.data.message}
-                            type="danger"
-                        />,
-                        {
-                            placement: 'top-center',
-                        }
-                    )
-                }
+                )
             }
             setTimeout(() => {
                 getBalance()
@@ -317,9 +353,21 @@ const WalletSettings = () => {
                 return
             }
 
+            if (userProfile.walletsBounded == true) {
+                toast.push(
+                    <Notification title="Error" type="danger">
+                        Identity and ownership wallets are already bound.
+                    </Notification>,
+                    { placement: 'top-center' }
+                )
+                setBindWalletsLoading(false)
+                return
+            }
+
             const res = await bindIdentityOwnership(
                 String(userProfile.ownerShipWallets[0])
             )
+
             if (res.status == true) {
                 toast.push(
                     <Notification
@@ -329,7 +377,8 @@ const WalletSettings = () => {
                     { placement: 'top-center' }
                 )
                 try {
-                    await apiEditUserProfile(userProfile.id, {
+                    userProfile.walletsBounded
+                    await apiEditUserProfile(userProfile._id, {
                         walletsBounded: true,
                     })
                 } catch (error) {
@@ -383,11 +432,28 @@ const WalletSettings = () => {
                                         </p>
                                         {isConnected &&
                                             walletType == 'identity' && (
-                                                <p className="break-all">
+                                                <p className="break-all flex gap-2 items-center">
                                                     Balance:{' '}
                                                     <span className="text-white">
                                                         {walletBalance}
                                                     </span>
+                                                    <FaSync
+                                                        className={`ml-1 cursor-pointer ${
+                                                            refreshBalanceLoading
+                                                                ? 'opacity-50 cursor-not-allowed'
+                                                                : ''
+                                                        }`}
+                                                        onClick={() =>
+                                                            !refreshBalanceLoading &&
+                                                            getBalance()
+                                                        }
+                                                        style={{
+                                                            animation:
+                                                                refreshBalanceLoading
+                                                                    ? 'spin 1s linear infinite'
+                                                                    : 'none',
+                                                        }}
+                                                    />
                                                 </p>
                                             )}
                                     </>
@@ -432,7 +498,7 @@ const WalletSettings = () => {
                                     )}
                                     <Button
                                         className="w-full"
-                                        loading={requestIdentityLoading}
+                                        loading={identityTokenLoading}
                                         onClick={() =>
                                             handleRequestFaucet('identity')
                                         }
@@ -446,7 +512,25 @@ const WalletSettings = () => {
                                         Receive Test Token
                                     </Button>
                                 </div>
+                                {!userProfile.identityBounded && (
+                                    <Button
+                                        disabled={
+                                            !isConnected ||
+                                            walletType != 'identity'
+                                        }
+                                        size="sm"
+                                        variant="solid"
+                                        onClick={registerIdentity}
+                                        loading={requestIdentityLoading}
+                                    >
+                                        Register on Network
+                                    </Button>
+                                )}
                             </section>
+
+                            {userProfile.walletsBounded && (
+                                <FaLink className="my-auto text-2xl" />
+                            )}
 
                             <section
                                 className={`flex flex-col gap-4 bg-${themeColor} rounded-lg p-4 shadow-[0_0_7px_2px_rgba(31,41,55,0.9)] max-w-[500px]`}
@@ -470,11 +554,28 @@ const WalletSettings = () => {
                                             </p>
                                             {isConnected &&
                                                 walletType == 'ownership' && (
-                                                    <p className="break-all">
+                                                    <p className="break-all flex gap-2 items-center">
                                                         Balance:{' '}
                                                         <span className="text-white">
                                                             {walletBalance}
                                                         </span>
+                                                        <FaSync
+                                                            className={`cursor-pointer ${
+                                                                refreshBalanceLoading
+                                                                    ? 'opacity-50 cursor-not-allowed'
+                                                                    : ''
+                                                            }`}
+                                                            onClick={() =>
+                                                                !refreshBalanceLoading &&
+                                                                getBalance()
+                                                            }
+                                                            style={{
+                                                                animation:
+                                                                    refreshBalanceLoading
+                                                                        ? 'spin 1s linear infinite'
+                                                                        : 'none',
+                                                            }}
+                                                        />
                                                     </p>
                                                 )}
                                         </>
@@ -522,7 +623,7 @@ const WalletSettings = () => {
                                     )}
                                     <Button
                                         className="w-full"
-                                        loading={requestOwnershipLoading}
+                                        loading={ownershipTokenLoading}
                                         onClick={() =>
                                             handleRequestFaucet('ownership')
                                         }
@@ -536,24 +637,41 @@ const WalletSettings = () => {
                                         Receive Test Token
                                     </Button>
                                 </div>
+                                {!userProfile.ownershipBounded && (
+                                    <Button
+                                        disabled={
+                                            !isConnected ||
+                                            walletType != 'ownership' ||
+                                            !userProfile.identityBounded
+                                        }
+                                        size="sm"
+                                        variant="solid"
+                                        onClick={registerOwnership}
+                                        loading={requestOwnershipLoading}
+                                    >
+                                        Register on Network
+                                    </Button>
+                                )}
                             </section>
                         </div>
 
-                        <Button
-                            size="sm"
-                            variant="solid"
-                            className="w-fit mx-auto mt-1"
-                            disabled={
-                                !userProfile.identityWallet ||
-                                !userProfile.ownerShipWallets ||
-                                userProfile.ownerShipWallets.length == 0 ||
-                                (isConnected && walletType == 'ownership')
-                            }
-                            loading={bindWalletsLoading}
-                            onClick={handleBindIdentityAndOwnerShip}
-                        >
-                            Bind Identity and Ownership Wallets
-                        </Button>
+                        {!userProfile.walletsBounded && (
+                            <Button
+                                size="sm"
+                                variant="solid"
+                                className="w-fit mx-auto mt-1"
+                                disabled={
+                                    !userProfile.identityWallet ||
+                                    !userProfile.ownerShipWallets ||
+                                    userProfile.ownerShipWallets.length == 0 ||
+                                    (isConnected && walletType == 'ownership')
+                                }
+                                loading={bindWalletsLoading}
+                                onClick={handleBindIdentityAndOwnerShip}
+                            >
+                                Bind Identity and Ownership Wallets
+                            </Button>
+                        )}
 
                         <span className="w-full border-t border-gray-600 my-4"></span>
 
