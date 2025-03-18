@@ -11,6 +11,7 @@ interface ContractStore {
     zkpContract: Contract
     commitmentContract: Contract
     identityOwnershipRegisterationContract: Contract
+    deviceNFTManagemantContract: Contract
     getErrorMessage: (error: any) => string
     RegisterIdentity: (
         nodeId: string
@@ -38,6 +39,14 @@ interface ContractStore {
     ) => Promise<boolean | string>
     bindIdentityOwnership: (
         ownershipAddress: string
+    ) => Promise<{ status: boolean; tx?: any; error?: string }>
+    CreateDeviceNFT: (
+        ownershipAddress: string,
+        deviceId: string,
+        deviceIdType: string,
+        deviceType: string,
+        manufacturer: string,
+        deviceModel: string
     ) => Promise<{ status: boolean; tx?: any; error?: string }>
 }
 
@@ -67,6 +76,12 @@ export function createContractStore(walletProvider: any) {
             ContractData.identityOwnershipRegisterationABI,
             provider
         ),
+        
+        deviceNFTManagemantContract: new Contract(
+            ContractData.deviceNFTManagemantContractAddress,
+            ContractData.DeviceNFTManagemantABI,
+            provider
+        ),
 
         getErrorMessage: (error: any) => {
             let errorMessage = 'An unknown error occurred'
@@ -77,6 +92,35 @@ export function createContractStore(walletProvider: any) {
             }
 
             return errorMessage
+        },
+
+        CreateDeviceNFT: async (
+            ownershipAddress: string,
+            deviceId: string,
+            deviceIdType: string,
+            deviceType: string,
+            manufacturer: string,
+            deviceModel: string
+        ) => {
+            const { deviceNFTManagemantContract, getErrorMessage } = get()
+            try {
+                set({ loading: true })
+                const signer = await provider.getSigner()
+                
+                const tx = await (deviceNFTManagemantContract.connect(signer) as any).createNFT(
+                    ownershipAddress,
+                    deviceId,
+                    deviceIdType,
+                    deviceType,
+                    manufacturer,
+                    deviceModel
+                )
+                set({ loading: false })
+                return { status: true, tx: tx }
+            } catch (error) {
+                set({ loading: false })
+                return { status: false, error: getErrorMessage(error) }
+            }
         },
 
         RegisterIdentity: async (

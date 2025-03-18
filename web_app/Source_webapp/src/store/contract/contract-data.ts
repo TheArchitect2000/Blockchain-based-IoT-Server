@@ -7,7 +7,11 @@ export const commitmentContractAddress =
 export const identityOwnershipRegisterationContractAddress =
     '0xb02c53d07b2b40cb9edf3f7531ab9735bfa5eded'
 
+export const deviceNFTManagemantContractAddress =
+    '0x640335b9cab770dd720c9f57a82becc60bc97d02'
+
 import commitmentManagementABI from '../../ABI/CommitmentManagemantABI.json'
+import DeviceNFTManagemantABI from '../../ABI/DeviceNFTManagemant.json'
 import identityOwnershipRegisterationABI from '../../ABI/IdentityOwnershipRegisterationABI.json'
 import zkpStorageABI from '../../ABI/ZKPStorageABI.json'
 
@@ -15,4 +19,5 @@ export {
     commitmentManagementABI,
     identityOwnershipRegisterationABI,
     zkpStorageABI,
+    DeviceNFTManagemantABI
 }
