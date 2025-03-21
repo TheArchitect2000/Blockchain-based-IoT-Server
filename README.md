@@ -412,6 +412,12 @@ SUPER_ADMIN_EMAILS=['SERVER_ADMIN_EMAIL@EXAMPLE.COM']
 # Multer is a node.js middleware for handling multipart/form-data, which is primarily used for uploading files.
 MULTER_MEDIA_PATH=./storages/resources
 MULTER_MEDIA_SIZE=10000000    # 10 MB
+
+IDENTITY_OWNERSHIP_REGISTERATION='0xb02c53d07b2b40cb9edf3f7531ab9735bfa5eded'
+DEVICE_NFT_MANAGEMENT='0x640335b9cab770dd720c9f57a82becc60bc97d02'
+COMMITMENT_MANAGEMENT='0x96259fba1f845b42c257f72088dd38c7e8540504'
+ZKP_STORAGE='0x897264b7d872e07a3d8e1d22b199f12cfb4bb26d'
+NODE_SERVICE_DEVICE_MANAGEMENT='0x4b08ea934e6bfb7c72a376c842c911e1dd2aa74f'
 ```
 - Create two wallets address on Fidesinnova network for the admin and the faucet. To learn how to connect your wallet to fides network, please [watch this video on YouTube](https://www.youtube.com/watch?v=3GVfyu4uzhs) 
 - Email only the wallet addresses (excluding private keys) to info@fidesinnova.io and ask to receive some tokens for your node operation. The admin address will be authorized on the network. The faucet address will be used to distribute tokens to your users on your server.
@@ -451,7 +457,13 @@ THEME_BUTTON='33658A'
 ACCESS_TOKEN_SECRET_KEY='YOUR_ACCESS_SECRET_KEY'
 REFRESH_TOKEN_SECRET_KEY='YOUR_REFRESH_SECRET_KEY'
 
-SUPER_ADMIN_EMAILS=['SERVER_ADMIN_EMAIL@EXAMPLE.COM'] 
+SUPER_ADMIN_EMAILS=['SERVER_ADMIN_EMAIL@EXAMPLE.COM']
+
+IDENTITY_OWNERSHIP_REGISTERATION='0xb02c53d07b2b40cb9edf3f7531ab9735bfa5eded'
+DEVICE_NFT_MANAGEMENT='0x640335b9cab770dd720c9f57a82becc60bc97d02'
+COMMITMENT_MANAGEMENT='0x96259fba1f845b42c257f72088dd38c7e8540504'
+ZKP_STORAGE='0x897264b7d872e07a3d8e1d22b199f12cfb4bb26d'
+NODE_SERVICE_DEVICE_MANAGEMENT='0x4b08ea934e6bfb7c72a376c842c911e1dd2aa74f'
 ```
 
 - Note: Please change only the the necessary values in the 'env' file, and do not add any extra space before or after '='. For exmaple,
