@@ -55,7 +55,7 @@ export function createContractStore(walletProvider: any) {
     if (walletProvider) {
         provider = new BrowserProvider(walletProvider)
     } else {
-        provider = new JsonRpcProvider('https://fidesf1-rpc.fidesinnova.io')
+        provider = new JsonRpcProvider(import.meta.env.VITE_RPC_URL)
     }
 
     return create<ContractStore>((set, get) => ({
@@ -76,7 +76,7 @@ export function createContractStore(walletProvider: any) {
             ContractData.identityOwnershipRegisterationABI,
             provider
         ),
-        
+
         deviceNFTManagemantContract: new Contract(
             ContractData.deviceNFTManagemantContractAddress,
             ContractData.DeviceNFTManagemantABI,
@@ -106,8 +106,10 @@ export function createContractStore(walletProvider: any) {
             try {
                 set({ loading: true })
                 const signer = await provider.getSigner()
-                
-                const tx = await (deviceNFTManagemantContract.connect(signer) as any).createNFT(
+
+                const tx = await (
+                    deviceNFTManagemantContract.connect(signer) as any
+                ).createNFT(
                     ownershipAddress,
                     deviceId,
                     deviceIdType,
@@ -174,7 +176,10 @@ export function createContractStore(walletProvider: any) {
                 set({ loading: true })
                 const signer = await provider.getSigner()
                 console.log('Signer wallet address:', await signer.getAddress())
-                console.log('ownershipAddress wallet address:', ownershipAddress)
+                console.log(
+                    'ownershipAddress wallet address:',
+                    ownershipAddress
+                )
                 const tx = await (
                     identityOwnershipRegisterationContract.connect(
                         signer
