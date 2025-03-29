@@ -220,10 +220,10 @@ export default function ProofPage() {
                 const jsonText = e.target.result as string
                 const parsedJson = JSON.parse(jsonText)
 
-                if (!parsedJson.commitment_id) {
+                if (!parsedJson.commitmentId) {
                     toast.push(
                         <Notification type="danger">
-                            This file has no commitment_id.
+                            This file has no commitmentId.
                         </Notification>,
                         { placement: 'top-center' }
                     )
@@ -424,7 +424,7 @@ export default function ProofPage() {
                                                         <span className="font-bold break-all">
                                                             {
                                                                 values.proof
-                                                                    .commitment_id
+                                                                    .commitmentId
                                                             }
                                                         </span>
                                                     </Card>
