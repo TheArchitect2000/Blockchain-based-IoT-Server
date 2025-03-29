@@ -407,7 +407,7 @@ export default function ProofPage() {
                                                             ) ||
                                                             transactionLoading
                                                         }
-                                                        size='sm'
+                                                        size="sm"
                                                         variant={
                                                             values.proof
                                                                 ? 'solid'
@@ -446,7 +446,7 @@ export default function ProofPage() {
                                         <strong
                                             onClick={() =>
                                                 navigateTo(
-                                                    '/account/settings/wallet'
+                                                    '/account/settings/digital-identity'
                                                 )
                                             }
                                             className={`underline cursor-pointer text-${themeColor}-500`}
@@ -467,7 +467,7 @@ export default function ProofPage() {
                                         <strong
                                             onClick={() =>
                                                 navigateTo(
-                                                    '/account/settings/wallet'
+                                                    '/account/settings/digital-identity'
                                                 )
                                             }
                                             className={`underline cursor-pointer text-${themeColor}-500`}
@@ -513,7 +513,7 @@ export default function ProofPage() {
                                                     )
                                                 }
                                                 variant="solid"
-                                                size='sm'
+                                                size="sm"
                                                 loading={
                                                     isSubmitting ||
                                                     transactionLoading
@@ -530,7 +530,7 @@ export default function ProofPage() {
                                                         'company_developer'
                                                     ) || transactionLoading
                                                 }
-                                                size='sm'
+                                                size="sm"
                                                 variant="default"
                                                 className="ml-2"
                                                 onClick={() => {

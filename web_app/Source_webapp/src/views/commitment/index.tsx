@@ -206,7 +206,7 @@ export default function CommitmentPage() {
 
         const reader = new FileReader()
         reader.onload = async (e) => {
-            if (!e.target?.result) {
+            /* if (!e.target?.result) {
                 toast.push(
                     <Notification type="danger">
                         CommitmentID already registered.
@@ -215,16 +215,16 @@ export default function CommitmentPage() {
                 )
                 setSubmitting(false)
                 return
-            }
+            } */
 
-            const jsonText = e.target.result as string
+            const jsonText = e.target?.result as string
+
+            console.log('Maghol:', jsonText)
 
             let parsedJson
             try {
                 parsedJson = JSON.parse(jsonText)
             } catch (error) {
-                console.log('Maghol 44')
-
                 toast.push(
                     <Notification type="danger">
                         Please upload a valid JSON file.
@@ -245,9 +245,10 @@ export default function CommitmentPage() {
                     const frontTx = (await storeCommitment(
                         commitmentId,
                         nodeId,
-                        manufacturer,
                         deviceType,
+                        deviceIdType,
                         deviceModel,
+                        manufacturer,
                         softwareVersion,
                         jsonText
                     )) as any
@@ -273,9 +274,10 @@ export default function CommitmentPage() {
 
                     await apiStoreCommitment(
                         commitmentId,
-                        manufacturer,
                         deviceType,
+                        deviceIdType,
                         deviceModel,
+                        manufacturer,
                         softwareVersion,
                         jsonText,
                         txHash,
@@ -284,9 +286,10 @@ export default function CommitmentPage() {
                 } else {
                     const tx = (await apiStoreCommitment(
                         commitmentId,
-                        manufacturer,
                         deviceType,
+                        deviceIdType,
                         deviceModel,
+                        manufacturer,
                         softwareVersion,
                         jsonText,
                         null,
@@ -307,6 +310,8 @@ export default function CommitmentPage() {
                     )
                 }, 5000)
             } catch (err) {
+                console.log('err:', err)
+
                 toast.push(
                     <Notification type="danger">
                         CommitmentID already registered.
@@ -520,7 +525,7 @@ export default function CommitmentPage() {
                                             <strong
                                                 onClick={() =>
                                                     navigateTo(
-                                                        '/account/settings/wallet'
+                                                        '/account/settings/digital-identity'
                                                     )
                                                 }
                                                 className={`underline cursor-pointer text-${themeColor}-500`}
@@ -541,7 +546,7 @@ export default function CommitmentPage() {
                                             <strong
                                                 onClick={() =>
                                                     navigateTo(
-                                                        '/account/settings/wallet'
+                                                        '/account/settings/digital-identity'
                                                     )
                                                 }
                                                 className={`underline cursor-pointer text-${themeColor}-500`}

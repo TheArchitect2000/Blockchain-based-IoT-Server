@@ -31,10 +31,11 @@ interface ContractStore {
     storeCommitment: (
         commitmentID: string,
         nodeId: string,
-        manufacturerName: string,
-        deviceName: string,
-        hardwareVersion: string,
-        firmwareVersion: string,
+        deviceType: string,
+        deviceIdType: string,
+        deviceModel: string,
+        manufacturer: string,
+        softwareVersion: string,
         commitmentData: string
     ) => Promise<boolean | string>
     bindIdentityOwnership: (
@@ -228,10 +229,11 @@ export function createContractStore(walletProvider: any) {
         storeCommitment: async (
             commitmentID,
             nodeId,
-            manufacturerName,
-            deviceName,
-            hardwareVersion,
-            firmwareVersion,
+            deviceType,
+            deviceIdType,
+            deviceModel,
+            manufacturer,
+            softwareVersion,
             commitmentData
         ) => {
             const { commitmentContract } = get()
@@ -244,11 +246,13 @@ export function createContractStore(walletProvider: any) {
                 ).storeCommitment(
                     commitmentID,
                     nodeId,
-                    manufacturerName,
-                    deviceName,
-                    hardwareVersion,
-                    firmwareVersion,
-                    commitmentData
+                    deviceType,
+                    deviceIdType,
+                    deviceModel,
+                    manufacturer,
+                    softwareVersion,
+                    commitmentData,
+                    Date.now()
                 )
 
                 return tx

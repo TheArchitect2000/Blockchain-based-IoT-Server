@@ -114,35 +114,45 @@ const CommitmentTable = ({
             },
         },
         {
-            header: 'IoT Developer Name',
-            accessorKey: 'iotDeveloperName',
+            header: 'Manufacturer',
+            accessorKey: 'manufacturer',
             cell: (props) => {
                 const row = props.row.original
-                return <span>{row.manufacturerName}</span>
+                return <span>{row.manufacturer}</span>
             },
         },
         {
-            header: 'IoT Device Type',
-            accessorKey: 'deviceName',
+            header: 'Device Type',
+            accessorKey: 'deviceType',
             cell: (props) => {
                 const row = props.row.original
-                return <span>{row.deviceName}</span>
+                return <span>{row.deviceType}</span>
             },
         },
         {
-            header: 'Hardware Version',
-            accessorKey: 'hardwareVersion',
+            header: 'Device Id Type',
+            accessorKey: 'deviceIdType',
             cell: (props) => {
                 const row = props.row.original
-                return <span>{row.hardwareVersion}</span>
+                return <span>{row.deviceIdType}</span>
             },
         },
+
         {
-            header: 'Firmware Version',
-            accessorKey: 'firmwareVersion',
+            header: 'Device Model',
+            accessorKey: 'deviceModel',
             cell: (props) => {
                 const row = props.row.original
-                return <span>{row.firmwareVersion}</span>
+                return <span>{row.deviceModel}</span>
+            },
+        },
+
+        {
+            header: 'Software Version',
+            accessorKey: 'softwareVersion',
+            cell: (props) => {
+                const row = props.row.original
+                return <span>{row.softwareVersion}</span>
             },
         },
         {
