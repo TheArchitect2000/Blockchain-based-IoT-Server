@@ -19,19 +19,23 @@ const schema = new Schema({
     type: String,
     required: true,
   },
-  manufacturerName: {
+  manufacturer: {
     type: String,
     required: true,
   },
-  deviceName: {
+  deviceType: {
     type: String,
     required: true,
   },
-  hardwareVersion: {
+  deviceIdType: {
     type: String,
     required: true,
   },
-  firmwareVersion: {
+  deviceModel: {
+    type: String,
+    required: true,
+  },
+  softwareVersion: {
     type: String,
     required: true,
   },

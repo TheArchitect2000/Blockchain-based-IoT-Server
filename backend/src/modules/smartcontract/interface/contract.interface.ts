@@ -1,14 +1,15 @@
 import { Document } from 'mongoose';
 
 export interface Contract extends Document {
+  createdAt: Date;
   transactionId: string;
   commitmentId: string;
-  userId: string;
   nodeId: string;
-  manufacturerName: string;
-  deviceName: string;
-  hardwareVersion: string;
-  firmwareVersion: string;
+  userId: string;
+  manufacturer: string;
+  deviceType: string;
+  deviceIdType: string;
+  deviceModel: string;
+  softwareVersion: string;
   commitmentData: string;
-  createdAt: Date;
 }
