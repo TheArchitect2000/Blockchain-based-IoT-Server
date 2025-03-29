@@ -211,12 +211,9 @@ export function createContractStore(walletProvider: any) {
                 const tx = await (zkpContract.connect(signer) as any).storeZKP(
                     nodeId,
                     deviceId,
-                    deviceType,
-                    hardwareVersion,
-                    firmwareVersion,
+                    zkp_payload,
                     data_payload,
-                    String(unixTimestamp),
-                    zkp_payload
+                    String(unixTimestamp)
                 )
 
                 return tx
