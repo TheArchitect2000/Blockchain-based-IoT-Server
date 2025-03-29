@@ -11,7 +11,8 @@ import { ContractDataService } from '../contract-data';
 // Import JSON files with type assertions
 const serviceDeviceABI = require('../ABI/ServiceDeviceABI.json') as any[];
 const zkpStorageABI = require('../ABI/ZKPStorageABI.json') as any[];
-const commitmentManagementABI = require('../ABI/CommitmentManagemantABI.json') as any[];
+const commitmentManagementABI =
+  require('../ABI/CommitmentManagemantABI.json') as any[];
 
 function parseProofString(proofString) {
   let cleanedString = proofString.substring(1, proofString.length - 1);
@@ -80,7 +81,15 @@ export class ContractService {
     );
 
     // Add debug logging
-    console.log("Service Device ABI loaded:", Array.isArray(serviceDeviceABI), serviceDeviceABI?.length);
+    console.log(
+      'this.contractData.serviceDeviceContractAddress:',
+      this.contractData.serviceDeviceContractAddress,
+    );
+    console.log(
+      'Service Device ABI loaded:',
+      Array.isArray(serviceDeviceABI),
+      serviceDeviceABI?.length,
+    );
 
     if (this.contractData.serviceDeviceContractAddress) {
       this.contracts.serviceDevice = new ethers.Contract(
@@ -103,6 +112,7 @@ export class ContractService {
     );
 
     this.contracts.serviceDevice.on('ServiceCreated', async (id, service) => {
+      console.log('New Service Created Right Now');
       let newService = {
         nodeId: service[0],
         nodeServiceId: service[1],
@@ -127,7 +137,7 @@ export class ContractService {
           newService,
         );
       } catch (error) {
-        console.log(error);
+        console.log('error isssss: ', error);
       }
     });
 
@@ -145,7 +155,7 @@ export class ContractService {
     });
 
     this.contracts.serviceDevice.on('DeviceCreated', (id, device) => {
-      console.log("DeviceCreated",device);
+      console.log('DeviceCreated', device);
       try {
         let newDevice = {
           nodeId: device[0],
@@ -162,12 +172,11 @@ export class ContractService {
           insertDate: new Date(String(device[10])),
           updateDate: new Date(String(device[10])),
         };
-        
+
         this.deviceService.insertDevice(newDevice);
       } catch (error) {
-        console.log("DeviceCreated",error);
+        console.log('DeviceCreated', error);
       }
-      
     });
 
     this.contracts.serviceDevice.on('DeviceRemoved', (id, device) => {
@@ -282,13 +291,13 @@ export class ContractService {
       deviceType,
       encryptedID,
       `${firmwareVersion}/${hardwareVersion}`,
-      "FidesInnova",
+      'FidesInnova',
       parameters,
       useCost,
       locationGPS,
-      "ownerShipId",
+      'ownerShipId',
       installationDate,
-      firmwareVersion
+      firmwareVersion,
     );
   }
 
@@ -310,24 +319,32 @@ export class ContractService {
     creationDate: string,
     publishedDate: string,
   ) {
-    return this.contracts.serviceDevice.createService(
-      nodeId,
-      serviceId,
-      name,
-      description,
-      serviceType,
-      devices,
-      installationPrice,
-      executionPrice,
-      imageURL,
-      program,
-      creationDate,
-      publishedDate,
-    );
+    try {
+      return this.contracts.serviceDevice.createService(
+        nodeId,
+        serviceId,
+        name,
+        description,
+        serviceType,
+        devices,
+        installationPrice,
+        executionPrice,
+        imageURL,
+        program,
+        creationDate,
+        publishedDate,
+      );
+    } catch (error) {
+      console.log('Error While publishing service:', error);
+    }
   }
 
   async removeService(nodeId: string, serviceId: string) {
-    return this.contracts.serviceDevice.removeService(nodeId, serviceId, nodeId);
+    return this.contracts.serviceDevice.removeService(
+      nodeId,
+      serviceId,
+      nodeId,
+    );
   }
 
   async fetchAllDevices() {
@@ -494,39 +511,48 @@ export class ContractService {
     try {
       const {
         commitmentID,
-        manufacturerName,
-        deviceName,
-        hardwareVersion,
-        firmwareVersion,
+        manufacturer,
+        deviceType,
+        deviceIdType,
+        deviceModel,
+        softwareVersion,
         commitmentData,
         frontPublish,
-        transactionId
+        transactionId,
       } = data;
 
-      console.log("data:", data);
-      
+      console.log('data:', data);
 
       let txHash = '';
 
       if (!frontPublish) {
-        console.log("Storing commitment");
-        const tx: any = await this.contracts.commitment.storeCommitment(
-          commitmentID,
-          process.env.NODE_ID,
-          manufacturerName,
-          deviceName,
-          hardwareVersion,
-          firmwareVersion,
-          commitmentData,
-        );
+        console.log('Storing commitment');
+        try {
+          const tx: any = await this.contracts.commitment.storeCommitment(
+            commitmentID,
+            process.env.NODE_ID,
+            deviceType,
+            deviceIdType,
+            deviceModel,
+            manufacturer,
+            softwareVersion,
+            commitmentData,
+            Date.now(),
+          );
 
-        txHash = tx.hash;
+          txHash = tx.hash;
 
-        console.log(`Transaction submitted. Hash: ${tx.hash}`);
+          console.log(`Transaction submitted. Hash: ${tx.hash}`);
+        } catch (error) {
+          console.log('Storing commitment Error:', error);
+        }
       }
 
       // Save commitment data to the database
-      await this.saveCommitmentInDB({...data, transactionId: transactionId ? transactionId : txHash});
+      await this.saveCommitmentInDB({
+        ...data,
+        transactionId: transactionId ? transactionId : txHash,
+      });
       console.log('Commitment data saved to the database successfully.');
 
       return txHash;
@@ -555,29 +581,33 @@ export class ContractService {
   }
 
   async removeCommitment(commitmentId: string, dbId: string, nodeId: string) {
-    const commitmentDb =
-      await this.contractRepository.getCommitmentByCommitmentIdAndNodeId(
-        dbId,
-        nodeId,
-      );
+    try {
+      const commitmentDb =
+        await this.contractRepository.getCommitmentByCommitmentIdAndNodeId(
+          dbId,
+          nodeId,
+        );
 
-    if (commitmentDb) {
-      await this.contractRepository.deleteCommitmentByCommitmentIdAndNodeId(
-        dbId,
-        nodeId,
-      );
+      if (commitmentDb) {
+        const result = await this.contracts.commitment.removeCommitment(
+          commitmentId,
+          nodeId,
+        );
 
-      const result = await this.contracts.commitment.removeCommitment(
-        commitmentId,
-        nodeId,
-      );
+        await this.contractRepository.deleteCommitmentByCommitmentIdAndNodeId(
+          dbId,
+          nodeId,
+        );
 
-      return result;
-    } else {
-      throw new GeneralException(
-        ErrorTypeEnum.NOT_FOUND,
-        `Commitment not found.`,
-      );
+        return result;
+      } else {
+        throw new GeneralException(
+          ErrorTypeEnum.NOT_FOUND,
+          `Commitment not found.`,
+        );
+      }
+    } catch (error) {
+      console.log('removeCommitment error:', error);
     }
   }
 
@@ -603,10 +633,11 @@ export class ContractService {
       commitmentId: data.commitmentID,
       nodeId: process.env.NODE_ID,
       userId: data.userId,
-      manufacturerName: data.manufacturerName,
-      deviceName: data.deviceName,
-      hardwareVersion: data.hardwareVersion,
-      firmwareVersion: data.firmwareVersion,
+      manufacturer: data.manufacturer,
+      deviceType: data.deviceType,
+      deviceIdType: data.deviceIdType,
+      deviceModel: data.deviceModel,
+      softwareVersion: data.softwareVersion,
       commitmentData: data.commitmentData,
     });
   }

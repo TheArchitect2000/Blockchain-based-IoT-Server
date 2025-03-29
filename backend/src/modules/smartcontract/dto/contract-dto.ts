@@ -13,12 +13,12 @@ export interface StoreCommitmentData {
   transactionId?: string;
   commitmentID: string;
   userId: string;
-  manufacturerName: string;
-  deviceName: string;
-  hardwareVersion: string;
-  firmwareVersion: string;
+  manufacturer: string;
+  deviceType: string;
+  deviceIdType: string;
+  deviceModel: string;
+  softwareVersion: string;
   commitmentData: string;
-  createdAt?: Date;
 }
 
 export class storeCommitmentDto {
@@ -36,27 +36,32 @@ export class storeCommitmentDto {
   @ApiProperty({ required: true })
   commitmentID: string;
 
-  @IsNotEmpty({ message: 'manufacturerName is required and must be entered.' })
-  @IsString({ message: 'manufacturerName must be string.' })
+  @IsNotEmpty({ message: 'deviceType is required and must be entered.' })
+  @IsString({ message: 'deviceType must be string.' })
   @ApiProperty({ required: true })
-  manufacturerName: string;
+  deviceType: string;
 
-  @IsNotEmpty({ message: 'deviceName is required and must be entered.' })
-  @IsString({ message: 'deviceName must be string.' })
+  @IsNotEmpty({ message: 'deviceIdType is required and must be entered.' })
+  @IsString({ message: 'deviceIdType must be string.' })
   @ApiProperty({ required: true })
-  deviceName: string;
+  deviceIdType: string;
 
   @IsNotEmpty({
-    message: 'hardwareVersion is required and must be entered.',
+    message: 'deviceModel is required and must be entered.',
   })
-  @IsString({ message: 'hardwareVersion must be string.' })
+  @IsString({ message: 'deviceModel must be string.' })
   @ApiProperty({ required: true })
-  hardwareVersion: string;
+  deviceModel: string;
 
-  @IsNotEmpty({ message: 'firmwareVersion is required and must be entered.' })
-  @IsString({ message: 'firmwareVersion must be string.' })
+  @IsNotEmpty({ message: 'manufacturer is required and must be entered.' })
+  @IsString({ message: 'manufacturer must be string.' })
   @ApiProperty({ required: true })
-  firmwareVersion: string;
+  manufacturer: string;
+
+  @IsNotEmpty({ message: 'softwareVersion is required and must be entered.' })
+  @IsString({ message: 'softwareVersion must be string.' })
+  @ApiProperty({ required: true })
+  softwareVersion: string;
 
   @IsNotEmpty({ message: 'commitmentData is required and must be entered.' })
   @IsString({ message: 'commitmentData must be string.' })
