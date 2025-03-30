@@ -464,18 +464,17 @@ export class ContractService {
         let newDevice = {
           nodeId: contractDevices[0],
           nodeDeviceId: contractDevices[1],
-          userId: contractDevices[2],
           isShared: true,
-          deviceName: contractDevices[3],
-          deviceType: contractDevices[4],
-          deviceEncryptedId: contractDevices[5],
-          hardwareVersion: contractDevices[6],
-          firmwareVersion: contractDevices[7],
-          parameters: contractDevices[8].map((str) => JSON.parse(str)),
-          costOfUse: contractDevices[9],
-          location: { coordinates: contractDevices[10] },
-          insertDate: contractDevices[11],
-          updateDate: contractDevices[11],
+          deviceName: contractDevices[2],
+          deviceType: contractDevices[2],
+          deviceEncryptedId: contractDevices[3],
+          hardwareVersion: String(contractDevices[4]).split('/')[0],
+          firmwareVersion: String(contractDevices[4]).split('/')[1],
+          parameters: contractDevices[6].map((str) => JSON.parse(str)),
+          costOfUse: contractDevices[7],
+          location: { coordinates: contractDevices[8] },
+          insertDate: new Date(String(contractDevices[10])),
+          updateDate: new Date(String(contractDevices[10])),
         };
 
         this.deviceService.insertDevice(newDevice);
