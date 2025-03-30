@@ -211,7 +211,7 @@ export class contractController {
       }
 
       if (userRes.ownerShipWallets.includes(faucetOwnerShip)) {
-        walletAddress = faucetOwnerShip
+        walletAddress = faucetOwnerShip;
       }
     }
 
@@ -254,11 +254,8 @@ export class contractController {
     const tx: any = await this.contractService.storeZKP(
       process.env.NODE_ID,
       objectId,
-      body.deviceType,
-      body.data.HV,
-      body.data.FV,
-      JSON.stringify(body.data),
       JSON.stringify(body.proof),
+      JSON.stringify(body.data),
     );
 
     return String(tx.hash);

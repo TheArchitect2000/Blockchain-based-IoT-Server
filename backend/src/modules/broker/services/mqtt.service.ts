@@ -250,11 +250,8 @@ export class MqttService implements OnModuleInit {
             await this.contractService.storeZKP(
               String(process.env.NODE_ID),
               String(client.id),
-              deviceData.deviceType,
-              String(dataWithoutProof.HV),
-              String(dataWithoutProof.FV),
-              JSON.stringify(dataWithoutProof),
               JSON.stringify(proof),
+              JSON.stringify(dataWithoutProof),
             );
           }
 

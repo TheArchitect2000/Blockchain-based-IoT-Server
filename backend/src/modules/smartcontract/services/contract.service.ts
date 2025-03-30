@@ -412,7 +412,6 @@ export class ContractService {
           updateDate: contractServices[11],
           published: true,
         };
-
         try {
           this.serviceService.insertService(newService);
         } catch (error) {
@@ -487,23 +486,17 @@ export class ContractService {
   async storeZKP(
     nodeId: string,
     deviceId: string,
-    deviceType: string,
-    hardwareVersion: string,
-    firmwareVersion: string,
-    data_payload: string,
     zkp_payload: string,
+    data_payload: string,
   ) {
     const unixTimestamp = Math.floor(Date.now() / 1000);
 
     return await this.contracts.storeZkp.storeZKP(
       nodeId,
       deviceId,
-      deviceType,
-      hardwareVersion,
-      firmwareVersion,
+      zkp_payload,
       data_payload,
       String(unixTimestamp),
-      zkp_payload,
     );
   }
 
@@ -537,7 +530,7 @@ export class ContractService {
             manufacturer,
             softwareVersion,
             commitmentData,
-            Date.now(),
+            Math.floor(Date.now() / 1000),
           );
 
           txHash = tx.hash;
