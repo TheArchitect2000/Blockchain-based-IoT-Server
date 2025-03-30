@@ -565,6 +565,7 @@ Enter the following lines in the .env file and replace `YOUR_NODE_NAME` with you
 ```
 VITE_URL='https://panel.YOUR_DOMAIN/app/'
 VITE_NODE_NAME='YOUR_NODE_NAME'
+VITE_RPC_URL='https://rpc1.fidesinnova.io'
 ```
 
 ## B.6. Install Admin Web App for administrator
