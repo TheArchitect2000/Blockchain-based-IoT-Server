@@ -249,7 +249,7 @@ export function createContractStore(walletProvider: any) {
                     manufacturer,
                     softwareVersion,
                     commitmentData,
-                    Date.now()
+                    Math.floor(Date.now() / 1000),
                 )
 
                 return tx
