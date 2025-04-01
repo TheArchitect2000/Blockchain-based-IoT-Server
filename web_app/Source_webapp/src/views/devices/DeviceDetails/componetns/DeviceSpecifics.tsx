@@ -56,11 +56,11 @@ function DeviceSpecifics({
                 />
 
                 <DeviceField
-                    title="Hardware Version"
+                    title="Device Model"
                     value={data.hardwareVersion}
                 />
                 <DeviceField
-                    title="Firmware Version"
+                    title="Software Version"
                     value={data.firmwareVersion}
                 />
             </div>

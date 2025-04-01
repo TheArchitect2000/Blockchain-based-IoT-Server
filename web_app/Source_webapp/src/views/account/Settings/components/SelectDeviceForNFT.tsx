@@ -179,7 +179,7 @@ export default function SelectDeviceForNFT() {
                             </span>
                         </p>
                         <p>
-                            Firmware Version:{' '}
+                            Software Version:{' '}
                             <span className="text-white">
                                 {' '}
                                 {
@@ -189,7 +189,7 @@ export default function SelectDeviceForNFT() {
                             </span>
                         </p>
                         <p>
-                            Hardware Version:{' '}
+                            Device Model:{' '}
                             <span className="text-white">
                                 {
                                     getDeviceByEncryptedId(selectedDevice)

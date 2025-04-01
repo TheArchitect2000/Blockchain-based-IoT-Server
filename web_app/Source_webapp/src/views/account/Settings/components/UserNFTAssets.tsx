@@ -92,7 +92,7 @@ export default function UserNFTAssets() {
                         >
                             <div className="flex items-center gap-3">
                                 <FaCoins className="text-xl" />
-                                <h5>Ownership Balance</h5>
+                                <h5>Ownership FDS Balance</h5>
                             </div>
                             {(isConnected && walletType == 'ownership' && (
                                 <p className="break-all">
