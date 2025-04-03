@@ -3,15 +3,17 @@ import Avatar from '@/components/ui/Avatar'
 import { BsCoin } from 'react-icons/bs'
 import './style.css'
 import ImageWithFallBack from '@/utils/components/ImageWithFallBack'
-import { Button, Dialog, Dropdown, Notification, toast } from '@/components/ui'
-import React, { MutableRefObject, useEffect, useRef, useState } from 'react'
-import { apiGetAllSharedDevices, apiGetDevices } from '@/services/DeviceApi'
-import { DeviceData } from '@/utils/hooks/useGetDevices'
 import {
-    apiGetAllInstalledServices,
-    apiGetInstalledServices,
-    apiInstallNewService,
-} from '@/services/ServiceAPI'
+    Button,
+    Dialog,
+    Dropdown,
+    Notification,
+    toast,
+    Input,
+} from '@/components/ui'
+import React, { MutableRefObject, useEffect, useRef, useState } from 'react'
+import { DeviceData } from '@/utils/hooks/useGetDevices'
+import { apiInstallNewService } from '@/services/ServiceAPI'
 import { ServiceData } from '@/utils/hooks/useGetServices'
 import { useNavigate } from 'react-router-dom'
 import { SyntaxHighlighter } from '@/components/shared'
@@ -32,6 +34,7 @@ const ServiceCard = ({
     className: string
     serviceData?: ServiceData
 }) => {
+    const [resultsModal, setResultsModal] = useState(false)
     const [modalOpen, setModalOpen] = useState(false)
     const [refreshTabs, setRefreshTabs] = useState<number>(0)
     const [installModal, setInstallModal] = useState(false)
@@ -47,6 +50,10 @@ const ServiceCard = ({
     }>({})
     const { _id: userId } = useAppSelector((state) => state.auth.user)
     const navigateTo = useNavigate()
+    const [executeModal, setExecuteModal] = useState(false)
+    const [uploading, setUploading] = useState(false)
+    const [uploadProgress, setUploadProgress] = useState(0)
+    const [uploadComplete, setUploadComplete] = useState(false)
 
     function refreshTheTabs() {
         setRefreshTabs(refreshTabs + 1)
@@ -186,13 +193,36 @@ const ServiceCard = ({
                     </span>
                 </span>
             </div>
-            <Button
-                variant="solid"
-                size="sm"
-                onClick={() => setModalOpen(true)}
-            >
-                Install Service
-            </Button>
+            {serviceData?.serviceType == 'automation' && (
+                <Button
+                    variant="solid"
+                    size="sm"
+                    onClick={() => setModalOpen(true)}
+                >
+                    Install Service
+                </Button>
+            )}
+            {serviceData?.serviceType == 'ML' && (
+                <div className="flex gap-2 w-full">
+                    <Button
+                        variant="solid"
+                        size="sm"
+                        className="w-full"
+                        onClick={() => setExecuteModal(true)}
+                    >
+                        Execute
+                    </Button>
+                    <Button
+                        variant="solid"
+                        size="sm"
+                        className="w-full"
+                        onClick={() => setResultsModal(true)}
+                    >
+                        Results
+                    </Button>
+                </div>
+            )}
+
             <div className="flex gap-2 w-full">
                 <Button
                     className="w-full"
@@ -202,16 +232,17 @@ const ServiceCard = ({
                 >
                     View Code
                 </Button>
-                {serviceData?.blocklyJson && (
-                    <Button
-                        className="w-full"
-                        variant="default"
-                        size="sm"
-                        onClick={() => setBlocklyModal(true)}
-                    >
-                        View Blockly
-                    </Button>
-                )}
+                {serviceData?.blocklyJson &&
+                    serviceData?.serviceType == 'automation' && (
+                        <Button
+                            className="w-full"
+                            variant="default"
+                            size="sm"
+                            onClick={() => setBlocklyModal(true)}
+                        >
+                            View Blockly
+                        </Button>
+                    )}
             </div>
         </section>
     )
@@ -290,6 +321,23 @@ const ServiceCard = ({
         }
     }
 
+    const handleFileUpload = () => {
+        setUploading(true)
+        let progress = 0
+
+        // Fake upload process
+        const interval = setInterval(() => {
+            progress += 0.5
+            setUploadProgress(progress)
+
+            if (progress >= 100) {
+                clearInterval(interval)
+                setUploading(false)
+                setUploadComplete(true)
+            }
+        }, 17)
+    }
+
     return (
         <div className={`max-w-xs ${className}`}>
             <Dialog
@@ -338,6 +386,32 @@ const ServiceCard = ({
                     </Button>
                 </div>
             </Dialog>
+
+            <Dialog
+                isOpen={resultsModal}
+                onClose={() => setResultsModal(false)} // Close Results Dialog
+                contentClassName="w-1/3 flex flex-col gap-6"
+            >
+                <h4>Results</h4>
+                <p className="text-md text-center">
+                    <SyntaxHighlighter language={'txt'}>
+                        {`Model and processor initialized successfully.
+Starting analysis workflow...
+Loading image ...
+Processing
+prompt: Describe "Airway"`}
+                    </SyntaxHighlighter>
+                </p>
+                <Button
+                    className="w-fit mx-auto"
+                    size="sm"
+                    variant="solid"
+                    onClick={() => setResultsModal(false)} // Close Results Dialog
+                >
+                    Close
+                </Button>
+            </Dialog>
+
             <Dialog
                 width={'40%'}
                 className={''}
@@ -346,7 +420,13 @@ const ServiceCard = ({
             >
                 <h5 className="mb-4">'{serviceData?.serviceName}' Code</h5>
                 <div className="">
-                    <SyntaxHighlighter language="javascript">
+                    <SyntaxHighlighter
+                        language={
+                            serviceData?.serviceType == 'ML'
+                                ? 'python'
+                                : 'javascript'
+                        }
+                    >
                         {serviceData?.code || ''}
                     </SyntaxHighlighter>
                 </div>
@@ -370,6 +450,7 @@ const ServiceCard = ({
                     Copy
                 </Button>
             </Dialog>
+
             <Dialog isOpen={modalOpen} onClose={() => setModalOpen(false)}>
                 <h3 className="mb-8">Contract Install Service</h3>
                 <div className="flex mb-4 items-center justify-center">
@@ -629,6 +710,70 @@ const ServiceCard = ({
                     </div>
                 </section>
             </Dialog>
+
+            <Dialog
+                isOpen={executeModal}
+                onClose={() => {
+                    setExecuteModal(false)
+                    setUploadComplete(false)
+                }}
+                contentClassName="w-1/3 flex flex-col gap-6"
+            >
+                {!uploadComplete ? (
+                    <>
+                        <h4 className="">
+                            {uploading
+                                ? 'Uploading in progress...'
+                                : 'Please upload your input file'}
+                        </h4>
+                        {!uploading ? (
+                            <Input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileUpload}
+                                className="w-full"
+                            />
+                        ) : (
+                            <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                                <div
+                                    className="bg-emerald-600 h-2.5 rounded-full"
+                                    style={{ width: `${uploadProgress}%` }}
+                                />
+                            </div>
+                        )}
+                    </>
+                ) : (
+                    <div className="flex flex-col gap-3">
+                        <h4>File Successfully Uploaded!</h4>
+                        <p className="text-md">
+                            The service is now processing your request. Once
+                            completed, the results will be accompanied by a
+                            Zero-Knowledge Proof (ZKP) verifying the integrity
+                            of the code execution. Please click the ‘Result’
+                            button when it becomes active to view the output.
+                        </p>
+                        <Button
+                            className="w-fit mx-auto"
+                            size="sm"
+                            variant="solid"
+                            onClick={() => {
+                                setExecuteModal(false)
+                                setUploadComplete(false)
+                            }}
+                        >
+                            Ok
+                        </Button>
+                    </div>
+                )}
+                {/* <Button
+                    variant="default"
+                    size="sm"
+                    onClick={() => setExecuteModal(false)}
+                >
+                    Close
+                </Button> */}
+            </Dialog>
+
             <Card
                 clickable
                 className="flex flex-col w-[300px] h-full hover:shadow-lg transition duration-150 ease-in-out dark:border dark:border-gray-600 dark:border-solid"

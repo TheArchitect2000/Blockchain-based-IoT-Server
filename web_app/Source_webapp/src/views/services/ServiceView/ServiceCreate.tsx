@@ -32,6 +32,7 @@ type ServiceTypeOption = {
 }
 const serviceOptions: ServiceTypeOption[] = [
     { value: 'automation', label: 'Automation' },
+    { value: 'ML', label: 'Machine Learning' },
 ]
 
 export type ServiceFormModel = {

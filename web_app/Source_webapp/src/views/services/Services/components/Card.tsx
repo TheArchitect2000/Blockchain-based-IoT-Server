@@ -314,7 +314,13 @@ const ServiceCard = ({
                         onClose={() => setCodeModal(false)}
                     >
                         <h5 className="mb-4">Code</h5>
-                        <SyntaxHighlighter language="javascript">
+                        <SyntaxHighlighter
+                            language={
+                                serviceData?.serviceType == 'ML'
+                                    ? 'python'
+                                    : 'javascript'
+                            }
+                        >
                             {serviceData.code}
                         </SyntaxHighlighter>
                     </Dialog>

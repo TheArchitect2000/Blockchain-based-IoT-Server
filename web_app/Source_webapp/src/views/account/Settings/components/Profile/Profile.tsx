@@ -670,7 +670,7 @@ const Profile = ({}: ProfileProps) => {
                                                     accept=".png, .jpg, .jpeg"
                                                     onChange={handleFileChange}
                                                 >
-                                                    <Button className="flex items-center gap-2">
+                                                    <Button className="flex items-center gap-2 nowrap">
                                                         Upload{' '}
                                                         <HiUpload className="text-[1.2rem]" />
                                                     </Button>
