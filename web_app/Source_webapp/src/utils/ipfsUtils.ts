@@ -17,6 +17,8 @@ export const uploadNFTToIPFS = async (
         token: nftStorageApiKey,
     })
 
+    console.log('nftStorageApiKey:', nftStorageApiKey)
+
     try {
         const { name, image, attributes } = metadata
 
