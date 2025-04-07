@@ -168,7 +168,7 @@ case $choice in
     echo "Removing node_modules for web_app..."
     rm -rf node_modules
     echo "Installing new packages for web_app via npm..."
-    if npm install; then
+    if npm install --legacy-peer-deps; then
         echo "Packages for web_app installed successfully."
     else
         echo "Error: Failed to install web_app packages."
