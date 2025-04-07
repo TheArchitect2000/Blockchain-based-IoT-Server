@@ -21,7 +21,7 @@
 !/backend/uploads/devices/zksensor-zk-multisensor.png
 !/backend/uploads/avatars/
 !/backend/uploads/sprites.png
-
+!/backend/uploads/fides_logo.png
 admin_web_app/Runner_webapp/frontend/*
 !/admin_web_app/Runner_webapp/.env
 !admin_web_app/Runner_webapp/frontend/t.txt

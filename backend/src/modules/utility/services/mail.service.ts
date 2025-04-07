@@ -71,7 +71,7 @@ export class MailService {
         attachments: [
           {
             filename: 'fides_logo.png',
-            path: `${process.cwd()}/assets/images/fides_logo.png`, // Relative path
+            path: `${process.cwd()}/uploads/fides_logo.png`, // Relative path
             cid: 'fidesinnova_logo',
           },
         ],
@@ -108,7 +108,7 @@ export class MailService {
         attachments: [
           {
             filename: 'fides_logo.png',
-            path: `${process.cwd()}/assets/images/fides_logo.png`, // Relative path
+            path: `${process.cwd()}/uploads/fides_logo.png`, // Relative path
             cid: 'fidesinnova_logo',
           },
         ],
@@ -153,7 +153,7 @@ export class MailService {
         attachments: [
           {
             filename: 'fides_logo.png',
-            path: `${process.cwd()}/assets/images/fides_logo.png`, // Relative path
+            path: `${process.cwd()}/uploads/fides_logo.png`, // Relative path
             cid: 'fidesinnova_logo',
           },
         ],
@@ -211,7 +211,7 @@ export class MailService {
         attachments: [
           {
             filename: 'fides_logo.png',
-            path: `${process.cwd()}/assets/images/fides_logo.png`, // Relative path
+            path: `${process.cwd()}/uploads/fides_logo.png`, // Relative path
             cid: 'fidesinnova_logo',
           },
         ],
@@ -274,7 +274,7 @@ export class MailService {
           attachments: [
             {
               filename: 'fides_logo.png',
-              path: `${process.cwd()}/assets/images/fides_logo.png`, // Relative path
+              path: `${process.cwd()}/uploads/fides_logo.png`, // Relative path
               cid: 'fidesinnova_logo',
             },
           ],
@@ -338,7 +338,7 @@ export class MailService {
         attachments: [
           {
             filename: 'fides_logo.png',
-            path: `${process.cwd()}/assets/images/fides_logo.png`, // Relative path
+            path: `${process.cwd()}/uploads/fides_logo.png`, // Relative path
             cid: 'fidesinnova_logo',
           },
         ],
@@ -409,7 +409,7 @@ export class MailService {
           attachments: [
             {
               filename: 'fides_logo.png',
-              path: `${process.cwd()}/assets/images/fides_logo.png`, // Relative path
+              path: `${process.cwd()}/uploads/fides_logo.png`, // Relative path
               cid: 'fidesinnova_logo',
             },
           ],

@@ -1,12 +1,8 @@
-import { apiGetMyProfile } from '@/services/UserApi'
-import { useAppKitAccount } from '@reown/appkit-core/react'
-import { useAppKitProvider } from '@reown/appkit/react'
-import { BrowserProvider, Contract, ethers, JsonRpcProvider } from 'ethers'
+import { BrowserProvider, Contract, JsonRpcProvider } from 'ethers'
 import { create } from 'zustand'
 import * as ContractData from './contract-data'
-import { toast, Notification } from '@/components/ui'
 
-interface ContractStore {
+export interface ContractStore {
     loading: boolean
     zkpContract: Contract
     commitmentContract: Contract
@@ -42,12 +38,12 @@ interface ContractStore {
         ownershipAddress: string
     ) => Promise<{ status: boolean; tx?: any; error?: string }>
     CreateDeviceNFT: (
-        ownershipAddress: string,
         deviceId: string,
         deviceIdType: string,
         deviceType: string,
         manufacturer: string,
-        deviceModel: string
+        deviceModel: string,
+        ipfsMetadataURL: string
     ) => Promise<{ status: boolean; tx?: any; error?: string }>
 }
 
@@ -96,30 +92,33 @@ export function createContractStore(walletProvider: any) {
         },
 
         CreateDeviceNFT: async (
-            ownershipAddress: string,
             deviceId: string,
             deviceIdType: string,
             deviceType: string,
             manufacturer: string,
-            deviceModel: string
+            deviceModel: string,
+            ipfsMetadataURL: string
         ) => {
             const { deviceNFTManagemantContract, getErrorMessage } = get()
             try {
                 set({ loading: true })
                 const signer = await provider.getSigner()
+                console.log('Signer wallet address:', await signer.getAddress())
 
                 const tx = await (
                     deviceNFTManagemantContract.connect(signer) as any
-                ).createNFT(
-                    ownershipAddress,
-                    deviceId,
-                    deviceIdType,
-                    deviceType,
-                    manufacturer,
-                    deviceModel
+                ).mintDeviceNFT(
+                    String(deviceId),
+                    String(deviceIdType),
+                    String(deviceType),
+                    String(manufacturer),
+                    String(deviceModel),
+                    String(ipfsMetadataURL)
                 )
+                const receipt = await tx.wait()
+
                 set({ loading: false })
-                return { status: true, tx: tx }
+                return { status: true, tx: receipt }
             } catch (error) {
                 set({ loading: false })
                 return { status: false, error: getErrorMessage(error) }
@@ -249,7 +248,7 @@ export function createContractStore(walletProvider: any) {
                     manufacturer,
                     softwareVersion,
                     commitmentData,
-                    Math.floor(Date.now() / 1000),
+                    Math.floor(Date.now() / 1000)
                 )
 
                 return tx

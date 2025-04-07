@@ -8,7 +8,7 @@ export const identityOwnershipRegisterationContractAddress =
     '0xb02c53d07b2b40cb9edf3f7531ab9735bfa5eded'
 
 export const deviceNFTManagemantContractAddress =
-    '0x640335b9cab770dd720c9f57a82becc60bc97d02'
+    '0x2723a1df10991b015071d243cc830941d460ae22'
 
 import commitmentManagementABI from '../../ABI/CommitmentManagemantABI.json'
 import DeviceNFTManagemantABI from '../../ABI/DeviceNFTManagemant.json'

@@ -46,7 +46,7 @@ function DeviceSpecifics({
                     )}
                 </Avatar>
 
-                <DeviceField title="Device Status" value={status} />
+                <DeviceField title="MQTT Broker Status" value={status} />
                 <DeviceField title="Device Name" value={data.deviceName} />
                 <DeviceField title="Device Type" value={data.deviceType} />
                 <DeviceField title="Mac Address" value={data.mac} />
