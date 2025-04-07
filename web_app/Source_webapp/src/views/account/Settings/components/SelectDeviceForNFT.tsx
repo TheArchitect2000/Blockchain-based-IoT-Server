@@ -64,7 +64,7 @@ export default function SelectDeviceForNFT() {
                         value: device.hardwareVersion,
                     },
                 ],
-            })
+            }, process.env.VITE_NFT_STORAGE_API_KEY || '')
 
             // Step 3: Create NFT with metadata URL
             const result = await CreateDeviceNFT(

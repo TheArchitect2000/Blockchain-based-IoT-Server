@@ -10,10 +10,11 @@ interface NFTMetadata {
 }
 
 export const uploadNFTToIPFS = async (
-    metadata: NFTMetadata
+    metadata: NFTMetadata,
+    nftStorageApiKey: string
 ): Promise<string> => {
     const client = new NFTStorage({
-        token: '',
+        token: nftStorageApiKey,
     })
 
     try {

@@ -37,7 +37,7 @@ case $choice in
     cd web_app/Source_webapp || { echo "Error: Failed to navigate to web_app directory."; exit 1; }
 
     echo "Installing new packages for web_app via npm..."
-    if npm install; then
+    if npm install --legacy-peer-deps; then
         echo "Packages for web_app installed successfully."
     else
         echo "Error: Failed to install web_app packages."
