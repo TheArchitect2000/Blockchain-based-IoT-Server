@@ -13,7 +13,7 @@
         "format": "npm run prettier:fix && npm run lint:fix"
     },
     "dependencies": {
-        "@coinbase/wallet-sdk": "^4.3.2",
+        "@coinbase/wallet-sdk": "^4.2.4",
         "@fullcalendar/core": "^6.1.17",
         "@fullcalendar/daygrid": "^6.1.8",
         "@fullcalendar/interaction": "^6.1.8",
@@ -52,8 +52,6 @@
         "lodash": "^4.17.21",
         "miragejs": "^0.1.47",
         "mqtt": "^5.7.0",
-        "nft.storage": "^7.1.1",
-        "node-fetch": "^3.3.2",
         "npm": "^10.9.2",
         "popper.js": "^1.16.1",
         "prismjs": "^1.29.0",

@@ -1,4 +1,3 @@
-// Remove the node-fetch import since we'll use browser's native File class
 
 export const addTextToImage = async (
     imageUrl: string,
