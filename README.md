@@ -266,10 +266,9 @@ sudo systemctl restart nginx
 ## A.5. Instal Node.js and NestJS
 ```
 sudo apt update
-sudo apt install nodejs
-sudo apt install npm
+sudo apt install -y curl build-essential
 sudo npm install -g n
-sudo n 20.9.0
+sudo n 22.14.0
 sudo npm i -g @nestjs/cli 
 ```
 
