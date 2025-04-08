@@ -27,7 +27,6 @@ interface UploadResponse {
 
 export const uploadNFTToIPFS = async (
     metadata: NFTMetadata,
-    nftStorageApiKey: string
 ): Promise<string> => {
     try {
         const { name, image, attributes } = metadata
