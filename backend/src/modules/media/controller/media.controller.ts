@@ -62,10 +62,14 @@ export class MediaController {
           type: 'string',
           format: 'binary',
         },
+        path: {
+          type: 'string',
+          description: 'Custom path within uploads directory (e.g. NFT/metadata)',
+        },
       },
     },
   })
-  @ApiOperation({ summary: 'upload media file.' })
+  @ApiOperation({ summary: 'Upload media file with optional custom path.' })
   async uploadMedia(
     @UploadedFile() file: Express.Multer.File,
     @Query('type') type: string,

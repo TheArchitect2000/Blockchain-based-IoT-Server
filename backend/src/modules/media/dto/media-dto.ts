@@ -7,4 +7,8 @@ export class uploadFileDto {
   @IsNotEmpty({ message: 'Selected type is required and must be entered.' })
   @ApiProperty({ required: false })
   type: string;
+
+  @IsOptional()
+  @ApiProperty({ required: false, description: 'Custom path within uploads directory (e.g. NFT/metadata)' })
+  path?: string;
 }

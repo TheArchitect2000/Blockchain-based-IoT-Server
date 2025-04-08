@@ -4,6 +4,8 @@ import { GeneralException } from 'src/modules/utility/exceptions/general.excepti
 import { uploadFileDto } from '../dto/media-dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { MediaRepository } from 'src/modules/utility/repositories/media.repository';
+import { join } from 'path';
+import * as fs from 'fs';
 
 @Injectable()
 export class MediaService {
@@ -18,14 +20,28 @@ export class MediaService {
     userId: string,
     file: Express.Multer.File,
   ) {
+    // Handle custom path
+    const basePath = './uploads';
+    const customPath = body?.path || '';
+    const fullPath = join(basePath, customPath);
+    
+    // Create directory if it doesn't exist
+    if (!fs.existsSync(fullPath)) {
+      fs.mkdirSync(fullPath, { recursive: true });
+    }
+
+    // Move file to custom path
+    const newFilePath = join(fullPath, file.filename);
+    fs.renameSync(file.path, newFilePath);
+
     const newMedium = {
       user: userId,
       type: type,
       encoding: file.encoding,
       mediaType: file.mimetype,
-      destination: file.destination,
+      destination: fullPath,
       fileName: file.filename,
-      path: file.path,
+      path: join(customPath, file.filename), // Store relative path for URL generation
       size: file.size,
       insertedBy: userId,
       insertDate: new Date(),
@@ -45,7 +61,7 @@ export class MediaService {
           path: uploadedFile.path,
           url: `${process.env.HOST_PROTOCOL + process.env.HOST_NAME_OR_IP}/${
             process.env.HOST_SUB_DIRECTORY
-          }/${uploadedFile.path}`,
+          }/${String(basePath).replace('./', '')}/${uploadedFile.path}`,
           size: uploadedFile.size,
           type: uploadedFile.type,
           destination: uploadedFile.destination,

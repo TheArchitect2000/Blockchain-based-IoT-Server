@@ -4,4 +4,6 @@ export enum ResourceTypeEnum {
   QUESTION = 'question',
   ANSWER = 'answer',
   UNDEFINED = 'undefined',
+  NFT_IMAGE = 'nft_image',
+  NFT_METADATA = 'nft_metadata',
 }
