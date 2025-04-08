@@ -40,7 +40,7 @@ export default function SelectDeviceForNFT() {
 
             // Step 2: Upload metadata to IPFS
             const ipfsMetadataURL = await uploadNFTToIPFS({
-                name: device.deviceName,
+                name: String(atob(device.deviceEncryptedId)),
                 image: processedImage,
                 attributes: [
                     {
