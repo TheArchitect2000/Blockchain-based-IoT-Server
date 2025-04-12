@@ -134,33 +134,6 @@ export const blocklyToolBox = {
         },
         {
             kind: 'category',
-            name: 'Devices',
-            colour: '180',
-            contents: [
-                {
-                    kind: 'block',
-                    type: 'customized_air_quality_sensor',
-                },
-                {
-                    kind: 'block',
-                    type: 'customized_noise_sensor',
-                },
-                {
-                    kind: 'block',
-                    type: 'customized_concrete_sensor_temperature_strength',
-                },
-                {
-                    kind: 'block',
-                    type: 'customized_gas_sensor',
-                },
-                {
-                    kind: 'block',
-                    type: 'customized_car_sensor',
-                },
-            ],
-        },
-        {
-            kind: 'category',
             name: 'Messages',
             colour: '250',
             contents: [
