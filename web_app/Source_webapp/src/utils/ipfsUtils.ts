@@ -39,8 +39,6 @@ export const uploadNFTToIPFS = async (
         const imageUploadResult = await apiUploadMedia<UploadResponse>('nft_image', imageFormData)
         const imageUrl = imageUploadResult?.data?.data?.url
 
-        
-
         // Create metadata JSON with the uploaded image URL
         const metadataJson = {
             name,
