@@ -10,13 +10,6 @@ import { MqttLogService } from './modules/broker/services/mqtt-log.service';
 import { readFileSync } from 'fs';
 
 async function bootstrap() {
-  // const app = await NestFactory.create(AppModule);
-
-  const httpsOptions = {
-    key: readFileSync('/etc/nginx/ssl/privkey.pem'),
-    cert: readFileSync('/etc/nginx/ssl/fullchain.pem'),
-  };
-
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   const config = new DocumentBuilder()
@@ -32,8 +25,31 @@ async function bootstrap() {
 
   app.useStaticAssets(join(__dirname, '../uploads'));
 
-  // app.enableCors();
+  const hostName = process.env.HOST_NAME_OR_IP;
+  let adminHostName = '';
+
+  if (hostName == 'developer.fidesinnova.io') {
+    adminHostName = 'admindeveloper.fidesinnova.io';
+  } else {
+    const host = String(hostName).split('.').slice(-2).join('.');
+    adminHostName = 'admin.' + host;
+  }
+
+  console.log('adminHostName:', adminHostName);
+  console.log('hostName:', hostName);
+
   app.enableCors({
+    origin: (origin, callback) => {
+      const allowedOrigins = [
+        `https://${hostName}`,
+        `https://${adminHostName}`,
+      ];
+      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error('Origin not allowed by CORS'));
+      }
+    },
     allowedHeaders: [
       'Content-Type',
       'Origin',
@@ -41,9 +57,8 @@ async function bootstrap() {
       'Accept',
       'Authorization',
     ],
-    // headers exposed to the client
     exposedHeaders: ['Authorization'],
-    credentials: true, // Enable credentials (cookies, authorization headers) cross-origin
+    credentials: true,
     methods: ['GET', 'POST', 'PATCH', 'DELETE'],
   });
 

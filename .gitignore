@@ -10,7 +10,6 @@
 /backups
 /backups/*
 
-
 /backend/src/data/*
 /backend/uploads/*
 !/backend/uploads/devices/
