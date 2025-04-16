@@ -460,6 +460,24 @@ THEME_BOX= '0xabcd'  <--- wrong
 THEME_BOX = '0xabcd'  <--- wrong
 ```
 
+### 🔔 Enable Node Mobile Notifications
+
+To enable mobile notifications on your Node server, follow these steps:
+
+1. **Request the Firebase Admin SDK**  
+   Email our admin at [info@fidesinnova.io](mailto:info@fidesinnova.io) and request the `firebase-adminsdk.json` file.
+
+2. **Place the File in the Backend**  
+   Move the file to the backend directory:
+
+   ```bash
+   cd /home/iot-server/backend/src/data
+   sudo nano firebase-adminsdk.json
+   ```
+
+3. **Paste JSON Content**  
+   Open the file with `nano`, then paste the full content of the `firebase-adminsdk.json` file you received.
+
 ## B.3. Web App Logo
 - Copy your logo in `.png` format with the `logo` name as `logo.png` in `\home\iot-server\backend\uploads` folder on your server. 
 
