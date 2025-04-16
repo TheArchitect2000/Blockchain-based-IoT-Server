@@ -8,7 +8,7 @@ import { UserService } from 'src/modules/user/services/user/user.service';
 import { SendNotificationRequestBodyDto } from '../dto/send-notif-dto';
 import firebase from 'firebase-admin';
 
-import * as serviceAccount from '../../../data/fidesinnova-aa633-firebase-adminsdk-utzec-1bba4806dd.json';
+import * as serviceAccount from '../../../data/firebase-adminsdk.json';
 import { NotificationRepository } from './notification.repository';
 import {
   AddNotificationByEmailRequestBodyDto,
