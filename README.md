@@ -206,23 +206,16 @@ http {
 
 		root /var/www/html/wikifidesdoc/site;
 
-		add_header 'Access-Control-Allow-Credentials' 'true';
-		add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
-		add_header 'Access-Control-Allow-Headers' 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization';
-
 		# This section is for user Web App on port 4000
 		location / {
 			proxy_set_header Authorization $http_authorization;
 			proxy_pass_header Authorization;
-			add_header Access-Control-Allow-Origin '*';
-			add_header Access-Control-Allow-Headers '*';
 			proxy_pass https://localhost:4000;
 		}
 
 		# This section is for Server Backend on port 3000
 		location /app {
 			proxy_pass http://localhost:3000;
-			add_header Access-Control-Allow-Origin *;
 		}
 	}
 
@@ -239,16 +232,10 @@ http {
 
 		index index.html index.htm;
 
-		add_header 'Access-Control-Allow-Credentials' 'true';
-		add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
-		add_header 'Access-Control-Allow-Headers' 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization';
-
 		# This section is for Admin Web App on port 5000
 		location / {
 			proxy_set_header Authorization $http_authorization;
 			proxy_pass_header Authorization;
-			add_header Access-Control-Allow-Origin '*';
-			add_header Access-Control-Allow-Headers '*';
 			proxy_pass https://localhost:5000;
 		}
 	}
