@@ -699,3 +699,87 @@ Change the port number in the following line.
 PORT=5000
 ```
 Note: If you change these two ports, please make sure you consult with the Fides Innova repository manager to avoid any future git push conflicts.
+
+--------
+
+# 🔐 Automated Web App Security Scan with OWASP ZAP (Docker)
+
+This guide walks you through setting up Java, and Docker, and running a baseline security scan using OWASP ZAP against a web application endpoint. Ultimately, you'll get a nicely formatted `zap-report.html` you can open in any browser.
+
+## 📦 1. Install Java Runtime Environment (JRE)
+
+ZAP requires Java to run. Begin by updating your system and installing the default JRE:
+
+```bash
+sudo apt update
+sudo apt install default-jre -y
+java -version
+```
+
+You should see a version output confirming Java is installed. Example:
+
+```bash
+openjdk version "11.0.20" 2023-07-18
+OpenJDK Runtime Environment (build 11.0.20+8-Ubuntu)
+```
+
+## 🐳 2. Install Docker
+
+Docker lets us run ZAP in a lightweight container without manual setup. Install and configure Docker:
+
+```bash
+sudo apt update
+sudo apt install docker.io -y
+sudo systemctl enable docker
+sudo systemctl start docker
+sudo usermod -aG docker $USER
+```
+
+## 🧰 3. Pull OWASP ZAP Docker Image
+
+Download the official stable ZAP image:
+
+```bash
+sudo docker pull zaproxy/zap-stable
+```
+
+## 📁 4. Prepare Report Directory
+
+Create a directory to store your report and make it writable:
+
+```bash
+sudo mkdir /home/security-report
+sudo chmod -R 777 /home/security-report
+cd /home/security-report
+```
+
+This ensures the ZAP container can write the report files without permission issues.
+
+## 🚀 5. Run ZAP Baseline Scan
+
+Now run the security scan:
+
+```bash
+sudo docker run -v $(pwd):/zap/wrk/:rw zaproxy/zap-stable zap-baseline.py -t https://<<node-address>>/app/api -r zap-report.html
+```
+
+Make sure to replace `<<node-address>>` with your actual domain or IP address.  
+Example:
+
+```bash
+panel.zksensor.tech
+```
+
+> 🕓 Note: This process can take a while depending on your network and app complexity.
+
+## 📊 6. View Results
+
+Once the scan is complete, the following files will appear in your `/home/security-report` folder:
+
+- `zap-report.html` — Main visual report (open this in any browser)  
+- `zap.yaml` — Scan configuration and results in YAML format
+
+To review the results:
+
+1. Download the `/home/security-report` folder to your local machine.  
+2. Open `zap-report.html` in a browser to inspect potential vulnerabilities.
