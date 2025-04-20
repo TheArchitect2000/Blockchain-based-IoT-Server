@@ -43,6 +43,8 @@ async function bootstrap() {
       const allowedOrigins = [
         `https://${hostName}`,
         `https://${adminHostName}`,
+        'https://explorer.fidesinnova.io',
+        'http://localhost:4000',
       ];
       if (!origin || allowedOrigins.indexOf(origin) !== -1) {
         callback(null, true);
