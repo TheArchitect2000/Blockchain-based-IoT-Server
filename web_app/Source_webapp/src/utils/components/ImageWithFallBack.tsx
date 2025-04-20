@@ -22,6 +22,9 @@ const ImageWithFallBack: React.FC<ImageWithFallbackProps> = ({
             setIsLoaded(true)
             setImageSrc(src)
         }
+        img.onerror = () => {
+            setIsLoaded(true)
+        }
     }, [src])
 
     return (
