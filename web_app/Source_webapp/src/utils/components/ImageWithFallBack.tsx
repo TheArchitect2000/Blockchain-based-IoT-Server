@@ -16,14 +16,36 @@ const ImageWithFallBack: React.FC<ImageWithFallbackProps> = ({
     const [isLoaded, setIsLoaded] = useState<boolean>(false)
 
     useEffect(() => {
+        setIsLoaded(false) // Reset loaded state on src change
+        let timerId: NodeJS.Timeout | null = null
         const img = new Image()
         img.src = src
+
         img.onload = () => {
+            if (timerId) clearTimeout(timerId)
             setIsLoaded(true)
             setImageSrc(src)
         }
+
         img.onerror = () => {
-            setIsLoaded(true)
+            if (timerId) clearTimeout(timerId)
+            setIsLoaded(true) // Keep fallback image
+        }
+
+        // Set timeout
+        timerId = setTimeout(() => {
+            if (!isLoaded) {
+                // Check if still loading after 5s
+                setIsLoaded(true) // Trigger fallback display
+            }
+        }, 5000) // 5 seconds timeout
+
+        // Cleanup function
+        return () => {
+            if (timerId) clearTimeout(timerId)
+            // Optional: Abort image loading if possible, though standard Image doesn't have abort
+            img.onload = null
+            img.onerror = null
         }
     }, [src])
 
