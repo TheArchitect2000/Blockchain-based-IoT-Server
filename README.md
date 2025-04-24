@@ -505,7 +505,7 @@ sudo nano devices.json
 ```json
 [
   {
-    "fileName": "zksensor-ecard.png",
+    "fileName": "ecard.png",
     "title": "E-Card",
     "type": "E-CARD",
     "parameters": [
@@ -515,7 +515,7 @@ sudo nano devices.json
     ]
   },
   {
-    "fileName": "zksensor-minisensor.png",
+    "fileName": "multisensor.png",
     "title": "MiniSensor",
     "type": "MINI_SENSOR",
     "parameters": [
@@ -527,8 +527,8 @@ sudo nano devices.json
     ]
   },
   {
-    "fileName": "zksensor-zk-multisensor.png",
-    "title": "zk-MultiSensor",
+    "fileName": "zkmultisensor.png",
+    "title": "ZK-MultiSensor",
     "type": "ZK_MULTISENSOR",
     "parameters": [
       { "label": "Temperature", "value": [] },
@@ -556,6 +556,22 @@ sudo nano devices.json
       { "label": "Door", "value": ["Open", "Close"] },
       { "label": "Movement", "value": ["Scanning...", "Detected"] },
       { "label": "Button", "value": ["Pressed", "NOT Pressed"] }
+    ]
+  },
+  {
+    "fileName": "Methane_Sensor.png",
+    "title": "Methane Sensor",
+    "type": "Methane_Sensor",
+    "parameters": [
+      { "label": "ID", "value": [] },
+      { "label": "DateTimeStamp", "value": [] },
+      { "label": "Location", "value": [] },
+      { "label": "BatteryPercentage", "value": [] },
+      { "label": "DeviceStatus", "value": ["ONLINE", "OFFLINE"] },
+      { "label": "MethaneLevel", "value": [] },
+      { "label": "TempCLevel", "value": [] },
+      { "label": "TempFLevel", "value": [] },
+      { "label": "HumidityLevel", "value": [] }
     ]
   }
 ]
