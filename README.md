@@ -18,7 +18,8 @@ To install the back-end and front-end components of the Fidesinnova platform, in
 First of all install Ubuntu 24.04 LTS on your server. 
 
 ## A.1. Install MongoDB
-- Install MongoDB version 8.0
+- Install MongoDB version 8.0 for ARM64.
+- If you have a x86 machine, please check the MongoDB documentation.
 ```
 sudo apt update
 sudo apt upgrade
@@ -473,8 +474,7 @@ To enable mobile notifications on your Node server, follow these steps:
    Move the file to the backend directory:
 
    ```bash
-   cd /home/iot-server/backend/src/data
-   sudo nano firebase-adminsdk.json
+   sudo nano /home/iot-server/backend/src/data/firebase-adminsdk.json
    ```
 
 3. **Paste JSON Content**  
