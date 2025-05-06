@@ -31,7 +31,12 @@ async function bootstrap() {
   if (hostName == 'developer.fidesinnova.io') {
     adminHostName = 'admindeveloper.fidesinnova.io';
   } else {
-    const host = String(hostName).slice(5);
+    
+    // const host = String(hostName).split('.').slice(-2).join('.'); X makes error X
+    // const host = String(hostName).slice(5); its ok but is not stable ( ok for panel. and admin. )
+    const parts = String(hostName).split('.'); 
+    const host = parts.slice(1).join('.');
+
     adminHostName = 'admin.' + host;
   }
 
