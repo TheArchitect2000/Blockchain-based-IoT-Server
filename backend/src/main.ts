@@ -31,7 +31,7 @@ async function bootstrap() {
   if (hostName == 'developer.fidesinnova.io') {
     adminHostName = 'admindeveloper.fidesinnova.io';
   } else {
-    const host = String(hostName);
+    const host = String(hostName).slice(5);
     adminHostName = 'admin.' + host;
   }
 
