@@ -474,6 +474,7 @@ To enable mobile notifications on your Node server, follow these steps:
    Move the file to the backend directory:
 
    ```bash
+   sudo mkdir /home/iot-server/backend/src/data/
    sudo nano /home/iot-server/backend/src/data/firebase-adminsdk.json
    ```
 
