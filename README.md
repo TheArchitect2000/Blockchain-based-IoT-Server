@@ -43,9 +43,12 @@ Run `mongosh`
 mongosh
 ```
 
-Set `ADMIN_USERNAME` and `ADMIN_PASSWORD`, and type the following lines in the `mongosh` terminal. Note that the password must contains only the lowercase or uppercase characters or numbers.
+Set `ADMIN_USERNAME` and `ADMIN_PASSWORD`, and type the following lines in the `mongosh` terminal. Note that the password must contain only lowercase or uppercase characters or numbers.
 ```
 use admin
+```
+
+```
 db.createUser({
   user: "MONGODB_ADMIN_USERNAME",
   pwd: "MONGODB_ADMIN_PASSWORD",
@@ -54,9 +57,12 @@ db.createUser({
 ```
 This account can be used later to connect to MongoDB using MongoDB Compass.
 
-Set `FIDESINNOVA_DB_USERNAME` and `FIDESINNOVA_DB_PASSWORD`, and type the following lines in the `mongosh` terminal. Note that the password must contains only the lowercase or uppercase characters or numbers.
+Set `FIDESINNOVA_DB_USERNAME` and `FIDESINNOVA_DB_PASSWORD`, and type the following lines in the `mongosh` terminal. Note that the password must contain only lowercase or uppercase characters or numbers.
 ```
 use fidesinnova
+```
+
+```
 db.createUser({
   user: "FIDESINNOVA_DB_USERNAME",
   pwd: "FIDESINNOVA_DB_PASSWORD",
