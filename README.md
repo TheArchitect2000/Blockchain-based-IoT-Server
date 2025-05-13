@@ -15,7 +15,14 @@
 To install the back-end and front-end components of the Fidesinnova platform, including both the web app and mobile app, you can follow the steps below. These instructions assume that you have a basic understanding of setting up development environments and are familiar with JavaScript, Node.js, and related technologies.
 
 # Step A. Prepare operating system
-First of all install Ubuntu 24.04 LTS on your server. 
+To run `iot-server` effectively, the following system specifications are recommended:
+
+- **Operating System:** Ubuntu 24.04 LTS
+- **Memory:** 16 GB RAM
+- **Storage:** 30 GB SSD minimum
+- **CPU:** Dual-core processor (x86_64 or ARM64)
+
+_These requirements are suitable for typical IoT workloads. Actual needs may vary based on deployment scale and data volume._
 
 ## A.1. Install MongoDB
 - Install MongoDB version 8.0 for ARM64.
