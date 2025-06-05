@@ -376,6 +376,8 @@ MONGO_HOST=127.0.0.1
 NOTIFICATION_BY_MAIL='enabled'
 NOTIFICATION_BY_NOTIFICATION='enabled'
 
+LOG_RETENTION_DAYS=14
+
 # Email Server Configuration
 MAIL_HOST='YOUR_HOST_MAIL_SERVER_PROVIDER'
 # Please check your email server’s mail port number by configuring an email client on your mobile or computer to confirm. On some servers, it may be 587 or a different port.
