@@ -24,6 +24,14 @@ const getColorFromHumidity = (humidity: number) => {
     return '#00BFFF'
 }
 
+const isValidCoordinate = (coord: any[]): boolean =>
+    Array.isArray(coord) &&
+    coord.length === 2 &&
+    typeof coord[0] === 'number' &&
+    typeof coord[1] === 'number' &&
+    !isNaN(coord[0]) &&
+    !isNaN(coord[1])
+
 const CirclesLayer: React.FC<CirclesLayerProps> = ({ devices, data, type }) => {
     const map = useMap()
 
@@ -39,47 +47,26 @@ const CirclesLayer: React.FC<CirclesLayerProps> = ({ devices, data, type }) => {
                 liveData = data[String(item?.deviceEncryptedId)]
             }
 
-            if (
-                Object.keys(liveData).length > 0 &&
-                (type === 'temperature' || type === 'humidity')
-            ) {
+            const coords = item.location?.coordinates
+            if (Object.keys(liveData).length > 0 && isValidCoordinate(coords)) {
                 const temp = liveData.data.Temperature
                 const humid = liveData.data.Humidity
                 const value = type === 'temperature' ? temp : humid
                 const text = type === 'temperature' ? `${temp}°C` : `${humid}%`
                 const color = getColor(value)
-                const circle = L.circle(
-                    [
-                        item.location.coordinates[0],
-                        item.location.coordinates[1],
-                    ],
-                    {
-                        radius: 100,
-                        color: color,
-                        fillColor: color,
-                        fillOpacity: 0.5,
-                    }
-                )
 
-                const icon = L.divIcon({
-                    html: `<div style="text-align: center; color: black; font-weight: bold;">${text}</div>`,
-                    className: '',
+                const latlng = [coords[0], coords[1]] as [number, number]
+
+                const circle = L.circle(latlng, {
+                    radius: 100,
+                    color: color,
+                    fillColor: color,
+                    fillOpacity: 0.5,
                 })
 
-                const emptyIcon = L.divIcon({
-                    html: `<div></div>`,
-                    className: '',
-                })
-
-                const marker = L.marker(
-                    [
-                        item.location.coordinates[0],
-                        item.location.coordinates[1],
-                    ],
-                    {
-                        icon: emptyIcon,
-                    }
-                ).bindTooltip(`${text}`, {
+                const marker = L.marker(latlng, {
+                    icon: L.divIcon({ html: `<div></div>`, className: '' }),
+                }).bindTooltip(`${text}`, {
                     direction: 'top',
                     offset: L.point(0, -10),
                     permanent: false,
@@ -98,12 +85,8 @@ const CirclesLayer: React.FC<CirclesLayerProps> = ({ devices, data, type }) => {
             elements?.forEach((data) => {
                 if (data !== null) {
                     const { circle, marker } = data
-                    if (circle) {
-                        map.removeLayer(circle)
-                    }
-                    if (marker) {
-                        map.removeLayer(marker)
-                    }
+                    circle && map.removeLayer(circle)
+                    marker && map.removeLayer(marker)
                 }
             })
         }

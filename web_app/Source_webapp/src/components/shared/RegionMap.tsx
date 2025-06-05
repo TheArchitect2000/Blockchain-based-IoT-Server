@@ -80,7 +80,10 @@ const MapChart = ({
     prefix,
 }: MapChartProps) => {
     const mode = useAppSelector((state) => state.theme.mode)
-    const [position, setPosition] = useState({ coordinates: [20, 0], zoom: 0.4 })
+    const [position, setPosition] = useState({
+        coordinates: [20, 0],
+        zoom: 0.4,
+    })
 
     const handleZoomIn = () => {
         setPosition((pos) => ({ ...pos, zoom: Math.min(pos.zoom * 1.5, 4) }))
@@ -107,6 +110,14 @@ const MapChart = ({
         mode === MODE_DARK ? twColor.gray['500'] : twColor.gray['100']
     const strokeColor =
         mode === MODE_DARK ? twColor.gray['600'] : twColor.gray['300']
+
+    const isValidCoordinate = (coord: any[]): coord is [number, number] =>
+        Array.isArray(coord) &&
+        coord.length === 2 &&
+        typeof coord[0] === 'number' &&
+        typeof coord[1] === 'number' &&
+        !isNaN(coord[0]) &&
+        !isNaN(coord[1])
 
     const geographies = useMemo(() => {
         return (
@@ -180,22 +191,22 @@ const MapChart = ({
                 >
                     {geographies}
                     {devicesData?.map((item, index) => {
-                        if (item.location.coordinates) {
+                        const coords = item.location?.coordinates
+                        if (isValidCoordinate(coords)) {
+                            const [lat, lon] = coords
                             return (
                                 <Marker
                                     onMouseEnter={() =>
                                         console.log(item.deviceName)
                                     }
                                     key={index}
-                                    coordinates={[
-                                        item.location.coordinates[1] - 1.5,
-                                        item.location.coordinates[0] + 2,
-                                    ]}
+                                    coordinates={[lon - 1.5, lat + 2]} // note: might be [lng, lat] depending on projection
                                 >
                                     <SvgLocation />
                                 </Marker>
                             )
                         }
+                        return null
                     })}
                 </ZoomableGroup>
             </ComposableMap>

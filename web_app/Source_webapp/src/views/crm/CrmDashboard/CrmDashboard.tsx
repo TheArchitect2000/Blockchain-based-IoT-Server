@@ -23,6 +23,17 @@ function getRandomInt(max: number) {
     return Math.floor(Math.random() * max)
 }
 
+function isValidCoordinate(coord: any[]): coord is [number, number] {
+    return (
+        Array.isArray(coord) &&
+        coord.length === 2 &&
+        typeof coord[0] === 'number' &&
+        typeof coord[1] === 'number' &&
+        !isNaN(coord[0]) &&
+        !isNaN(coord[1])
+    )
+}
+
 const CrmDashboard = () => {
     const dispatch = useAppDispatch()
 
@@ -47,12 +58,12 @@ const CrmDashboard = () => {
             setMapLoading(true)
             const res = (await apiGetAllSharedDevices()) as any
             if (res?.data.data) {
-                const newPositions: [any][] = res.data.data.filter(
-                    (item: any) => item.location.coordinates
+                const newPositions: DeviceData[] = res.data.data.filter(
+                    (item: DeviceData) =>
+                        isValidCoordinate(item?.location?.coordinates)
                 )
 
-                console.log("newPositions:", newPositions);
-                
+                console.log('newPositions:', newPositions)
 
                 setPositions([...newPositions, ...generateParisData(200, 200)])
                 setMapLoading(false)
