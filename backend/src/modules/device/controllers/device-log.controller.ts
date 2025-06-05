@@ -37,6 +37,8 @@ import { UserService } from 'src/modules/user/services/user/user.service';
 export class DeviceLogController {
   private result;
   private storxBucket = process.env.STORX_BUCKET_NAME || '';
+  private logKeepDays =
+  Number(process.env.LOG_RETENTION_DAYS ?? '14');
 
   constructor(
     @Inject(UserService)
@@ -44,8 +46,11 @@ export class DeviceLogController {
     private readonly deviceLogService: DeviceLogService,
     private readonly deviceService: DeviceService,
   ) {
-    /* setInterval(async () => {
-      const usersRes = await this.userService.getAllUsers();
+    setInterval(async () => {
+
+      await this.deviceLogService.removeAllDeviceLogsByDayBefore(this.logKeepDays)
+
+      /* const usersRes = await this.userService.getAllUsers();
       const devicesRes = await this.deviceService.getAllDevices();
 
       devicesRes.map(async (device: any, index) => {
@@ -114,8 +119,8 @@ export class DeviceLogController {
           //});
           }
         });
-      });
-    }, 24 * 60 * 60 * 1000); */
+      }); */
+    }, 24 * 60 * 60 * 1000);
   }
 
   async isAdmin(userId: string) {

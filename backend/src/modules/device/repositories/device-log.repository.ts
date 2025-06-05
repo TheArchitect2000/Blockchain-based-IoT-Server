@@ -34,6 +34,19 @@ export class DeviceLogRepository {
     // return await this.deviceLogModel.create(data)
   }
 
+  async deleteDeviceLogs(query) {
+  try {
+    const result = await this.deviceLogModel.deleteMany(query);
+    return result;
+  } catch (error) {
+    throw new GeneralException(
+      ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+      'An error occurred while deleting device logs.',
+    );
+  }
+}
+
+
   async editDeviceLog(id, editedData) {
     await this.deviceLogModel
       .updateOne({ _id: id }, editedData)
