@@ -622,29 +622,23 @@ const DeviceTable = memo(
                             ))}
                         </THead>
                         <TBody>
-                            {table
-                                .getRowModel()
-                                .rows.slice(0, 10)
-                                .map((row) => {
-                                    return (
-                                        <Tr key={row.id}>
-                                            {row
-                                                .getVisibleCells()
-                                                .map((cell) => {
-                                                    return (
-                                                        <Td key={cell.id}>
-                                                            {flexRender(
-                                                                cell.column
-                                                                    .columnDef
-                                                                    .cell,
-                                                                cell.getContext()
-                                                            )}
-                                                        </Td>
-                                                    )
-                                                })}
-                                        </Tr>
-                                    )
-                                })}
+                            {table.getRowModel().rows.map((row) => {
+                                return (
+                                    <Tr key={row.id}>
+                                        {row.getVisibleCells().map((cell) => {
+                                            return (
+                                                <Td key={cell.id}>
+                                                    {flexRender(
+                                                        cell.column.columnDef
+                                                            .cell,
+                                                        cell.getContext()
+                                                    )}
+                                                </Td>
+                                            )
+                                        })}
+                                    </Tr>
+                                )
+                            })}
                         </TBody>
                     </Table>
                 )) || (
