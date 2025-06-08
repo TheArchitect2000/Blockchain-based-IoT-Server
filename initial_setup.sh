@@ -153,24 +153,24 @@ EOF
 }
 
 # Backend service
-create_service "fides-backend" \
+create_service "fides.backend" \
   "FidesInnova Backend Server" \
-  "/home/ubuntu/Blockchain-based-IoT-Server/backend/dist/main.js" \
-  "/home/ubuntu/Blockchain-based-IoT-Server/backend" \
-  "/home/ubuntu/Blockchain-based-IoT-Server/backend/.env"
+  "/home/Blockchain-based-IoT-Server/backend/dist/main.js" \
+  "/home/Blockchain-based-IoT-Server/backend" \
+  "/home/Blockchain-based-IoT-Server/backend/.env"
 
 # User Webapp service
-create_service "fides-user-webapp" \
+create_service "fides.userwebapp" \
   "FidesInnova User Webapp" \
-  "/home/ubuntu/Blockchain-based-IoT-Server/web_app/Runner_webapp/main.js" \
-  "/home/ubuntu/Blockchain-based-IoT-Server/web_app/Runner_webapp" \
-  "/home/ubuntu/Blockchain-based-IoT-Server/web_app/Runner_webapp/.env"
+  "/home/Blockchain-based-IoT-Server/web_app/Runner_webapp/main.js" \
+  "/home/Blockchain-based-IoT-Server/web_app/Runner_webapp" \
+  "/home/Blockchain-based-IoT-Server/web_app/Runner_webapp/.env"
 
 # Admin Webapp service
-create_service "fides-admin-webapp" \
+create_service "fides.adminwebapp" \
   "FidesInnova Admin Webapp" \
-  "/home/ubuntu/Blockchain-based-IoT-Server/admin_web_app/Runner_webapp/main.js" \
-  "/home/ubuntu/Blockchain-based-IoT-Server/admin_web_app/Runner_webapp" \
-  "/home/ubuntu/Blockchain-based-IoT-Server/admin_web_app/Runner_webapp/.env"
+  "/home/Blockchain-based-IoT-Server/admin_web_app/Runner_webapp/main.js" \
+  "/home/Blockchain-based-IoT-Server/admin_web_app/Runner_webapp" \
+  "/home/Blockchain-based-IoT-Server/admin_web_app/Runner_webapp/.env"
 
 echo "All services started successfully."
