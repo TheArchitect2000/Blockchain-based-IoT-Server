@@ -297,12 +297,7 @@ sudo ufw enable
 sudo ufw status
 ```
 
-## A.7. Install PM2
-```
-sudo npm install -g pm2
-```
-
-## A.8. Clone the project
+## A.7. Clone the project
 - Install `git`
 ```
 sudo apt install git
@@ -634,7 +629,7 @@ VITE_NODE_NAME='YOUR_NODE_NAME'
 
 # D. Build and Execute
 ## D.1. Build the System
-To automate the setup and build processes for both the backend and frontend applications, run the `initial_setup.sh` script located in the root directory of the project. This script will handle building both the backend and frontend applications and configuring PM2 services automatically.
+To automate the setup and build processes for both the backend and frontend applications, run the `initial_setup.sh` script located in the root directory of the project. This script will handle building both the backend and frontend applications and configuring systemctl services automatically.
    ```
    cd /home/iot-server/
    sudo chmod +x initial_setup.sh
@@ -703,12 +698,35 @@ mv source target
 # delete a directory or file
 rm -rf directoryName
 
-pm2 list                               # Show running processes  
-pm2 show my-app                        # Show details of a specific process  
-pm2 stop my-app                        # Stop a process  
-pm2 restart my-app                     # Restart a process  
-pm2 delete my-app                      # Remove a process from PM2
-pm2 logs                               # Show logs of all processes  
+# View logs for a specific service (last 1 minute):
+sudo journalctl -u fides.backend.service --no-pager --since "1 minute ago"
+
+# View the latest logs for a service:
+sudo journalctl -u fides.backend.service -f
+
+# Show logs for a service since a specific time:
+sudo journalctl -u fides.backend.service --since "2025-06-08 10:00:00"
+
+# Show logs for all systemd services:
+sudo journalctl -xe
+
+# Check the status of a service:
+systemctl status fides.backend.service
+
+# Restart a service:
+sudo systemctl restart fides.backend.service
+
+# Stop a service:
+sudo systemctl stop fides.backend.service
+
+# Enable a service to start on boot:
+sudo systemctl enable fides.backend.service
+
+# Disable a service from starting on boot:
+sudo systemctl disable fides.backend.service
+
+# List all active systemd services:
+systemctl list-units --type=service
 ```
 ## E.4. Web App Ports
 - Change the Panel Web App Port
