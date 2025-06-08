@@ -492,6 +492,30 @@ export class DeviceLogService {
   };
 }
 
+  async removeAllDeviceLogsBeforeDaysAgo(
+  daysBefore: number,
+) {
+  const thresholdDate = new Date();
+  thresholdDate.setDate(thresholdDate.getDate() - daysBefore);
+  thresholdDate.setHours(0, 0, 0, 0); // Start of that day
+
+  const deleteQuery = {
+    data: { $exists: true },
+    insertDate: {
+      $lt: thresholdDate,
+    },
+  };
+
+  const deleteResult = await this.deviceLogRepository.deleteDeviceLogs(deleteQuery);
+
+  return {
+    success: true,
+    message: `All device logs older than ${daysBefore} day(s) have been deleted.`,
+    result: deleteResult,
+  };
+}
+
+
   async removeDeviceLogByEncryptedDeviceIdAndDayBefore(
   deviceEncryptedId: string,
   daysBefore: number,
