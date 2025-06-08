@@ -229,6 +229,9 @@ case $choice in
     ;;
 esac
 
-pm2 restart all;
+
+sudo systemctl restart fides.backend.service;
+sudo systemctl restart fides.userwebapp.service;
+sudo systemctl restart fides.adminwebapp.service;
 
 echo "Services restarted and Node updated successfully."
