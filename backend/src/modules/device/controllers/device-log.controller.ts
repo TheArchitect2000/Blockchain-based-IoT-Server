@@ -48,7 +48,7 @@ export class DeviceLogController {
   ) {
     setInterval(async () => {
 
-      await this.deviceLogService.removeAllDeviceLogsByDayBefore(this.logKeepDays)
+      await this.deviceLogService.removeAllDeviceLogsBeforeDaysAgo(this.logKeepDays)
 
       /* const usersRes = await this.userService.getAllUsers();
       const devicesRes = await this.deviceService.getAllDevices();
