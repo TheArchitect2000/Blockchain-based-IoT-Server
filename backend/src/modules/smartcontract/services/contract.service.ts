@@ -479,7 +479,11 @@ export class ContractService {
           updateDate: new Date(String(contractDevices[10])),
         };
 
-        this.deviceService.insertDevice(newDevice);
+        this.deviceService.insertDevice(newDevice)
+        .catch(error => {
+          console.log('syncAllDevices insertDevice error:', error);
+        });
+
       }
     });
   }

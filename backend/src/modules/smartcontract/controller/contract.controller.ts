@@ -46,8 +46,12 @@ export class contractController {
     private readonly userService?: UserService,
   ) {
     setTimeout(() => {
-      this.contractService.syncAllServices();
+      try {
+        this.contractService.syncAllServices();
       this.contractService.syncAllDevices();
+      } catch (error) {
+        console.log("contractController constructor error:", error)
+      }
     }, 4000);
   }
 
