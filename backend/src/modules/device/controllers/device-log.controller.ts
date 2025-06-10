@@ -38,7 +38,7 @@ export class DeviceLogController {
   private result;
   private storxBucket = process.env.STORX_BUCKET_NAME || '';
   private logKeepDays =
-  String(process.env.LOG_RETENTION_DAYS ?? '14') + "d";
+  Number(process.env.LOG_RETENTION_DAYS ?? '14');
 
   constructor(
     @Inject(UserService)
