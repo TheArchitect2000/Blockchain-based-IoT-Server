@@ -15,7 +15,7 @@
 To install the back-end and front-end components of the Fidesinnova platform, including both the web app and mobile app, you can follow the steps below. These instructions assume that you have a basic understanding of setting up development environments and are familiar with JavaScript, Node.js, and related technologies.
 
 # Step A. Prepare operating system
-To run `iot-server` effectively, the following system specifications are recommended:
+To run `Blockchain-based-IoT-Server` effectively, the following system specifications are recommended:
 
 - **Operating System:** Ubuntu 24.04 LTS
 - **Memory:** 16 GB RAM
@@ -305,7 +305,7 @@ sudo apt install git
 - Clone the project
 ```
 cd /home
-sudo git clone https://github.com/FidesInnova/iot-server.git
+sudo git clone https://github.com/FidesInnova/Blockchain-based-IoT-Server.git
 ```
 
 ### Continue with Step B if you want to install a new node, or jump to Step C if you want to restore your node from a previous backup.
@@ -325,7 +325,7 @@ openssl rand -hex 32
 ## B.2. Backend configurations
 - In project root folder, create `.env` file and edit parameters based on your node URL info
 ```
-cd /home/iot-server/backend
+cd /home/Blockchain-based-IoT-Server/backend
 sudo nano .env
 ```
 
@@ -484,19 +484,19 @@ To enable mobile notifications on your Node server, follow these steps:
    Move the file to the backend directory:
 
    ```bash
-   sudo mkdir /home/iot-server/backend/src/data/
-   sudo nano /home/iot-server/backend/src/data/firebase-adminsdk.json
+   sudo mkdir /home/Blockchain-based-IoT-Server/backend/src/data/
+   sudo nano /home/Blockchain-based-IoT-Server/backend/src/data/firebase-adminsdk.json
    ```
 
 3. **Paste JSON Content**  
    Open the file with `nano`, then paste the full content of the `firebase-adminsdk.json` file you received.
 
 ## B.3. Web App Logo
-- Copy your logo in `.png` format with the `logo` name as `logo.png` in `\home\iot-server\backend\uploads` folder on your server. 
+- Copy your logo in `.png` format with the `logo` name as `logo.png` in `\home\Blockchain-based-IoT-Server\backend\uploads` folder on your server. 
 
 ## B.4. Device Configuration File
 - Fidesinnova offers a mobile app to control IoT devices that support the MQTT protocol. The device configuration files, which specify the IoT device types, are stored on the IoT server. In this section, we will review how to create a device configuration file on the server. Each device in the configuration file is represented by an image, a title, a type, and its parameters:
-- **fileName**: Refers to the image file that should be placed in the `/iot-server/backend/uploads/device` directory. This image will be displayed in the mobile app (e.g., "ecard.png").
+- **fileName**: Refers to the image file that should be placed in the `/Blockchain-based-IoT-Server/backend/uploads/device` directory. This image will be displayed in the mobile app (e.g., "ecard.png").
 - **title**: The display name for the device (e.g., "E-Card").
 - **type**: Device type identifier (e.g., "E-CARD").
 - **Device Parameters**: Parameters specify data points each device supports. These parameters will be passed to the web app Blockly editor for creating new services. 
@@ -506,13 +506,13 @@ To enable mobile notifications on your Node server, follow these steps:
 ### B.4.1. Edit the `devices.json` file
 - Create `devices.json` file in the `backend/src/data/` in the project folder
 ```
-cd /home/iot-server/backend/src
+cd /home/Blockchain-based-IoT-Server/backend/src
 sudo mkdir data
 cd data
 sudo nano devices.json
 ```
 
-- Copy the following config in your `devices.json` file if you would like to use zkSensor's devices. Please note that you can edit this file and add your own IoT devices. When you add your new IoT device make sure you upload a `.png` file in `/home/iot-server/backend/uploads/devices`. We hae already copied three `zksensor-ecard.png`, `zksensor-minisensor.png`, and `zksensor-zk-multisensor.png` files in this folder for the following devices.
+- Copy the following config in your `devices.json` file if you would like to use zkSensor's devices. Please note that you can edit this file and add your own IoT devices. When you add your new IoT device make sure you upload a `.png` file in `/home/Blockchain-based-IoT-Server/backend/uploads/devices`. We hae already copied three `zksensor-ecard.png`, `zksensor-minisensor.png`, and `zksensor-zk-multisensor.png` files in this folder for the following devices.
 ```json
 [
   {
@@ -591,7 +591,7 @@ sudo nano devices.json
 ## B.5. Install Panel Web App for users
 - In `Source_webapp` folder, create `.env` file.
 ```
-cd /home/iot-server/web_app/Source_webapp
+cd /home/Blockchain-based-IoT-Server/web_app/Source_webapp
 sudo nano .env
 ```
 Enter the following lines in the .env file and replace `YOUR_NODE_NAME` with your actual node name.
@@ -604,7 +604,7 @@ VITE_RPC_URL='https://rpc1.fidesinnova.io'
 ## B.6. Install Admin Web App for administrator
 - In `Source_webapp` folder, create `.env` file.
 ```
-cd /home/iot-server/admin_web_app/Source_webapp
+cd /home/Blockchain-based-IoT-Server/admin_web_app/Source_webapp
 sudo nano .env
 ```
 Enter the following lines in the .env file and replace `YOUR_NODE_NAME` with your actual node name.
@@ -617,13 +617,13 @@ VITE_RPC_URL='https://rpc1.fidesinnova.io'
 # C. Restore Node from Backup
 - Create the 'backups' folder.
    ```
-   cd /home/iot-server/
+   cd /home/Blockchain-based-IoT-Server/
    sudo mkdir backups
    ```
 - Copy your backup file (e.g. iot_server_backup_2025-02-12.tar.gz ) to this folder.
 - Execute the restore script file
 ```
-   cd /home/iot-server/
+   cd /home/Blockchain-based-IoT-Server/
    sudo chmod +x restore.sh
    sudo ./restore.sh
 ```
@@ -632,7 +632,7 @@ VITE_RPC_URL='https://rpc1.fidesinnova.io'
 ## D.1. Build the System
 To automate the setup and build processes for both the backend and frontend applications, run the `initial_setup.sh` script located in the root directory of the project. This script will handle building both the backend and frontend applications and configuring systemctl services automatically.
    ```
-   cd /home/iot-server/
+   cd /home/Blockchain-based-IoT-Server/
    sudo chmod +x initial_setup.sh
    sudo ./initial_setup.sh
    ```
@@ -654,21 +654,21 @@ To automate the setup and build processes for both the backend and frontend appl
 ## E.1. Update IoT Server
 - Every time Fidesinnova core development team push a new version of the code on GitHub.
 ```
-cd /home/iot-server/
+cd /home/Blockchain-based-IoT-Server/
 sudo git fetch
 sudo git pull
 ```
 
 - Every time you pull a new version of the server code from GitHub or you make a change to any `.env` files in the system, you should apply the changes to your production server via update script.
 ```
-cd /home/iot-server/
+cd /home/Blockchain-based-IoT-Server/
 sudo chmod +x update.sh
 sudo ./update.sh
 ```
 ## E.2. Backup IoT Server
 - Every time you want to get a backup from your server, you should execute the following script and get your backup file in the 'backups' folder.
 ```
-cd /home/iot-server/
+cd /home/Blockchain-based-IoT-Server/
 sudo chmod +x backup.sh
 sudo ./backup.sh
 ```
@@ -733,7 +733,7 @@ systemctl list-units --type=service
 - Change the Panel Web App Port
 In `Runner_webapp` folder, create `.env` file.
 ```
-cd /home/iot-server/web_app/Runner_webapp
+cd /home/Blockchain-based-IoT-Server/web_app/Runner_webapp
 sudo nano .env
 ```
 Change the port number in the following line.
@@ -744,7 +744,7 @@ PORT=4000
 - Change the Admin Web App Port
 - In `Runner_webapp` folder, create `.env` file.
 ```
-cd /home/iot-server/admin_web_app/Runner_webapp
+cd /home/Blockchain-based-IoT-Server/admin_web_app/Runner_webapp
 sudo nano .env
 ```
 Change the port number in the following line.
