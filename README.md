@@ -465,13 +465,19 @@ ZKP_STORAGE='0x897264b7d872e07a3d8e1d22b199f12cfb4bb26d'
 NODE_SERVICE_DEVICE_MANAGEMENT='0x4b08ea934e6bfb7c72a376c842c911e1dd2aa74f'
 ```
 
-- Note: Please change only the the necessary values in the 'env' file, and do not add any extra space before or after '='. For exmaple,
+- Please update only the necessary values in the `.env` file, and make sure **not to add any extra spaces** before or after the `=` sign. For example:
+```ini
+THEME_BOX='0xabcd'      ✔️ Correct  
+THEME_BOX ='0xabcd'     ❌ Incorrect  
+THEME_BOX= '0xabcd'     ❌ Incorrect  
+THEME_BOX = '0xabcd'    ❌ Incorrect  
 ```
-THEME_BOX='0xabcd'  <--- correct
-THEME_BOX ='0xabcd'  <--- wrong
-THEME_BOX= '0xabcd'  <--- wrong
-THEME_BOX = '0xabcd'  <--- wrong
+- Additionally, ensure that **no comments** are placed on the same line as any parameter.
+```ini
+API_KEY='123456'        ✔️ Correct  
+API_KEY='123456' # key  ❌ Incorrect  
 ```
+
 
 ### 🔔 Enable Node Mobile Notifications
 
@@ -652,7 +658,12 @@ To automate the setup and build processes for both the backend and frontend appl
 
 # E. Maintenance
 ## E.1. Update IoT Server
-- Every time Fidesinnova core development team push a new version of the code on GitHub.
+- Every time the Fides Innova core development team pushes a new version of the code on GitHub.
+- **Note:** Make sure to check the name of the repository, and if needed, update the folder name using the following command:
+```
+mv IoT-Server Blockchain-based-IoT-Server
+```
+Use the following commands to pull and update your local repository from GitHub:
 ```
 cd /home/Blockchain-based-IoT-Server/
 sudo git fetch
