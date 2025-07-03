@@ -133,7 +133,7 @@ After running the command, enter your web app and admin web app domains separate
 panel.YOUR_DOMAIN admin.YOUR_DOMAIN
 ```
 - The 'certbot' command generates `fullchain.pem` and `privkey.pem` in either `/etc/letsencrypt/admin.YOURDOMAIN.COM` or `/etc/letsencrypt/panel.YOURDOMAIN.COM`.
-<!-- - Create the `ssl` folder inside `/etc/nginx` 
+- Create the `ssl` folder inside `/etc/nginx` 
 ```
 sudo mkdir /etc/nginx/ssl
 ```
@@ -147,7 +147,6 @@ or
 sudo cp /etc/letsencrypt/live/admin.YOUR_DOMAIN/fullchain.pem /etc/nginx/ssl/
 sudo cp /etc/letsencrypt/live/admin.YOUR_DOMAIN/privkey.pem /etc/nginx/ssl/
 ```
--->
 <!-- - Required commands for SSL by Certbot:
   - Check the expiration date of your SSL certificates:
   ```
@@ -196,8 +195,8 @@ http {
 	ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3; # Dropping SSLv3, ref: POODLE
 	ssl_prefer_server_ciphers on;
 
-	ssl_certificate   /etc/letsencrypt/live/admin.YOUR_DOMAIN/fullchain.pem;
-	ssl_certificate_key /etc/letsencrypt/live/admin.YOUR_DOMAIN/privkey.pem;
+	ssl_certificate     /etc/nginx/ssl/fullchain.pem;
+	ssl_certificate_key /etc/nginx/ssl/privkey.pem;
 
 	##
 	# Logging Settings
