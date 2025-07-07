@@ -329,7 +329,7 @@ sudo nano .env
 
 ```
 # Set this with your node URL (e.g., 'zksensor.tech')
-NODE_ID='YOUR_DOMAIN' 
+NODE_ID='YOUR_NODE_DOMAIN' 
 
 # Set this with your node name (e.g., 'zkSensor')
 NODE_NAME='YOUR_NODE_NAME'
@@ -373,9 +373,9 @@ LOG_RETENTION_DAYS=14
 MAIL_HOST='YOUR_HOST_MAIL_SERVER_PROVIDER'
 # Please check your email server’s mail port number by configuring an email client on your mobile or computer to confirm. On some servers, it may be 587 or a different port.
 MAIL_PORT=465
-MAIL_USER='noreply@YOUR_DOMAIN'
+MAIL_USER='noreply@YOUR_NODE_DOMAIN'
 MAIL_PASSWORD='YOUR_MAIL_SERVER_PASSWORD'
-MAIL_FROM='noreply@YOUR_DOMAIN'
+MAIL_FROM='noreply@YOUR_NODE_DOMAIN'
 # optional
 MAIL_TRANSPORT=smtp://${MAIL_USER}:${MAIL_PASSWORD}@${MAIL_HOST} 
 
@@ -420,7 +420,7 @@ Never share your account’s private key with anyone.
 - Update these parameters in the file:
 ```
 # Set this with your node URL (e.g., 'zksensor.tech')
-NODE_ID='YOUR_DOMAIN' 
+NODE_ID='YOUR_NODE_DOMAIN' 
 
 # Set this with your node name (e.g., 'zkSensor')
 NODE_NAME='YOUR_NODE_NAME'
@@ -437,9 +437,9 @@ HOST_NAME_OR_IP='panel.YOUR-DOMAIN'
 MAIL_HOST='YOUR_HOST_MAIL_SERVER_PROVIDER'
 # Please check your email server’s mail port number by configuring an email client on your mobile or computer to confirm. On some servers, it may be 587 or a different port.
 MAIL_PORT=465
-MAIL_USER='noreply@YOUR_DOMAIN'
+MAIL_USER='noreply@YOUR_NODE_DOMAIN'
 MAIL_PASSWORD='YOUR_MAIL_SERVER_PASSWORD'
-MAIL_FROM='noreply@YOUR_DOMAIN'
+MAIL_FROM='noreply@YOUR_NODE_DOMAIN'
 
 # Application color codes in hex. Please write it without '#'. Exmaple: #4e46e7 -> 4e46e7
 # This text color is for Mobile App 
