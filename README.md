@@ -227,9 +227,9 @@ http {
 			proxy_pass https://localhost:4000;
 		}
 
-		# This section is for Server Backend on port 3000
+		# This section is for Server Backend on port 6000
 		location /app {
-			proxy_pass http://localhost:3000;
+			proxy_pass http://localhost:6000;
 		}
 	}
 
@@ -271,14 +271,14 @@ sudo npm i -g @nestjs/cli
 ```
 
 ## A.6. Configure Firewall 
-- Install `ufw`, allow OpenSSH connection, allow nginx connection. Then, allow ports 3000, 4000, and 5000 on the server for Mobile App, Web App, and Admin Web App, respectively. Also, open ports 8883 and 8081 to let IoT devices to connect to the MQTT broker and the web socket, respectively.
+- Install `ufw`, allow OpenSSH connection, allow nginx connection. Then, allow ports 4000, 5000, and 6000 on the server for Mobile App, Web App, and Admin Web App, respectively. Also, open ports 8883 and 8081 to let IoT devices to connect to the MQTT broker and the web socket, respectively.
 ```
 sudo apt install ufw
 sudo ufw allow OpenSSH
 sudo ufw allow 'nginx full'
-sudo ufw allow 3000
 sudo ufw allow 4000
 sudo ufw allow 5000
+sudo ufw allow 6000
 sudo ufw allow 8883
 sudo ufw allow 8081
 ```
@@ -347,7 +347,7 @@ ADMIN_WALLET_PRIVATE_KEY='YOUR_ADMIN_WALLET_PRIVATE_KEY'
 # Server Configuration
 HOST_PROTOCOL='https://'
 HOST_NAME_OR_IP='panel.YOUR_DOMAIN'
-HOST_PORT='3000'
+HOST_PORT='6000'
 HOST_SUB_DIRECTORY='app'
 
 # StorX Configuration
