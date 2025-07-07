@@ -22,8 +22,11 @@ To run `Blockchain-based-IoT-Server` effectively, the following system specifica
 - **Storage:** 30 GB SSD minimum
 - **CPU:** Dual-core processor (x86_64 or ARM64)
 
-**PANEL_URL: Consider a URL (sub-domain), e.g., panel.zksensor.tech, for your IoT server's users. We call it PANEL_URL in this ReadMe.**
-**ADMIN_URL: Consider a URL (sub-domain), e.g., admin.zksensor.tech, for your IoT server's administrators. We call it ADMIN_URL in the ReadMe.**
+--- 
+## URLs:
+- **PANEL_URL: Consider a URL (sub-domain), e.g., panel.zksensor.tech, for your IoT server's users. We call it PANEL_URL in this ReadMe.**
+- **ADMIN_URL: Consider a URL (sub-domain), e.g., admin.zksensor.tech, for your IoT server's administrators. We call it ADMIN_URL in the ReadMe.**
+---
 
 _These requirements are suitable for typical IoT workloads. Actual needs may vary based on deployment scale and data volume._
 
