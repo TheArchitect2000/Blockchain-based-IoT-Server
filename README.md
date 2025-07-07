@@ -325,10 +325,10 @@ cd /home/Blockchain-based-IoT-Server/backend
 sudo nano .env
 ```
 
-- Inside the `.env` file, paste the following parameters. Note that your user web app URL is "NODE_URL"  (e.g., "panel.zksensor.tech").
+- Inside the `.env` file, paste the following parameters. Note that your user web app URL is "NODE_URL"  (e.g., "panel.zksensor.com").
 
 ```
-# Set this with your node URL (e.g., 'zksensor.tech')
+# Set this with your node URL (e.g., 'zksensor.com')
 NODE_ID='YOUR_NODE_DOMAIN' 
 
 # Set this with your node name (e.g., 'zkSensor')
@@ -419,7 +419,7 @@ NODE_SERVICE_DEVICE_MANAGEMENT='0x4b08ea934e6bfb7c72a376c842c911e1dd2aa74f'
 Never share your account’s private key with anyone.
 - Update these parameters in the file:
 ```
-# Set this with your node URL (e.g., 'zksensor.tech')
+# Set this with your node URL (e.g., 'zksensor.com')
 NODE_ID='YOUR_NODE_DOMAIN' 
 
 # Set this with your node name (e.g., 'zkSensor')
