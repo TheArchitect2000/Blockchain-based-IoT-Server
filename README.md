@@ -22,7 +22,7 @@ To run `Blockchain-based-IoT-Server` effectively, the following system specifica
 - **Storage:** 30 GB SSD minimum
 - **CPU:** Dual-core processor (x86_64 or ARM64)
 
-- Consider a URL for your IoT Server. All your users will access the IoT server web dashboard using this URL. We call it NODE_URL in this ReadMe.
+- Consider a URL for your IoT Server. All your users will access the IoT server web dashboard using this URL. We call it PANEL_URL in this ReadMe.
 - Consider a URL for your IoT Server's administrators. All your administrators will access the IoT server admin dashboard using this URL. We call it ADMIN_URL in the ReadMe.
 
 _These requirements are suitable for typical IoT workloads. Actual needs may vary based on deployment scale and data volume._
@@ -133,7 +133,7 @@ sudo certbot certonly --standalone --preferred-challenges http
 -  Make sure to create the certificate for domain and all subdomains
 After running the command, enter your web app and admin web app domains separated by a space, like this:
 ```
-NODE_URL  ADMIN_URL
+PANEL_URL  ADMIN_URL
 ```
 - The 'certbot' command generates `fullchain.pem` and `privkey.pem` in either `/etc/letsencrypt/admin.YOURDOMAIN.COM` or `/etc/letsencrypt/panel.YOURDOMAIN.COM`.
 - Create the `ssl` folder inside `/etc/nginx` 
@@ -142,8 +142,8 @@ sudo mkdir /etc/nginx/ssl
 ```
 - Copy both `fullchain.pem` and `privkey.pem` into `/etc/nginx/ssl`. 
 ```
-sudo cp /etc/letsencrypt/live/NODE_URL/fullchain.pem /etc/nginx/ssl/
-sudo cp /etc/letsencrypt/live/NODE_URL/privkey.pem /etc/nginx/ssl/
+sudo cp /etc/letsencrypt/live/PANEL_URL/fullchain.pem /etc/nginx/ssl/
+sudo cp /etc/letsencrypt/live/PANEL_URL/privkey.pem /etc/nginx/ssl/
 ```
 or
 ```
@@ -219,7 +219,7 @@ http {
 		listen [::]:443 ssl;
 
 		index index.html index.htm;
-		server_name NODE_URL;
+		server_name PANEL_URL;
 
 		root /var/www/html/wikifidesdoc/site;
 
@@ -325,7 +325,7 @@ cd /home/Blockchain-based-IoT-Server/backend
 sudo nano .env
 ```
 
-- Inside the `.env` file, paste the following parameters. Note that your user web app URL is "NODE_URL"  (e.g., "panel.zksensor.com").
+- Inside the `.env` file, paste the following parameters. Note that your user web app URL is "PANEL_URL"  (e.g., "panel.zksensor.com").
 
 ```
 # Set this with your node URL (e.g., 'zksensor.com')
@@ -347,7 +347,7 @@ ADMIN_WALLET_PRIVATE_KEY='YOUR_ADMIN_WALLET_PRIVATE_KEY'
 
 # Server Configuration
 HOST_PROTOCOL='https://'
-HOST_NAME_OR_IP=NODE_URL
+HOST_NAME_OR_IP=PANEL_URL
 HOST_PORT='6000'
 HOST_SUB_DIRECTORY='app'
 
@@ -388,7 +388,7 @@ THEME_BOX='1D293D'
 THEME_BUTTON='33658A'
 
 # IoT Server logo path
-THEME_LOGO='https://NODE_URL/app/uploads/logo.png'
+THEME_LOGO='https://PANEL_URL/app/uploads/logo.png'
 
 ACCESS_TOKEN_ISSUER='https://fidesinnova.io'
 ACCESS_TOKEN_EXPIRATION_TIME=1200000000
@@ -598,7 +598,7 @@ sudo nano .env
 ```
 Enter the following lines in the .env file and replace `YOUR_NODE_NAME` with your actual node name.
 ```
-VITE_URL='https://NODE_URL/app/'
+VITE_URL='https://PANEL_URL/app/'
 VITE_NODE_NAME='YOUR_NODE_NAME'
 VITE_RPC_URL='https://rpc1.fidesinnova.io'
 ```
@@ -611,7 +611,7 @@ sudo nano .env
 ```
 Enter the following lines in the .env file and replace `YOUR_NODE_NAME` with your actual node name.
 ```
-VITE_URL='https://NODE_URL/app/'
+VITE_URL='https://PANEL_URL/app/'
 VITE_NODE_NAME='YOUR_NODE_NAME'
 VITE_RPC_URL='https://rpc1.fidesinnova.io'
 ```
@@ -639,11 +639,11 @@ To automate the setup and build processes for both the backend and frontend appl
    sudo ./initial_setup.sh
    ```
 ## D.2. Account Setup
-- Goto `https://NODE_URL` and go to the 'Sign up' section and create a password for your `super admin email address`.
+- Goto `https://PANEL_URL` and go to the 'Sign up' section and create a password for your `super admin email address`.
 - Goto `https://ADMIN_URL` and login with your `super admin email address` and its password.
   
 ## D.3. Congratulations
-- Panel Web App, `https://NODE_URL` is for your regular users.
+- Panel Web App, `https://PANEL_URL` is for your regular users.
 - Admin Web App, `https://ADMIN_URL` is for your super admin users.
 - Contact FidesInnova at info@fidesinnova.io to add your Web App URLs to the FidesInnova website. These are already registered IoT Servers:
 - [https://panel.motioncertified.online](https://panel.motioncertified.online/)
