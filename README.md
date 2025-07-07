@@ -22,6 +22,9 @@ To run `Blockchain-based-IoT-Server` effectively, the following system specifica
 - **Storage:** 30 GB SSD minimum
 - **CPU:** Dual-core processor (x86_64 or ARM64)
 
+- Consider a URL for your IoT Server. All your users will access the IoT server web dashboard using this URL. We call it NODE_URL in this ReadMe.
+- Consider a URL for your IoT Server's administrators. All your administrators will access the IoT server admin dashboard using this URL. We call it ADMIN_URL in the ReadMe.
+
 _These requirements are suitable for typical IoT workloads. Actual needs may vary based on deployment scale and data volume._
 
 ## A.1. Install MongoDB
@@ -130,7 +133,7 @@ sudo certbot certonly --standalone --preferred-challenges http
 -  Make sure to create the certificate for domain and all subdomains
 After running the command, enter your web app and admin web app domains separated by a space, like this:
 ```
-NODE_URL admin.YOUR_DOMAIN
+NODE_URL  ADMIN_URL
 ```
 - The 'certbot' command generates `fullchain.pem` and `privkey.pem` in either `/etc/letsencrypt/admin.YOURDOMAIN.COM` or `/etc/letsencrypt/panel.YOURDOMAIN.COM`.
 - Create the `ssl` folder inside `/etc/nginx` 
@@ -144,8 +147,8 @@ sudo cp /etc/letsencrypt/live/NODE_URL/privkey.pem /etc/nginx/ssl/
 ```
 or
 ```
-sudo cp /etc/letsencrypt/live/admin.YOUR_DOMAIN/fullchain.pem /etc/nginx/ssl/
-sudo cp /etc/letsencrypt/live/admin.YOUR_DOMAIN/privkey.pem /etc/nginx/ssl/
+sudo cp /etc/letsencrypt/live/ADMIN_URL/fullchain.pem /etc/nginx/ssl/
+sudo cp /etc/letsencrypt/live/ADMIN_URL/privkey.pem /etc/nginx/ssl/
 ```
 <!-- - Required commands for SSL by Certbot:
   - Check the expiration date of your SSL certificates:
@@ -237,7 +240,7 @@ http {
 	server {
 		listen 443 ssl;
 		listen [::]:443 ssl;
-		server_name admin.YOUR_DOMAIN;
+		server_name ADMIN_URL;
 
 		index index.html index.htm;
 
@@ -251,8 +254,6 @@ http {
 }
 
 ```
-- Please update YOUR_DOMAIN with your actual domain name in admin.YOUR_DOMAIN.
-- Please update YOUR_DOMAIN with your actual domain name in NODE_URL.
   
 - Restart Nginx 
 ```
@@ -639,11 +640,11 @@ To automate the setup and build processes for both the backend and frontend appl
    ```
 ## D.2. Account Setup
 - Goto `https://NODE_URL` and go to the 'Sign up' section and create a password for your `super admin email address`.
-- Goto `https://admin.YOUR_DOMAIN` and login with your `super admin email address` and its password.
+- Goto `https://ADMIN_URL` and login with your `super admin email address` and its password.
   
 ## D.3. Congratulations
 - Panel Web App, `https://NODE_URL` is for your regular users.
-- Admin Web App, `https://admin.YOUR_DOMAIN` is for your super admin users.
+- Admin Web App, `https://ADMIN_URL` is for your super admin users.
 - Contact FidesInnova at info@fidesinnova.io to add your Web App URLs to the FidesInnova website. These are already registered IoT Servers:
 - [https://panel.motioncertified.online](https://panel.motioncertified.online/)
 - [https://panel.zksensor.tech](https://panel.zksensor.tech/)
