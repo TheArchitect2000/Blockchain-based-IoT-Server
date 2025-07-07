@@ -496,10 +496,10 @@ To enable mobile notifications on your Node server, follow these steps:
 
 3. **Paste JSON Content**  
    Open the file with `nano`, then paste the full content of the `firebase-adminsdk.json` file you received.
-
+--- 
 ## B.3. Web App Logo
 - Copy your logo in `.png` format with the `logo` name as `logo.png` in `\home\Blockchain-based-IoT-Server\backend\uploads` folder on your server. 
-
+--- 
 ## B.4. Device Configuration File
 - Fidesinnova offers a mobile app to control IoT devices that support the MQTT protocol. The device configuration files, which specify the IoT device types, are stored on the IoT server. In this section, we will review how to create a device configuration file on the server. Each device in the configuration file is represented by an image, a title, a type, and its parameters:
 - **fileName**: Refers to the image file that should be placed in the `/Blockchain-based-IoT-Server/backend/uploads/device` directory. This image will be displayed in the mobile app (e.g., "ecard.png").
@@ -593,7 +593,7 @@ sudo nano devices.json
   }
 ]
 ```
-
+--- 
 ## B.5. Install Panel Web App for users
 - In `Source_webapp` folder, create `.env` file.
 ```
@@ -606,7 +606,7 @@ VITE_URL='https://PANEL_URL/app/'
 VITE_NODE_NAME='YOUR_NODE_NAME'
 VITE_RPC_URL='https://rpc1.fidesinnova.io'
 ```
-
+--- 
 ## B.6. Install Admin Web App for administrator
 - In `Source_webapp` folder, create `.env` file.
 ```
@@ -619,7 +619,7 @@ VITE_URL='https://PANEL_URL/app/'
 VITE_NODE_NAME='YOUR_NODE_NAME'
 VITE_RPC_URL='https://rpc1.fidesinnova.io'
 ```
-
+--- 
 # C. Restore Node from Backup
 - Create the 'backups' folder.
    ```
@@ -635,6 +635,7 @@ VITE_RPC_URL='https://rpc1.fidesinnova.io'
 ```
 
 # D. Build and Execute
+--- 
 ## D.1. Build the System
 To automate the setup and build processes for both the backend and frontend applications, run the `initial_setup.sh` script located in the root directory of the project. This script will handle building both the backend and frontend applications and configuring systemctl services automatically.
    ```
@@ -642,10 +643,11 @@ To automate the setup and build processes for both the backend and frontend appl
    sudo chmod +x initial_setup.sh
    sudo ./initial_setup.sh
    ```
+--- 
 ## D.2. Account Setup
 - Goto `https://PANEL_URL` and go to the 'Sign up' section and create a password for your `super admin email address`.
 - Goto `https://ADMIN_URL` and login with your `super admin email address` and its password.
-  
+--- 
 ## D.3. Congratulations
 - Panel Web App, `https://PANEL_URL` is for your regular users.
 - Admin Web App, `https://ADMIN_URL` is for your super admin users.
@@ -657,6 +659,7 @@ To automate the setup and build processes for both the backend and frontend appl
 - [https://panel.trustsense.tech](https://panel.trustsense.tech/)
 
 # E. Maintenance
+--- 
 ## E.1. Update IoT Server
 - Every time the Fides Innova core development team pushes a new version of the code on GitHub.
 - **Note:** Make sure to check the name of the repository, and if needed, update the folder name using the following command:
@@ -676,6 +679,7 @@ cd /home/Blockchain-based-IoT-Server/
 sudo chmod +x update.sh
 sudo ./update.sh
 ```
+--- 
 ## E.2. Backup IoT Server
 - Every time you want to get a backup from your server, you should execute the following script and get your backup file in the 'backups' folder.
 ```
@@ -683,6 +687,7 @@ cd /home/Blockchain-based-IoT-Server/
 sudo chmod +x backup.sh
 sudo ./backup.sh
 ```
+--- 
 ## E.3. Troubleshooting
 - Useful commands for troubleshooting
 ```
@@ -740,6 +745,7 @@ sudo systemctl disable fides.backend.service
 # List all active systemd services:
 systemctl list-units --type=service
 ```
+--- 
 ## E.4. Web App Ports
 - Change the Panel Web App Port
 In `Runner_webapp` folder, create `.env` file.
@@ -764,7 +770,7 @@ PORT=5000
 ```
 Note: If you change these two ports, please make sure you consult with the Fides Innova repository manager to avoid any future git push conflicts.
 
---------
+---
 
 # 🔐 Automated Web App Security Scan with OWASP ZAP (Docker)
 
