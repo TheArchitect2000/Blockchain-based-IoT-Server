@@ -130,7 +130,7 @@ sudo certbot certonly --standalone --preferred-challenges http
 -  Make sure to create the certificate for domain and all subdomains
 After running the command, enter your web app and admin web app domains separated by a space, like this:
 ```
-panel.YOUR_DOMAIN admin.YOUR_DOMAIN
+NODE_URL admin.YOUR_DOMAIN
 ```
 - The 'certbot' command generates `fullchain.pem` and `privkey.pem` in either `/etc/letsencrypt/admin.YOURDOMAIN.COM` or `/etc/letsencrypt/panel.YOURDOMAIN.COM`.
 - Create the `ssl` folder inside `/etc/nginx` 
@@ -139,8 +139,8 @@ sudo mkdir /etc/nginx/ssl
 ```
 - Copy both `fullchain.pem` and `privkey.pem` into `/etc/nginx/ssl`. 
 ```
-sudo cp /etc/letsencrypt/live/panel.YOUR_DOMAIN/fullchain.pem /etc/nginx/ssl/
-sudo cp /etc/letsencrypt/live/panel.YOUR_DOMAIN/privkey.pem /etc/nginx/ssl/
+sudo cp /etc/letsencrypt/live/NODE_URL/fullchain.pem /etc/nginx/ssl/
+sudo cp /etc/letsencrypt/live/NODE_URL/privkey.pem /etc/nginx/ssl/
 ```
 or
 ```
@@ -216,7 +216,7 @@ http {
 		listen [::]:443 ssl;
 
 		index index.html index.htm;
-		server_name panel.YOUR_DOMAIN;
+		server_name NODE_URL;
 
 		root /var/www/html/wikifidesdoc/site;
 
@@ -252,7 +252,7 @@ http {
 
 ```
 - Please update YOUR_DOMAIN with your actual domain name in admin.YOUR_DOMAIN.
-- Please update YOUR_DOMAIN with your actual domain name in panel.YOUR_DOMAIN.
+- Please update YOUR_DOMAIN with your actual domain name in NODE_URL.
   
 - Restart Nginx 
 ```
@@ -324,7 +324,7 @@ cd /home/Blockchain-based-IoT-Server/backend
 sudo nano .env
 ```
 
-- Inside the `.env` file, paste the following parameters. Note that your user web app URL is "panel.YOUR_DOMAIN"  (e.g., "panel.zksensor.tech").
+- Inside the `.env` file, paste the following parameters. Note that your user web app URL is "NODE_URL"  (e.g., "panel.zksensor.tech").
 
 ```
 # Set this with your node URL (e.g., 'zksensor.tech')
@@ -346,7 +346,7 @@ ADMIN_WALLET_PRIVATE_KEY='YOUR_ADMIN_WALLET_PRIVATE_KEY'
 
 # Server Configuration
 HOST_PROTOCOL='https://'
-HOST_NAME_OR_IP='panel.YOUR_DOMAIN'
+HOST_NAME_OR_IP=NODE_URL
 HOST_PORT='6000'
 HOST_SUB_DIRECTORY='app'
 
@@ -387,7 +387,7 @@ THEME_BOX='1D293D'
 THEME_BUTTON='33658A'
 
 # IoT Server logo path
-THEME_LOGO='https://panel.YOUR_DOMAIN/app/uploads/logo.png'
+THEME_LOGO='https://NODE_URL/app/uploads/logo.png'
 
 ACCESS_TOKEN_ISSUER='https://fidesinnova.io'
 ACCESS_TOKEN_EXPIRATION_TIME=1200000000
@@ -597,7 +597,7 @@ sudo nano .env
 ```
 Enter the following lines in the .env file and replace `YOUR_NODE_NAME` with your actual node name.
 ```
-VITE_URL='https://panel.YOUR_DOMAIN/app/'
+VITE_URL='https://NODE_URL/app/'
 VITE_NODE_NAME='YOUR_NODE_NAME'
 VITE_RPC_URL='https://rpc1.fidesinnova.io'
 ```
@@ -610,7 +610,7 @@ sudo nano .env
 ```
 Enter the following lines in the .env file and replace `YOUR_NODE_NAME` with your actual node name.
 ```
-VITE_URL='https://panel.YOUR_DOMAIN/app/'
+VITE_URL='https://NODE_URL/app/'
 VITE_NODE_NAME='YOUR_NODE_NAME'
 VITE_RPC_URL='https://rpc1.fidesinnova.io'
 ```
@@ -638,11 +638,11 @@ To automate the setup and build processes for both the backend and frontend appl
    sudo ./initial_setup.sh
    ```
 ## D.2. Account Setup
-- Goto `https://panel.YOUR_DOMAIN` and go to the 'Sign up' section and create a password for your `super admin email address`.
+- Goto `https://NODE_URL` and go to the 'Sign up' section and create a password for your `super admin email address`.
 - Goto `https://admin.YOUR_DOMAIN` and login with your `super admin email address` and its password.
   
 ## D.3. Congratulations
-- Panel Web App, `https://panel.YOUR_DOMAIN` is for your regular users.
+- Panel Web App, `https://NODE_URL` is for your regular users.
 - Admin Web App, `https://admin.YOUR_DOMAIN` is for your super admin users.
 - Contact FidesInnova at info@fidesinnova.io to add your Web App URLs to the FidesInnova website. These are already registered IoT Servers:
 - [https://panel.motioncertified.online](https://panel.motioncertified.online/)
