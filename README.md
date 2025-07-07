@@ -113,12 +113,13 @@ sudo systemctl restart mongod
 sudo systemctl disable mongod
 sudo systemctl enable mongod
 ```
-
+--- 
 ## A.2. Install nginx web server 
 ```
 sudo apt update
 sudo apt -y install nginx
 ```
+--- 
 ## A.3. Install Certbot
 - First, stop the `nginx`
 ```
@@ -162,7 +163,7 @@ sudo cp /etc/letsencrypt/live/ADMIN_URL/privkey.pem /etc/nginx/ssl/
   ```
   sudo certbot renew
   ``` -->
-
+--- 
 ## A.4. Update the `nginx.conf` file
 - Replace the following configuration in your `nginx.conf` file located at `/etc/nginx/nginx.conf`.
 ```
@@ -262,7 +263,7 @@ http {
 ```
 sudo systemctl restart nginx
 ```
-
+--- 
 ## A.5. Install Node.js and NestJS
 ```
 sudo apt update
@@ -273,7 +274,7 @@ sudo npm install -g n
 sudo n 22.14.0
 sudo npm i -g @nestjs/cli 
 ```
-
+--- 
 ## A.6. Configure Firewall 
 - Install `ufw`, allow OpenSSH connection, allow nginx connection. Then, allow ports 4000, 5000, and 6000 on the server for Mobile App, Web App, and Admin Web App, respectively. Also, open ports 8883 and 8081 to let IoT devices to connect to the MQTT broker and the web socket, respectively.
 ```
@@ -295,7 +296,7 @@ sudo ufw enable
 ```
 sudo ufw status
 ```
-
+--- 
 ## A.7. Clone the project
 - Install `git`
 ```
@@ -308,7 +309,7 @@ sudo git clone https://github.com/FidesInnova/Blockchain-based-IoT-Server.git
 ```
 
 ### Continue with Step B if you want to install a new node, or jump to Step C if you want to restore your node from a previous backup.
-
+--- 
 # Step B. Configure a New Node
 ## B.1. Generate two JWT secret keys  
 - Generate an access secret key (256-bit / 32-byte)
@@ -320,7 +321,7 @@ openssl rand -hex 32
 ```
 openssl rand -hex 32
 ```
-
+--- 
 ## B.2. Backend configurations
 - In project root folder, create `.env` file and edit parameters based on your node URL info
 ```
