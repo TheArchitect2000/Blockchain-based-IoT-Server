@@ -25,20 +25,8 @@ async function bootstrap() {
 
   app.useStaticAssets(join(__dirname, '../uploads'));
 
-  const hostName = process.env.HOST_NAME_OR_IP;
-  let adminHostName = '';
-
-  if (hostName == 'developer.fidesinnova.io') {
-    adminHostName = 'admindeveloper.fidesinnova.io';
-  } else {
-//    const host = String(hostName).split('.').slice(-2).join('.');
-    const parts = String(hostName).split('.');
-    const host = parts.slice(1).join('.');
-    adminHostName = 'admin.' + host;
-  }
-
-  console.log('adminHostName:', adminHostName);
-  console.log('hostName:', hostName);
+  const hostName = process.env.PANEL_URL || '';
+  const adminHostName = process.env.ADMIN_URL || '';
 
   app.enableCors({
     origin: (origin, callback) => {

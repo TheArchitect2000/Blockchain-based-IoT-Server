@@ -1,9 +1,4 @@
-import {
-    apiSignIn,
-    apiSignInGoogle,
-    apiSignOut,
-    apiSignUp,
-} from '@/services/AuthService'
+import { apiSignIn, apiSignInGoogle, apiSignUp } from '@/services/AuthService'
 import {
     setUser,
     signInSuccess,
@@ -17,15 +12,13 @@ import { REDIRECT_URL_KEY } from '@/constants/app.constant'
 import { useNavigate } from 'react-router-dom'
 import useQuery from './useQuery'
 import type { SignInCredential, SignUpCredential } from '@/@types/auth'
-import Notification from '@/components/ui/Notification'
-import { toast } from '@/components/ui'
-import { FaGlasses } from 'react-icons/fa'
+import * as bcrypt from 'bcrypt'
 
 type Status = 'success' | 'failed'
 
 function useAuth() {
     const dispatch = useAppDispatch()
-
+    const saltRounds = parseInt(process.env.CRYPTION_SALT || '10', 10)
     const navigate = useNavigate()
 
     const query = useQuery()
@@ -44,9 +37,20 @@ function useAuth() {
         try {
             let resp
 
+            const salt = bcrypt.genSaltSync(saltRounds)
+            const hashedNewPassword = bcrypt.hashSync(
+                String(values.password),
+                salt
+            )
+
+            values = { ...values, password: hashedNewPassword }
+
             if (values.tokenId || values.accessToken) {
                 try {
-                    resp = await apiSignInGoogle(values.tokenId || null, values.accessToken || null)
+                    resp = await apiSignInGoogle(
+                        values.tokenId || null,
+                        values.accessToken || null
+                    )
                 } catch (error: any) {
                     return {
                         message: error.response.data.message,
@@ -94,6 +98,14 @@ function useAuth() {
 
     const signUp = async (values: SignUpCredential) => {
         try {
+            const salt = bcrypt.genSaltSync(saltRounds)
+            const hashedNewPassword = bcrypt.hashSync(
+                String(values.password),
+                salt
+            )
+
+            values = { ...values, password: hashedNewPassword }
+
             const resp = await apiSignUp(values)
             console.log(resp)
             if (resp.data) {

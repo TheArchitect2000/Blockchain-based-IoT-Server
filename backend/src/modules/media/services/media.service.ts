@@ -59,7 +59,7 @@ export class MediaService {
           _id: uploadedFile._id,
           fileName: uploadedFile.fileName,
           path: uploadedFile.path,
-          url: `${process.env.HOST_PROTOCOL + process.env.HOST_NAME_OR_IP}/${
+          url: `${process.env.HOST_PROTOCOL + process.env.PANEL_URL}/${
             process.env.HOST_SUB_DIRECTORY
           }/${String(basePath).replace('./', '')}/${uploadedFile.path}`,
           size: uploadedFile.size,
@@ -93,7 +93,7 @@ export class MediaService {
 
       return {
         ...media._doc,
-        url: `${process.env.HOST_PROTOCOL + process.env.HOST_NAME_OR_IP}/${
+        url: `${process.env.HOST_PROTOCOL + process.env.PANEL_URL}/${
           process.env.HOST_SUB_DIRECTORY
         }/${media.path}`,
       };

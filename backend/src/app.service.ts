@@ -31,7 +31,7 @@ export class AppService {
       const fileContent = await fs.promises.readFile(filePath, 'utf-8');
       this.deviceList = JSON.parse(fileContent).map((device) => ({
         ...device,
-        url: `${process.env.HOST_PROTOCOL}${process.env.HOST_NAME_OR_IP}/${process.env.HOST_SUB_DIRECTORY}/uploads/devices/${device.fileName}`,
+        url: `${process.env.HOST_PROTOCOL}${process.env.PANEL_URL}/${process.env.HOST_SUB_DIRECTORY}/uploads/devices/${device.fileName}`,
       }));
     } catch (error) {
       console.error('Error reading devices.json:');
@@ -82,7 +82,7 @@ export class AppService {
     const device = this.deviceList.find((d) => d.type === deviceType);
 
     if (device) {
-      return `${process.env.HOST_PROTOCOL}${process.env.HOST_NAME_OR_IP}/${process.env.HOST_SUB_DIRECTORY}/uploads/devices/${device.fileName}`;
+      return `${process.env.HOST_PROTOCOL}${process.env.PANEL_URL}/${process.env.HOST_SUB_DIRECTORY}/uploads/devices/${device.fileName}`;
     } else {
       console.log(`Device type "${deviceType}" not found.`);
       return null;

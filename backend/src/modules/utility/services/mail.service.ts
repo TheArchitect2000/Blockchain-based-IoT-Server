@@ -9,7 +9,7 @@ import { UserService } from 'src/modules/user/services/user/user.service';
 
 @Injectable()
 export class MailService {
-  private validateTokenUrl = `${process.env.HOST_PROTOCOL}${process.env.HOST_NAME_OR_IP}/${process.env.HOST_SUB_DIRECTORY}/v1/subscriptions/unsubscribe-email?token=`;
+  private validateTokenUrl = `${process.env.HOST_PROTOCOL}${process.env.PANEL_URL}/${process.env.HOST_SUB_DIRECTORY}/v1/subscriptions/unsubscribe-email?token=`;
 
   constructor(
     private readonly mailerService?: MailerService,
@@ -180,7 +180,7 @@ export class MailService {
 
     const url =
       process.env.HOST_PROTOCOL +
-      process.env.HOST_NAME_OR_IP +
+      process.env.PANEL_URL +
       '/' +
       process.env.HOST_SUB_DIRECTORY +
       '/v1/user/verify-otp-code-sent-by-email-for-signup?email=' +
@@ -240,7 +240,7 @@ export class MailService {
 
     const url =
       process.env.HOST_PROTOCOL +
-      process.env.HOST_NAME_OR_IP +
+      process.env.PANEL_URL +
       '/' +
       process.env.HOST_SUB_DIRECTORY +
       '/v1/user/verify-otp-code-sent-by-email-for-reset-password?email=' +
@@ -305,7 +305,7 @@ export class MailService {
 
     const url =
       process.env.HOST_PROTOCOL +
-      process.env.HOST_NAME_OR_IP +
+      process.env.PANEL_URL +
       '/' +
       process.env.HOST_SUB_DIRECTORY +
       '/v1/user/verify-otp-code-sent-by-email-for-verify-email?email=' +
@@ -445,7 +445,7 @@ export class MailService {
       notificationMessage,
     );
 
-    const host = 'https://' + process.env.HOST_NAME_OR_IP;
+    const host = 'https://' + process.env.PANEL_URL;
     if (process.env.NOTIFICATION_BY_NOTIFICATION == 'enabled') {
       this.notificationService.sendNotification({
         message: notificationMessage,

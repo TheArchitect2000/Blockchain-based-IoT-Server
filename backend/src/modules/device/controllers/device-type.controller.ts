@@ -35,7 +35,7 @@ export class DeviceTypeController {
 
   constructor(private readonly deviceTypeService: DeviceTypeService) {}
 
-  @Get('v1/device-type/get-all-device-types')
+  /* @Get('v1/device-type/get-all-device-types')
   @HttpCode(200)
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -44,7 +44,7 @@ export class DeviceTypeController {
     description: 'Gets all device types.',
   })
   async getAllDeviceTypes() {
-    /* await this.deviceTypeService.getAllDeviceTypes()
+    await this.deviceTypeService.getAllDeviceTypes()
         .then((data)=>{            
           this.result = data
         })
@@ -54,6 +54,6 @@ export class DeviceTypeController {
             throw new GeneralException(ErrorTypeEnum.UNPROCESSABLE_ENTITY, errorMessage)
         })
 
-        return this.result; */
-  }
+        return this.result;
+  } */
 }

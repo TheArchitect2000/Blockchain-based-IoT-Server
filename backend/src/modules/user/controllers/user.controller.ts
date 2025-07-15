@@ -266,7 +266,7 @@ export class UserController {
       htmlContent = htmlContent
         .replace(
           '{{ url }}',
-          `${process.env.HOST_PROTOCOL}${process.env.HOST_NAME_OR_IP}/app/v1/user/reset-password-by-otp-code`,
+          `${process.env.HOST_PROTOCOL}${process.env.PANEL_URL}/app/v1/user/reset-password-by-otp-code`,
         )
         .replace('{{ email }}', email)
         .replace('{{ otp }}', otpCode)

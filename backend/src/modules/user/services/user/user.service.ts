@@ -36,7 +36,7 @@ import {
 import { MailService } from 'src/modules/utility/services/mail.service';
 import { randomBytes } from 'crypto';
 
-const saltRounds = 10;
+const saltRounds = process.env.CRYPTION_SALT;
 
 /**
  * User manipulation service.
@@ -485,7 +485,7 @@ export class UserService {
 
       await this.findAUserByEmail(body.email);
 
-      console.log('this.user: ', this.user);
+      //console.log('this.user: ', this.user);
 
       if (this.user) {
         // User already exists.
@@ -551,8 +551,8 @@ export class UserService {
     if (this.user) {
       // User found.
 
-      console.log('User found for password change.');
-      console.log('New Password: ', data.newPassword);
+      //console.log('User found for password change.');
+      //console.log('New Password: ', data.newPassword);
 
       const salt = bcrypt.genSaltSync(saltRounds);
       const hashedNewPassword = bcrypt.hashSync(String(data.newPassword), salt);
@@ -1150,7 +1150,7 @@ export class UserService {
       )
       .then((data) => {
         this.result = data;
-        console.log('Found user is: ', this.result);
+        //console.log('Found user is: ', this.result);
       })
       .catch((error) => {
         const errorMessage =
@@ -1650,13 +1650,17 @@ export class UserService {
   async validateUserPassword(enteredPassword, userPassword) {
     let isValidPassword = null;
 
-    await bcrypt.compare(enteredPassword, userPassword).then((result) => {
+    if (String(enteredPassword) === String(userPassword)) {
+      isValidPassword = true 
+    } else {
+      await bcrypt.compare(enteredPassword, userPassword).then((result) => {
       if (result == true) {
         isValidPassword = true;
       } else {
         isValidPassword = false;
       }
     });
+    }
 
     return isValidPassword;
   }
@@ -1962,11 +1966,8 @@ export class UserService {
       roles.push(ordinaryUserRole);
     }
 
-    const salt = bcrypt.genSaltSync(saltRounds);
-
     const newUser = {
       ...body,
-      password: bcrypt.hashSync(String(body.password), salt),
       StorX: body.StorX || {},
       roles: roles,
       insertDate: new Date(),
@@ -2062,7 +2063,7 @@ export class UserService {
       selectCondition,
     );
 
-    console.log('Found users are: ', foundUsers);
+    //console.log('Found users are: ', foundUsers);
 
     foundUsers.forEach((element) => {
       response.push({ ...element._doc });

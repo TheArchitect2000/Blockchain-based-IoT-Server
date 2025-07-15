@@ -491,10 +491,10 @@ export class DeviceService {
       console.log('Founded Device is:', foundDevice);
 
       console.log(
-        `Device Node: ${foundDevice.nodeId} ||| BackEnd Node: ${process.env.NODE_ID}`,
+        `Device Node: ${foundDevice.nodeId} ||| BackEnd Node: ${process.env.PANEL_URL}`,
       );
 
-      if (String(foundDevice.nodeId) !== String(process.env.NODE_ID)) {
+      if (String(foundDevice.nodeId) !== String(process.env.PANEL_URL)) {
         let errorMessage = `You can't edit other nodes devices !`;
         throw new GeneralException(ErrorTypeEnum.FORBIDDEN, errorMessage);
       }
@@ -513,7 +513,7 @@ export class DeviceService {
         };
         return this.result;
       }
-      foundDevice.nodeId = String(process.env.NODE_ID);
+      foundDevice.nodeId = String(process.env.PANEL_URL);
       foundDevice.updatedBy =
         String(userId) == 'root' ? foundDevice.updatedBy : userId;
       foundDevice.updateDate = new Date();
@@ -528,7 +528,7 @@ export class DeviceService {
         this.result = data;
         if (body.isShared == true && foundDevice.isShared == false) {
           this.contractService.shareDevice(
-            String(process.env.NODE_ID),
+            String(process.env.PANEL_URL),
             String(newData._id),
             String(newData.userId),
             String(newData.deviceName),
@@ -549,7 +549,7 @@ export class DeviceService {
             newData.deviceEncryptedId,
           );
           this.contractService.removeSharedDevice(
-            process.env.NODE_ID,
+            process.env.PANEL_URL,
             String(newData._id),
           );
         }
@@ -563,7 +563,7 @@ export class DeviceService {
   }
 
   async updateAllDevices() {
-    await this.deviceRepository.updateAllNodeIds(process.env.NODE_ID);
+    await this.deviceRepository.updateAllNodeIds(process.env.PANEL_URL);
   }
 
   async renameDevice(body, userId, isAdmin = false): Promise<any> {
@@ -850,7 +850,7 @@ export class DeviceService {
     console.log('Updated found device for deletion is: ', foundDevice);
 
     this.contractService.removeSharedDevice(
-      process.env.NODE_ID,
+      process.env.PANEL_URL,
       String(foundDevice._id),
     );
 
@@ -899,7 +899,7 @@ export class DeviceService {
 
     for (const element of devices) {
       this.contractService.removeSharedDevice(
-        process.env.NODE_ID,
+        process.env.PANEL_URL,
         String(element._id),
       );
 

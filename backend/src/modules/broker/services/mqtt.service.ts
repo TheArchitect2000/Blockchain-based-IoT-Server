@@ -116,7 +116,7 @@ export class MqttService implements OnModuleInit {
       );
     });
 
-    const host = 'https://' + process.env.HOST_NAME_OR_IP;
+    const host = 'https://' + process.env.PANEL_URL;
 
     // fired when a client connects
     aedes.on('client', async function (client) {
@@ -248,7 +248,7 @@ export class MqttService implements OnModuleInit {
             const { proof, ...dataWithoutProof } = parsedPayload.data;
             const deviceData = await this.getDeviceType(parsedPayload.from)
             await this.contractService.storeZKP(
-              String(process.env.NODE_ID),
+              String(process.env.PANEL_URL),
               String(client.id),
               JSON.stringify(proof),
               JSON.stringify(dataWithoutProof),
@@ -263,7 +263,8 @@ export class MqttService implements OnModuleInit {
                 true,
               );
 
-            await this.deviceService.editDevice(
+            try {
+              await this.deviceService.editDevice(
               {
                 deviceId: String(deviceData?._id),
                 hardwareVersion: Number(String(parsedPayload.data.HV)),
@@ -272,9 +273,13 @@ export class MqttService implements OnModuleInit {
               'root',
               true,
             );
-            console.log(
+              console.log(
               `HV and FV of device with id: ${deviceData._id} updated successfully.`,
             );
+            } catch (error) {
+              console.log('Error updating device HV and FV:', error);
+            }
+          
           }
 
           axios

@@ -195,7 +195,7 @@ export class ServiceService {
       foundService.publishRejected = false;
       foundService.publishRequested = false;
 
-      (foundService.nodeId = String(process.env.NODE_ID)),
+      (foundService.nodeId = String(process.env.PANEL_URL)),
         (foundService.updatedBy = userId);
       foundService.updatedAt = new Date();
     }
@@ -213,7 +213,7 @@ export class ServiceService {
           console.log("JSONNNNNN(foundService.devices):", JSON.stringify(foundService.devices))
 
           this.contractService.createService(
-            String(process.env.NODE_ID),
+            String(process.env.PANEL_URL),
             String(foundService._id),
             String(foundService.serviceName),
             String(foundService.description),
@@ -284,7 +284,7 @@ export class ServiceService {
         this.result = data;
         if (nodePublish == false) {
           this.contractService.removeService(
-            process.env.NODE_ID,
+            process.env.PANEL_URL,
             String(foundService._id),
           );
         }
@@ -322,7 +322,7 @@ export class ServiceService {
       .then((data) => {
         foundService = data;
         this.contractService.removeService(
-          process.env.NODE_ID,
+          process.env.PANEL_URL,
           String(foundService._id),
         );
       })

@@ -333,7 +333,10 @@ sudo nano .env
 
 ```
 # Set this with your node URL (e.g., 'zksensor.com')
-NODE_ID='YOUR_NODE_DOMAIN' 
+PANEL_URL='YOUR_NODE_DOMAIN' 
+
+# Set this with your node admin URL (e.g., 'admin.zksensor.com')
+ADMIN_URL='YOUR_NODE_ADMIN_DOMAIN'
 
 # Set this with your node name (e.g., 'zkSensor')
 NODE_NAME='YOUR_NODE_NAME'
@@ -349,9 +352,11 @@ FAUCET_WALLET_PRIVATE_KEY='YOUR_FAUCET_WALLET_PRIVATE_KEY'
 # Admin Wallet Private Key
 ADMIN_WALLET_PRIVATE_KEY='YOUR_ADMIN_WALLET_PRIVATE_KEY'
 
+# Sets how many times passwords are hashed. Higher values mean stronger security but slower processing
+CRYPTION_SALT=10
+
 # Server Configuration
 HOST_PROTOCOL='https://'
-HOST_NAME_OR_IP=PANEL_URL
 HOST_PORT='6000'
 HOST_SUB_DIRECTORY='app'
 
@@ -424,7 +429,10 @@ Never share your account’s private key with anyone.
 - Update these parameters in the file:
 ```
 # Set this with your node URL (e.g., 'zksensor.com')
-NODE_ID='YOUR_NODE_DOMAIN' 
+PANEL_URL='YOUR_NODE_DOMAIN'
+
+# Set this with your node admin URL (e.g., 'admin.zksensor.com')
+ADMIN_URL='YOUR_NODE_ADMIN_DOMAIN'
 
 # Set this with your node name (e.g., 'zkSensor')
 NODE_NAME='YOUR_NODE_NAME'
@@ -434,8 +442,6 @@ MONGO_PASSWORD='FIDESINNOVA_DB_PASSWORD'
 
 FAUCET_WALLET_PRIVATE_KEY='YOUR_FAUCET_WALLET_PRIVATE_KEY'
 ADMIN_WALLET_PRIVATE_KEY='YOUR_ADMIN_WALLET_PRIVATE_KEY'
-
-HOST_NAME_OR_IP='panel.YOUR-DOMAIN'
 
 # Email Server Configuration
 MAIL_HOST='YOUR_HOST_MAIL_SERVER_PROVIDER'
