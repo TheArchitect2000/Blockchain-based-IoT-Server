@@ -193,7 +193,7 @@ async function developerLogin() {
     expire: data.expiresAt,
   };
 
-  console.log('Developer data is:', developer_data);
+  //console.log('Developer data is:', developer_data);
 
   return developer_data;
 }
