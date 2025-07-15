@@ -256,14 +256,14 @@ export class MqttService implements OnModuleInit {
           }
 
           if (shouldTrigger(String(parsedPayload.from), 6)) {
-            const deviceData =
+            try {
+              const deviceData =
               await this.deviceService.getDeviceInfoByEncryptedId(
                 String(parsedPayload.from),
                 '',
                 true,
               );
 
-            try {
               await this.deviceService.editDevice(
               {
                 deviceId: String(deviceData?._id),
