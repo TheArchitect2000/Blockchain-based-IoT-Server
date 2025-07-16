@@ -23,6 +23,7 @@ import { UtilityModule } from './modules/utility/utility.module';
 import { MediaModule } from './modules/media/media.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { BuildingModule } from './modules/building/building.module';
+import { SyslogModule } from './modules/logging/syslog.module';
 //import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
@@ -47,6 +48,7 @@ import { BuildingModule } from './modules/building/building.module';
       serveRoot: '/app/uploads/*',
     }),
     AuthenticationModule,
+    SyslogModule,
     UserModule,
     BrokerModule,
     forwardRef(() => DeviceModule),

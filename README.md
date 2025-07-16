@@ -355,6 +355,14 @@ ADMIN_WALLET_PRIVATE_KEY='YOUR_ADMIN_WALLET_PRIVATE_KEY'
 # Sets how many times passwords are hashed. Higher values mean stronger security but slower processing
 CRYPTION_SALT=10
 
+# Syslog Server Configuration
+SYSLOG_SERVER_ENABLED='True'
+SYSLOG_SERVER_HOST='192.168.1.100'
+SYSLOG_SERVER_PORT=514
+SYSLOG_SERVER_LEVEL=3
+SYSLOG_SERVER_USERNAME=''
+SYSLOG_SERVER_PASSWORD=''
+
 # Server Configuration
 HOST_PROTOCOL='https://'
 HOST_PORT='6000'
