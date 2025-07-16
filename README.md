@@ -731,30 +731,46 @@ rm -rf directoryName
 
 # View logs for a specific service (last 1 minute):
 sudo journalctl -u fides.backend.service --no-pager --since "1 minute ago"
+sudo journalctl -u fides.userwebapp.service --no-pager --since "1 minute ago"
+sudo journalctl -u fides.adminwebapp.service --no-pager --since "1 minute ago"
 
 # View the latest logs for a service:
 sudo journalctl -u fides.backend.service -f
+sudo journalctl -u fides.userwebapp.service -f
+sudo journalctl -u fides.adminwebapp.service -f
 
 # Show logs for a service since a specific time:
 sudo journalctl -u fides.backend.service --since "2025-06-08 10:00:00"
+sudo journalctl -u fides.userwebapp.service --since "2025-06-08 10:00:00"
+sudo journalctl -u fides.adminwebapp.service --since "2025-06-08 10:00:00"
 
 # Show logs for all systemd services:
 sudo journalctl -xe
 
 # Check the status of a service:
 systemctl status fides.backend.service
+systemctl status fides.userwebapp.service
+systemctl status fides.adminwebapp.service
 
 # Restart a service:
 sudo systemctl restart fides.backend.service
+sudo systemctl restart fides.userwebapp.service
+sudo systemctl restart fides.adminwebapp.service
 
 # Stop a service:
 sudo systemctl stop fides.backend.service
+sudo systemctl stop fides.userwebapp.service
+sudo systemctl stop fides.adminwebapp.service
 
 # Enable a service to start on boot:
 sudo systemctl enable fides.backend.service
+sudo systemctl enable fides.userwebapp.service
+sudo systemctl enable fides.adminwebapp.service
 
 # Disable a service from starting on boot:
 sudo systemctl disable fides.backend.service
+sudo systemctl disable fides.userwebapp.service
+sudo systemctl disable fides.adminwebapp.service
 
 # List all active systemd services:
 systemctl list-units --type=service
