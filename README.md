@@ -305,7 +305,7 @@ sudo apt install git
 - Clone the project
 ```
 cd /home
-sudo git clone https://github.com/FidesInnova/Blockchain-based-IoT-Server.git
+sudo git clone https://github.com/TheArchitect2000/Blockchain-based-IoT-Server.git
 ```
 
 ### Continue with Step B if you want to install a new node, or jump to Step C if you want to restore your node from a previous backup.
