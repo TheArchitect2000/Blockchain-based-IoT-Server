@@ -1966,6 +1966,11 @@ export class UserService {
       roles.push(ordinaryUserRole);
     }
 
+    if (body.password){
+      const salt = bcrypt.genSaltSync(saltRounds);
+      body.password = bcrypt.hashSync(String(body.password), salt);
+    }
+
     const newUser = {
       ...body,
       StorX: body.StorX || {},
