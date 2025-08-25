@@ -36,7 +36,7 @@ import {
 import { MailService } from 'src/modules/utility/services/mail.service';
 import { randomBytes } from 'crypto';
 
-const saltRounds = process.env.CRYPTION_SALT;
+const saltRounds = parseInt(process.env.CRYPTION_SALT) || 10;
 
 /**
  * User manipulation service.
@@ -1966,9 +1966,8 @@ export class UserService {
       roles.push(ordinaryUserRole);
     }
 
-    if (body.password){
-      const salt = bcrypt.genSaltSync(saltRounds);
-      body.password = bcrypt.hashSync(String(body.password), salt);
+    if (body.password) {
+      body.password = await bcrypt.hash(String(body.password), saltRounds);
     }
 
     const newUser = {
