@@ -1,4 +1,4 @@
-import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { Inject, Injectable, forwardRef, Logger } from '@nestjs/common';
 import { Types } from 'mongoose';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { OTPTypeEnum } from 'src/modules/utility/enums/otp-type.enum';
@@ -249,14 +249,13 @@ export class UserService {
       }
     } catch (error) {}
 
-    this.otp = await this.otpService.findOTPByEmail(
+    const otp = await this.otpService.findOTPByEmail(
       body.email,
       OTPTypeEnum.REGISTRATION,
     );
-
     if (
-      this.otp.length == 0 ||
-      new Date(this.otp[this.otp.length - 1].expiryDate).getTime() <
+      otp.length == 0 ||
+      new Date(otp[otp.length - 1].expiryDate).getTime() <
         new Date().getTime()
     ) {
       /* const StorX = await storxController.createUserAndGenerateStorXKey(
