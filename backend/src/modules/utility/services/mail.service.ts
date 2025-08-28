@@ -194,7 +194,8 @@ export class MailService {
       return false;
     } */
 
-    const userToken = await this.getTokenWithUserEmail(email);
+
+    // const userToken = await this.getTokenWithUserEmail(email);
 
     await this.mailerService
       .sendMail({
@@ -206,7 +207,7 @@ export class MailService {
           NodeName: process.env.NODE_NAME,
           NodeImageSrc: process.env.THEME_LOGO,
           url: url,
-          unsubscribeEmailUrl: `${this.validateTokenUrl}${userToken}`,
+          // unsubscribeEmailUrl: `${this.validateTokenUrl}${userToken}`,
         },
         attachments: [
           {
