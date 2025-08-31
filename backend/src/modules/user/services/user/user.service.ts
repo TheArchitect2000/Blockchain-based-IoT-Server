@@ -92,9 +92,15 @@ export class UserService {
     private readonly buildingService?: BuildingService,
   ) {}
 
-  getUserKeys(): string {
-    return Object.keys(userSchema.paths).join(' ');
+  getUserKeys(exclude=true): string {
+  const excludedFields = ['password', 'newPassword'];
+  if (exclude) { 
+  return Object.keys(userSchema.paths)
+    .filter(key => !excludedFields.includes(key))
+    .join(' ');
   }
+  return Object.keys(userSchema.paths).join(' ');
+}
 
   validateEmail(email: string) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -1446,7 +1452,7 @@ export class UserService {
         },
       },
     ];
-    const selectCondition = this.getUserKeys();
+    const selectCondition = this.getUserKeys(false);
 
     this.user = await this.userRepository.findUserByEmail(
       data.email,
@@ -1556,7 +1562,7 @@ export class UserService {
       },
     ];
 
-    const selectCondition = this.getUserKeys();
+    const selectCondition = this.getUserKeys(false);
 
     this.user = await this.userRepository.findUserByEmail(
       data.email,

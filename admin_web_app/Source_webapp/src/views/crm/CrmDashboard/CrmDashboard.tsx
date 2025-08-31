@@ -47,7 +47,15 @@ const CrmDashboard = () => {
         if (devices?.data.data) {
             const newPositions: [number, number, number, number][] =
                 devices.data.data
-                    .filter((item) => item.location.coordinates)
+                    .filter(
+                        (item) =>
+                            Array.isArray(item.location.coordinates) &&
+                            item.location.coordinates.length === 2 &&
+                            typeof item.location.coordinates[0] === 'number' &&
+                            typeof item.location.coordinates[1] === 'number' &&
+                            item.location.coordinates[0] !== null &&
+                            item.location.coordinates[1] !== null
+                    )
                     .map(
                         (item: any) =>
                             [
