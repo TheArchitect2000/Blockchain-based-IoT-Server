@@ -45,6 +45,8 @@ export class AuthenticationService {
       });
 
       if (passwordIsCorrect) {
+        user.password = undefined;
+        user.newPassword = undefined;
         return { user: user, error: null };
       } else {
         return { user: null, error: 'passwordIncorrect' };
