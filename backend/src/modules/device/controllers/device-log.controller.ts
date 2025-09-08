@@ -29,7 +29,6 @@ import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { DeviceLogService } from '../services/device-log.service';
 import { DeviceService } from '../services/device.service';
-import storxController from './storx.controller';
 import { UserService } from 'src/modules/user/services/user/user.service';
 
 @ApiTags('Manage Device Logs')
@@ -37,8 +36,7 @@ import { UserService } from 'src/modules/user/services/user/user.service';
 export class DeviceLogController {
   private result;
   private storxBucket = process.env.STORX_BUCKET_NAME || '';
-  private logKeepDays =
-  Number(process.env.LOG_RETENTION_DAYS ?? '14');
+  private logKeepDays = Number(process.env.LOG_RETENTION_DAYS ?? '14');
 
   constructor(
     @Inject(UserService)
@@ -47,8 +45,9 @@ export class DeviceLogController {
     private readonly deviceService: DeviceService,
   ) {
     setInterval(async () => {
-
-      await this.deviceLogService.removeAllDeviceLogsBeforeDaysAgo(this.logKeepDays)
+      await this.deviceLogService.removeAllDeviceLogsBeforeDaysAgo(
+        this.logKeepDays,
+      );
 
       /* const usersRes = await this.userService.getAllUsers();
       const devicesRes = await this.deviceService.getAllDevices();
@@ -471,7 +470,7 @@ export class DeviceLogController {
 
     return this.result;
   }
-  
+
   @Get('v1/device-log/get-device-log-by-encrypted-deviceid-and-date-range')
   @HttpCode(200)
   @UseGuards(JwtAuthGuard)
@@ -523,14 +522,15 @@ export class DeviceLogController {
     const isAdmin = await this.isAdmin(request.user.userId);
 
     try {
-      const result = await this.deviceLogService.getDeviceLogByEncryptedDeviceIdAndDateRange(
-        deviceEncryptedId,
-        new Date(startDate),
-        new Date(endDate),
-        type,
-        request.user.userId,
-        (isSharedWithUser || isAdmin),
-      );
+      const result =
+        await this.deviceLogService.getDeviceLogByEncryptedDeviceIdAndDateRange(
+          deviceEncryptedId,
+          new Date(startDate),
+          new Date(endDate),
+          type,
+          request.user.userId,
+          isSharedWithUser || isAdmin,
+        );
 
       return result;
     } catch (error) {
@@ -541,5 +541,4 @@ export class DeviceLogController {
       );
     }
   }
-
 }

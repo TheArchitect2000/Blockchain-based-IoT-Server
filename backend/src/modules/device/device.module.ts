@@ -19,9 +19,15 @@ import { VirtualMachineModule } from '../virtual-machine/virtual-machine.module'
 import { ContractModule } from '../smartcontract/contract.module';
 import { AppModule } from 'src/app.module';
 import { BuildingModule } from '../building/building.module';
+import { StorxService } from './services/storx.service';
+import { StorXController } from './controllers/storx.controller';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
+    JwtModule.register({
+      secret: '$2a$10$4THkK2FfT2Y7AIbU0pBFPOpmKeTfrzs8On2Qe8L362D4DR8VI52gO',
+    }),
     MongooseModule.forFeature(deviceFeature),
     MongooseModule.forFeature(deviceLogFeature),
     MongooseModule.forFeature(deviceTypeFeature),
@@ -40,8 +46,14 @@ import { BuildingModule } from '../building/building.module';
     DeviceLogRepository,
     DeviceTypeService,
     DeviceTypeRepository,
+    StorxService,
   ],
-  controllers: [DeviceController, DeviceTypeController, DeviceLogController],
+  controllers: [
+    DeviceController,
+    DeviceTypeController,
+    DeviceLogController,
+    StorXController,
+  ],
   exports: [DeviceService, DeviceLogService, DeviceTypeService],
 })
 export class DeviceModule {}
