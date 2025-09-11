@@ -22,15 +22,18 @@ import { BuildingModule } from '../building/building.module';
 import { StorxService } from './services/storx.service';
 import { StorXController } from './controllers/storx.controller';
 import { JwtModule } from '@nestjs/jwt';
+import { storxFeature } from './features/storx.feature';
+import { StorxRepository } from './repositories/storx.repository';
 
 @Module({
   imports: [
     JwtModule.register({
-      secret: '$2a$10$4THkK2FfT2Y7AIbU0pBFPOpmKeTfrzs8On2Qe8L362D4DR8VI52gO',
+      secret: process.env.STORX_CLIENT_SECRET,
     }),
     MongooseModule.forFeature(deviceFeature),
     MongooseModule.forFeature(deviceLogFeature),
     MongooseModule.forFeature(deviceTypeFeature),
+    MongooseModule.forFeature(storxFeature),
     forwardRef(() => UserModule),
     forwardRef(() => NotificationModule),
     forwardRef(() => ServiceModule),
@@ -47,6 +50,7 @@ import { JwtModule } from '@nestjs/jwt';
     DeviceTypeService,
     DeviceTypeRepository,
     StorxService,
+    StorxRepository,
   ],
   controllers: [
     DeviceController,
