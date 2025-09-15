@@ -91,9 +91,7 @@ export class DeviceRepository {
       .select(this.getDeviceKeys());
   }
 
-  async getDevicesByUserId(
-    userId,
-  ) {
+  async getDevicesByUserId(userId) {
     console.log('we are in getDevicesByUserId repository!');
 
     return await this.deviceModel
@@ -286,6 +284,4 @@ export class DeviceRepository {
 
     return !!result; // Returns true if found, false otherwise
   }
-
-  
 }

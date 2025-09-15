@@ -64,11 +64,6 @@ export class EditDeviceDto {
   parameters: [];
 
   @IsOptional()
-  @IsBoolean({ message: 'isShared must be boolean.' })
-  @ApiProperty({ required: false })
-  isShared: boolean;
-
-  @IsOptional()
   @IsNumber({}, { message: 'costOfUse must be number.' })
   @ApiProperty({ required: false })
   costOfUse: number;

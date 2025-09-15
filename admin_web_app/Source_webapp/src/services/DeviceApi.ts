@@ -18,12 +18,8 @@ export async function apiGetAllDevices<T>() {
 
 export async function apiUnshareDevice<T>(deviceId: string) {
     return ApiService.fetchData<T>({
-        url: `${import.meta.env.VITE_URL}v1/device/edit`,
+        url: `${import.meta.env.VITE_URL}v1/device/global-unshare/${deviceId}`,
         method: 'patch',
-        data: {
-            deviceId: deviceId,
-            isShared: false,
-        },
     })
 }
 

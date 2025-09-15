@@ -9,7 +9,11 @@ import 'leaflet/dist/leaflet.css'
 import { Dialog, Button, Input, toast, Notification } from '@/components/ui'
 import { useState } from 'react'
 import { BsTextWrap } from 'react-icons/bs'
-import { apiEditDevice, apiRenameDevice } from '@/services/DeviceApi'
+import {
+    apiEditDevice,
+    apiGlobalShare,
+    apiRenameDevice,
+} from '@/services/DeviceApi'
 import MarkerCluster from '@/components/map/MarkerCluster'
 import GlobalMapMarker from './MapMarker'
 
@@ -107,22 +111,34 @@ const GlobalShareDeviceDialog: React.FC<GlobalShareDeviceDialogProps> = ({
     async function handleGlobalShare() {
         setApiLoading(true)
         try {
-            const apiRes = await apiEditDevice(deviceId, {
-                location: { type: 'Point', coordinates: location },
-                isShared: true,
+            const apiRes = await apiGlobalShare(deviceId, {
+                coordinate: location,
                 costOfUse: sharePrice ? sharePrice : 0,
             })
-            toast.push(
-                <Notification type="success">
-                    {'Device globaly shared successfully.'}
-                </Notification>,
-                {
-                    placement: 'top-center',
-                }
-            )
-            setApiLoading(false)
-            onClose()
-            refreshPage()
+            if (apiRes.status !== 200) {
+                toast.push(
+                    <Notification type="danger">
+                        {'Device globaly shared failed.'}
+                    </Notification>,
+                    {
+                        placement: 'top-center',
+                    }
+                )
+                setApiLoading(false)
+                onClose()
+            } else {
+                toast.push(
+                    <Notification type="success">
+                        {'Device globaly shared successfully.'}
+                    </Notification>,
+                    {
+                        placement: 'top-center',
+                    }
+                )
+                setApiLoading(false)
+                onClose()
+                refreshPage()
+            }
         } catch (error: any) {
             setApiLoading(false)
             toast.push(

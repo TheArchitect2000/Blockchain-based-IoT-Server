@@ -2,7 +2,7 @@ import { Types } from 'mongoose';
 import { Document } from 'mongoose';
 
 export interface Device extends Document {
-  nodeMqttAddress?: string
+  nodeMqttAddress?: string;
   userId: string;
   nodeId: string;
   nodeDeviceId: string;
@@ -17,7 +17,7 @@ export interface Device extends Document {
   sharedWith: Array<Types.ObjectId>;
   isShared: boolean;
   costOfUse: number;
-  location: string;
+  location: { coordinates: number[]; type: string } | string;
   geometry: string;
   insertedBy: string;
   insertDate: string;

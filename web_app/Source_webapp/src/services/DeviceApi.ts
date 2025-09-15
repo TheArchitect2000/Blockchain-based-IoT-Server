@@ -47,6 +47,16 @@ export async function apiEditDevice<T>(deviceId: string, data: Object) {
     })
 }
 
+export async function apiGlobalShare<T>(deviceId: string, data: Object) {
+    return ApiService.fetchData<T>({
+        url: `${import.meta.env.VITE_URL}v1/device/global-share/${deviceId}`,
+        method: 'patch',
+        data: {
+            ...data,
+        },
+    })
+}
+
 export async function apiGetAllSharedDevices<T>() {
     return ApiService.fetchData<T>(
         {
@@ -135,11 +145,7 @@ export async function apiGetLocalShareUsersWithDeviceId<T>(deviceId: string) {
 
 export async function apiUnshareDevice<T>(deviceId: string) {
     return ApiService.fetchData<T>({
-        url: `${import.meta.env.VITE_URL}v1/device/edit`,
+        url: `${import.meta.env.VITE_URL}v1/device/global-unshare/${deviceId}`,
         method: 'patch',
-        data: {
-            deviceId: deviceId,
-            isShared: false,
-        },
     })
 }
