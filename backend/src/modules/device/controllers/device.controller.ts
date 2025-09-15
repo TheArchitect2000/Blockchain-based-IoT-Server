@@ -32,6 +32,7 @@ import { DeviceService } from '../services/device.service';
 import { EditDeviceDto } from '../data-transfer-objects/edit-device.dto';
 import { UserService } from 'src/modules/user/services/user/user.service';
 import { LocalShareDto } from '../data-transfer-objects/local-share-dto';
+import { GlobalShareDto } from '../data-transfer-objects/global-share-dto';
 
 @ApiTags('Manage Devices')
 @Controller('app')
@@ -140,6 +141,50 @@ export class DeviceController {
       });
 
     return this.result;
+  }
+
+  @Patch('v1/device/global-unshare/:deviceId')
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Global unshare device.',
+    description: 'This API will globally unshare a device with user',
+  })
+  async globalUnShareDevice(
+    @Param('deviceId') deviceId: string,
+    @Request() request,
+  ) {
+    const isAdmin = await this.isAdmin(request.user.userId);
+    await this.deviceService.unshareGlobalDevice(
+      deviceId,
+      request.user.userId,
+      isAdmin,
+    );
+    return { message: 'Device unshared' };
+  }
+
+  @Patch('v1/device/global-share/:deviceId')
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Global share device.',
+    description: 'This API will globally share a device with user',
+  })
+  async globalShareDevice(
+    @Param('deviceId') deviceId: string,
+    @Body() body: GlobalShareDto,
+    @Request() request,
+  ) {
+    const isAdmin = await this.isAdmin(request.user.userId);
+    await this.deviceService.globalShareDevice(
+      deviceId,
+      body,
+      request.user.userId,
+      isAdmin,
+    );
+    return { message: 'Device sharing updated successfully' };
   }
 
   @Get('v1/device/get-devices-by-user-id/:userId')
@@ -651,11 +696,11 @@ export class DeviceController {
     description:
       'This API will return all devices that are sharing with a user.',
   })
-  async getAllDevicesSharingWithUser(
-    @Request() request,
-  ) {
+  async getAllDevicesSharingWithUser(@Request() request) {
     console.log('We are in getAllDevicesSharingWithUser controller');
 
-    return await this.deviceService.getSharedDevicesWithUserId(request.user.userId);
+    return await this.deviceService.getSharedDevicesWithUserId(
+      request.user.userId,
+    );
   }
 }

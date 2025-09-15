@@ -1,5 +1,5 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { ContractTransaction, ethers } from 'ethers';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import { AbiCoder, ContractTransaction, ethers, id as keccakId } from 'ethers';
 import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { DeviceService } from 'src/modules/device/services/device.service';
@@ -13,6 +13,66 @@ const serviceDeviceABI = require('../ABI/ServiceDeviceABI.json') as any[];
 const zkpStorageABI = require('../ABI/ZKPStorageABI.json') as any[];
 const commitmentManagementABI =
   require('../ABI/CommitmentManagemantABI.json') as any[];
+
+function decodeRevertData(data: string, types: string[]) {
+  if (!data || data === '0x') return null;
+  // drop selector (first 4 bytes = 10 chars including '0x')
+  const encodedArgs = '0x' + data.slice(10);
+  const coder = new AbiCoder();
+  try {
+    return coder.decode(types, encodedArgs);
+  } catch (err) {
+    return null;
+  }
+}
+
+// build selector -> error signature map from ABI JSON (errors only)
+function buildErrorSelectorMapFromAbi(abi: any[]): Record<string, string> {
+  const map: Record<string, string> = {};
+  const errors = abi.filter((item) => item.type === 'error');
+  for (const e of errors) {
+    const types = (e.inputs || []).map((i) => i.type).join(',');
+    const signature = `${e.name}(${types})`;
+    const selector = keccakId(signature).slice(0, 10); // 0x + 8 hex chars
+    map[selector] = signature;
+  }
+  return map;
+}
+
+// try to decode unknown custom error using ABI (if available) or using common fallback ["address","string"]
+function decodeCustomError(
+  data: string,
+  abiList: any[] = [],
+):
+  | { selector: string; signature?: string; decoded?: any }
+  | { selector: string; raw: string } {
+  if (!data || data === '0x') return { selector: '0x' };
+
+  const selector = data.slice(0, 10);
+
+  // 1) try all provided ABIs for matching error signature
+  for (const abi of abiList) {
+    const map = buildErrorSelectorMapFromAbi(abi);
+    if (map[selector]) {
+      // we have the signature, get types
+      const signature = map[selector]; // e.g. "NotAuthorized(address,string)"
+      const typesPart = signature.replace(/^[^\(]+\(|\)$/g, ''); // "address,string"
+      const types = typesPart === '' ? [] : typesPart.split(',');
+      const decoded = types.length ? decodeRevertData(data, types) : null;
+      return { selector, signature, decoded };
+    }
+  }
+
+  // 2) fallback: attempt common pattern (address, string)
+  const fallbackTypes = ['address', 'string'];
+  const decoded = decodeRevertData(data, fallbackTypes);
+  if (decoded) {
+    return { selector, signature: 'unknown(address,string)', decoded };
+  }
+
+  // 3) nothing matched, return raw
+  return { selector, raw: data };
+}
 
 function parseProofString(proofString) {
   let cleanedString = proofString.substring(1, proofString.length - 1);
@@ -155,7 +215,7 @@ export class ContractService {
     });
 
     this.contracts.serviceDevice.on('DeviceCreated', (id, device) => {
-      console.log('DeviceCreated', device);
+      Logger.log('DeviceCreated', device);
       try {
         let newDevice = {
           nodeId: device[0],
@@ -275,8 +335,6 @@ export class ContractService {
   async shareDevice(
     nodeId: string,
     deviceId: string,
-    ownerId: string,
-    name: string,
     deviceType: string,
     encryptedID: string,
     hardwareVersion: string,
@@ -286,22 +344,47 @@ export class ContractService {
     locationGPS: Array<string>,
     installationDate: string,
   ) {
-    return this.contracts.serviceDevice.createDevice(
-      nodeId,
-      deviceId,
-      deviceType,
-      encryptedID,
-      `${firmwareVersion}/${hardwareVersion}`,
-      'FidesInnova',
-      parameters,
-      useCost,
-      locationGPS,
-      'ownerShipId',
-      installationDate,
-      firmwareVersion,
-    );
-  }
+    try {
+      const tx = await this.contracts.serviceDevice.createDevice(
+        nodeId,
+        deviceId,
+        deviceType,
+        encryptedID,
+        `${firmwareVersion}/${hardwareVersion}`,
+        'FidesInnova',
+        parameters,
+        useCost,
+        locationGPS,
+        'ownerShipId',
+        installationDate,
+        firmwareVersion,
+      );
 
+      await tx.wait();
+      return tx.hash;
+    } catch (error: any) {
+      let errorMessage = 'An unexpected error occurred.';
+      if (error?.code === 'CALL_EXCEPTION') {
+        const revertData =
+          error?.data || (error?.error && error.error.data) || null;
+        if (revertData) {
+          const decoded = decodeCustomError(revertData, [serviceDeviceABI]);
+          if ('decoded' in decoded && decoded.decoded) {
+            const values = decoded.decoded;
+            errorMessage = `Smart contract reverted: selector=${
+              decoded.selector
+            }, signature=${decoded.signature ?? 'unknown'}, user=${
+              values[0]
+            }, reason=${values[1]}`;
+          }
+        }
+      }
+      throw new GeneralException(
+        ErrorTypeEnum.INTERNAL_SERVER_ERROR,
+        errorMessage,
+      );
+    }
+  }
   async removeSharedDevice(nodeId: string, deviceId: string) {
     return this.contracts.serviceDevice.removeDevice(nodeId, deviceId, nodeId);
   }
@@ -422,71 +505,71 @@ export class ContractService {
     });
   }
 
-  async syncAllDevices() {
-    const allContractDevices = await this.fetchAllDevices();
-    const allNodeDevices = await this.deviceService.getAllSharedDevices();
+  // async syncAllDevices() {
+  //   const allContractDevices = await this.fetchAllDevices();
+  //   const allNodeDevices = await this.deviceService.getAllSharedDevices();
 
-    allNodeDevices.map((nodeDevices: any) => {
-      let exist = false;
-      allContractDevices.map((contractDevices: any) => {
-        if (
-          String(nodeDevices.nodeId) == String(contractDevices[0]) &&
-          (String(nodeDevices.nodeDeviceId) == String(contractDevices[1]) ||
-            String(nodeDevices._id) == String(contractDevices[1]))
-        ) {
-          exist = true;
-        }
-      });
-      if (exist == false) {
-        try {
-          this.deviceService.deleteOtherNodeDeviceByNodeIdAndDeviceId(
-            nodeDevices.nodeId,
-            nodeDevices.nodeDeviceId,
-            nodeDevices.deviceEncryptedId,
-          );
-        } catch (error) {
-          console.log(error);
-        }
-      }
-    });
+  //   allNodeDevices.map((nodeDevices: any) => {
+  //     let exist = false;
+  //     allContractDevices.map((contractDevices: any) => {
+  //       Logger.log('contractDevices:', contractDevices);
+  //       Logger.log('nodeDevices:', nodeDevices);
+  //       if (
+  //         String(nodeDevices.nodeId) == String(contractDevices[0]) &&
+  //         (String(nodeDevices.nodeDeviceId) == String(contractDevices[1]) ||
+  //           String(nodeDevices._id) == String(contractDevices[1]))
+  //       ) {
+  //         exist = true;
+  //       }
+  //     });
+  //     if (exist == false) {
+  //       try {
+  //         this.deviceService.deleteOtherNodeDeviceByNodeIdAndDeviceId(
+  //           nodeDevices.nodeId,
+  //           nodeDevices.nodeDeviceId,
+  //           nodeDevices.deviceEncryptedId,
+  //         );
+  //       } catch (error) {
+  //         console.log(error);
+  //       }
+  //     }
+  //   });
 
-    allContractDevices.map((contractDevices: any) => {
-      let exist = false;
-      allNodeDevices.map((nodeDevices: any) => {
-        if (
-          String(nodeDevices.nodeId) == String(contractDevices[0]) &&
-          (String(nodeDevices.nodeDeviceId) == String(contractDevices[1]) ||
-            String(nodeDevices._id) == String(contractDevices[1]))
-        ) {
-          exist = true;
-        }
-      });
-      if (exist == false) {
-        let newDevice = {
-          nodeId: contractDevices[0],
-          nodeDeviceId: contractDevices[1],
-          isShared: true,
-          deviceName: contractDevices[2],
-          deviceType: contractDevices[2],
-          deviceEncryptedId: contractDevices[3],
-          mac: Buffer.from(contractDevices[3], 'base64').toString('utf8'),
-          hardwareVersion: String(contractDevices[4]).split('/')[0],
-          firmwareVersion: String(contractDevices[4]).split('/')[1],
-          parameters: contractDevices[6].map((str) => JSON.parse(str)),
-          costOfUse: contractDevices[7],
-          location: { coordinates: contractDevices[8] },
-          insertDate: new Date(String(contractDevices[10])),
-          updateDate: new Date(String(contractDevices[10])),
-        };
+  //   allContractDevices.map((contractDevices: any) => {
+  //     let exist = false;
+  //     allNodeDevices.map((nodeDevices: any) => {
+  //       if (
+  //         String(nodeDevices.nodeId) == String(contractDevices[0]) &&
+  //         (String(nodeDevices.nodeDeviceId) == String(contractDevices[1]) ||
+  //           String(nodeDevices._id) == String(contractDevices[1]))
+  //       ) {
+  //         exist = true;
+  //       }
+  //     });
+  //     if (exist == false) {
+  //       let newDevice = {
+  //         nodeId: contractDevices[0],
+  //         nodeDeviceId: contractDevices[1],
+  //         isShared: true,
+  //         deviceName: contractDevices[2],
+  //         deviceType: contractDevices[2],
+  //         deviceEncryptedId: contractDevices[3],
+  //         mac: Buffer.from(contractDevices[3], 'base64').toString('utf8'),
+  //         hardwareVersion: String(contractDevices[4]).split('/')[0],
+  //         firmwareVersion: String(contractDevices[4]).split('/')[1],
+  //         parameters: contractDevices[6].map((str) => JSON.parse(str)),
+  //         costOfUse: contractDevices[7],
+  //         location: { coordinates: contractDevices[8] },
+  //         insertDate: new Date(String(contractDevices[10])),
+  //         updateDate: new Date(String(contractDevices[10])),
+  //       };
 
-        this.deviceService.insertDevice(newDevice)
-        .catch(error => {
-          console.log('syncAllDevices insertDevice error:', error);
-        });
-
-      }
-    });
-  }
+  //       this.deviceService.insertDevice(newDevice).catch((error) => {
+  //         console.log('syncAllDevices insertDevice error:', error);
+  //       });
+  //     }
+  //   });
+  // }
 
   async storeZKP(
     nodeId: string,

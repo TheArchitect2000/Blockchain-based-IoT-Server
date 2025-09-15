@@ -98,18 +98,30 @@ const DevicesTable: React.FC<UsersTableProps> = ({ setCount, superAdmin }) => {
             try {
                 setApiLoading(true)
                 const res = await apiUnshareDevice(String(deviceData?._id))
-                setApiLoading(false)
-                setUnshareDialog(false)
-                toast.push(
-                    <Notification
-                        title={'Device was successfully unshared.'}
-                        type="success"
-                    />,
-                    {
-                        placement: 'top-center',
-                    }
-                )
-                refreshPage()
+                if (res.status !== 200) {
+                    toast.push(
+                        <Notification
+                            title={'Error while unsharing device'}
+                            type="danger"
+                        />,
+                        {
+                            placement: 'top-center',
+                        }
+                    )
+                } else {
+                    setApiLoading(false)
+                    setUnshareDialog(false)
+                    toast.push(
+                        <Notification
+                            title={'Device was successfully unshared.'}
+                            type="success"
+                        />,
+                        {
+                            placement: 'top-center',
+                        }
+                    )
+                    refreshPage()
+                }
             } catch (error: any) {
                 setApiLoading(false)
                 setUnshareDialog(false)

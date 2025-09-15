@@ -48,9 +48,9 @@ export class contractController {
     setTimeout(() => {
       try {
         this.contractService.syncAllServices();
-      this.contractService.syncAllDevices();
+        // this.contractService.syncAllDevices();
       } catch (error) {
-        console.log("contractController constructor error:", error)
+        console.log('contractController constructor error:', error);
       }
     }, 4000);
   }

@@ -1,4 +1,4 @@
-import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { Inject, Injectable, forwardRef, Logger } from '@nestjs/common';
 import mongoose from 'mongoose';
 import { DeviceRepository } from '../repositories/device.repository';
 import * as randompassword from 'secure-random-password';
@@ -12,6 +12,7 @@ import { InstalledServiceService } from 'src/modules/service/services/installed-
 import { ContractService } from 'src/modules/smartcontract/services/contract.service';
 import { AppService } from 'src/app.service';
 import { BuildingService } from 'src/modules/building/buildings/building.service';
+import { GlobalShareDto } from '../data-transfer-objects/global-share-dto';
 
 // Nodejs encryption with CTR
 let crypto = require('crypto');
@@ -472,94 +473,153 @@ export class DeviceService {
   }
 
   async editDevice(body: EditDeviceDto, userId: any, isAdmin = false) {
-    let foundDevice: any = null;
+    try {
+      let foundDevice: any = null;
 
-    console.log('we are in editDevice service!');
+      console.log('we are in editDevice service!');
 
-    await this.deviceRepository
-      .getDeviceById(body.deviceId)
-      .then((data) => {
-        foundDevice = data;
-      })
-      .catch((error) => {
-        let errorMessage =
-          'Some errors occurred while finding a device for rename!';
-        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
-      });
+      await this.deviceRepository
+        .getDeviceById(body.deviceId)
+        .then((data) => {
+          foundDevice = data;
+        })
+        .catch((error) => {
+          let errorMessage =
+            'Some errors occurred while finding a device for rename!';
+          throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+        });
 
-    if (foundDevice && foundDevice !== undefined) {
-      console.log('Founded Device is:', foundDevice);
+      if (foundDevice && foundDevice !== undefined) {
+        console.log('Founded Device is:', foundDevice);
 
-      console.log(
-        `Device Node: ${foundDevice.nodeId} ||| BackEnd Node: ${process.env.PANEL_URL}`,
-      );
+        console.log(
+          `Device Node: ${foundDevice.nodeId} ||| BackEnd Node: ${process.env.PANEL_URL}`,
+        );
 
-      if (String(foundDevice.nodeId) !== String(process.env.PANEL_URL)) {
-        let errorMessage = `You can't edit other nodes devices !`;
-        throw new GeneralException(ErrorTypeEnum.FORBIDDEN, errorMessage);
+        if (String(foundDevice.nodeId) !== String(process.env.PANEL_URL)) {
+          let errorMessage = `You can't edit other nodes devices !`;
+          throw new GeneralException(ErrorTypeEnum.FORBIDDEN, errorMessage);
+        }
+
+        if (
+          foundDevice &&
+          foundDevice != undefined &&
+          foundDevice.userId != userId &&
+          isAdmin == false
+        ) {
+          let errorMessage = 'Access Denied.';
+          this.result = {
+            message: errorMessage,
+            success: false,
+            date: new Date(),
+          };
+          return this.result;
+        }
+        foundDevice.nodeId = String(process.env.PANEL_URL);
+        foundDevice.updatedBy =
+          String(userId) == 'root' ? foundDevice.updatedBy : userId;
+        foundDevice.updateDate = new Date();
       }
 
-      if (
-        foundDevice &&
-        foundDevice != undefined &&
-        foundDevice.userId != userId &&
-        isAdmin == false
-      ) {
-        let errorMessage = 'Access Denied.';
-        this.result = {
-          message: errorMessage,
-          success: false,
-          date: new Date(),
-        };
-        return this.result;
-      }
-      foundDevice.nodeId = String(process.env.PANEL_URL);
-      foundDevice.updatedBy =
-        String(userId) == 'root' ? foundDevice.updatedBy : userId;
-      foundDevice.updateDate = new Date();
+      const newData = { ...foundDevice._doc, ...body };
+
+      console.log('Updated found device for edit is: ', foundDevice);
+
+      await this.deviceRepository.editDevice(foundDevice._id, newData);
+      return this.result;
+    } catch (error) {
+      let errorMessage = 'Some errors occurred while editing a device!';
+      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
+    }
+  }
+
+  async globalShareDevice(
+    deviceId: string,
+    body: GlobalShareDto,
+    userId: string,
+    isAdmin = false,
+  ): Promise<void> {
+    const device = await this.deviceRepository.getDeviceById(deviceId);
+
+    if (!device) {
+      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, 'Device not found!');
     }
 
-    const newData = { ...foundDevice._doc, ...body };
+    if (device.userId != userId && isAdmin == false) {
+      let errorMessage = 'Access Denied.';
+      throw new GeneralException(ErrorTypeEnum.FORBIDDEN, errorMessage);
+    }
 
-    console.log('Updated found device for edit is: ', foundDevice);
-    await this.deviceRepository
-      .editDevice(foundDevice._id, newData)
-      .then((data) => {
-        this.result = data;
-        if (body.isShared == true && foundDevice.isShared == false) {
-          this.contractService.shareDevice(
-            String(process.env.PANEL_URL),
-            String(newData._id),
-            String(newData.userId),
-            String(newData.deviceName),
-            String(newData.deviceType),
-            String(newData.deviceEncryptedId),
-            String(newData.hardwareVersion),
-            String(newData.firmwareVersion),
-            newData.parameters.map((param) => JSON.stringify(param)),
-            String(newData.costOfUse),
-            newData.location.coordinates.map((coordinate) =>
-              String(coordinate),
-            ),
-            String(newData.insertDate),
-          );
-        }
-        if (body.isShared == false && foundDevice.isShared == true) {
-          this.buildingService.deleteDeviceIdFromAllBuildings(
-            newData.deviceEncryptedId,
-          );
-          this.contractService.removeSharedDevice(
-            process.env.PANEL_URL,
-            String(newData._id),
-          );
-        }
-      })
-      .catch((error) => {
-        let errorMessage = 'Some errors occurred while editing a device!';
-        throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
-      });
+    if (device.nodeId !== String(process.env.PANEL_URL)) {
+      let errorMessage = `You can't edit other nodes devices !`;
+      throw new GeneralException(ErrorTypeEnum.FORBIDDEN, errorMessage);
+    }
 
-    return this.result;
+    try {
+      await this.contractService.shareDevice(
+        String(process.env.NODE_NAME),
+        String(device.deviceEncryptedId),
+        String(device.deviceType),
+        String(device.deviceEncryptedId),
+        String(device.hardwareVersion),
+        String(device.firmwareVersion),
+        device.parameters.map((param) => JSON.stringify(param)),
+        String(body.costOfUse),
+        body.coordinate.map((coordinate) => String(coordinate)),
+        String(device.insertDate),
+      );
+    } catch (error) {
+      Logger.error('Error sharing device:', error);
+      throw new GeneralException(
+        ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+        error.message || 'Error sharing device',
+      );
+    }
+
+    await this.deviceRepository.editDevice(device._id, {
+      isShared: true,
+      costOfUse: body.costOfUse,
+      updatedBy: userId,
+      updateDate: new Date().toDateString(),
+      location: { type: 'Point', coordinates: body.coordinate },
+    });
+  }
+
+  async unshareGlobalDevice(
+    deviceId: string,
+    userId: string,
+    isAdmin = false,
+  ): Promise<void> {
+    const device = await this.deviceRepository.getDeviceById(deviceId);
+
+    if (!device) {
+      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, 'Device not found!');
+    }
+
+    if (device.userId != userId && isAdmin == false) {
+      let errorMessage = 'Access Denied.';
+      throw new GeneralException(ErrorTypeEnum.FORBIDDEN, errorMessage);
+    }
+
+    if (device.nodeId !== String(process.env.PANEL_URL)) {
+      let errorMessage = `You can't edit other nodes devices !`;
+      throw new GeneralException(ErrorTypeEnum.FORBIDDEN, errorMessage);
+    }
+
+    this.buildingService.deleteDeviceIdFromAllBuildings(
+      device.deviceEncryptedId,
+    );
+
+    this.contractService.removeSharedDevice(
+      String(process.env.NODE_NAME),
+      String(device.deviceEncryptedId),
+    );
+
+    await this.deviceRepository.editDevice(device._id, {
+      isShared: false,
+      updatedBy: userId,
+      updateDate: new Date().toDateString(),
+    });
   }
 
   async updateAllDevices() {
@@ -850,8 +910,8 @@ export class DeviceService {
     console.log('Updated found device for deletion is: ', foundDevice);
 
     this.contractService.removeSharedDevice(
-      process.env.PANEL_URL,
-      String(foundDevice._id),
+      process.env.NODE_NAME,
+      String(foundDevice.deviceEncryptedId),
     );
 
     this.buildingService.deleteDeviceIdFromAllBuildings(
@@ -899,8 +959,8 @@ export class DeviceService {
 
     for (const element of devices) {
       this.contractService.removeSharedDevice(
-        process.env.PANEL_URL,
-        String(element._id),
+        process.env.NODE_NAME,
+        String(element.deviceEncryptedId),
       );
 
       this.buildingService.deleteDeviceIdFromAllBuildings(

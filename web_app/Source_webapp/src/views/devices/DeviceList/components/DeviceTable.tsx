@@ -252,20 +252,32 @@ const DeviceTable = memo(
                 const res = (await apiUnshareDevice(
                     deviceData?._id || ''
                 )) as any
-                toast.push(
-                    <Notification
-                        title={'Device unshared successfully'}
-                        type="success"
-                    />,
-                    {
-                        placement: 'top-center',
-                    }
-                )
-                setTimeout(() => {
-                    refreshPage()
-                    setGlobalUnshareDialog(false)
-                    setApiLoading(false)
-                }, 1000)
+                if (res.status !== 200) {
+                    toast.push(
+                        <Notification
+                            title={'Error while unsharing device'}
+                            type="danger"
+                        />,
+                        {
+                            placement: 'top-center',
+                        }
+                    )
+                } else {
+                    toast.push(
+                        <Notification
+                            title={'Device unshared successfully'}
+                            type="success"
+                        />,
+                        {
+                            placement: 'top-center',
+                        }
+                    )
+                    setTimeout(() => {
+                        refreshPage()
+                        setGlobalUnshareDialog(false)
+                        setApiLoading(false)
+                    }, 1000)
+                }
             } catch (error) {
                 setGlobalUnshareDialog(false)
                 setApiLoading(false)
