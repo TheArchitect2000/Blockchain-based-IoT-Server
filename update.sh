@@ -230,7 +230,8 @@ case $choice in
 esac
 
 
-sudo systemctl restart fides.backend.service;
+# sudo systemctl restart fides.backend.service;
+sudo pm2 restart all;
 sudo systemctl restart fides.userwebapp.service;
 sudo systemctl restart fides.adminwebapp.service;
 
