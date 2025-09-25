@@ -84,3 +84,5 @@ dist-ssr
 build
 *.local
 .codegpt
+package-lock.json
+*/package-lock.json
