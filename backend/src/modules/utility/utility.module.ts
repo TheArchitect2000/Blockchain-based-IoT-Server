@@ -1,4 +1,3 @@
-import { MailerModule } from '@nestjs-modules/mailer';
 import { Module, forwardRef } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -15,13 +14,10 @@ import { MediaService } from './services/media.service';
 import { MulterConfigService } from './services/multer-configuration.service';
 import { OTPService } from './services/otp.service';
 import { SMSService } from './services/sms.service';
-import { join } from 'path';
-import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { NotificationModule } from '../notification/notification.module';
 import { DeviceModule } from '../device/device.module';
 import { UserModule } from '../user/user.module';
 import { SubscriptionsModule } from '../subscriptions/subscriptions.module';
-
 
 @Module({
   imports: [
@@ -36,31 +32,6 @@ import { SubscriptionsModule } from '../subscriptions/subscriptions.module';
     forwardRef(() => SubscriptionsModule),
     MulterModule.registerAsync({
       useClass: MulterConfigService,
-    }),
-    MailerModule.forRoot({
-      transport: {
-        host: process.env.MAIL_HOST,
-        port: Number(process.env.MAIL_PORT.toString()),
-        secure: false,
-        auth: {
-          user: process.env.MAIL_USER,
-          pass: process.env.MAIL_PASSWORD,
-        },
-        tls: {
-          rejectUnauthorized: false,
-        },
-        connectionTimeout: 10000,
-      },
-      defaults: {
-        from: `"${process.env.NODE_NAME}" <` + process.env.MAIL_FROM + '>',
-      },
-      template: {
-        dir: join(__dirname, 'templates/mail-templates'),
-        adapter: new HandlebarsAdapter(),
-        options: {
-          strict: true,
-        },
-      },
     }),
   ],
   providers: [
