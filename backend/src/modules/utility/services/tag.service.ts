@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
-import { ObjectID } from 'mongodb';
-// import { Types } from 'mongoose';
+import { ObjectId } from 'mongodb';
 import { TagRepository } from '../repositories/tag.repository';
 import { ActivationStatusEnum } from './../enums/activation-status.enum';
 import { VerificationStatusEnum } from '../enums/verification-status.enum';
@@ -311,7 +310,7 @@ export class TagService {
     let populateCondition = [];
     let selectCondition = '';
 
-    if (ObjectID.isValid(TagId)) {
+    if (ObjectId.isValid(TagId)) {
       await this.tagRepository
         .findById(TagId, whereCondition, populateCondition, selectCondition)
         .then((data) => {

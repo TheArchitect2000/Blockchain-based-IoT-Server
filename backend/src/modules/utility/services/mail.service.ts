@@ -103,9 +103,9 @@ export class MailService {
     }
   }
 
-  async getUserIdByEmail(email: string) {
+  async getUserIdByEmail(email: string): Promise<string> {
     const res = await this.userService.getUserByEmail(email);
-    return res._id;
+    return String(res._id);
   }
 
   async generateUserUnsubscribeToken(userId: string) {

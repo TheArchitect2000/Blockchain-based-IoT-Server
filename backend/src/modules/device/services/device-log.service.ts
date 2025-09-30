@@ -464,100 +464,100 @@ export class DeviceLogService {
     return foundDeviceLogs;
   }
 
-    async removeAllDeviceLogsByDayBefore(
-  daysBefore: number,
-) {
-  const startDate = new Date();
-  startDate.setDate(startDate.getDate() - daysBefore);
-  startDate.setHours(0, 0, 0, 0);
+  async removeAllDeviceLogsByDayBefore(daysBefore: number) {
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - daysBefore);
+    startDate.setHours(0, 0, 0, 0);
 
-  const endDate = new Date();
-  endDate.setDate(endDate.getDate() - (daysBefore - 1));
-  endDate.setHours(0, 0, 0, 0);
+    const endDate = new Date();
+    endDate.setDate(endDate.getDate() - (daysBefore - 1));
+    endDate.setHours(0, 0, 0, 0);
 
-  const deleteQuery = {
-    data: { $exists: true },
-    insertDate: {
-      $gte: startDate,
-      $lt: endDate,
-    },
-  };
+    const deleteQuery = {
+      data: { $exists: true },
+      insertDate: {
+        $gte: startDate,
+        $lt: endDate,
+      },
+    };
 
-  const deleteResult = await this.deviceLogRepository.deleteDeviceLogs(deleteQuery);
+    const deleteResult = await this.deviceLogRepository.deleteDeviceLogs(
+      deleteQuery,
+    );
 
-  return {
-    success: true,
-    message: `All device Logs from exactly ${daysBefore} day(s) ago have been deleted.`,
-    result: deleteResult,
-  };
-}
-
-  async removeAllDeviceLogsBeforeDaysAgo(
-  daysBefore: number,
-) {
-  const thresholdDate = new Date();
-  thresholdDate.setDate(thresholdDate.getDate() - daysBefore);
-  thresholdDate.setHours(0, 0, 0, 0); // Start of that day
-
-  const deleteQuery = {
-    data: { $exists: true },
-    insertDate: {
-      $lt: thresholdDate,
-    },
-  };
-
-  const deleteResult = await this.deviceLogRepository.deleteDeviceLogs(deleteQuery);
-
-  return {
-    success: true,
-    message: `All device logs older than ${daysBefore} day(s) have been deleted.`,
-    result: deleteResult,
-  };
-}
-
-
-  async removeDeviceLogByEncryptedDeviceIdAndDayBefore(
-  deviceEncryptedId: string,
-  daysBefore: number,
-  userId = '',
-  isAdmin = false,
-) {
-  const foundDevices = await this.deviceService.getDeviceInfoByEncryptedId(
-    deviceEncryptedId,
-    userId,
-    isAdmin,
-  ) as any;
-
-  if (foundDevices?.success === false) {
-    return foundDevices;
+    return {
+      success: true,
+      message: `All device Logs from exactly ${daysBefore} day(s) ago have been deleted.`,
+      result: deleteResult,
+    };
   }
 
-  const startDate = new Date();
-  startDate.setDate(startDate.getDate() - daysBefore);
-  startDate.setHours(0, 0, 0, 0);
+  async removeAllDeviceLogsBeforeDaysAgo(daysBefore: number) {
+    const thresholdDate = new Date();
+    thresholdDate.setDate(thresholdDate.getDate() - daysBefore);
+    thresholdDate.setHours(0, 0, 0, 0); // Start of that day
 
-  const endDate = new Date();
-  endDate.setDate(endDate.getDate() - (daysBefore - 1));
-  endDate.setHours(0, 0, 0, 0);
+    const deleteQuery = {
+      data: { $exists: true },
+      insertDate: {
+        $lt: thresholdDate,
+      },
+    };
 
-  const deleteQuery = {
-    deviceEncryptedId: deviceEncryptedId,
-    data: { $exists: true },
-    insertDate: {
-      $gte: startDate,
-      $lt: endDate,
-    },
-  };
+    const deleteResult = await this.deviceLogRepository.deleteDeviceLogs(
+      deleteQuery,
+    );
 
-  const deleteResult = await this.deviceLogRepository.deleteDeviceLogs(deleteQuery);
+    return {
+      success: true,
+      message: `All device logs older than ${daysBefore} day(s) have been deleted.`,
+      result: deleteResult,
+    };
+  }
 
-  return {
-    success: true,
-    message: `Logs from exactly ${daysBefore} day(s) ago have been deleted.`,
-    result: deleteResult,
-  };
-}
+  async removeDeviceLogByEncryptedDeviceIdAndDayBefore(
+    deviceEncryptedId: string,
+    daysBefore: number,
+    userId = '',
+    isAdmin = false,
+  ) {
+    const foundDevices = (await this.deviceService.getDeviceInfoByEncryptedId(
+      deviceEncryptedId,
+      userId,
+      isAdmin,
+    )) as any;
 
+    if (foundDevices?.success === false) {
+      return foundDevices;
+    }
+
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - daysBefore);
+    startDate.setHours(0, 0, 0, 0);
+
+    const endDate = new Date();
+    endDate.setDate(endDate.getDate() - (daysBefore - 1));
+    endDate.setHours(0, 0, 0, 0);
+
+    const deleteQuery = {
+      deviceEncryptedId: deviceEncryptedId,
+      data: { $exists: true },
+      insertDate: {
+        $gte: startDate,
+        $lt: endDate,
+      },
+    };
+
+    const deleteResult = await this.deviceLogRepository.deleteDeviceLogs(
+      deleteQuery,
+    );
+
+    return {
+      success: true,
+      message: `Logs from exactly ${daysBefore} day(s) ago have been deleted.`,
+      result: deleteResult,
+    };
+  }
 
   async getDeviceLogByEncryptedDeviceIdAndDate(
     deviceEncryptedId,

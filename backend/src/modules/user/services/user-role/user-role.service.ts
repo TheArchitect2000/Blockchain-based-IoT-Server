@@ -113,7 +113,7 @@ export class UserRoleService {
               );
             });
 
-          permissions.push(fullControllPermission._id);
+          permissions.push(String(fullControllPermission._id));
 
           let newRole = {
             name: role.roleName,

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
-import { MongoClient, ObjectID } from 'mongodb';
+import { ObjectId } from 'mongodb';
 import { Types } from 'mongoose';
 import { CategoryRepository } from '../repositories/category.repository';
 import { MediaService } from 'src/modules/utility/services/media.service';
@@ -275,7 +275,7 @@ export class CategoryService {
   }
 
   async findCategoryById(categoryId) {
-    if (ObjectID.isValid(categoryId)) {
+    if (ObjectId.isValid(categoryId)) {
       await this.categoryRepository
         .findCategoryById(categoryId)
         .then((data) => {
