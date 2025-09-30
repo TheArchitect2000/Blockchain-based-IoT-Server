@@ -8,7 +8,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthenticationModule } from './modules/authentication/authentication.module';
 import { BlocklyModule } from './modules/blockly/blockly.module';
-import { BrokerModule } from './modules/broker/broker.module';
+// import { BrokerModule } from './modules/broker/broker.module';
 import { DeviceModule } from './modules/device/device.module';
 import { ContractModule } from './modules/smartcontract/contract.module';
 import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
@@ -50,7 +50,7 @@ import { SyslogModule } from './modules/logging/syslog.module';
     AuthenticationModule,
     SyslogModule,
     UserModule,
-    BrokerModule,
+    // BrokerModule,
     forwardRef(() => DeviceModule),
     UtilityModule,
     //PanelModule,

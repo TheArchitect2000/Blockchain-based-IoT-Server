@@ -5,8 +5,8 @@ import { SwaggerModule } from '@nestjs/swagger/dist/swagger-module';
 import { AppModule } from './app.module';
 import { join } from 'path';
 import { Inject, Logger } from '@nestjs/common';
-import { TestService } from './modules/broker/services/test.service';
-import { MqttLogService } from './modules/broker/services/mqtt-log.service';
+// import { TestService } from './modules/broker/services/test.service';
+// import { MqttLogService } from './modules/broker/services/mqtt-log.service';
 import { readFileSync } from 'fs';
 import { SyslogService } from './modules/logging/syslog.service';
 
@@ -70,15 +70,15 @@ async function bootstrap() {
     process.env.HOST_PORT,
   );
 
-  let mqttLogService: MqttLogService = new MqttLogService();
-  let testService: TestService = new TestService(mqttLogService);
-  testService.printMsg();
-  testService.callDeviceModule();
+  // let mqttLogService: MqttLogService = new MqttLogService();
+  // let testService: TestService = new TestService(mqttLogService);
+  // testService.printMsg();
+  // testService.callDeviceModule();
 
   // Run MQTT Server.
-  const mqttServerRunner = require('./modules/broker/server/mqtt-server');
+  // const mqttServerRunner = require('./modules/broker/server/mqtt-server');
 
   // Run Blockly Server.
-  const blocklyServerRunner = require('./modules/blockly/server/blockly-server');
+  // const blocklyServerRunner = require('./modules/blockly/server/blockly-server');
 }
 bootstrap();

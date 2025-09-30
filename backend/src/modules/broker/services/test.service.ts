@@ -1,17 +1,17 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { MqttLogService } from './mqtt-log.service';
+// import { Inject, Injectable } from '@nestjs/common';
+// import { MqttLogService } from './mqtt-log.service';
 
-@Injectable()
-export class TestService {
-  constructor(
-    @Inject(MqttLogService)
-    private readonly mqttLogService?: MqttLogService,
-  ) {}
-  async printMsg() {
-    console.log('\nService Call Test Successful!\n');
-  }
+// @Injectable()
+// export class TestService {
+//   constructor(
+//     @Inject(MqttLogService)
+//     private readonly mqttLogService?: MqttLogService,
+//   ) {}
+//   async printMsg() {
+//     console.log('\nService Call Test Successful!\n');
+//   }
 
-  async callDeviceModule() {
-    this.mqttLogService.testLogService();
-  }
-}
+//   async callDeviceModule() {
+//     this.mqttLogService.testLogService();
+//   }
+// }
