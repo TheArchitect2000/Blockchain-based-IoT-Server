@@ -1,5 +1,8 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
-import { MailerService } from '@nestjs-modules/mailer';
+import * as nodemailer from 'nodemailer';
+import * as handlebars from 'handlebars';
+import * as fs from 'fs';
+import * as path from 'path';
 import { User } from './user.entity';
 import { GeneralException } from '../exceptions/general.exception';
 import { ErrorTypeEnum } from '../enums/error-type.enum';
@@ -9,19 +12,100 @@ import { UserService } from 'src/modules/user/services/user/user.service';
 
 @Injectable()
 export class MailService {
+  private transporter: nodemailer.Transporter;
   private validateTokenUrl = `${process.env.HOST_PROTOCOL}${process.env.PANEL_URL}/${process.env.HOST_SUB_DIRECTORY}/v1/subscriptions/unsubscribe-email?token=`;
+  private templatesCache = new Map<string, handlebars.TemplateDelegate>();
 
   constructor(
-    private readonly mailerService?: MailerService,
     private readonly notificationService?: NotificationService,
     private readonly subscriptionsService?: SubscriptionsService,
     @Inject(forwardRef(() => UserService))
     private readonly userService?: UserService,
-  ) {}
+  ) {
+    this.initializeTransporter();
+  }
 
-  async getUserIdByEmail(email: string) {
+  private initializeTransporter() {
+    this.transporter = nodemailer.createTransport({
+      host: process.env.MAIL_HOST,
+      port: Number(process.env.MAIL_PORT.toString()),
+      secure: false,
+      auth: {
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASSWORD,
+      },
+      tls: {
+        rejectUnauthorized: false,
+      },
+    });
+  }
+
+  private async getTemplate(
+    templateName: string,
+  ): Promise<handlebars.TemplateDelegate> {
+    if (this.templatesCache.has(templateName)) {
+      return this.templatesCache.get(templateName);
+    }
+
+    try {
+      const templatePath = path.join(
+        process.cwd(),
+        'src/modules/utility/templates/mail-templates',
+        `${templateName}.hbs`,
+      );
+      const templateContent = fs.readFileSync(templatePath, 'utf8');
+      const compiledTemplate = handlebars.compile(templateContent);
+
+      this.templatesCache.set(templateName, compiledTemplate);
+      return compiledTemplate;
+    } catch (error) {
+      console.error(`Error loading template ${templateName}:`, error);
+      throw new GeneralException(
+        ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+        `Template ${templateName} not found or invalid`,
+      );
+    }
+  }
+
+  private async sendMail(options: {
+    to: string;
+    subject: string;
+    template?: string;
+    context?: any;
+    html?: string;
+    attachments?: any[];
+  }) {
+    try {
+      let html = options.html;
+
+      if (options.template && options.context) {
+        const template = await this.getTemplate(options.template);
+        html = template(options.context);
+      }
+
+      const mailOptions = {
+        from: process.env.MAIL_FROM || '"Support Team" <noreply@example.com>',
+        to: options.to,
+        subject: options.subject,
+        html,
+        attachments: options.attachments || [],
+      };
+
+      const result = await this.transporter.sendMail(mailOptions);
+      console.log('Email sent:', result.messageId);
+      return result;
+    } catch (error) {
+      console.error('Email sending error:', error);
+      throw new GeneralException(
+        ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+        'Some errors occurred while sending email',
+      );
+    }
+  }
+
+  async getUserIdByEmail(email: string): Promise<string> {
     const res = await this.userService.getUserByEmail(email);
-    return res._id;
+    return String(res._id);
   }
 
   async generateUserUnsubscribeToken(userId: string) {
@@ -46,128 +130,75 @@ export class MailService {
   }
 
   async sendUserConfirmation(user: User, token: string) {
-    // const url = `example.com/auth/confirm?token=${token}`;
-    const url = 'https://programming.cpvanda.com/auth/confirm?token=${token}';
-
-    /* if (await this.isUserUnsubscribed(user.email)) {
-      return false;
-    } */
-
+    const url = `https://programming.cpvanda.com/auth/confirm?token=${token}`;
     const userToken = await this.getTokenWithUserEmail(user.email);
 
-    await this.mailerService
-      .sendMail({
-        to: user.email,
-        // from: '"Support Team" <support@example.com>', // override default from
-        subject: 'Welcome to Nice App! Confirm your Email',
-        template: './signup-with-token', // `.hbs` extension is appended automatically
-        context: {
-          // filling curly brackets with content
-          name: user.name,
-          NodeName: process.env.NODE_NAME,
-          url,
-          unsubscribeEmailUrl: `${this.validateTokenUrl}${userToken}`,
+    await this.sendMail({
+      to: user.email,
+      subject: 'Welcome to Nice App! Confirm your Email',
+      template: 'signup-with-token',
+      context: {
+        name: user.name,
+        NodeName: process.env.NODE_NAME,
+        url,
+        unsubscribeEmailUrl: `${this.validateTokenUrl}${userToken}`,
+      },
+      attachments: [
+        {
+          filename: 'fides_logo.png',
+          path: `${process.cwd()}/uploads/fides_logo.png`,
+          cid: 'fidesinnova_logo',
         },
-        attachments: [
-          {
-            filename: 'fides_logo.png',
-            path: `${process.cwd()}/uploads/fides_logo.png`, // Relative path
-            cid: 'fidesinnova_logo',
-          },
-        ],
-      })
-      .then((data) => {
-        console.log(data);
-      })
-      .catch((error) => {
-        let errorMessage = 'Some errors occurred while sending email';
-        throw new GeneralException(
-          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-          errorMessage,
-        );
-      });
+      ],
+    });
   }
 
   async sendChangeEmailToken(user: User, token: string) {
-    await this.mailerService
-      .sendMail({
-        to: user.email,
-        // from: '"Support Team" <support@example.com>', // override default from
-        subject: `Confirm Your Email Address Update - ${process.env.NODE_NAME}`,
-        template: './change-email-token', // `.hbs` extension is appended automatically
-        context: {
-          // filling curly brackets with content
-          NodeName: process.env.NODE_NAME,
-          NodeImageSrc: process.env.THEME_LOGO,
-          token_1: token[0],
-          token_2: token[1],
-          token_3: token[2],
-          token_4: token[3],
-          token_5: token[4],
+    await this.sendMail({
+      to: user.email,
+      subject: `Confirm Your Email Address Update - ${process.env.NODE_NAME}`,
+      template: 'change-email-token',
+      context: {
+        NodeName: process.env.NODE_NAME,
+        NodeImageSrc: process.env.THEME_LOGO,
+        token_1: token[0],
+        token_2: token[1],
+        token_3: token[2],
+        token_4: token[3],
+        token_5: token[4],
+      },
+      attachments: [
+        {
+          filename: 'fides_logo.png',
+          path: `${process.cwd()}/uploads/fides_logo.png`,
+          cid: 'fidesinnova_logo',
         },
-        attachments: [
-          {
-            filename: 'fides_logo.png',
-            path: `${process.cwd()}/uploads/fides_logo.png`, // Relative path
-            cid: 'fidesinnova_logo',
-          },
-        ],
-      })
-      .then((data) => {
-        console.log(data);
-      })
-      .catch((error) => {
-        console.log('Erorrrrrrrrrrrrr:', error);
-
-        let errorMessage = 'Some errors occurred while sending email';
-        throw new GeneralException(
-          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-          errorMessage,
-        );
-      });
+      ],
+    });
   }
 
   async sendRegistrationToken(user: User, token: string) {
-    // const url = `example.com/auth/confirm?token=${token}`;
-    const url = 'https://programming.cpvanda.com/auth/confirm?token=${token}';
-
-    /* if (await this.isUserUnsubscribed(user.email)) {
-      return false;
-    } */
-
+    const url = `https://programming.cpvanda.com/auth/confirm?token=${token}`;
     const userToken = await this.getTokenWithUserEmail(user.email);
 
-    await this.mailerService
-      .sendMail({
-        to: user.email,
-        // from: '"Support Team" <support@example.com>', // override default from
-        subject: `Welcome to ${process.env.NODE_NAME}! Confirm your Email`,
-        template: './signup-with-token', // `.hbs` extension is appended automatically
-        context: {
-          // filling curly brackets with content
-          name: user.name,
-          NodeName: process.env.NODE_NAME,
-          url,
-          unsubscribeEmailUrl: `${this.validateTokenUrl}${userToken}`,
+    await this.sendMail({
+      to: user.email,
+      subject: `Welcome to ${process.env.NODE_NAME}! Confirm your Email`,
+      template: 'signup-with-token',
+      context: {
+        name: user.name,
+        NodeName: process.env.NODE_NAME,
+        url,
+        unsubscribeEmailUrl: `${this.validateTokenUrl}${userToken}`,
+      },
+      attachments: [
+        {
+          filename: 'fides_logo.png',
+          path: `${process.cwd()}/uploads/fides_logo.png`,
+          cid: 'fidesinnova_logo',
         },
-        attachments: [
-          {
-            filename: 'fides_logo.png',
-            path: `${process.cwd()}/uploads/fides_logo.png`, // Relative path
-            cid: 'fidesinnova_logo',
-          },
-        ],
-      })
-      .then((data) => {
-        console.log(data);
-      })
-      .catch((error) => {
-        let errorMessage = 'Some errors occurred while sending email';
-        throw new GeneralException(
-          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-          errorMessage,
-        );
-      });
+      ],
+    });
   }
 
   async sendRegistrationOTP(email: string, otp: string, otpType: string) {
@@ -190,45 +221,24 @@ export class MailService {
 
     console.log('email url: ', url);
 
-    /* if (await this.isUserUnsubscribed(email)) {
-      return false;
-    } */
-
-
-    // const userToken = await this.getTokenWithUserEmail(email);
-
-    await this.mailerService
-      .sendMail({
-        to: email,
-        subject: `Verify Your Email for ${process.env.NODE_NAME} - ${process.env.NODE_NAME}`,
-        template: './signup-with-otp', // `.hbs` extension is appended automatically
-        context: {
-          name: email,
-          NodeName: process.env.NODE_NAME,
-          NodeImageSrc: process.env.THEME_LOGO,
-          url: url,
-          // unsubscribeEmailUrl: `${this.validateTokenUrl}${userToken}`,
+    await this.sendMail({
+      to: email,
+      subject: `Verify Your Email for ${process.env.NODE_NAME} - ${process.env.NODE_NAME}`,
+      template: 'signup-with-otp',
+      context: {
+        name: email,
+        NodeName: process.env.NODE_NAME,
+        NodeImageSrc: process.env.THEME_LOGO,
+        url: url,
+      },
+      attachments: [
+        {
+          filename: 'fides_logo.png',
+          path: `${process.cwd()}/uploads/fides_logo.png`,
+          cid: 'fidesinnova_logo',
         },
-        attachments: [
-          {
-            filename: 'fides_logo.png',
-            path: `${process.cwd()}/uploads/fides_logo.png`, // Relative path
-            cid: 'fidesinnova_logo',
-          },
-        ],
-      })
-      .then((data) => {
-        console.log(data);
-      })
-      .catch((error) => {
-        console.log(error);
-
-        let errorMessage = 'Some errors occurred while sending email';
-        throw new GeneralException(
-          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-          errorMessage,
-        );
-      });
+      ],
+    });
   }
 
   async sendChangePasswordOTP(email: string, otp: string, otpType: string) {
@@ -253,47 +263,35 @@ export class MailService {
 
     try {
       console.log('Sending email');
-
-      /* if (await this.isUserUnsubscribed(email)) {
-        return false;
-      } */
-
       const userToken = await this.getTokenWithUserEmail(email);
 
-      await this.mailerService
-        .sendMail({
-          to: email,
-          subject: `Password Reset Request - ${process.env.NODE_NAME}`,
-          template: './reset-password-with-otp',
-          context: {
-            name: email,
-            NodeName: process.env.NODE_NAME,
-            NodeImageSrc: process.env.THEME_LOGO,
-            url: url,
-            unsubscribeEmailUrl: `${this.validateTokenUrl}${userToken}`,
+      await this.sendMail({
+        to: email,
+        subject: `Password Reset Request - ${process.env.NODE_NAME}`,
+        template: 'reset-password-with-otp',
+        context: {
+          name: email,
+          NodeName: process.env.NODE_NAME,
+          NodeImageSrc: process.env.THEME_LOGO,
+          url: url,
+          unsubscribeEmailUrl: `${this.validateTokenUrl}${userToken}`,
+        },
+        attachments: [
+          {
+            filename: 'fides_logo.png',
+            path: `${process.cwd()}/uploads/fides_logo.png`,
+            cid: 'fidesinnova_logo',
           },
-          attachments: [
-            {
-              filename: 'fides_logo.png',
-              path: `${process.cwd()}/uploads/fides_logo.png`, // Relative path
-              cid: 'fidesinnova_logo',
-            },
-          ],
-        })
-        .then((data) => {
-          console.log(data);
-        });
-      console.log('email sended');
+        ],
+      });
+      console.log('email sent');
     } catch (error) {
       console.log(error);
-
-      let errorMessage = 'Some errors occurred while sending email';
       throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-        errorMessage,
+        'Some errors occurred while sending email',
       );
     }
-    console.log('email sended 2');
   }
 
   async sendVerifyEmailOTP(email: string, otp: string, otpType: string) {
@@ -316,52 +314,32 @@ export class MailService {
 
     console.log('url: ', url);
 
-    /* if (await this.isUserUnsubscribed(email)) {
-      return false;
-    } */
-
     const userToken = await this.getTokenWithUserEmail(email);
 
-    await this.mailerService
-      .sendMail({
-        to: email,
-        // from: '"Support Team" <support@example.com>', // override default from
-        subject: `Please Verify Your Email - ${process.env.NODE_NAME}`,
-        template: './verify-email-with-otp.hbs', // `.hbs` extension is appended automatically
-        context: {
-          // filling curly brackets with content
-          name: email,
-          NodeName: process.env.NODE_NAME,
-          NodeImageSrc: process.env.THEME_LOGO,
-          url: url,
-          unsubscribeEmailUrl: `${this.validateTokenUrl}${userToken}`,
+    await this.sendMail({
+      to: email,
+      subject: `Please Verify Your Email - ${process.env.NODE_NAME}`,
+      template: 'verify-email-with-otp',
+      context: {
+        name: email,
+        NodeName: process.env.NODE_NAME,
+        NodeImageSrc: process.env.THEME_LOGO,
+        url: url,
+        unsubscribeEmailUrl: `${this.validateTokenUrl}${userToken}`,
+      },
+      attachments: [
+        {
+          filename: 'fides_logo.png',
+          path: `${process.cwd()}/uploads/fides_logo.png`,
+          cid: 'fidesinnova_logo',
         },
-        attachments: [
-          {
-            filename: 'fides_logo.png',
-            path: `${process.cwd()}/uploads/fides_logo.png`, // Relative path
-            cid: 'fidesinnova_logo',
-          },
-        ],
-      })
-      .then((data) => {
-        console.log(data);
-      })
-      .catch((error) => {
-        console.log(error);
-
-        let errorMessage = 'Some errors occurred while sending email';
-        throw new GeneralException(
-          ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-          errorMessage,
-        );
-      });
+      ],
+    });
   }
 
   async getCurrentTimeFormatted() {
     const now = new Date();
-
-    const month = (now.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-indexed
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
     const day = now.getDate().toString().padStart(2, '0');
     const year = now.getFullYear();
     const hours = now.getHours().toString().padStart(2, '0');
@@ -383,50 +361,30 @@ export class MailService {
     );
 
     if (process.env.NOTIFICATION_BY_MAIL == 'enabled') {
-      /* if (await this.isUserUnsubscribed(email)) {
-        return false;
-      } */
-
       const userToken = await this.getTokenWithUserEmail(email);
-
       const currentTime = await this.getCurrentTimeFormatted();
 
-      await this.mailerService
-        .sendMail({
-          to: email,
-          // from: '"Support Team" <support@example.com>', // override default from
-          subject: `Device Notification Received - ${process.env.NODE_NAME}`,
-          template: './send-notification', // `.hbs` extension is appended automatically
-          context: {
-            // filling curly brackets with content
-            name: email,
-            NodeName: process.env.NODE_NAME,
-            NodeImageSrc: process.env.THEME_LOGO,
-            notificationMessage: String(notificationMessage),
-            subject: subject,
-            date: currentTime,
-            unsubscribeEmailUrl: `${this.validateTokenUrl}${userToken}`,
+      await this.sendMail({
+        to: email,
+        subject: `Device Notification Received - ${process.env.NODE_NAME}`,
+        template: 'send-notification',
+        context: {
+          name: email,
+          NodeName: process.env.NODE_NAME,
+          NodeImageSrc: process.env.THEME_LOGO,
+          notificationMessage: String(notificationMessage),
+          subject: subject,
+          date: currentTime,
+          unsubscribeEmailUrl: `${this.validateTokenUrl}${userToken}`,
+        },
+        attachments: [
+          {
+            filename: 'fides_logo.png',
+            path: `${process.cwd()}/uploads/fides_logo.png`,
+            cid: 'fidesinnova_logo',
           },
-          attachments: [
-            {
-              filename: 'fides_logo.png',
-              path: `${process.cwd()}/uploads/fides_logo.png`, // Relative path
-              cid: 'fidesinnova_logo',
-            },
-          ],
-        })
-        .then((data) => {
-          console.log(data);
-        })
-        .catch((error) => {
-          console.log(error);
-
-          let errorMessage = 'Some errors occurred while sending email' + error;
-          throw new GeneralException(
-            ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-            errorMessage,
-          );
-        });
+        ],
+      });
     } else if (process.env.NOTIFICATION_BY_MAIL == 'disabled') {
       console.log(`\x1b[33m \nSending email is disabled.\x1b[0m`);
     }
@@ -438,7 +396,7 @@ export class MailService {
     notificationMessage: string,
   ) {
     console.log(
-      'We are in sendNotifacattionFromService userId is: ',
+      'We are in sendNotificationFromService userId is: ',
       userId,
       '   and notification title is: ',
       notificationTitle,
@@ -446,19 +404,12 @@ export class MailService {
       notificationMessage,
     );
 
-    const host = 'https://' + process.env.PANEL_URL;
     if (process.env.NOTIFICATION_BY_NOTIFICATION == 'enabled') {
       this.notificationService.sendNotification({
         message: notificationMessage,
         title: notificationTitle,
         user: userId,
       });
-      /* axios
-        .post(host + '/app/v1/notification/sendMessage', {
-          message: notificationMessage,
-          title: notificationTitle,
-          user: userId,
-        }) */
     } else if (process.env.NOTIFICATION_BY_NOTIFICATION == 'disabled') {
       console.log(`\x1b[33m \nSending notifications is disabled.\x1b[0m`);
     }

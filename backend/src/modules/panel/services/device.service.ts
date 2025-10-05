@@ -1,12 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/mongoose';
-import { Mongoose, Connection } from 'mongoose';
-import mongoose from 'mongoose';
-import { MongoClient, ObjectID } from 'mongodb';
 import { DeviceRepository } from '../repositories/device.repository';
-import * as randompassword from 'secure-random-password';
-import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
-import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 
 // Nodejs encryption with CTR
 let crypto = require('crypto');

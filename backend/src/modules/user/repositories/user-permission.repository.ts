@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { MongoClient, ObjectID } from 'mongodb';
+
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { UserPermissionModel } from '../models/user-permission.model';
@@ -52,8 +52,6 @@ export class UserPermissionRepository {
   }
 
   async findAPermissionById(_id) {
-    const userInfoId = new ObjectID(_id);
-
     await this.userPermissionModel
       .findOne({ _id })
       .where({ isDeleted: false })

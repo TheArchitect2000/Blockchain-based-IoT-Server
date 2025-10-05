@@ -92,15 +92,15 @@ export class UserService {
     private readonly buildingService?: BuildingService,
   ) {}
 
-  getUserKeys(exclude=true): string {
-  const excludedFields = ['password', 'newPassword'];
-  if (exclude) { 
-  return Object.keys(userSchema.paths)
-    .filter(key => !excludedFields.includes(key))
-    .join(' ');
+  getUserKeys(exclude = true): string {
+    const excludedFields = ['password', 'newPassword'];
+    if (exclude) {
+      return Object.keys(userSchema.paths)
+        .filter((key) => !excludedFields.includes(key))
+        .join(' ');
+    }
+    return Object.keys(userSchema.paths).join(' ');
   }
-  return Object.keys(userSchema.paths).join(' ');
-}
 
   validateEmail(email: string) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -261,8 +261,7 @@ export class UserService {
     );
     if (
       otp.length == 0 ||
-      new Date(otp[otp.length - 1].expiryDate).getTime() <
-        new Date().getTime()
+      new Date(otp[otp.length - 1].expiryDate).getTime() < new Date().getTime()
     ) {
       /* const StorX = await storxController.createUserAndGenerateStorXKey(
         body.email,
@@ -272,7 +271,7 @@ export class UserService {
       const newUser = await this.insertAUserByEmail({ ...body, StorX: {} });
       const payload = { mobile: newUser.mobile, sub: newUser._id };
 
-      this.buildingService.createDefaultBuilding(newUser._id);
+      this.buildingService.createDefaultBuilding(String(newUser._id));
 
       const accessSignOptions: any = {};
       accessSignOptions.expiresIn = process.env.ACCESS_TOKEN_EXPIRATION_TIME;
@@ -813,8 +812,12 @@ export class UserService {
       );
     }
 
-    const isExist1 = await this.userRepository.checkIfOwnerShipWalletExist(wallet)
-    const isExist2 = await this.userRepository.checkIfIdentityWalletExist(wallet)
+    const isExist1 = await this.userRepository.checkIfOwnerShipWalletExist(
+      wallet,
+    );
+    const isExist2 = await this.userRepository.checkIfIdentityWalletExist(
+      wallet,
+    );
 
     if (isExist1 == true || isExist2 == true) {
       throw new GeneralException(
@@ -867,9 +870,13 @@ export class UserService {
         'Wallet address is invalid.',
       );
     }
-    
-    const isExist1 = await this.userRepository.checkIfOwnerShipWalletExist(wallet)
-    const isExist2 = await this.userRepository.checkIfIdentityWalletExist(wallet)
+
+    const isExist1 = await this.userRepository.checkIfOwnerShipWalletExist(
+      wallet,
+    );
+    const isExist2 = await this.userRepository.checkIfIdentityWalletExist(
+      wallet,
+    );
 
     if (isExist1 == true || isExist2 == true) {
       throw new GeneralException(
@@ -1656,15 +1663,15 @@ export class UserService {
     let isValidPassword = null;
 
     if (String(enteredPassword) === String(userPassword)) {
-      isValidPassword = true 
+      isValidPassword = true;
     } else {
       await bcrypt.compare(enteredPassword, userPassword).then((result) => {
-      if (result == true) {
-        isValidPassword = true;
-      } else {
-        isValidPassword = false;
-      }
-    });
+        if (result == true) {
+          isValidPassword = true;
+        } else {
+          isValidPassword = false;
+        }
+      });
     }
 
     return isValidPassword;
