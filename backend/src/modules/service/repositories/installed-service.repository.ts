@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Types } from 'mongoose';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { InstalledServiceModel } from '../models/installed-service.model';
 import { installedServiceSchema } from '../schemas/installed-service.schema';
-import { DeleteResult, Types } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class InstalledServiceRepository {
@@ -40,19 +40,13 @@ export class InstalledServiceRepository {
     // return await this.installedServiceModel.create(data)
   }
 
-  async deleteInstalledServiceById(id): Promise<DeleteResult> {
+  async deleteInstalledServiceById(id) {
     return await this.installedServiceModel.deleteOne({ _id: id });
   }
 
-  async deleteInstalledServicesFromUserWithDeviceEncryptedId(
-    userId: string,
-    deviceEncryptedId: string,
-  ): Promise<DeleteResult> {
-    const theUserId = new Types.ObjectId(userId);
-    return await this.installedServiceModel.deleteMany({
-      userId: theUserId,
-      deviceMap: { $in: [deviceEncryptedId] },
-    });
+  async deleteInstalledServicesFromUserWithDeviceEncryptedId(userId: string, deviceEncryptedId: string) {
+    const theUserId = new Types.ObjectId(userId)
+    return await this.installedServiceModel.deleteMany({ userId: theUserId, deviceMap: { $in: [deviceEncryptedId] } });
   }
 
   async editInstalledService(id, editedData) {

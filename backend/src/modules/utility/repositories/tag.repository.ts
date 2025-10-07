@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { MongoClient, ObjectID } from 'mongodb';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { TagModel } from '../models/tag.model';
@@ -37,6 +38,8 @@ export class TagRepository {
   }
 
   async findTagByUserId(userId) {
+    const user_Id = new ObjectID(userId);
+
     await this.tagModel
       .findOne({ user: userId })
       .where({ isDeleted: false })

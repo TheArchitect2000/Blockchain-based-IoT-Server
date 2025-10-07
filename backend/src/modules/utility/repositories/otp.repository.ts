@@ -3,7 +3,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { ErrorTypeEnum } from '../enums/error-type.enum';
 import { OTPException } from '../exceptions/otp.exception';
 import { OTPModel } from '../models/otp.model';
-import { DeleteResult } from 'mongoose';
 
 @Injectable()
 export class OTPRepository {
@@ -22,7 +21,7 @@ export class OTPRepository {
     return await this.otpModel.updateOne({ _id: id }, editedData);
   }
 
-  async deleteOTP(id): Promise<DeleteResult> {
+  async deleteOTP(id) {
     return await this.otpModel.deleteOne({ _id: id });
   }
 

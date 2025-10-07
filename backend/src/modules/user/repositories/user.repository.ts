@@ -1,10 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { DeleteResult, Types } from 'mongoose';
+import { Types } from 'mongoose';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { ChangeEmailTokenModel, UserModel } from '../models/user.model';
-import { UserInterface } from '../interfaces/user.interface';
+import {
+  UserChangeEmailTokenInterface,
+  UserInterface,
+} from '../interfaces/user.interface';
 import { changeEmailTokenSchema, userSchema } from '../schemas/user.schema';
 
 @Injectable()
@@ -13,7 +16,7 @@ export class UserRepository {
 
   constructor(
     @InjectModel('user')
-    private readonly userModel: UserModel,
+    private readonly userModel?: UserModel,
     @InjectModel('email-token')
     private readonly changeEmailTokenModel?: ChangeEmailTokenModel,
   ) {
@@ -51,7 +54,7 @@ export class UserRepository {
       .select(this.getChangeEmailKeys());
   }
 
-  async deleteChangeEmailToken(token: string): Promise<DeleteResult> {
+  async deleteChangeEmailToken(token: string) {
     return await this.changeEmailTokenModel
       .deleteOne({ token: token })
       .where({})
@@ -160,11 +163,23 @@ export class UserRepository {
   }
 
   async checkIfOwnerShipWalletExist(wallet: string) {
-    return (await this.userModel.countDocuments()) > 0;
+    return (
+      (await this.userModel
+        .find({
+          ownerShipWallets: wallet,
+        })
+        .count()) > 0
+    );
   }
 
   async checkIfIdentityWalletExist(wallet: string) {
-    return (await this.userModel.countDocuments()) > 0;
+    return (
+      (await this.userModel
+        .find({
+          identityWallet: { $exists: true, $eq: wallet },
+        })
+        .count()) > 0
+    );
   }
 
   async findUserById(_id, whereCondition, populateCondition, selectCondition) {

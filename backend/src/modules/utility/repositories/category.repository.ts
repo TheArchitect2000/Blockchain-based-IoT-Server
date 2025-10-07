@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { MongoClient, ObjectID } from 'mongodb';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { CategoryModel } from '../models/category.model';
@@ -58,6 +59,8 @@ export class CategoryRepository {
   }
 
   async findCategoryById(_id) {
+    const articaleCategoryId = new ObjectID(_id);
+
     await this.categoryModel
       .findOne({ _id })
       .where({ isDeleted: false })

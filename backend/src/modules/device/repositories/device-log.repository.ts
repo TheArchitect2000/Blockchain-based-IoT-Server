@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { MongoClient, ObjectID } from 'mongodb';
+import { Types } from 'mongoose';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { DeviceLogModel } from '../models/device-log.model';
-import { DeleteResult } from 'mongodb';
 
 @Injectable()
 export class DeviceLogRepository {
@@ -33,17 +34,18 @@ export class DeviceLogRepository {
     // return await this.deviceLogModel.create(data)
   }
 
-  async deleteDeviceLogs(query): Promise<DeleteResult> {
-    try {
-      const result = await this.deviceLogModel.deleteMany(query);
-      return result;
-    } catch (error) {
-      throw new GeneralException(
-        ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-        'An error occurred while deleting device logs.',
-      );
-    }
+  async deleteDeviceLogs(query) {
+  try {
+    const result = await this.deviceLogModel.deleteMany(query);
+    return result;
+  } catch (error) {
+    throw new GeneralException(
+      ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+      'An error occurred while deleting device logs.',
+    );
   }
+}
+
 
   async editDeviceLog(id, editedData) {
     await this.deviceLogModel

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { MongoClient, ObjectID } from 'mongodb';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { UserRoleModel } from '../models/user-role.model';
@@ -50,6 +51,8 @@ export class UserRoleRepository {
   }
 
   async findARoleById(_id) {
+    const roleId = new ObjectID(_id);
+
     await this.userRoleModel
       .findOne({ _id })
       .where({ isDeleted: false })
