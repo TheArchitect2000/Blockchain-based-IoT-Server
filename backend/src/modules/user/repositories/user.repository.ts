@@ -56,7 +56,7 @@ export class UserRepository {
 
   async deleteChangeEmailToken(token: string) {
     return await this.changeEmailTokenModel
-      .deleteOne({ token: token })
+      .deleteOne({ token: { $eq: token } })
       .where({})
       .populate([]);
   }
@@ -129,7 +129,7 @@ export class UserRepository {
 
   async changeUserEmail(userId, newEmail) {
     await this.userModel
-      .updateOne({ _id: userId }, { $set: { email: newEmail } })
+      .updateOne({ _id: { $eq: userId } }, { $set: { email: newEmail } })
       .then((data) => {
         this.result = data;
       })
@@ -147,7 +147,7 @@ export class UserRepository {
   async editUser(id, editedData) {
     const { email, ...restData } = editedData;
     await this.userModel
-      .updateOne({ _id: id }, { $set: restData })
+      .updateOne({ _id: { $eq: id } }, { $set: restData })
       .then((data) => {
         this.result = data;
       })

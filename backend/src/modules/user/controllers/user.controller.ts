@@ -50,6 +50,8 @@ import {
   requestChangeEmailWithTokenDto,
   verifyChangeEmailWithTokenDto,
 } from '../data-transfer-objects/user/verify-change-email.dto';
+import escapeHtml from 'escape-html';
+
 var fs = require('fs');
 
 @ApiTags('Manage Users')
@@ -268,7 +270,7 @@ export class UserController {
           '{{ url }}',
           `${process.env.HOST_PROTOCOL}${process.env.PANEL_URL}/app/v1/user/reset-password-by-otp-code`,
         )
-        .replace('{{ email }}', email)
+        .replace('{{ email }}', escapeHtml(email))
         .replace('{{ otp }}', otpCode)
         .replace(/{{NodeImageSrc}}/g, process.env.THEME_LOGO)
         .replace(/{{NodeName}}/g, process.env.NODE_NAME);
@@ -600,7 +602,10 @@ export class UserController {
     @Body() body: setUserIdentityWalletDto,
     @Request() request,
   ) {
-    return await this.userService.setUserIdentityWallet(request.user.userId, body.wallet);
+    return await this.userService.setUserIdentityWallet(
+      request.user.userId,
+      body.wallet,
+    );
   }
 
   @Post('v1/user/set-my-ownership-wallet')
@@ -615,7 +620,10 @@ export class UserController {
     @Body() body: setUserIdentityWalletDto,
     @Request() request,
   ) {
-    return await this.userService.setUserOwnerShipWallet(request.user.userId, body.wallet);
+    return await this.userService.setUserOwnerShipWallet(
+      request.user.userId,
+      body.wallet,
+    );
   }
 
   @Patch('v1/user/edit-user-by-user/:userId')

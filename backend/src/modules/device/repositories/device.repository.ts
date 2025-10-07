@@ -47,7 +47,7 @@ export class DeviceRepository {
   async editDevice(id, editedData) {
     try {
       const result = (await this.deviceModel.updateOne(
-        { _id: id },
+        { _id: { $eq: id } },
         { $set: editedData },
       )) as any;
 
@@ -159,7 +159,7 @@ export class DeviceRepository {
   async deleteDeviceByDeviceId(deviceId) {
     await this.deviceModel
       .deleteOne()
-      .where({ _id: deviceId })
+      .where({ _id: { $eq: deviceId } })
       .then((data) => {
         this.result = data;
       })
@@ -230,7 +230,7 @@ export class DeviceRepository {
   async localShareDeviceWithId(deviceId: string, userId: string) {
     return await this.deviceModel
       .updateOne(
-        { _id: deviceId },
+        { _id: { $eq: deviceId } },
         {
           $addToSet: {
             sharedWith: userId,
@@ -243,7 +243,7 @@ export class DeviceRepository {
   async localUnshareDeviceWithId(deviceId: string, userId: string) {
     return await this.deviceModel
       .updateOne(
-        { _id: deviceId },
+        { _id: { $eq: deviceId } },
         {
           $pull: {
             sharedWith: userId,

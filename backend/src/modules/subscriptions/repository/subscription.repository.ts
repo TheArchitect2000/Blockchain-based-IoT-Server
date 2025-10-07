@@ -44,7 +44,7 @@ export class SubscriptionsRepository {
 
   async deleteToken(token: string) {
     return await this.subscriptionModel
-      .deleteOne({ token: token })
+      .deleteOne({ token: { $eq: token } })
       .where({})
       .populate([]);
   }

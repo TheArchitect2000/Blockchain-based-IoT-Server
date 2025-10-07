@@ -36,7 +36,7 @@ export class ServiceRepository {
 
   async editService(id, editedData) {
     await this.serviceModel
-      .updateOne({ _id: id }, editedData)
+      .updateOne({ _id: { $eq: id } }, editedData)
       .then((data) => {
         this.result = data;
       })

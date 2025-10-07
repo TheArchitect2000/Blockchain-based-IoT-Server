@@ -35,21 +35,20 @@ export class DeviceLogRepository {
   }
 
   async deleteDeviceLogs(query) {
-  try {
-    const result = await this.deviceLogModel.deleteMany(query);
-    return result;
-  } catch (error) {
-    throw new GeneralException(
-      ErrorTypeEnum.UNPROCESSABLE_ENTITY,
-      'An error occurred while deleting device logs.',
-    );
+    try {
+      const result = await this.deviceLogModel.deleteMany(query);
+      return result;
+    } catch (error) {
+      throw new GeneralException(
+        ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+        'An error occurred while deleting device logs.',
+      );
+    }
   }
-}
-
 
   async editDeviceLog(id, editedData) {
     await this.deviceLogModel
-      .updateOne({ _id: id }, editedData)
+      .updateOne({ _id: { $eq: id } }, editedData)
       .then((data) => {
         this.result = data;
       })

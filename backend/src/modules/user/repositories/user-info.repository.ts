@@ -38,7 +38,7 @@ export class UserInfoRepository {
   }
 
   async editUserInfo(id, editedData) {
-    return await this.userInfoModel.updateOne({ _id: id }, editedData);
+    return await this.userInfoModel.updateOne({ _id: { $eq: id } }, editedData);
   }
 
   async findAUserInfoById(_id) {

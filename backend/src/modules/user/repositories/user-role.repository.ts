@@ -35,7 +35,7 @@ export class UserRoleRepository {
 
   async editRole(id, editedData) {
     await this.userRoleModel
-      .updateOne({ _id: id }, editedData)
+      .updateOne({ _id: { $eq: id } }, editedData)
       .then((data) => {
         this.result = data;
       })

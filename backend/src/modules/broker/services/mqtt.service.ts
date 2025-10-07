@@ -128,7 +128,7 @@ export class MqttService implements OnModuleInit {
         aedes.id,
       );
 
-      process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
+      // process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
       //const httpsAgent = new https.Agent({ rejectUnauthorized: false });
       axios
         .post(host + '/app/v1/broker-mqtt-log/log-device-event', {
@@ -246,7 +246,7 @@ export class MqttService implements OnModuleInit {
 
           if (parsedPayload.data?.proof) {
             const { proof, ...dataWithoutProof } = parsedPayload.data;
-            const deviceData = await this.getDeviceType(parsedPayload.from)
+            const deviceData = await this.getDeviceType(parsedPayload.from);
             await this.contractService.storeZKP(
               String(process.env.PANEL_URL),
               String(client.id),
@@ -258,28 +258,27 @@ export class MqttService implements OnModuleInit {
           if (shouldTrigger(String(parsedPayload.from), 6)) {
             try {
               const deviceData =
-              await this.deviceService.getDeviceInfoByEncryptedId(
-                String(parsedPayload.from),
-                '',
-                true,
-              );
+                await this.deviceService.getDeviceInfoByEncryptedId(
+                  String(parsedPayload.from),
+                  '',
+                  true,
+                );
 
               await this.deviceService.editDevice(
-              {
-                deviceId: String(deviceData?._id),
-                hardwareVersion: Number(String(parsedPayload.data.HV)),
-                firmwareVersion: Number(String(parsedPayload.data.FV)),
-              } as any,
-              'root',
-              true,
-            );
+                {
+                  deviceId: String(deviceData?._id),
+                  hardwareVersion: Number(String(parsedPayload.data.HV)),
+                  firmwareVersion: Number(String(parsedPayload.data.FV)),
+                } as any,
+                'root',
+                true,
+              );
               console.log(
-              `HV and FV of device with id: ${deviceData._id} updated successfully.`,
-            );
+                `HV and FV of device with id: ${deviceData._id} updated successfully.`,
+              );
             } catch (error) {
               console.log('Error updating device HV and FV:', error);
             }
-          
           }
 
           axios

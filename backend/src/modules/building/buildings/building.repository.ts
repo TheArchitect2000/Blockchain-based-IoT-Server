@@ -41,7 +41,7 @@ export class BuildingRepository {
     try {
       const result = await this.buildingModel
         .updateOne(
-          { _id: buildId },
+          { _id: { $eq: buildId } },
           { $set: editedFields }, // Use $set to update specific fields
         )
         .exec();

@@ -34,7 +34,7 @@ export class TagRepository {
   }
 
   async edit(id, editedData) {
-    return await this.tagModel.updateOne({ _id: id }, editedData);
+    return await this.tagModel.updateOne({ _id: { $eq: id } }, editedData);
   }
 
   async findTagByUserId(userId) {

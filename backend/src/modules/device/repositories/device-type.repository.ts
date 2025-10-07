@@ -36,7 +36,7 @@ export class DeviceTypeRepository {
 
   async editDeviceType(id, editedData) {
     await this.deviceTypeModel
-      .updateOne({ _id: id }, editedData)
+      .updateOne({ _id: { $eq: id } }, editedData)
       .then((data) => {
         this.result = data;
       })

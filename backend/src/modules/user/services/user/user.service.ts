@@ -49,13 +49,17 @@ function generatePassword(length: number): string {
     throw new Error('Length must be greater than 0');
   }
 
-  const buffer = randomBytes(length);
   const characters =
     'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let password = '';
 
-  for (let i = 0; i < length; i++) {
-    password += characters.charAt(buffer[i] % characters.length);
+  while (password.length < length) {
+    const maxValidByte =
+      Math.floor(256 / characters.length) * characters.length;
+    const randomByte = randomBytes(1)[0];
+    if (randomByte < maxValidByte) {
+      password += characters.charAt(randomByte % characters.length);
+    }
   }
 
   return password;
@@ -92,19 +96,21 @@ export class UserService {
     private readonly buildingService?: BuildingService,
   ) {}
 
-  getUserKeys(exclude=true): string {
-  const excludedFields = ['password', 'newPassword'];
-  if (exclude) { 
-  return Object.keys(userSchema.paths)
-    .filter(key => !excludedFields.includes(key))
-    .join(' ');
+  getUserKeys(exclude = true): string {
+    const excludedFields = ['password', 'newPassword'];
+    if (exclude) {
+      return Object.keys(userSchema.paths)
+        .filter((key) => !excludedFields.includes(key))
+        .join(' ');
+    }
+    return Object.keys(userSchema.paths).join(' ');
   }
-  return Object.keys(userSchema.paths).join(' ');
-}
 
   validateEmail(email: string) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return email.trim() && emailRegex.test(email.trim());
+    if (typeof email !== 'string' || email.length > 320) return false;
+    // RFC 5322 Official Standard (simplified, safe for most uses)
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailRegex.test(email.trim());
   }
 
   generateEmailToken(): string {
@@ -261,8 +267,7 @@ export class UserService {
     );
     if (
       otp.length == 0 ||
-      new Date(otp[otp.length - 1].expiryDate).getTime() <
-        new Date().getTime()
+      new Date(otp[otp.length - 1].expiryDate).getTime() < new Date().getTime()
     ) {
       /* const StorX = await storxController.createUserAndGenerateStorXKey(
         body.email,
@@ -813,8 +818,12 @@ export class UserService {
       );
     }
 
-    const isExist1 = await this.userRepository.checkIfOwnerShipWalletExist(wallet)
-    const isExist2 = await this.userRepository.checkIfIdentityWalletExist(wallet)
+    const isExist1 = await this.userRepository.checkIfOwnerShipWalletExist(
+      wallet,
+    );
+    const isExist2 = await this.userRepository.checkIfIdentityWalletExist(
+      wallet,
+    );
 
     if (isExist1 == true || isExist2 == true) {
       throw new GeneralException(
@@ -867,9 +876,13 @@ export class UserService {
         'Wallet address is invalid.',
       );
     }
-    
-    const isExist1 = await this.userRepository.checkIfOwnerShipWalletExist(wallet)
-    const isExist2 = await this.userRepository.checkIfIdentityWalletExist(wallet)
+
+    const isExist1 = await this.userRepository.checkIfOwnerShipWalletExist(
+      wallet,
+    );
+    const isExist2 = await this.userRepository.checkIfIdentityWalletExist(
+      wallet,
+    );
 
     if (isExist1 == true || isExist2 == true) {
       throw new GeneralException(
@@ -1656,15 +1669,15 @@ export class UserService {
     let isValidPassword = null;
 
     if (String(enteredPassword) === String(userPassword)) {
-      isValidPassword = true 
+      isValidPassword = true;
     } else {
       await bcrypt.compare(enteredPassword, userPassword).then((result) => {
-      if (result == true) {
-        isValidPassword = true;
-      } else {
-        isValidPassword = false;
-      }
-    });
+        if (result == true) {
+          isValidPassword = true;
+        } else {
+          isValidPassword = false;
+        }
+      });
     }
 
     return isValidPassword;
