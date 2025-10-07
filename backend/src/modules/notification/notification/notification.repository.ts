@@ -82,7 +82,7 @@ export class NotificationRepository {
     try {
       const result = await this.notificationModel
         .updateOne(
-          { _id: notifId },
+          { _id: { $eq: notifId } },
           { $set: editedFields }, // Use $set to update specific fields
         )
         .exec();

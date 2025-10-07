@@ -73,8 +73,6 @@ export class OTPService {
 
     this.otp = await this.repository.insertOTP(newOTP);
 
-    console.log('Type Issss:', type);
-
     if (this.otp) {
       if (type === OTPTypeEnum.REGISTRATION) {
         return await this.mailService.sendRegistrationOTP(
@@ -177,30 +175,28 @@ export class OTPService {
 
     try {
       return await bcrypt
-      .compare(String(userOTP), findOTP.sentCode)
-      .then(async function (result) {
-        if (result) {
-          try {
-            await newThis.repository.deleteOTP(findOTP._id);
-          } catch (error) {
-            console.log('Error Catched:', error);
-          }
-          return true;
-          /* if (newThis.validateOTPExpiryDate(findOTP.expiryDate)) {
+        .compare(String(userOTP), findOTP.sentCode)
+        .then(async function (result) {
+          if (result) {
+            try {
+              await newThis.repository.deleteOTP(findOTP._id);
+            } catch (error) {
+              console.log('Error Catched:', error);
+            }
+            return true;
+            /* if (newThis.validateOTPExpiryDate(findOTP.expiryDate)) {
             return true
           } else {
             return false;
           } */
-        } else {
-          console.log('inValid code');
-          return false;
-        }
-      });
+          } else {
+            console.log('inValid code');
+            return false;
+          }
+        });
     } catch (error) {
-      return false
+      return false;
     }
-
-    
   }
 
   async setVerificationStatus(otpId, verificationStatus, verificationReason) {

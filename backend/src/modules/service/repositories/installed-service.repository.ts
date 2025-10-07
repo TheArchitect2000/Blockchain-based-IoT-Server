@@ -41,17 +41,23 @@ export class InstalledServiceRepository {
   }
 
   async deleteInstalledServiceById(id) {
-    return await this.installedServiceModel.deleteOne({ _id: id });
+    return await this.installedServiceModel.deleteOne({ _id: { $eq: id } });
   }
 
-  async deleteInstalledServicesFromUserWithDeviceEncryptedId(userId: string, deviceEncryptedId: string) {
-    const theUserId = new Types.ObjectId(userId)
-    return await this.installedServiceModel.deleteMany({ userId: theUserId, deviceMap: { $in: [deviceEncryptedId] } });
+  async deleteInstalledServicesFromUserWithDeviceEncryptedId(
+    userId: string,
+    deviceEncryptedId: string,
+  ) {
+    const theUserId = new Types.ObjectId(userId);
+    return await this.installedServiceModel.deleteMany({
+      userId: theUserId,
+      deviceMap: { $in: [deviceEncryptedId] },
+    });
   }
 
   async editInstalledService(id, editedData) {
     await this.installedServiceModel
-      .updateOne({ _id: id }, editedData)
+      .updateOne({ _id: { $eq: id } }, editedData)
       .then((data) => {
         this.result = data;
       })

@@ -54,7 +54,7 @@ export class ContractRepository {
     );
 
     return await this.contractModel
-      .deleteOne({ _id: commitmentId, nodeId: nodeId })
+      .deleteOne({ _id: { $eq: commitmentId }, nodeId: { $eq: nodeId } })
       .where({});
   }
 

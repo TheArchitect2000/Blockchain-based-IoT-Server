@@ -36,7 +36,7 @@ export class UserPermissionRepository {
 
   async editPermission(id, editedData) {
     await this.userPermissionModel
-      .updateOne({ _id: id }, editedData)
+      .updateOne({ _id: { $eq: id } }, editedData)
       .then((data) => {
         this.result = data;
       })

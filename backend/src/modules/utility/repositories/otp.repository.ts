@@ -18,11 +18,11 @@ export class OTPRepository {
   }
 
   async editOTP(id, editedData) {
-    return await this.otpModel.updateOne({ _id: id }, editedData);
+    return await this.otpModel.updateOne({ _id: { $eq: id } }, editedData);
   }
 
   async deleteOTP(id) {
-    return await this.otpModel.deleteOne({ _id: id });
+    return await this.otpModel.deleteOne({ _id: { $eq: id } });
   }
 
   async findOTPByEmail(userEmail, otpType) {

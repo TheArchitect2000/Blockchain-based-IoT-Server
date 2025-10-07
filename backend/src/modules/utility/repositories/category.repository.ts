@@ -43,7 +43,7 @@ export class CategoryRepository {
 
   async editCategory(id, editedData) {
     await this.categoryModel
-      .updateOne({ _id: id }, editedData)
+      .updateOne({ _id: { $eq: id } }, editedData)
       .then((data) => {
         this.result = data;
       })
