@@ -27,15 +27,16 @@ const MapComponent: React.FC<MapComponentProps> = ({ positions, loading }) => {
 
     useEffect(() => {
         const unsubscribeFunctions: (() => void)[] = []
+        const port = import.meta.env.VITE_MQTT_WEBSOCKET_PORT || '8081' // Default WebSocket port
 
         positions.forEach((item) => {
             if (item?.deviceEncryptedId) {
                 let deviceNodeId = ''
 
                 if (item.nodeId == 'developer.fidesinnova.io') {
-                    deviceNodeId = `wss://${item.nodeId}:8081`
+                    deviceNodeId = `wss://${item.nodeId}:${port}`
                 } else {
-                    deviceNodeId = `wss://panel.${item.nodeId}:8081`
+                    deviceNodeId = `wss://panel.${item.nodeId}:${port}}`
                 }
 
                 const unsubscribe = subscribe(
@@ -94,7 +95,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ positions, loading }) => {
     const filteredPositions =
         selectedNodeId !== null
             ? positions.filter((item) => item.nodeId === selectedNodeId)
-            : positions.filter((item) => item.nodeId !== "Sample")
+            : positions.filter((item) => item.nodeId !== 'Sample')
 
     // Custom component to zoom the map to Paris
     const ZoomToParis: React.FC = () => {
