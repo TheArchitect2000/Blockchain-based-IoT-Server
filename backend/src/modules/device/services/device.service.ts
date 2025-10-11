@@ -622,6 +622,23 @@ export class DeviceService {
     });
   }
 
+  /*
+  if a device is shared but doesnt exist on blockchain, unshare it on db
+  */
+  async unshareBySystem(deviceId: string): Promise<void> {
+    const device = await this.deviceRepository.getDeviceById(deviceId);
+
+    if (!device) {
+      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, 'Device not found!');
+    }
+
+    await this.deviceRepository.editDevice(device._id, {
+      isShared: false,
+
+      updateDate: new Date().toDateString(),
+    });
+  }
+
   async updateAllDevices() {
     await this.deviceRepository.updateAllNodeIds(process.env.PANEL_URL);
   }
@@ -1172,5 +1189,9 @@ export class DeviceService {
       userId,
     );
     return checkExist;
+  }
+
+  async getDeviceByEncryptedId(deviceEncryptedId: string) {
+    return this.deviceRepository.getDeviceByEncryptedId(deviceEncryptedId);
   }
 }

@@ -24,6 +24,7 @@ import { MediaModule } from './modules/media/media.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { BuildingModule } from './modules/building/building.module';
 import { SyslogModule } from './modules/logging/syslog.module';
+import { ScheduleModule } from '@nestjs/schedule';
 //import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
@@ -47,6 +48,9 @@ import { SyslogModule } from './modules/logging/syslog.module';
       rootPath: './uploads/*',
       serveRoot: '/app/uploads/*',
     }),
+
+    ScheduleModule.forRoot(),
+
     AuthenticationModule,
     SyslogModule,
     UserModule,

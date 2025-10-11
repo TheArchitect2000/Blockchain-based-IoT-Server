@@ -30,6 +30,7 @@
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.3.9",
     "@nestjs/platform-socket.io": "^10.4.2",
+    "@nestjs/schedule": "^6.0.1",
     "@nestjs/serve-static": "^4.0.2",
     "@nestjs/swagger": "^7.3.1",
     "@nestjs/websockets": "^10.4.2",
@@ -42,6 +43,7 @@
     "blockly": "^10.0.2",
     "class-validator": "^0.14.1",
     "crypto": "^1.0.1",
+    "escape-html": "^1.0.3",
     "ethers": "^6.13.4",
     "firebase-admin": "^12.0.0",
     "handlebars": "^4.7.8",
@@ -64,8 +66,7 @@
     "uuid": "^10.0.0",
     "vm": "^0.1.0",
     "websocket-stream": "^5.5.2",
-    "ws": "^8.18.0",
-    "escape-html": "^1.0.3"
+    "ws": "^8.18.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.4.5",
