@@ -22,7 +22,7 @@ const indexLimiter = rateLimit({
 });
 
 app.use(express.static(__dirname + "/frontend"));
-app.use("/*", indexLimiter, (req, res) => {
+app.use("/", indexLimiter, (req, res) => {
   res.sendFile(__dirname + "/frontend/index.html");
 });
 
