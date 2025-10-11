@@ -1,0 +1,56 @@
+name: CI/CD Deployment
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      # --- Backend ---
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: npm ci
+
+      - name: Build backend
+        working-directory: ./backend
+        run: npm run build
+
+      # --- Admin Web App ---
+      - name: Install admin web app dependencies
+        working-directory: ./admin_web_app/Source_webapp
+        run: npm ci
+
+      - name: Build admin web app
+        working-directory: ./admin_web_app/Source_webapp
+        run: npm run build
+
+      # --- User Web App ---
+      - name: Install user web app dependencies
+        working-directory: ./web_app/Source_webapp
+        run: npm ci
+
+      - name: Build user web app
+        working-directory: ./web_app/Source_webapp
+        run: npm run build
+
+      # --- Deploy ---
+      - name: Deploy to correct environment
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ github.ref == 'refs/heads/main' && secrets.SERVER_HOST}}
+          username: ${{ github.ref == 'refs/heads/main' && secrets.SERVER_USER}}
+          key: ${{ github.ref == 'refs/heads/main' && secrets.SERVER_SSH_KEY}}
