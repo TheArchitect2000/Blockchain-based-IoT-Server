@@ -22,11 +22,9 @@
 !/backend/uploads/sprites.png
 !/backend/uploads/fides_logo.png
 admin_web_app/Runner_webapp/frontend/*
-!/admin_web_app/Runner_webapp/.env
 !admin_web_app/Runner_webapp/frontend/t.txt
 web_app/Runner_webapp/frontend/*
 !web_app/Runner_webapp/frontend/t.txt
-!/web_app/Runner_webapp/.env
 
 # Project configuration files
 *webprivate.pem

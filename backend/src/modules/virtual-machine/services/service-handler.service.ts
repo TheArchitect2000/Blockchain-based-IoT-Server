@@ -1,5 +1,4 @@
 import { Script, createContext } from 'vm';
-
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { MailService } from 'src/modules/utility/services/mail.service';
 import { UserService } from 'src/modules/user/services/user/user.service';
@@ -53,11 +52,15 @@ export class VirtualMachineHandlerService {
 
     const { letLinesCode, restOfCode } = this.parseUserCode(userCode);
 
-    const mainThreadCode = this.generateMainThreadCode(
-      localDeviceMap,
-      userId,
-      installedServiceId,
-    );
+    console.log('-----------------------------------------------------------');
+    console.log('1 Full code:', userCode);
+    console.log('-----------------------------------------------------------');
+    console.log('2 Let lines:', letLinesCode);
+    console.log('-----------------------------------------------------------');
+    console.log('3 Rest of code:', restOfCode);
+    console.log('-----------------------------------------------------------');
+
+    const mainThreadCode = this.generateMainThreadCode();
 
     const script = new Script(mainThreadCode);
 
@@ -69,7 +72,7 @@ export class VirtualMachineHandlerService {
       userService: this.userService,
       mailService: this.mailService,
       deviceService: this.deviceService,
-      userId: userId,
+      userId: userId, // ✅ Passed as variable
       userCode: {
         letLines: letLinesCode,
         restOfCode: restOfCode,
@@ -98,7 +101,10 @@ export class VirtualMachineHandlerService {
     return true;
   }
 
-  sanitizeUserCode(userCode) {
+  // ============================================
+  // SANITIZE USER CODE FROM BLOCKLY
+  // ============================================
+  sanitizeUserCode(userCode: string): string {
     // Replace custom functions with safe equivalents
     userCode = userCode.replaceAll('customizedMessage.sendMail', 'sendMail');
     userCode = userCode.replaceAll(
@@ -113,11 +119,13 @@ export class VirtualMachineHandlerService {
         `${match}\n    getNewData();var waitTill = new Date(new Date().getTime() + 200);while (waitTill > new Date()) {};`,
     );
 
+    // Replace waitForDevicePayload with actual backend code
     userCode = userCode.replace(
       /await waitForDevicePayload\(([\w\d_]+)\);/g,
       'while (getNewData("$1") == false) {parentPort.postMessage("Looping"); var waitTill = new Date(new Date().getTime() + 500);while (waitTill > new Date()) {}}; parentPort.postMessage("Device sent data and exited loop");',
     );
 
+    // Replace blockly wait function with while loops
     let waitCounter = 0;
     userCode = userCode.replace(
       /await waitTill\((\w+)\);( ?\/\/.*)?/g,
@@ -130,7 +138,13 @@ export class VirtualMachineHandlerService {
     return userCode;
   }
 
-  parseUserCode(userCode) {
+  // ============================================
+  // PARSE USER CODE INTO SECTIONS
+  // ============================================
+  parseUserCode(userCode: string): {
+    letLinesCode: string;
+    restOfCode: string;
+  } {
     const lines = userCode.split('\n');
     const letLinesCode = lines
       .filter((line) => line.trim().startsWith('let '))
@@ -142,7 +156,11 @@ export class VirtualMachineHandlerService {
     return { letLinesCode, restOfCode };
   }
 
-  generateMainThreadCode(localDeviceMap, userId, installedServiceId) {
+  // ============================================
+  // GENERATE MAIN THREAD CODE (NO INJECTION)
+  // ============================================
+  generateMainThreadCode(): string {
+    // All dynamic values are accessed from context variables
     return `
 const { Worker } = require('worker_threads');
 const { TextEncoder, TextDecoder } = require('util');
@@ -173,6 +191,9 @@ function lowercaseStrings(obj) {
   return obj;
 }
 
+// ============================================
+// DEVICE MANAGEMENT
+// ============================================
 let devicesInfo = {};
 
 async function getServiceDevicesData() {
@@ -217,10 +238,16 @@ function getDeviceDataByEncryptedId(deviceEncryptedId) {
   return devicesInfo[deviceData] || {};
 }
 
+// ============================================
+// SHARED BUFFER COMMUNICATION
+// ============================================
 const sharedBuffer = new SharedArrayBuffer(2048);
 const view = new DataView(sharedBuffer);
 let clients = [];
 
+// ============================================
+// MQTT DEVICE LISTENERS
+// ============================================
 function listenToAllDevices() {
   Object.keys(devicesInfo).forEach((key) => {
     const deviceData = devicesInfo[key];
@@ -295,6 +322,9 @@ function listenToAllDevices() {
   });
 }
 
+// ============================================
+// VM TERMINATION
+// ============================================
 function terminateVm() {
   view.setUint8(1, 1);
 
@@ -309,6 +339,10 @@ function terminateVm() {
 
 globalThis.terminateVm = terminateVm;
 
+// ============================================
+// SECURE MESSAGING FUNCTIONS
+// ============================================
+// ✅ SECURE: userId is accessed from context variable, not template string
 const sendMail = async (email) => {
   try {
     let user = await userService.getUserProfileByIdFromUser(userId);
@@ -337,12 +371,218 @@ const sendNotification = async (notification) => {
   }
 };
 
+// ============================================
+// CREATE WORKER THREAD
+// ============================================
 console.log('Main thread: Starting workers...');
 
-const vmWorker = new Worker(__dirname + '/worker-executor.js', {
+// ✅ SECURE: Worker code without template injection
+const workerCode = \`
+const { parentPort, workerData } = require('worker_threads');
+const { TextDecoder } = require('util');
+
+const sharedBuffer = workerData.sharedBuffer;
+const userCode = workerData.userCode;
+
+let lastData = {};
+let functions = {};
+
+// Safe context for user code
+const safeContext = {
+  lastData: lastData,
+  functions: functions,
+  console: {
+    log: (...args) => parentPort.postMessage({ type: 'log', data: args }),
+    error: (...args) => parentPort.postMessage({ type: 'error', data: args }),
+  },
+  sendMail: (obj) => {
+    if (obj && typeof obj === 'object' && obj.subject && obj.body) {
+      parentPort.postMessage({ ...obj });
+    }
+  },
+  sendNotification: (obj) => {
+    if (obj && typeof obj === 'object' && obj.title && obj.message) {
+      parentPort.postMessage({ ...obj });
+    }
+  },
+  parentPort: {
+    postMessage: (msg) => parentPort.postMessage(msg)
+  },
+  Date: Date,
+  Math: Math,
+  String: String,
+  Number: Number,
+  Boolean: Boolean,
+  Array: Array,
+  Object: Object,
+};
+
+function getNewData(variable = "") {
+  const view = new DataView(sharedBuffer);
+  const decoder = new TextDecoder();
+  const flag = view.getUint8(0);
+  const terminate = view.getUint8(1);
+  
+  if (terminate === 1) {
+    process.exit(0);
+  }
+
+  if (flag === 1) {
+    parentPort.postMessage("Data received from custom function");
+    view.setUint8(0, 0);
+
+    const bytes = new Uint8Array(sharedBuffer, 2, 2046);
+    let message = decoder.decode(bytes).trim();
+    const cleanMessage = message.replace(/[^\\\\x20-\\\\x7E]/g, '');
+
+    let data;
+    try {
+      data = JSON.parse(cleanMessage);
+      lastData[String(data.variable)] = data.data;
+      safeContext.lastData = lastData;
+
+      parentPort.postMessage('Log lastData:');
+      parentPort.postMessage(lastData);
+
+      const deviceName = String(data.variable);
+      const capitalizedDeviceName = deviceName.charAt(0).toUpperCase() + deviceName.slice(1);
+      const functionName = "runFunctionWithPayload" + capitalizedDeviceName;
+
+      if (typeof functions[functionName] === "function") {
+        functions[functionName]();
+      }
+    } catch (e) {
+      parentPort.postMessage('Failed to parse JSON');
+    }
+
+    const deviceVar = String(variable);
+    if (deviceVar.length > 0 && deviceVar !== String(data?.variable)) {
+      return false;
+    }
+    return true;
+  } else {
+    return false;
+  }
+}
+
+safeContext.getNewData = getNewData;
+
+function executeUserCode(letLines, restOfCode, data) {
+  try {
+    const userFunction = new Function(
+      ...Object.keys(safeContext),
+      'data',
+      \\\`
+      'use strict';
+      \\\${letLines}
+      \\\${restOfCode}
+      \\\`
+    );
+    userFunction(...Object.values(safeContext), data);
+  } catch (error) {
+    parentPort.postMessage('Error in user code:');
+    parentPort.postMessage({
+      message: error.message,
+      stack: error.stack
+    });
+  }
+}
+
+function initializeUserCode() {
+  try {
+    if (userCode.letLines) {
+      const initFunction = new Function(
+        ...Object.keys(safeContext),
+        \\\`
+        'use strict';
+        \\\${userCode.letLines}
+        \\\`
+      );
+      initFunction(...Object.values(safeContext));
+    }
+    parentPort.postMessage('User code initialized successfully');
+  } catch (error) {
+    parentPort.postMessage('Error initializing user code:');
+    parentPort.postMessage({
+      message: error.message,
+      stack: error.stack
+    });
+  }
+}
+
+function mainFunction() {
+  const view = new DataView(sharedBuffer);
+  const decoder = new TextDecoder();
+  
+  parentPort.postMessage('Loop Started');
+  
+  while (true) {
+    const flag = view.getUint8(0);
+    const terminate = view.getUint8(1);
+    
+    if (terminate === 1) {
+      process.exit(0);
+    }
+
+    if (flag === 1) {
+      view.setUint8(0, 0);
+
+      const bytes = new Uint8Array(sharedBuffer, 2, 2046);
+      let message = decoder.decode(bytes).trim();
+      const cleanMessage = message.replace(/[^\\\\x20-\\\\x7E]/g, '');
+
+      try {
+        let data = JSON.parse(cleanMessage);
+        lastData[String(data.variable)] = data.data;
+        safeContext.lastData = lastData;
+
+        parentPort.postMessage('Log lastData:');
+        parentPort.postMessage(lastData);
+
+        if (userCode.restOfCode) {
+          executeUserCode(userCode.letLines, userCode.restOfCode, data);
+        }
+
+        const deviceName = String(data.variable);
+        const capitalizedDeviceName = deviceName.charAt(0).toUpperCase() + deviceName.slice(1);
+        const functionName = "runFunctionWithPayload" + capitalizedDeviceName;
+
+        if (typeof functions[functionName] === "function") {
+          functions[functionName]();
+        }
+      } catch (e) {
+        parentPort.postMessage('Error processing device data:');
+        parentPort.postMessage({
+          message: e.message,
+          stack: e.stack
+        });
+      }
+    }
+
+    const waitTill = new Date(new Date().getTime() + 100);
+    while (waitTill > new Date()) {}
+  }
+}
+
+try {
+  initializeUserCode();
+  mainFunction();
+} catch (error) {
+  parentPort.postMessage('Fatal worker error:');
+  parentPort.postMessage({
+    message: error.message,
+    stack: error.stack
+  });
+  process.exit(1);
+}
+\`;
+
+// ✅ SECURE: Create worker with code string, pass user code as data
+const vmWorker = new Worker(workerCode, {
+  eval: true,
   workerData: {
     sharedBuffer: sharedBuffer,
-    userCode: userCode, // From context variable
+    userCode: userCode, // ✅ From context variable, not template interpolation
   }
 });
 
@@ -371,6 +611,9 @@ vmWorker.on('exit', (code) => {
 
 console.log('vmWorker started successfully.');
 
+// ============================================
+// INITIALIZE
+// ============================================
 (async () => {
   await getServiceDevicesData();
   await listenToAllDevices();
@@ -382,25 +625,30 @@ setTimeout(() => {
 `;
   }
 
+  // ============================================
+  // DELETE VIRTUAL MACHINE
+  // ============================================
   async deleteVirtualMachinByServiceId(installedServiceId) {
-    console.log('Deletingggggggggg');
+    console.log('Deleting VM...');
 
     try {
       if (this.vmContexts[installedServiceId.toString()]) {
         this.vmContexts[installedServiceId.toString()].terminateVm();
         delete this.vmContexts[installedServiceId.toString()];
         console.log(
-          `${installedServiceId} Virtual Machine Deleted Succesfully !`,
+          `${installedServiceId} Virtual Machine Deleted Successfully!`,
         );
       }
       return true;
     } catch (e) {
-      console.log('Errrrorrrrr:', e);
-
+      console.log('Error deleting VM:', e);
       return false;
     }
   }
 
+  // ============================================
+  // DELETE ALL USER VMS
+  // ============================================
   async deleteAllUserVirtualMachines(userId: string) {
     await this.installedServiceService
       .getInstalledServicesByUserId(userId)
@@ -412,12 +660,16 @@ setTimeout(() => {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while fetching installed services!';
+        console.error(errorMessage, error);
         return errorMessage;
       });
 
     return true;
   }
 
+  // ============================================
+  // CREATE ALL VMS ON STARTUP
+  // ============================================
   async createAllVirtualMachines() {
     let count = 0;
     await this.installedServiceService
@@ -433,6 +685,7 @@ setTimeout(() => {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while fetching installed services!';
+        console.error(errorMessage, error);
         return errorMessage;
       });
     console.log(`All virtual machines created successfully (Count: ${count})`);
