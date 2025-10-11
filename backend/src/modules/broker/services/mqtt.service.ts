@@ -68,9 +68,9 @@ export class MqttService implements OnModuleInit {
   async brokerStart() {
     const mqttPorts = {
       mqtt: 1883, // TCP Port: 1883
-      mqtts: 8883, // SSL/TLS Port: 8883
+      mqtts: process.env.MQTT_BROKER_PORT || 8083, // SSL/TLS Port: 8883
       ws: 8080, // WebSocket unencrypted
-      wss: 8081, // WebSocket encrypted
+      wss: process.env.MQTT_WEBSOCKET_PORT || 8081, // WebSocket encrypted
     };
 
     const tlsOptions = {
