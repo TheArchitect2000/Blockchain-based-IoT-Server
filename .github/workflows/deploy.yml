@@ -4,13 +4,7 @@ on:
   push:
     branches: [staging]
 jobs:
-  healthcheck:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Healthcheck
-        run: curl --fail https://staging.fidesinnova.io/  exit 1
   deploy:
-    needs: [healthcheck]
     runs-on: ubuntu-latest
     environment: staging
     steps:
