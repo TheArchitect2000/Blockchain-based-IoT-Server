@@ -17,9 +17,9 @@ jobs:
       - uses: actions/checkout@v3
       - name: Update application
         env:
-          HOSTNAME: ${{ secrets.SERVER_HOST }}
-          USERNAME: ${{ secrets.SERVER_USER }}
-          PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
+          HOSTNAME: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
+          USERNAME: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
+          PRIVATE_KEY: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
         run: |
           echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
           ssh -o StrictHostKeyChecking=no -i private_key ${USERNAME}@${HOSTNAME} '
@@ -28,9 +28,9 @@ jobs:
           git pull
       - name: Update backend
         env:
-          HOSTNAME: ${{ secrets.SERVER_HOST }}
-          USERNAME: ${{ secrets.SERVER_USER }}
-          PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
+          HOSTNAME: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
+          USERNAME: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
+          PRIVATE_KEY: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
         run: |
           echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
           ssh -o StrictHostKeyChecking=no -i private_key ${USERNAME}@${HOSTNAME} '
@@ -51,9 +51,9 @@ jobs:
           fi
       - name: Update web_app
         env:
-          HOSTNAME: ${{ secrets.SERVER_HOST }}
-          USERNAME: ${{ secrets.SERVER_USER }}
-          PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
+          HOSTNAME: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
+          USERNAME: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
+          PRIVATE_KEY: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
         run: |
           echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
           ssh -o StrictHostKeyChecking=no -i private_key ${USERNAME}@${HOSTNAME} '
