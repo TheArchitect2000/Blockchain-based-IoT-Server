@@ -26,16 +26,7 @@ jobs:
           cd /home/fidesinnova-stg &&
           git checkout staging &&
           git pull
-      - name: Update backend
-        env:
-          HOSTNAME: ${{ secrets.STAGING_SERVER }}
-          USERNAME: ${{ secrets.STAGING_USER }}
-          PRIVATE_KEY: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
-        run: |
-          echo "$PRIVATE_KEY" > private_key
-          chmod 600 private_key
 
-          ssh -o StrictHostKeyChecking=no -i private_key ${USERNAME}@${HOSTNAME} << 'EOF'
           cd /home/fidesinnova-stg/backend &&
           echo "Installing new packages for backend via npm..."
           if npm install; then
@@ -51,16 +42,7 @@ jobs:
               echo "Error: Backend build failed."
               exit 1
           fi
-      - name: Update web_app
-        env:
-          HOSTNAME: ${{ secrets.STAGING_SERVER }}
-          USERNAME: ${{ secrets.STAGING_USER }}
-          PRIVATE_KEY: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
-        run: |
-          echo "$PRIVATE_KEY" > private_key
-          chmod 600 private_key
 
-          ssh -o StrictHostKeyChecking=no -i private_key ${USERNAME}@${HOSTNAME} << 'EOF'
           echo "Navigating to web_app..."
           cd /home/fidesinnova-stg/web_app/Source_webapp || { echo "Error: Failed to navigate to web_app directory."; exit 1; }
 
