@@ -1,16 +1,17 @@
+‍‍‍``` 
 name: stage Staging
 
 on:
   push:
-    branches: [staging]
+    branches: [ staging ]
 jobs:
   healthcheck:
     runs-on: ubuntu-latest
     steps:
       - name: Healthcheck
-        run: curl --fail https://staging.fidesinnova.io/ || exit 1
+        run: curl --fail https://staging.fidesinnova.io/  exit 1
   deploy:
-    needs: [healthcheck]
+    needs: [ healthcheck ]
     runs-on: ubuntu-latest
     environment: staging
     steps:
@@ -22,7 +23,7 @@ jobs:
           PRIVATE_KEY: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
         run: |
           echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
-          ssh -o StrictHostKeyChecking=no -i private_key ${USERNAME}@${HOSTNAME} 
+          ssh -o StrictHostKeyChecking=no -i private_key ${USERNAME}@${HOSTNAME} ' 
           cd /home/fidesinnova-stg &&
           git checkout staging &&
           git pull
@@ -44,7 +45,7 @@ jobs:
           fi
 
           echo "Navigating to web_app..."
-          cd /home/fidesinnova-stg/web_app/Source_webapp || { echo "Error: Failed to navigate to web_app directory."; exit 1; }
+          cd /home/fidesinnova-stg/web_app/Source_webapp  { echo "Error: Failed to navigate to web_app directory."; exit 1; }
 
           echo "Installing new packages for web_app via npm..."
           if npm install; then
@@ -67,7 +68,7 @@ jobs:
                   mkdir "/home/fidesinnova-stg/web_app/Runner_webapp/frontend"
               fi
               echo "Moving web_app files to Runner_webapp/frontend..."
-              mv build/* /home/fidesinnova-stg/web_app/Runner_webapp/frontend/ || { echo "Error: Failed to move web_app files."; exit 1; }
+              mv build/* /home/fidesinnova-stg/web_app/Runner_webapp/frontend/  { echo "Error: Failed to move web_app files."; exit 1; }
               echo "web_app files moved successfully."
           else
               echo "Error: web_app build failed."
@@ -76,10 +77,11 @@ jobs:
 
 
           echo "Installing new packages for web_app/Runner_webapp..."
-          cd /home/fidesinnova-stg/web_app/Runner_webapp || { echo "Error: Failed to navigate to Runner_webapp directory."; exit 1; }
+          cd /home/fidesinnova-stg/web_app/Runner_webapp  { echo "Error: Failed to navigate to Runner_webapp directory."; exit 1; }
           if npm install; then
               echo "Packages of Runner_webapp for web_app installed successfully."
           else
               echo "Error: Runner_webapp package installation failed."
               exit 1
-          fi
+          fi '
+```
