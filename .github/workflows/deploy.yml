@@ -21,18 +21,11 @@ jobs:
           USERNAME: ${{ secrets.STAGING_USER }}
           PRIVATE_KEY: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
         run: |
-          echo "$PRIVATE_KEY" > private_key
-          chmod 600 private_key
-
-          ssh -o StrictHostKeyChecking=no -i private_key ${USERNAME}@${HOSTNAME} << 'EOF'
-          cd /home/fidesinnova-stg
-          git fetch origin staging
-          git checkout staging
-          git pull origin staging
-          npm install
-          npm run build
-          pm2 restart all
-          EOF
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ${USERNAME}@${HOSTNAME} 
+          cd /home/fidesinnova-stg &&
+          git checkout staging &&
+          git pull
       - name: Update backend
         env:
           HOSTNAME: ${{ secrets.STAGING_SERVER }}
