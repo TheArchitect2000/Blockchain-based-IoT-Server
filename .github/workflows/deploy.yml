@@ -1,9 +1,8 @@
-‍‍‍``` 
 name: stage Staging
 
 on:
   push:
-    branches: [ staging ]
+    branches: [staging]
 jobs:
   healthcheck:
     runs-on: ubuntu-latest
@@ -11,7 +10,7 @@ jobs:
       - name: Healthcheck
         run: curl --fail https://staging.fidesinnova.io/  exit 1
   deploy:
-    needs: [ healthcheck ]
+    needs: [healthcheck]
     runs-on: ubuntu-latest
     environment: staging
     steps:
@@ -84,4 +83,3 @@ jobs:
               echo "Error: Runner_webapp package installation failed."
               exit 1
           fi '
-```
