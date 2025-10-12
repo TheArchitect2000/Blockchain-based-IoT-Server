@@ -1,4 +1,4 @@
-name: stage Deployment
+name: stage Staging
 
 on:
   push:
@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Healthcheck
-        run: curl --fail https://staging.fidesinnova.com/ || exit 1
+        run: curl --fail https://staging.fidesinnova.io/ || exit 1
   deploy:
     needs: [healthcheck]
     runs-on: ubuntu-latest
