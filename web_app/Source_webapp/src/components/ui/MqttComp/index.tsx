@@ -8,7 +8,8 @@ const clients: Record<string, MqttClient> = {}
 function convertToWebSocketUrl(url: string): string {
     const parsedUrl = new URL(url)
     const host = parsedUrl.host
-    return `wss://${host}:8081`
+    const port = import.meta.env.VITE_MQTT_WEBSOCKET_PORT || '8081' // Default WebSocket port
+    return `wss://${host}:${port}`
 }
 
 export const useMQTT = () => {
@@ -152,6 +153,3 @@ export const useMQTT = () => {
 
     return { subscribe, status }
 }
-
-
-

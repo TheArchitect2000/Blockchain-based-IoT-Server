@@ -1,0 +1,99 @@
+name: stage Deployment
+
+on:
+  push:
+    branches: [staging]
+jobs:
+  healthcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Healthcheck
+        run: curl --fail https://staging.fidesinnova.com/ || exit 1
+  deploy:
+    needs: [healthcheck]
+    runs-on: ubuntu-latest
+    environment: stage
+    steps:
+      - uses: actions/checkout@v3
+      - name: Update application
+        env:
+          HOSTNAME: ${{ secrets.STAGING_SERVER }}
+          USERNAME: ${{ secrets.STAGING_USER }}
+          PRIVATE_KEY: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
+        run: |
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ${USERNAME}@${HOSTNAME} '
+          cd /home/fidesinnova-stg &&
+          git checkout staging &&
+          git pull
+      - name: Update backend
+        env:
+          HOSTNAME: ${{ secrets.STAGING_SERVER }}
+          USERNAME: ${{ secrets.STAGING_USER }}
+          PRIVATE_KEY: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
+        run: |
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ${USERNAME}@${HOSTNAME} '
+          cd /home/fidesinnova-stg/backend &&
+          echo "Installing new packages for backend via npm..."
+          if npm install; then
+              echo "Packages for backend installed successfully."
+          else
+              echo "Error: Failed to install backend packages."
+              exit 1
+          fi
+          echo "Building backend..."
+          if npm run build; then
+              echo "Backend build completed successfully."
+          else
+              echo "Error: Backend build failed."
+              exit 1
+          fi
+      - name: Update web_app
+        env:
+          HOSTNAME: ${{ secrets.STAGING_SERVER }}
+          USERNAME: ${{ secrets.STAGING_USER }}
+          PRIVATE_KEY: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
+        run: |
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ${USERNAME}@${HOSTNAME} '
+          echo "Navigating to web_app..."
+          cd /home/fidesinnova-stg/web_app/Source_webapp || { echo "Error: Failed to navigate to web_app directory."; exit 1; }
+
+          echo "Installing new packages for web_app via npm..."
+          if npm install; then
+              echo "Packages for web_app installed successfully."
+          else
+              echo "Error: Failed to install web_app packages."
+              exit 1
+          fi
+
+          echo "Building web_app..."
+          if npm run build; then
+              echo "web_app build completed successfully."
+              echo "Cleaning up Runner_webapp frontend folder..."
+              if [ ! -d "/home/fidesinnova-stg/web_app/Runner_webapp/frontend" ]; then
+                  echo "Frontend folder does not exist. Creating it..."
+                  mkdir "/home/fidesinnova-stg/web_app/Runner_webapp/frontend"
+              else
+                  echo "Frontend folder exists. Cleaning it up..."
+                  rm -rf "/home/fidesinnova-stg/web_app/Runner_webapp/frontend"
+                  mkdir "/home/fidesinnova-stg/web_app/Runner_webapp/frontend"
+              fi
+              echo "Moving web_app files to Runner_webapp/frontend..."
+              mv build/* /home/fidesinnova-stg/web_app/Runner_webapp/frontend/ || { echo "Error: Failed to move web_app files."; exit 1; }
+              echo "web_app files moved successfully."
+          else
+              echo "Error: web_app build failed."
+              exit 1
+          fi
+
+
+          echo "Installing new packages for web_app/Runner_webapp..."
+          cd /home/fidesinnova-stg/web_app/Runner_webapp || { echo "Error: Failed to navigate to Runner_webapp directory."; exit 1; }
+          if npm install; then
+              echo "Packages of Runner_webapp for web_app installed successfully."
+          else
+              echo "Error: Runner_webapp package installation failed."
+              exit 1
+          fi
