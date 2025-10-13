@@ -23,9 +23,6 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i private_key ${USERNAME}@${HOSTNAME} '
             set -e
 
-            echo "Current user:"
-            whoami
-
             echo "Pulling latest changes..."
             cd /home/fidesinnova-stg &&
             git fetch origin staging &&
@@ -33,12 +30,12 @@ jobs:
 
             echo "Building and deploying using Docker Compose..."
             cd /home/fidesinnova-stg &&
-            sudo -S docker compose down --remove-orphans &&
-            sudo -S docker compose build --no-cache &&
-            sudo -S docker compose up -d
+            docker compose down --remove-orphans &&
+            docker compose build --no-cache &&
+            docker compose up -d
 
             echo "Cleaning up old Docker images..."
-            sudo -S docker image prune -f
+            docker image prune -f
 
             echo "✅ Deployment completed successfully!"
           '
