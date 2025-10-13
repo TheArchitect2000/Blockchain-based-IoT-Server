@@ -1,9 +1,9 @@
 services:
-  backend:
+  backend_production:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: backend
+    container_name: backend_production
     ports:
       - "${BACK_PORT}:${BACK_PORT}"
     env_file:
@@ -13,11 +13,11 @@ services:
       - ./nginx/ssl:/etc/nginx/ssl:ro
       - ./backend/src/data:/usr/src/app/src/data:ro
 
-  webapp:
+  webapp_production:
     build:
       context: ./web_app
       dockerfile: Dockerfile
-    container_name: web_app
+    container_name: web_app_production
     ports:
       - ${WEBAPP_PORT}:80
     restart: always
@@ -26,11 +26,50 @@ services:
     env_file:
       - "./web_app/.env"
 
-  admin_webapp:
+  admin_webapp_production:
     build:
       context: ./admin_web_app
       dockerfile: Dockerfile
-    container_name: admin_webapp
+    container_name: admin_webapp_production
+    ports:
+      - ${ADMIN_WEBAPP_PORT}:80
+    restart: always
+    depends_on:
+      - backend
+    env_file:
+      - "./admin_web_app/.env"
+  backend_stg:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend_stg
+    ports:
+      - "${BACK_PORT}:${BACK_PORT}"
+    env_file:
+      - ./backend/.env
+    restart: always
+    volumes:
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./backend/src/data:/usr/src/app/src/data:ro
+
+  webapp_stg:
+    build:
+      context: ./web_app
+      dockerfile: Dockerfile
+    container_name: web_app_stg
+    ports:
+      - ${WEBAPP_PORT}:80
+    restart: always
+    depends_on:
+      - backend
+    env_file:
+      - "./web_app/.env"
+
+  admin_webapp_stg:
+    build:
+      context: ./admin_web_app
+      dockerfile: Dockerfile
+    container_name: admin_webapp_stg
     ports:
       - ${ADMIN_WEBAPP_PORT}:80
     restart: always
