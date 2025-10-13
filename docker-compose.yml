@@ -1,23 +1,23 @@
 services:
-  backend_production:
+  backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: backend_production
     ports:
       - "${BACK_PORT}:${BACK_PORT}"
     env_file:
       - ./backend/.env
     restart: always
+    depends_on:
+      - mongo
     volumes:
       - ./nginx/ssl:/etc/nginx/ssl:ro
       - ./backend/src/data:/usr/src/app/src/data:ro
 
-  webapp_production:
+  webapp:
     build:
       context: ./web_app
       dockerfile: Dockerfile
-    container_name: web_app_production
     ports:
       - ${WEBAPP_PORT}:80
     restart: always
@@ -26,11 +26,10 @@ services:
     env_file:
       - "./web_app/.env"
 
-  admin_webapp_production:
+  admin_webapp:
     build:
       context: ./admin_web_app
       dockerfile: Dockerfile
-    container_name: admin_webapp_production
     ports:
       - ${ADMIN_WEBAPP_PORT}:80
     restart: always
@@ -38,42 +37,22 @@ services:
       - backend
     env_file:
       - "./admin_web_app/.env"
-  backend_stg:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: backend_stg
-    ports:
-      - "${BACK_PORT}:${BACK_PORT}"
-    env_file:
-      - ./backend/.env
+
+  mongo:
+    image: mongo:7.0
     restart: always
+    ports:
+      - "${MONGO_DATABASE_PORT}:${MONGO_DATABASE_PORT}"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE_NAME}
+      FIDESINNOVA_DB_USERNAME: ${MONGO_USER}
+      FIDESINNOVA_DB_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_DATABASE_PORT: ${MONGO_DATABASE_PORT}
     volumes:
-      - ./nginx/ssl:/etc/nginx/ssl:ro
-      - ./backend/src/data:/usr/src/app/src/data:ro
+      - mongo_data:/data/db
+      - ./mongo-init-scripts:/docker-entrypoint-initdb.d
 
-  webapp_stg:
-    build:
-      context: ./web_app
-      dockerfile: Dockerfile
-    container_name: web_app_stg
-    ports:
-      - ${WEBAPP_PORT}:80
-    restart: always
-    depends_on:
-      - backend
-    env_file:
-      - "./web_app/.env"
-
-  admin_webapp_stg:
-    build:
-      context: ./admin_web_app
-      dockerfile: Dockerfile
-    container_name: admin_webapp_stg
-    ports:
-      - ${ADMIN_WEBAPP_PORT}:80
-    restart: always
-    depends_on:
-      - backend
-    env_file:
-      - "./admin_web_app/.env"
+volumes:
+  mongo_data:
