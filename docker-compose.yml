@@ -46,13 +46,14 @@ services:
     container_name: mongodb
     restart: always
     ports:
-      - "27017:27017"
+      - "${MONGO_DATABASE_PORT}:${MONGO_DATABASE_PORT}"
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
       MONGO_INITDB_DATABASE: ${MONGO_DATABASE_NAME}
       FIDESINNOVA_DB_USERNAME: ${MONGO_USER}
       FIDESINNOVA_DB_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_DATABASE_PORT: ${MONGO_DATABASE_PORT}
     volumes:
       - mongo_data:/data/db
       - ./mongo-init-scripts:/docker-entrypoint-initdb.d
