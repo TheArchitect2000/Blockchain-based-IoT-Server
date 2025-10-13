@@ -42,7 +42,7 @@ services:
     image: mongo:7.0
     restart: always
     ports:
-      - "${MONGO_DATABASE_PORT}:${MONGO_DATABASE_PORT}"
+      - "${MONGO_DATABASE_PORT}:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
