@@ -27,7 +27,7 @@ COPY --from=builder /usr/src/app/dist ./dist
 COPY package*.json ./
 
 
-RUN npm ci --only=production
+RUN npm install --omit=dev
 
 
 EXPOSE 3000
