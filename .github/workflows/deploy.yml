@@ -34,32 +34,11 @@ jobs:
             
             echo "📦 Pulling latest changes..."
             cd $PROJECT_DIR
-            
-            # Clean any Docker-created files that might block git
-            sudo find . -type f -name "*.js" -exec chown ${USERNAME}:${USERNAME} {} \;
-            sudo find . -type d -exec chmod 755 {} \;
-            sudo find . -type f -exec chmod 644 {} \;
-            
-            # Force clean git state
-            git clean -fd
             git fetch origin staging
             git reset --hard origin/staging
             
-            # Restore permissions
-            sudo chown -R ${USERNAME}:${USERNAME} $PROJECT_DIR
-            
             echo "🔧 Stopping existing containers..."
-            # Stop staging containers
             docker compose -p $PROJECT_NAME down --remove-orphans
-            
-            # Stop development containers if they exist
-            docker compose -p dev down --remove-orphans 2>/dev/null || true
-            
-            echo "🔍 Freeing up ports..."
-            # Kill any process still using the ports (backup safety measure)
-            sudo lsof -ti:${WEBAPP_PORT:-4000} | xargs -r sudo kill -9 || true
-            sudo lsof -ti:${BACK_PORT:-3001} | xargs -r sudo kill -9 || true
-            sudo lsof -ti:${ADMIN_WEBAPP_PORT:-4001} | xargs -r sudo kill -9 || true
             
             echo "🏗️ Building Docker images..."
             docker compose -p $PROJECT_NAME build --no-cache
