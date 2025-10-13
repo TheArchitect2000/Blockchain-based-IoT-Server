@@ -20,8 +20,11 @@ jobs:
           PRIVATE_KEY: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
         run: |
           echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
-          ssh -o StrictHostKeyChecking=no -i private_key ${USERNAME}@${HOSTNAME} 'whoami' '
+          ssh -o StrictHostKeyChecking=no -i private_key ${USERNAME}@${HOSTNAME} '
             set -e
+
+            echo "Current user:"
+            whoami
 
             echo "Pulling latest changes..."
             cd /home/fidesinnova-stg &&
@@ -30,12 +33,12 @@ jobs:
 
             echo "Building and deploying using Docker Compose..."
             cd /home/fidesinnova-stg &&
-            sudo docker compose down --remove-orphans &&
-            sudo docker compose build --no-cache &&
-            sudo docker compose up -d
+            sudo -S docker compose down --remove-orphans &&
+            sudo -S docker compose build --no-cache &&
+            sudo -S docker compose up -d
 
             echo "Cleaning up old Docker images..."
-            sudo docker image prune -f
+            sudo -S docker image prune -f
 
             echo "✅ Deployment completed successfully!"
           '
