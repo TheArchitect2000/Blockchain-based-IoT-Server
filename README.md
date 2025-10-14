@@ -647,7 +647,14 @@ VITE_RPC_URL='https://rpc1.fidesinnova.io'
 PORT=5000
 ```
 
-## D.3. Congratulations
+## B.8. Run the app
+
+```
+docker compose -p $PROJECT_NAME build --no-cache
+docker compose -p $PROJECT_NAME up -d
+```
+
+## C.1. Congratulations
 
 - Panel Web App, `https://PANEL_URL` is for your regular users.
 - Admin Web App, `https://ADMIN_URL` is for your super admin users.
@@ -658,9 +665,9 @@ PORT=5000
 - [https://panel.energywisenetwork.com](https://panel.energywisenetwork.com/)
 - [https://panel.trustsense.tech](https://panel.trustsense.tech/)
 
-# E. Maintenance
+# D. Maintenance
 
-## E.3. Troubleshooting
+## D.1. Troubleshooting
 
 - Useful commands for troubleshooting
 
@@ -690,17 +697,17 @@ mv source target
 rm -rf directoryName
 
 # View logs for a specific continer (last 1 minute):
-sudo docker compose logs "service-name" -f
+sudo docker compose logs $service-name -f
 
 
 # Check the status of a service:
 sudo docker ps
 
 # Restart continers:
-sudo docker compose -p "stage-name"  build
+sudo docker compose -p $stage-name  build
 
 # Stop a service:
-sudo docker stop "service-name"
+sudo docker stop $service-name
 
 
 ```
