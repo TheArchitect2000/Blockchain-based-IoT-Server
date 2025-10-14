@@ -34,106 +34,7 @@ To run `Blockchain-based-IoT-Server` effectively, the following system specifica
 
 _These requirements are suitable for typical IoT workloads. Actual needs may vary based on deployment scale and data volume._
 
-## A.1. Install MongoDB
-
-- Install MongoDB version 8.0 for ARM64.
-- If you have a x86 machine, please check the MongoDB documentation.
-
-```
-sudo apt update
-sudo apt upgrade
-sudo apt install -y gnupg curl
-curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc | sudo gpg -o /usr/share/keyrings/mongodb-server-8.0.gpg --dearmor
-echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-8.0.list
-sudo apt update
-sudo apt install -y mongodb-org
-```
-
-- Start the MongoDB service and test the database
-
-```
-sudo systemctl start mongod
-sudo systemctl start mongod.service
-sudo systemctl enable mongod
-```
-
-- Set MongoDB password
-  Run `mongosh`
-
-```
-mongosh
-```
-
-Set `ADMIN_USERNAME` and `ADMIN_PASSWORD`, and type the following lines in the `mongosh` terminal. Note that the password must contain only lowercase or uppercase characters or numbers.
-
-```
-use admin
-```
-
-```
-db.createUser({
-  user: "MONGODB_ADMIN_USERNAME",
-  pwd: "MONGODB_ADMIN_PASSWORD",
-  roles: [{ role: "root", db: "admin" }]
-})
-```
-
-This account can be used later to connect to MongoDB using MongoDB Compass.
-
-Set `FIDESINNOVA_DB_USERNAME` and `FIDESINNOVA_DB_PASSWORD`, and type the following lines in the `mongosh` terminal. Note that the password must contain only lowercase or uppercase characters or numbers.
-
-```
-use fidesinnova
-```
-
-```
-db.createUser({
-  user: "FIDESINNOVA_DB_USERNAME",
-  pwd: "FIDESINNOVA_DB_PASSWORD",
-  roles: [{ role: "readWrite", db: "fidesinnova" }]
-})
-```
-
-This account will be used later to let the system backend connects to the database. Save both credentials in a secure place.
-Exit from the mongosh environment.
-
-```
-exit
-```
-
-- Edit the config file
-
-```
-sudo nano /etc/mongod.conf
-```
-
-Find the security section and enable authentication:
-
-```
-security:
-  authorization: enabled
-```
-
-- Restart the MongoDb service
-
-```
-sudo systemctl restart mongod
-```
-
-- The MongoDB configuration is done. To conect to MongoDB, use `mongosh -u 'ADMIN_USERNAME' -p 'ADMIN_PASSWORD' --authenticationDatabase admin`. Also, to manage the MongoDB service, use the following commands:
-
-```
-sudo systemctl status mongod
-sudo systemctl stop mongod
-sudo systemctl start mongod
-sudo systemctl restart mongod
-sudo systemctl disable mongod
-sudo systemctl enable mongod
-```
-
----
-
-## A.2. Install nginx web server
+## A.1. Install nginx web server
 
 ```
 sudo apt update
@@ -141,6 +42,18 @@ sudo apt -y install nginx
 ```
 
 ---
+
+## A.2. Install Docker
+
+Docker lets us run ZAP in a lightweight container without manual setup. Install and configure Docker:
+
+```bash
+sudo apt update
+sudo apt install docker.io -y
+sudo systemctl enable docker
+sudo systemctl start docker
+sudo usermod -aG docker $USER
+```
 
 ## A.3. Install Certbot
 
@@ -272,7 +185,7 @@ http {
 		location / {
 			proxy_set_header Authorization $http_authorization;
 			proxy_pass_header Authorization;
-			proxy_pass https://localhost:4000;
+			proxy_pass http://localhost:4000;
 		}
 
 		# This section is for Server Backend on port 6000
@@ -293,7 +206,7 @@ http {
 		location / {
 			proxy_set_header Authorization $http_authorization;
 			proxy_pass_header Authorization;
-			proxy_pass https://localhost:5000;
+			proxy_pass http://localhost:5000;
 		}
 	}
 }
@@ -304,20 +217,6 @@ http {
 
 ```
 sudo systemctl restart nginx
-```
-
----
-
-## A.5. Install Node.js and NestJS
-
-```
-sudo apt update
-sudo apt install -y curl build-essential
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-sudo apt install -y nodejs
-sudo npm install -g n
-sudo n 22.14.0
-sudo npm i -g @nestjs/cli
 ```
 
 ---
@@ -389,7 +288,29 @@ openssl rand -hex 32
 
 ---
 
-## B.2. Backend configurations
+## B.2 create node in root of project
+
+```
+sudo nano .env
+```
+
+- Insert the following values:
+
+```
+BACK_PORT=6000
+WEBAPP_PORT=4000
+ADMIN_WEBAPP_PORT=5000
+
+# Mongo Database Configuration
+MONGO_DATABASE_NAME=fidesinnova
+MONGO_DATABASE_PORT=27017
+MONGO_USER=fidesinnova_user
+MONGO_PASSWORD=FIDESINNOVA_DB_PASSWORD
+MONGO_INITDB_ROOT_USERNAME=admin
+MONGO_INITDB_ROOT_PASSWORD=supersecretadmin
+```
+
+## B.3. Backend configurations
 
 - In project root folder, create `.env` file and edit parameters based on your node URL info
 
@@ -446,7 +367,7 @@ MONGO_DATABASE_NAME='fidesinnova'
 MONGO_USER='FIDESINNOVA_DB_USERNAME'
 MONGO_PASSWORD='FIDESINNOVA_DB_PASSWORD'
 MONGO_PORT=27017
-MONGO_HOST=127.0.0.1
+MONGO_HOST=mongo
 
 # Email Configuration
 NOTIFICATION_BY_MAIL='enabled'
@@ -585,13 +506,13 @@ To enable mobile notifications on your Node server, follow these steps:
 
 ---
 
-## B.3. Web App Logo
+## B.4. Web App Logo
 
 - Copy your logo in `.png` format with the `logo` name as `logo.png` in `\home\Blockchain-based-IoT-Server\backend\uploads` folder on your server.
 
 ---
 
-## B.4. Device Configuration File
+## B.5. Device Configuration File
 
 - Fidesinnova offers a mobile app to control IoT devices that support the MQTT protocol. The device configuration files, which specify the IoT device types, are stored on the IoT server. In this section, we will review how to create a device configuration file on the server. Each device in the configuration file is represented by an image, a title, a type, and its parameters:
 - **fileName**: Refers to the image file that should be placed in the `/Blockchain-based-IoT-Server/backend/uploads/device` directory. This image will be displayed in the mobile app (e.g., "ecard.png").
@@ -601,7 +522,7 @@ To enable mobile notifications on your Node server, follow these steps:
 - If a parameter’s `value` is an empty array `[]`, it indicates dynamic data input.
 - If `value` has specific options (e.g., `["Open", "Close"]`), it will show these options in the Blockly dropdown as predefined outputs.
 
-### B.4.1. Edit the `devices.json` file
+### B.5.1. Edit the `devices.json` file
 
 - Create `devices.json` file in the `backend/src/data/` in the project folder
 
@@ -691,12 +612,10 @@ sudo nano devices.json
 
 ---
 
-## B.5. Install Panel Web App for users
-
-- In `Source_webapp` folder, create `.env` file.
+## B.6. Initial Panel Web App for users
 
 ```
-cd /home/Blockchain-based-IoT-Server/web_app/Source_webapp
+cd /home/Blockchain-based-IoT-Server/web_app/
 sudo nano .env
 ```
 
@@ -706,16 +625,16 @@ Enter the following lines in the .env file and replace `YOUR_NODE_NAME` with you
 VITE_URL='https://PANEL_URL/app/'
 VITE_NODE_NAME='YOUR_NODE_NAME'
 VITE_RPC_URL='https://rpc1.fidesinnova.io'
+MQTT_WEBSOCKET_PORT=8082
+PORT=4000
 ```
 
 ---
 
-## B.6. Install Admin Web App for administrator
-
-- In `Source_webapp` folder, create `.env` file.
+## B.7. Initial Admin Web App for administrator
 
 ```
-cd /home/Blockchain-based-IoT-Server/admin_web_app/Source_webapp
+cd /home/Blockchain-based-IoT-Server/admin_web_app
 sudo nano .env
 ```
 
@@ -725,48 +644,8 @@ Enter the following lines in the .env file and replace `YOUR_NODE_NAME` with you
 VITE_URL='https://PANEL_URL/app/'
 VITE_NODE_NAME='YOUR_NODE_NAME'
 VITE_RPC_URL='https://rpc1.fidesinnova.io'
+PORT=5000
 ```
-
----
-
-# C. Restore Node from Backup
-
-- Create the 'backups' folder.
-  ```
-  cd /home/Blockchain-based-IoT-Server/
-  sudo mkdir backups
-  ```
-- Copy your backup file (e.g. iot_server_backup_2025-02-12.tar.gz ) to this folder.
-- Execute the restore script file
-
-```
-   cd /home/Blockchain-based-IoT-Server/
-   sudo chmod +x restore.sh
-   sudo ./restore.sh
-```
-
-# D. Build and Execute
-
----
-
-## D.1. Build the System
-
-To automate the setup and build processes for both the backend and frontend applications, run the `initial_setup.sh` script located in the root directory of the project. This script will handle building both the backend and frontend applications and configuring systemctl services automatically.
-
-```
-cd /home/Blockchain-based-IoT-Server/
-sudo chmod +x initial_setup.sh
-sudo ./initial_setup.sh
-```
-
----
-
-## D.2. Account Setup
-
-- Goto `https://PANEL_URL` and go to the 'Sign up' section and create a password for your `super admin email address`.
-- Goto `https://ADMIN_URL` and login with your `super admin email address` and its password.
-
----
 
 ## D.3. Congratulations
 
@@ -780,47 +659,6 @@ sudo ./initial_setup.sh
 - [https://panel.trustsense.tech](https://panel.trustsense.tech/)
 
 # E. Maintenance
-
----
-
-## E.1. Update IoT Server
-
-- Every time the Fides Innova core development team pushes a new version of the code on GitHub.
-- **Note:** Make sure to check the name of the repository, and if needed, update the folder name using the following command:
-
-```
-mv IoT-Server Blockchain-based-IoT-Server
-```
-
-Use the following commands to pull and update your local repository from GitHub:
-
-```
-cd /home/Blockchain-based-IoT-Server/
-sudo git fetch
-sudo git pull
-```
-
-- Every time you pull a new version of the server code from GitHub or you make a change to any `.env` files in the system, you should apply the changes to your production server via update script.
-
-```
-cd /home/Blockchain-based-IoT-Server/
-sudo chmod +x update.sh
-sudo ./update.sh
-```
-
----
-
-## E.2. Backup IoT Server
-
-- Every time you want to get a backup from your server, you should execute the following script and get your backup file in the 'backups' folder.
-
-```
-cd /home/Blockchain-based-IoT-Server/
-sudo chmod +x backup.sh
-sudo ./backup.sh
-```
-
----
 
 ## E.3. Troubleshooting
 
@@ -851,86 +689,21 @@ mv source target
 # delete a directory or file
 rm -rf directoryName
 
-# View logs for a specific service (last 1 minute):
-sudo journalctl -u fides.backend.service --no-pager --since "1 minute ago"
-sudo journalctl -u fides.userwebapp.service --no-pager --since "1 minute ago"
-sudo journalctl -u fides.adminwebapp.service --no-pager --since "1 minute ago"
+# View logs for a specific continer (last 1 minute):
+sudo docker compose logs "service-name" -f
 
-# View the latest logs for a service:
-sudo journalctl -u fides.backend.service -f
-sudo journalctl -u fides.userwebapp.service -f
-sudo journalctl -u fides.adminwebapp.service -f
-
-# Show logs for a service since a specific time:
-sudo journalctl -u fides.backend.service --since "2025-06-08 10:00:00"
-sudo journalctl -u fides.userwebapp.service --since "2025-06-08 10:00:00"
-sudo journalctl -u fides.adminwebapp.service --since "2025-06-08 10:00:00"
-
-# Show logs for all systemd services:
-sudo journalctl -xe
 
 # Check the status of a service:
-systemctl status fides.backend.service
-systemctl status fides.userwebapp.service
-systemctl status fides.adminwebapp.service
+sudo docker ps
 
-# Restart a service:
-sudo systemctl restart fides.backend.service
-sudo systemctl restart fides.userwebapp.service
-sudo systemctl restart fides.adminwebapp.service
+# Restart continers:
+sudo docker compose -p "stage-name"  build
 
 # Stop a service:
-sudo systemctl stop fides.backend.service
-sudo systemctl stop fides.userwebapp.service
-sudo systemctl stop fides.adminwebapp.service
+sudo docker stop "service-name"
 
-# Enable a service to start on boot:
-sudo systemctl enable fides.backend.service
-sudo systemctl enable fides.userwebapp.service
-sudo systemctl enable fides.adminwebapp.service
-
-# Disable a service from starting on boot:
-sudo systemctl disable fides.backend.service
-sudo systemctl disable fides.userwebapp.service
-sudo systemctl disable fides.adminwebapp.service
-
-# List all active systemd services:
-systemctl list-units --type=service
-```
-
----
-
-## E.4. Web App Ports
-
-- Change the Panel Web App Port
-  In `Runner_webapp` folder, create `.env` file.
 
 ```
-cd /home/Blockchain-based-IoT-Server/web_app/Runner_webapp
-sudo nano .env
-```
-
-Change the port number in the following line.
-
-```
-PORT=4000
-```
-
-- Change the Admin Web App Port
-- In `Runner_webapp` folder, create `.env` file.
-
-```
-cd /home/Blockchain-based-IoT-Server/admin_web_app/Runner_webapp
-sudo nano .env
-```
-
-Change the port number in the following line.
-
-```
-PORT=5000
-```
-
-Note: If you change these two ports, please make sure you consult with the Fides Innova repository manager to avoid any future git push conflicts.
 
 ---
 
@@ -953,18 +726,6 @@ You should see a version output confirming Java is installed. Example:
 ```bash
 openjdk version "11.0.20" 2023-07-18
 OpenJDK Runtime Environment (build 11.0.20+8-Ubuntu)
-```
-
-## 🐳 2. Install Docker
-
-Docker lets us run ZAP in a lightweight container without manual setup. Install and configure Docker:
-
-```bash
-sudo apt update
-sudo apt install docker.io -y
-sudo systemctl enable docker
-sudo systemctl start docker
-sudo usermod -aG docker $USER
 ```
 
 ## 🧰 3. Pull OWASP ZAP Docker Image
