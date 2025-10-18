@@ -222,49 +222,44 @@ export class MqttService implements OnModuleInit {
     });
 
     aedes.on('publish', async (packet, client) => {
-      console.log('Published packet: ', packet);
+      try {
+        console.log('Published packet payload: ', packet.payload.toString());
+        if (!client) return;
 
-      console.log('Published packet payload: ', packet.payload.toString());
+        const payload = packet.payload.toString();
+        if (!payload.includes('from')) return;
 
-      if (packet && packet.payload) {
-        console.log('publish packet:', packet.payload.toString());
-      }
+        const parsedPayload = JSON.parse(payload);
 
-      if (client) {
-        console.log('message from client', client.id);
+        // Ensure services exist
+        if (
+          parsedPayload.data?.proof &&
+          this.contractService &&
+          this.deviceService
+        ) {
+          const { proof, ...dataWithoutProof } = parsedPayload.data;
+          const deviceData = await this.getDeviceType(parsedPayload.from);
+          await this.contractService.storeZKP(
+            String(process.env.PANEL_URL),
+            String(client.id),
+            JSON.stringify(proof),
+            JSON.stringify(dataWithoutProof),
+          );
+        }
 
-        let payload = packet.payload.toString();
-        if (payload.includes('from')) {
-          let parsedPayload;
+        if (
+          shouldTrigger(String(parsedPayload.from), 6) &&
+          this.deviceService
+        ) {
           try {
-            parsedPayload = JSON.parse(payload);
-          } catch (e) {
-            console.error(e);
-            // Return a default object, or null based on use case.
-            return {};
-          }
-
-          if (parsedPayload.data?.proof) {
-            const { proof, ...dataWithoutProof } = parsedPayload.data;
-            const deviceData = await this.getDeviceType(parsedPayload.from)
-            await this.contractService.storeZKP(
-              String(process.env.PANEL_URL),
-              String(client.id),
-              JSON.stringify(proof),
-              JSON.stringify(dataWithoutProof),
-            );
-          }
-
-          if (shouldTrigger(String(parsedPayload.from), 6)) {
-            try {
-              const deviceData =
+            const deviceData =
               await this.deviceService.getDeviceInfoByEncryptedId(
                 String(parsedPayload.from),
                 '',
                 true,
               );
 
-              await this.deviceService.editDevice(
+            await this.deviceService.editDevice(
               {
                 deviceId: String(deviceData?._id),
                 hardwareVersion: Number(String(parsedPayload.data.HV)),
@@ -273,46 +268,33 @@ export class MqttService implements OnModuleInit {
               'root',
               true,
             );
-              console.log(
+
+            console.log(
               `HV and FV of device with id: ${deviceData._id} updated successfully.`,
             );
-            } catch (error) {
-              console.log('Error updating device HV and FV:', error);
-            }
-          
-          }
-
-          axios
-            .post(host + '/app/v1/broker-mqtt-log/log-device-data', {
-              deviceEncryptedId: parsedPayload.from,
-              event: DeviceEventsEnum.PUBLISHED,
-              data: parsedPayload.data,
-              senderDeviceEncryptedId: client.id,
-            })
-            .then(function (response) {
-              // handle success
-              // console.log(response);
-            })
-            .catch(function (error) {
-              // handle error
-              // console.log(error);
-            })
-            .finally(function () {
-              // always executed
-            });
-
-          if (client.id !== parsedPayload.from) {
-            // last commented code
-            console.log(
-              '\x1b[33m \nWe are trying to republish node data... \x1b[0m',
-            );
-
-            aedes.publish({
-              topic: parsedPayload.from,
-              payload: payload,
-            });
+          } catch (error) {
+            console.log('Error updating device HV and FV:', error);
           }
         }
+
+        await axios.post(host + '/app/v1/broker-mqtt-log/log-device-data', {
+          deviceEncryptedId: parsedPayload.from,
+          event: DeviceEventsEnum.PUBLISHED,
+          data: parsedPayload.data,
+          senderDeviceEncryptedId: client.id,
+        });
+
+        if (client.id !== parsedPayload.from) {
+          console.log(
+            '\x1b[33m \nWe are trying to republish node data... \x1b[0m',
+          );
+          aedes.publish({
+            topic: parsedPayload.from,
+            payload,
+          });
+        }
+      } catch (e) {
+        console.error('Error in publish handler:', e);
       }
     });
 
