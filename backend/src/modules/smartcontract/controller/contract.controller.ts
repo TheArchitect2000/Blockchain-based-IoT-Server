@@ -251,12 +251,12 @@ export class contractController {
     if (body.frontPublish) {
       return {
         objectId: objectId,
-        nodeId: process.env.PANEL_URL,
+        nodeId: process.env.NODE_NAME,
       };
     }
 
     const tx: any = await this.contractService.storeZKP(
-      process.env.PANEL_URL,
+      process.env.NODE_NAME,
       objectId,
       JSON.stringify(body.proof),
       JSON.stringify(body.data),

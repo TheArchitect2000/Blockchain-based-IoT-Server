@@ -493,10 +493,10 @@ export class DeviceService {
         console.log('Founded Device is:', foundDevice);
 
         console.log(
-          `Device Node: ${foundDevice.nodeId} ||| BackEnd Node: ${process.env.PANEL_URL}`,
+          `Device Node: ${foundDevice.nodeId} ||| BackEnd Node: ${process.env.NODE_NAME}`,
         );
 
-        if (String(foundDevice.nodeId) !== String(process.env.PANEL_URL)) {
+        if (String(foundDevice.nodeId) !== String(process.env.NODE_NAME)) {
           let errorMessage = `You can't edit other nodes devices !`;
           throw new GeneralException(ErrorTypeEnum.FORBIDDEN, errorMessage);
         }
@@ -515,7 +515,7 @@ export class DeviceService {
           };
           return this.result;
         }
-        foundDevice.nodeId = String(process.env.PANEL_URL);
+        foundDevice.nodeId = String(process.env.NODE_NAME);
         foundDevice.updatedBy =
           String(userId) == 'root' ? foundDevice.updatedBy : userId;
         foundDevice.updateDate = new Date();
@@ -550,7 +550,7 @@ export class DeviceService {
       throw new GeneralException(ErrorTypeEnum.FORBIDDEN, errorMessage);
     }
 
-    if (device.nodeId !== String(process.env.PANEL_URL)) {
+    if (device.nodeId !== String(process.env.NODE_NAME)) {
       let errorMessage = `You can't edit other nodes devices !`;
       throw new GeneralException(ErrorTypeEnum.FORBIDDEN, errorMessage);
     }
@@ -601,7 +601,7 @@ export class DeviceService {
       throw new GeneralException(ErrorTypeEnum.FORBIDDEN, errorMessage);
     }
 
-    if (device.nodeId !== String(process.env.PANEL_URL)) {
+    if (device.nodeId !== String(process.env.NODE_NAME)) {
       let errorMessage = `You can't edit other nodes devices !`;
       throw new GeneralException(ErrorTypeEnum.FORBIDDEN, errorMessage);
     }
@@ -623,7 +623,7 @@ export class DeviceService {
   }
 
   async updateAllDevices() {
-    await this.deviceRepository.updateAllNodeIds(process.env.PANEL_URL);
+    await this.deviceRepository.updateAllNodeIds(process.env.NODE_NAME);
   }
 
   async renameDevice(body, userId, isAdmin = false): Promise<any> {
