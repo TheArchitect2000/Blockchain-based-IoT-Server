@@ -605,7 +605,7 @@ export class ContractService {
         try {
           const tx: any = await this.contracts.commitment.storeCommitment(
             commitmentID,
-            process.env.PANEL_URL,
+            process.env.NODE_NAME,
             deviceType,
             deviceIdType,
             deviceModel,
@@ -706,7 +706,7 @@ export class ContractService {
     return await this.contractRepository.saveCommitment({
       transactionId: data.transactionId,
       commitmentId: data.commitmentID,
-      nodeId: process.env.PANEL_URL,
+      nodeId: process.env.NODE_NAME,
       userId: data.userId,
       manufacturer: data.manufacturer,
       deviceType: data.deviceType,

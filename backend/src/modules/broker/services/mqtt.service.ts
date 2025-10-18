@@ -116,7 +116,7 @@ export class MqttService implements OnModuleInit {
       );
     });
 
-    const host = 'https://' + process.env.PANEL_URL;
+    const host = 'https://' + process.env.NODE_NAME;
 
     // fired when a client connects
     aedes.on('client', async function (client) {
@@ -249,7 +249,7 @@ export class MqttService implements OnModuleInit {
             const deviceData = await this.getDeviceType(parsedPayload.from);
             await this.contractService.storeZKP(
               String(process.env.PANEL_URL),
-              String(client.id),
+              String(deviceData?.deviceEncryptedId),
               JSON.stringify(proof),
               JSON.stringify(dataWithoutProof),
             );

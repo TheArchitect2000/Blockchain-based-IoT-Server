@@ -93,7 +93,7 @@ export class DeviceController {
     const newBody = {
       ...body,
       userId: request.user.userId,
-      nodeId: process.env.PANEL_URL,
+      nodeId: process.env.NODE_NAME,
     };
     return await this.deviceService.insertDevice(newBody);
   }
