@@ -25,6 +25,8 @@ services:
       - backend
     env_file:
       - "./web_app/.env"
+    volumes:
+      - ./nginx/ssl:/etc/nginx/ssl:ro
 
   admin_webapp:
     build:
