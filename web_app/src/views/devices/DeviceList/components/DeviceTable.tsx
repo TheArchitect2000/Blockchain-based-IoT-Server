@@ -396,13 +396,16 @@ const DeviceTable = memo(
                     cell: (props) => {
                         const { lastLog, deviceEncryptedId } =
                             props.row.original
-                        return (
-                            <LastLogCell
-                                lastLog={lastLog}
-                                deviceEncryptedId={deviceEncryptedId}
-                                payloads={payloads}
-                            />
-                        )
+                        if (!lastLog) {
+                            return <span>N/A</span>
+                        } else
+                            return (
+                                <LastLogCell
+                                    lastLog={lastLog}
+                                    deviceEncryptedId={deviceEncryptedId}
+                                    payloads={payloads}
+                                />
+                            )
                     },
                 },
 
