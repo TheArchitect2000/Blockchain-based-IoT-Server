@@ -251,7 +251,9 @@ const ProductList = () => {
                                 <TabNav
                                     className={menuItem.className || ''}
                                     key={index}
-                                    value={menuItem.path}
+                                    value={
+                                        menuItem.path ? menuItem.path : 'empty'
+                                    }
                                 >
                                     {menuItem.label}
                                 </TabNav>
