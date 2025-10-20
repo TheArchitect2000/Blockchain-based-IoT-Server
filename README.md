@@ -709,6 +709,8 @@ sudo docker compose -p $stage-name  build
 # Stop a service:
 sudo docker stop $service-name
 
+#See syslogs
+sudo tail -f /var/log/syslog | grep -v UFW
 
 ```
 
