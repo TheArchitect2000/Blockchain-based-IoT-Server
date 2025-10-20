@@ -3,18 +3,15 @@ FROM node:20-alpine AS builder
 
 WORKDIR /usr/src/app
 
-
 RUN npm config set registry https://registry.npmjs.org/
 
+RUN npm install -g npm@latest
 
 COPY package*.json ./
 
-
-RUN npm install -g npm@latest && npm ci
-
+RUN npm ci
 
 COPY . .
-
 
 RUN npm run build
 
@@ -27,7 +24,7 @@ RUN npm config set registry https://registry.npmjs.org/
 COPY --from=builder /usr/src/app/dist ./dist
 COPY package*.json ./
 
-RUN npm ci --omit=dev
 
+RUN npm ci --omit=dev
 
 CMD ["node", "dist/main.js"]
