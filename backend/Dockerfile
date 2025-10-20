@@ -25,6 +25,6 @@ COPY --from=builder /usr/src/app/dist ./dist
 COPY package*.json ./
 
 
-RUN npm ci --omit=dev
+RUN npm install --omit=dev
 
 CMD ["node", "dist/main.js"]
