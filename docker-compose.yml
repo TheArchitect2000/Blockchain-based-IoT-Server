@@ -62,8 +62,7 @@ services:
       - "514:514/udp"
     volumes:
       - ./syslog/logs:/var/log
-    command: >
-      /usr/sbin/syslog-ng -Fv
+    command: syslog-ng -F
     healthcheck:
       test: ["CMD", "pgrep", "syslog-ng"]
       interval: 10s
