@@ -10,7 +10,6 @@ services:
     restart: always
     depends_on:
       - mongo
-      - syslog
     volumes:
       - ./nginx/ssl:/etc/nginx/ssl:ro
       - ./backend/src/data:/usr/src/app/src/data:ro
@@ -54,19 +53,6 @@ services:
     volumes:
       - mongo_data:/data/db
       - ./mongo-init-scripts:/docker-entrypoint-initdb.d
-
-  syslog:
-    image: balabit/syslog-ng:latest
-    restart: always
-    ports:
-      - "514:514/udp"
-    volumes:
-      - ./syslog/logs:/var/log
-    healthcheck:
-      test: ["CMD", "pgrep", "syslog-ng"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
 
 volumes:
   mongo_data:

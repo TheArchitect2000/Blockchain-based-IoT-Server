@@ -9,13 +9,13 @@ export class SyslogService {
   private password: string;
 
   constructor() {
-    this.enabled = process.env.Syslog_Server_Enabled === 'True';
-    this.username = process.env.Syslog_Server_Username || '';
-    this.password = process.env.Syslog_Server_Password || '';
+    this.enabled = process.env.SYSLOG_SERVER_ENABLED === 'True';
+    this.username = process.env.SYSLOG_SERVER_USERNAME || '';
+    this.password = process.env.SYSLOG_SERVER_PASSWORD || '';
 
     if (this.enabled) {
-      this.client = Syslog.createClient(process.env.Syslog_Server_Host, {
-        port: Number(process.env.Syslog_Server_Port || 514),
+      this.client = Syslog.createClient(process.env.SYSLOG_SERVER_HOST, {
+        port: Number(process.env.SYSLOG_SERVER_PORT || 514),
         transport: Syslog.Transport.Udp,
         // auth: {
         //   username: this.username,
@@ -37,7 +37,7 @@ export class SyslogService {
       messageWithUser,
       {
         facility: Syslog.Facility.Local0,
-        severity: Number(process.env.Syslog_Serverl_Level || 3),
+        severity: Number(process.env.SYSLOG_SERVER_LEVEL || 3),
       },
       (err) => {
         if (err) console.error('Syslog send error:', err);
