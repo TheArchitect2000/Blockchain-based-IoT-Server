@@ -1,44 +1,30 @@
-# This workflow will build and push a new container image to Amazon ECR,
-# and then will deploy a new task definition to Amazon ECS, when there is a push to the "main" branch.
-#
-# To use this workflow, you will need to complete the following set-up steps:
-#
-# 1. Create an ECR repository to store your images.
-#    For example: `aws ecr create-repository --repository-name my-ecr-repo --region us-east-2`.
-#    Replace the value of the `ECR_REPOSITORY` environment variable in the workflow below with your repository's name.
-#    Replace the value of the `AWS_REGION` environment variable in the workflow below with your repository's region.
-#
-# 2. Create an ECS task definition, an ECS cluster, and an ECS service.
-#    For example, follow the Getting Started guide on the ECS console:
-#      https://us-east-2.console.aws.amazon.com/ecs/home?region=us-east-2#/firstRun
-#    Replace the value of the `ECS_SERVICE` environment variable in the workflow below with the name you set for the Amazon ECS service.
-#    Replace the value of the `ECS_CLUSTER` environment variable in the workflow below with the name you set for the cluster.
-#
-# 3. Store your ECS task definition as a JSON file in your repository.
-#    The format should follow the output of `aws ecs register-task-definition --generate-cli-skeleton`.
-#    Replace the value of the `ECS_TASK_DEFINITION` environment variable in the workflow below with the path to the JSON file.
-#    Replace the value of the `CONTAINER_NAME` environment variable in the workflow below with the name of the container
-#    in the `containerDefinitions` section of the task definition.
-#
-# 4. Store an IAM user access key in GitHub Actions secrets named `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`.
-#    See the documentation for each action used below for the recommended IAM policies for this IAM user,
-#    and best practices on handling the access key credentials.
-
 name: Deploy to Amazon ECS
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
 
 env:
-  AWS_REGION: MY_AWS_REGION                   # set this to your preferred AWS region, e.g. us-west-1
-  ECR_REPOSITORY: MY_ECR_REPOSITORY           # set this to your Amazon ECR repository name
-  ECS_SERVICE: MY_ECS_SERVICE                 # set this to your Amazon ECS service name
-  ECS_CLUSTER: MY_ECS_CLUSTER                 # set this to your Amazon ECS cluster name
-  ECS_TASK_DEFINITION: MY_ECS_TASK_DEFINITION # set this to the path to your Amazon ECS task definition
-                                               # file, e.g. .aws/task-definition.json
-  CONTAINER_NAME: MY_CONTAINER_NAME           # set this to the name of the container in the
-                                               # containerDefinitions section of your task definition
+  AWS_REGION: MY_AWS_REGION
+  # Backend Service
+  ECR_REPOSITORY_BACKEND: MY_BACKEND_ECR_REPO
+  ECS_SERVICE_BACKEND: MY_BACKEND_ECS_SERVICE
+  ECS_TASK_DEFINITION_BACKEND: .aws/backend.json
+  CONTAINER_NAME_BACKEND: MY_BACKEND_CONTAINER_NAME
+
+  # WebApp Service
+  ECR_REPOSITORY_WEBAPP: MY_WEBAPP_ECR_REPO
+  ECS_SERVICE_WEBAPP: MY_WEBAPP_ECS_SERVICE
+  ECS_TASK_DEFINITION_WEBAPP: .aws/webapp.json
+  CONTAINER_NAME_WEBAPP: MY_WEBAPP_CONTAINER_NAME
+
+  # Admin WebApp Service
+  ECR_REPOSITORY_ADMIN: MY_ADMIN_WEBAPP_ECR_REPO
+  ECS_SERVICE_ADMIN: MY_ADMIN_WEBAPP_ECS_SERVICE
+  ECS_TASK_DEFINITION_ADMIN: .aws/admin-webapp.json
+  CONTAINER_NAME_ADMIN: MY_ADMIN_WEBAPP_CONTAINER_NAME
+
+  ECS_CLUSTER: MY_ECS_CLUSTER
 
 permissions:
   contents: read
@@ -50,45 +36,114 @@ jobs:
     environment: production
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ env.AWS_REGION }}
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
 
-    - name: Login to Amazon ECR
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Build, tag, and push image to Amazon ECR
-      id: build-image
-      env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        IMAGE_TAG: ${{ github.sha }}
-      run: |
-        # Build a docker container and
-        # push it to ECR so that it can
-        # be deployed to ECS.
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+      - name: Set AWS Account ID
+        id: account
+        run: |
+          echo "account_id=$(aws sts get-caller-identity --query Account --output text)" >> $GITHUB_OUTPUT
 
-    - name: Fill in the new image ID in the Amazon ECS task definition
-      id: task-def
-      uses: aws-actions/amazon-ecs-render-task-definition@v1
-      with:
-        task-definition: ${{ env.ECS_TASK_DEFINITION }}
-        container-name: ${{ env.CONTAINER_NAME }}
-        image: ${{ steps.build-image.outputs.image }}
+      - name: Prepare task definitions with secrets
+        run: |
+          # Replace placeholders in task definitions
+          sed -i "s/{{AWS_ACCOUNT_ID}}/${{ steps.account.outputs.account_id }}/g" .aws/*.json
+          sed -i "s/{{AWS_REGION}}/${{ env.AWS_REGION }}/g" .aws/*.json
+          sed -i "s|{{ECR_REGISTRY}}|${{ steps.login-ecr.outputs.registry }}|g" .aws/*.json
+          sed -i "s/{{EFS_ID}}/${{ secrets.EFS_FILE_SYSTEM_ID }}/g" .aws/*.json
+          sed -i "s/{{EFS_SSL_ACCESS_POINT}}/${{ secrets.EFS_SSL_ACCESS_POINT }}/g" .aws/*.json
+          sed -i "s/{{EFS_DATA_ACCESS_POINT}}/${{ secrets.EFS_DATA_ACCESS_POINT }}/g" .aws/*.json
+          sed -i "s/{{EFS_MONGO_DATA_ACCESS_POINT}}/${{ secrets.EFS_MONGO_DATA_ACCESS_POINT }}/g" .aws/*.json
+          sed -i "s/{{EFS_MONGO_INIT_ACCESS_POINT}}/${{ secrets.EFS_MONGO_INIT_ACCESS_POINT }}/g" .aws/*.json
 
-    - name: Deploy Amazon ECS task definition
-      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-      with:
-        task-definition: ${{ steps.task-def.outputs.task-definition }}
-        service: ${{ env.ECS_SERVICE }}
-        cluster: ${{ env.ECS_CLUSTER }}
-        wait-for-service-stability: true
+      # Backend Service
+      - name: Build, tag, and push backend image to Amazon ECR
+        id: build-backend
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_BACKEND:$IMAGE_TAG ./backend
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY_BACKEND:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY_BACKEND:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Update backend task definition
+        id: task-def-backend
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ env.ECS_TASK_DEFINITION_BACKEND }}
+          container-name: ${{ env.CONTAINER_NAME_BACKEND }}
+          image: ${{ steps.build-backend.outputs.image }}
+
+      - name: Deploy backend to Amazon ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def-backend.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE_BACKEND }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true
+
+      # WebApp Service
+      - name: Build, tag, and push webapp image to Amazon ECR
+        id: build-webapp
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_WEBAPP:$IMAGE_TAG ./web_app
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY_WEBAPP:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY_WEBAPP:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Update webapp task definition
+        id: task-def-webapp
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ env.ECS_TASK_DEFINITION_WEBAPP }}
+          container-name: ${{ env.CONTAINER_NAME_WEBAPP }}
+          image: ${{ steps.build-webapp.outputs.image }}
+
+      - name: Deploy webapp to Amazon ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def-webapp.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE_WEBAPP }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true
+
+      # Admin WebApp Service
+      - name: Build, tag, and push admin webapp image to Amazon ECR
+        id: build-admin
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_ADMIN:$IMAGE_TAG ./admin_web_app
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY_ADMIN:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY_ADMIN:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Update admin webapp task definition
+        id: task-def-admin
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ env.ECS_TASK_DEFINITION_ADMIN }}
+          container-name: ${{ env.CONTAINER_NAME_ADMIN }}
+          image: ${{ steps.build-admin.outputs.image }}
+
+      - name: Deploy admin webapp to Amazon ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def-admin.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE_ADMIN }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true
