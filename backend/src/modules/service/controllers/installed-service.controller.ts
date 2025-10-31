@@ -303,8 +303,6 @@ export class InstalledServiceController {
         this.result = data;
       })
       .catch((error) => {
-        console.error('Errrrrrrorrrrrrrrrrrrrrr Isssssssssssssss:', error);
-
         let errorMessage =
           'Some errors occurred while deleting the installed service!';
         throw new GeneralException(
