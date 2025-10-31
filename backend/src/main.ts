@@ -58,8 +58,5 @@ async function bootstrap() {
 
   // Run MQTT Server.
   const mqttServerRunner = require('./modules/broker/server/mqtt-server');
-
-  // Run Blockly Server.
-  const blocklyServerRunner = require('./modules/blockly/server/blockly-server');
 }
 bootstrap();
