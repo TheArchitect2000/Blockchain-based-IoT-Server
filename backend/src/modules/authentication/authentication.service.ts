@@ -61,7 +61,11 @@ export class AuthenticationService {
     return null;
   }
 
-  async loginWithGoogle(tokenId?: string | null, accessToken?: string | null, isAdmin = false) {
+  async loginWithGoogle(
+    tokenId?: string | null,
+    accessToken?: string | null,
+    isAdmin = false,
+  ) {
     let payload;
     if (tokenId) {
       /* const ticket = await this.client.verifyIdToken({
@@ -69,7 +73,10 @@ export class AuthenticationService {
         audience: process.env.GOOGLE_CLIENT_ID,
       });
       payload = ticket.getPayload(); */
-      throw new GeneralException(ErrorTypeEnum.INTERNAL_SERVER_ERROR, "Error Code #10294")
+      throw new GeneralException(
+        ErrorTypeEnum.INTERNAL_SERVER_ERROR,
+        'Error Code #10294',
+      );
     } else {
       const userInfo = await axios
         .get('https://www.googleapis.com/oauth2/v3/userinfo', {
@@ -149,10 +156,9 @@ export class AuthenticationService {
       { ignoreExpiration: true },
       function (err, decoded) {
         if (err) {
-          console.log('access token error message: ', err.message);
+          console.error('access token error message: ', err.message);
         } else {
           decodedAccessToken = decoded;
-          console.log('decoded access token', decoded);
         }
         // next()
       },
@@ -164,10 +170,9 @@ export class AuthenticationService {
       { ignoreExpiration: true },
       function (err, decoded) {
         if (err) {
-          console.log('refresh token error message: ', err.message);
+          console.error('refresh token error message: ', err.message);
         } else {
           decodedRefreshToken = decoded;
-          console.log('decoded refresh token', decoded);
           if (Number(decodedRefreshToken.exp) < Math.floor(Date.now() / 1000)) {
             // Math.floor(Date.now()/1000) Converts Date.now() from miliseconds to seconds.
             throw new GeneralException(
@@ -189,7 +194,6 @@ export class AuthenticationService {
         email: decodedAccessToken.email,
         sub: decodedAccessToken.sub,
       };
-      console.log(payload);
 
       // const signOptions: SignOptions = { algorithm: 'HS256' };
       const accessSignOptions: SignOptions = {};
@@ -235,7 +239,6 @@ export class AuthenticationService {
           accessSignOptions.algorithm = 'ES512';
           break;
         default:
-          console.log('No such algirithm exists!');
           break;
       }
 
@@ -288,7 +291,6 @@ export class AuthenticationService {
           refreshSignOptions.algorithm = 'ES512';
           break;
         default:
-          console.log('No such algirithm exists!');
           break;
       }
 
@@ -434,7 +436,6 @@ export class AuthenticationService {
         accessToken: accessToken,
         refreshToken: refreshToken,
       };
-      console.log(user);
       const response: any = await this.userService.myProfileResponse(user);
 
       return { ...response, tokens };

@@ -9,7 +9,7 @@ export default function authFakeApi(server: Server, apiPrefix: string) {
             accountUserName: userName,
             password,
         })
-        console.log('user', user)
+
         if (user) {
             const { avatar, email, authority } = user
             return {

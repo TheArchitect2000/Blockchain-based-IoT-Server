@@ -73,7 +73,6 @@ function DeviceDetails() {
                 undefined,
                 data.deviceEncryptedId,
                 (message: any) => {
-                    //console.log('message', message)
                     let tempData = message.data
                     delete tempData.HV
                     delete tempData.FV

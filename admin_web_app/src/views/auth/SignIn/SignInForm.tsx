@@ -34,7 +34,7 @@ const SignInForm = (props: SignInFormProps) => {
         disableSubmit = false,
         className,
         forgotPasswordUrl = '/forgot-password',
-        signUpUrl = '/sign-up', /*'https://fidesinnova.io'*/
+        signUpUrl = '/sign-up' /*'https://fidesinnova.io'*/,
     } = props
 
     const [message, setMessage] = useTimeOutMessage()
@@ -49,11 +49,10 @@ const SignInForm = (props: SignInFormProps) => {
         setSubmitting(true)
 
         const result = await signIn({ email, password })
-        console.log("res:", result);
-        
+
         if (result?.status === 'failed') {
-            setMessage("Username or password is invalid")
-        } else if ( result?.status === 'permission' ) {
+            setMessage('Username or password is invalid')
+        } else if (result?.status === 'permission') {
             setMessage(result.message)
         }
         setSubmitting(false)

@@ -34,7 +34,6 @@ export class DeviceTypeService {
     let foundDeviceTypes: any = null;
     let response = [];
 
-    console.log('we are in getDeviceByHomeId service!');
 
     foundDeviceTypes = await this.deviceTypeRepository.findAllDeviceTypes(
       whereCondition,
@@ -42,7 +41,6 @@ export class DeviceTypeService {
       selectCondition,
     );
 
-    console.log('Found device types are: ', foundDeviceTypes);
 
     foundDeviceTypes.forEach((element) => {
       response.push({
@@ -59,7 +57,6 @@ export class DeviceTypeService {
         VersionNo: element.VersionNo,
       });
     });
-    console.log('response are: ', response);
 
     return response;
   } */

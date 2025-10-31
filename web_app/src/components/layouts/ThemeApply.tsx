@@ -360,8 +360,6 @@ export default function ThemeApply() {
                 '#' + data.button
             ).split('-')
 
-            console.log('Theme apply')
-
             dispatch(setThemeColor(buttonColorSplited[0]))
             dispatch(setThemeColorLevel(buttonColorSplited[1]))
 

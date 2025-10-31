@@ -92,8 +92,6 @@ export class InstalledServiceRepository {
     populateCondition,
     selectCondition,
   ) {
-    console.log('we are in getInstalledServicesByUserId repository!');
-
     return await this.installedServiceModel
       .find({ userId: userId })
       .where(whereCondition)
@@ -107,11 +105,6 @@ export class InstalledServiceRepository {
     populateCondition,
     selectCondition,
   ) {
-    console.log(
-      'we are in getInstalledServicesByDeviceEncryptedId repository!',
-    );
-    console.log('deviceEncryptedId is: ', deviceEncryptedId);
-
     return await this.installedServiceModel
       .find({ deviceMap: { $in: [deviceEncryptedId] } })
       .where(whereCondition)
@@ -124,15 +117,11 @@ export class InstalledServiceRepository {
     populateCondition,
     selectCondition,
   ) {
-    console.log('we are in getAllInstalledServices repository!');
-
     let res = await this.installedServiceModel
       .find()
       .where({ isDeleted: false })
       .populate([])
       .select(this.getInstalledServicesKeys());
-
-    console.log('rese is: ', res);
 
     return res;
   }

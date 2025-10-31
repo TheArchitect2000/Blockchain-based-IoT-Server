@@ -489,7 +489,6 @@
           if (validateMatch() == false) {
             return window.alert('Passwords do not match');
           } else {
-            //console.log('New password: ', password.value);
             document.getElementById('submitBtn').disabled = true;
             loading = true;
             fetch('{{ url }}', {

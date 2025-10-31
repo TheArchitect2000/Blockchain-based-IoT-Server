@@ -65,8 +65,6 @@ export class DeviceTypeRepository {
   }
 
   async findAllDeviceTypes(whereCondition, populateCondition, selectCondition) {
-    console.log('we are in findAllDeviceTypes repository!');
-
     return await this.deviceTypeModel
       .find()
       .where(whereCondition)

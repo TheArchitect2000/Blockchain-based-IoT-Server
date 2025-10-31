@@ -40,7 +40,6 @@ export class VirtualMachineHandlerService {
   async createVirtualMachine(body, installedServiceId) {
     const isExist = await this.isVmExist(installedServiceId);
     if (isExist === true) {
-      console.log('VM with this installedServiceId is created before!');
       return false;
     }
 
@@ -51,14 +50,6 @@ export class VirtualMachineHandlerService {
     userCode = this.sanitizeUserCode(userCode);
 
     const { letLinesCode, restOfCode } = this.parseUserCode(userCode);
-
-    console.log('-----------------------------------------------------------');
-    console.log('1 Full code:', userCode);
-    console.log('-----------------------------------------------------------');
-    console.log('2 Let lines:', letLinesCode);
-    console.log('-----------------------------------------------------------');
-    console.log('3 Rest of code:', restOfCode);
-    console.log('-----------------------------------------------------------');
 
     const mainThreadCode = this.generateMainThreadCode();
 
@@ -93,10 +84,6 @@ export class VirtualMachineHandlerService {
 
     // Store context
     this.vmContexts[installedServiceId.toString()] = context;
-
-    console.log(
-      `Virtual Machine With ID ${installedServiceId} Created Successfully`,
-    );
 
     return true;
   }
@@ -217,7 +204,6 @@ async function getServiceDevicesData() {
     devicesInfo[key].nodeMqttAddress = nodeMqttAddress;
   });
 
-  console.log('All Device Data Refreshed From DB');
 }
 
 function getDeviceVariableWithEncryptedId(deviceEncryptedId) {
@@ -266,11 +252,9 @@ function listenToAllDevices() {
 
     client.on('connect', () => {
       client.subscribe(topic, (err) => {
-        if (!err) {
-          console.log('Connected To:', topic);
-        } else {
-          console.log('Error While Connecting To:', topic);
-        }
+        if (err) {
+          console.error('Error While Connecting To:', topic);
+        } 
       });
     });
 
@@ -279,7 +263,7 @@ function listenToAllDevices() {
 
       try {
         const deviceInfos = getDeviceDataByEncryptedId(data.from);
-        console.log('Device Name:', deviceInfos.deviceName, ', Device Enc:', data.from);
+
 
         if (deviceInfos) {
           data.variable = getDeviceVariableWithEncryptedId(data.from);
@@ -291,7 +275,7 @@ function listenToAllDevices() {
 
           if (data.data.proof) {
             delete data.data.proof;
-            console.log('Proof Deleted');
+
           }
 
           data.data = lowercaseStrings(data.data);
@@ -316,7 +300,7 @@ function listenToAllDevices() {
         view.setUint8(i + 2, encodedMessage[i]);
       }
 
-      console.log('Flag set to true');
+
       view.setUint8(0, 1);
     });
   });
@@ -371,10 +355,6 @@ const sendNotification = async (notification) => {
   }
 };
 
-// ============================================
-// CREATE WORKER THREAD
-// ============================================
-console.log('Main thread: Starting workers...');
 
 // ✅ SECURE: Worker code without template injection
 const workerCode = \`
@@ -594,7 +574,7 @@ vmWorker.on('message', (msg) => {
       sendNotification(msg).catch(err => console.error('Notification error:', err));
     }
   }
-  console.log('Main thread: Received from worker:', msg);
+
 });
 
 vmWorker.on('error', (err) => {
@@ -604,16 +584,9 @@ vmWorker.on('error', (err) => {
 vmWorker.on('exit', (code) => {
   if (code !== 0) {
     console.error('Worker stopped with exit code', code);
-  } else {
-    console.log('Worker exited successfully.');
   }
 });
 
-console.log('vmWorker started successfully.');
-
-// ============================================
-// INITIALIZE
-// ============================================
 (async () => {
   await getServiceDevicesData();
   await listenToAllDevices();
@@ -629,19 +602,14 @@ setTimeout(() => {
   // DELETE VIRTUAL MACHINE
   // ============================================
   async deleteVirtualMachinByServiceId(installedServiceId) {
-    console.log('Deleting VM...');
-
     try {
       if (this.vmContexts[installedServiceId.toString()]) {
         this.vmContexts[installedServiceId.toString()].terminateVm();
         delete this.vmContexts[installedServiceId.toString()];
-        console.log(
-          `${installedServiceId} Virtual Machine Deleted Successfully!`,
-        );
       }
       return true;
     } catch (e) {
-      console.log('Error deleting VM:', e);
+      console.error('Error deleting VM:', e);
       return false;
     }
   }
@@ -688,7 +656,6 @@ setTimeout(() => {
         console.error(errorMessage, error);
         return errorMessage;
       });
-    console.log(`All virtual machines created successfully (Count: ${count})`);
 
     return this.allResults;
   }

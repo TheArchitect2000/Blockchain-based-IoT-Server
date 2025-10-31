@@ -95,8 +95,6 @@ export default function CommitmentPage() {
         const file = event.target.files[0]
 
         if (!file || file.type !== 'application/json') {
-            console.log('Maghol 55')
-
             toast.push(
                 <Notification type="danger">
                     Please upload a valid JSON file.
@@ -114,8 +112,6 @@ export default function CommitmentPage() {
         const reader = new FileReader()
         reader.onload = (e) => {
             if (!e.target?.result) {
-                console.log('Maghol')
-
                 toast.push(
                     <Notification type="danger">
                         Please upload a valid JSON file.
@@ -172,8 +168,6 @@ export default function CommitmentPage() {
                     { placement: 'top-center' }
                 )
             } catch (error) {
-                console.log('Maghol 22')
-
                 toast.push(
                     <Notification type="danger">
                         Please upload a valid JSON file.
@@ -192,8 +186,6 @@ export default function CommitmentPage() {
         setSubmitting: (isSubmitting: boolean) => void
     ) => {
         if (!values.commitmentData) {
-            console.log('Maghol 33')
-
             toast.push(
                 <Notification type="danger">
                     Please upload a valid JSON file.
@@ -218,8 +210,6 @@ export default function CommitmentPage() {
             } */
 
             const jsonText = e.target?.result as string
-
-            console.log('Maghol:', jsonText)
 
             let parsedJson
             try {
@@ -310,7 +300,7 @@ export default function CommitmentPage() {
                     )
                 }, 5000)
             } catch (err) {
-                console.log('err:', err)
+                console.error('err:', err)
 
                 toast.push(
                     <Notification type="danger">

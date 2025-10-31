@@ -6,6 +6,7 @@ import { DeviceEventsEnum } from '../enums/device-events.enum';
 import { ContractService } from 'src/modules/smartcontract/services/contract.service';
 import { DeviceService } from 'src/modules/device/services/device.service';
 import { createServer } from 'tls';
+import { LogService } from 'src/modules/logging/log.service';
 const wsStream = require('websocket-stream');
 
 const triggerData = {};
@@ -40,7 +41,6 @@ export class MqttService implements OnModuleInit {
 
   async getDeviceType(device: string) {
     if (this.deviceCache.has(device)) {
-      console.log('Returning cached data for device:', device);
       return this.deviceCache.get(device);
     }
 
@@ -51,13 +51,11 @@ export class MqttService implements OnModuleInit {
     );
 
     this.deviceCache.set(device, deviceData);
-    console.log('Data fetched and cached for device:', device);
 
     return deviceData;
   }
 
   async onModuleInit() {
-    console.log('Initialization of MqttService...');
     await this.brokerStart();
   }
 
@@ -78,7 +76,7 @@ export class MqttService implements OnModuleInit {
     const tlsServer = createServer(tlsOptions, aedes.handle);
 
     tlsServer.listen(mqttPorts.mqtts, function () {
-      console.log(
+      LogService.log(
         `MQTT over TLS / MQTTS started and listening on port ${mqttPorts.mqtts}`,
       );
     });
@@ -88,28 +86,26 @@ export class MqttService implements OnModuleInit {
     wsStream.createServer({ server: httpServer }, aedes.handle);
 
     httpServer.listen(mqttPorts.wss, function () {
-      console.log('websocket server listening on port ', mqttPorts.wss);
+      LogService.log(
+        `MQTT over WebSocket Secure / WSS started and listening on port ${mqttPorts.wss}`,
+      );
     });
 
     aedes.on('subscribe', async function (subscriptions, client) {
-      console.log(
-        'MQTT client \x1b[32m' +
-          (client ? client.id : client) +
-          '\x1b[0m subscribed to topics: ' +
-          subscriptions.map((s) => s.topic).join('\n'),
-        'from broker',
-        aedes.id,
+      LogService.log(
+        `MQTT client ${
+          client ? client.id : client
+        } subscribed to topics: ${subscriptions
+          .map((s) => s.topic)
+          .join(', ')}`,
       );
     });
 
     aedes.on('unsubscribe', function (subscriptions, client) {
-      console.log(
-        'MQTT client \x1b[32m' +
-          (client ? client.id : client) +
-          '\x1b[0m unsubscribed to topics: ' +
-          subscriptions.join('\n'),
-        'from broker',
-        aedes.id,
+      LogService.log(
+        `MQTT client ${
+          client ? client.id : client
+        } unsubscribed to topics: ${subscriptions.join(', ')}`,
       );
     });
 
@@ -118,13 +114,10 @@ export class MqttService implements OnModuleInit {
     // Axios will use system's trusted CA certificates by default
     // If NODE_NAME points to a domain with valid Let's Encrypt cert, this will work
     aedes.on('client', async function (client) {
-      console.log(
-        'Client Connected: \x1b[33m' +
-          (client ? client.id : client) +
-          '\x1b[0m',
-        'to broker',
-        aedes.id,
-      );
+      LogService.log(`New MQTT client connected: ${
+        client ? client.id : client
+      } to broker,
+        ${aedes.id}`);
 
       try {
         await axios.post(host + '/app/v1/broker-mqtt-log/log-device-event', {
@@ -132,18 +125,17 @@ export class MqttService implements OnModuleInit {
           event: DeviceEventsEnum.CONNECTED,
         });
       } catch (error) {
-        console.error('Failed to log device connection event:', error.message);
+        console.error(
+          'Failed to log device connection event: ' + error.message,
+        );
       }
     });
 
     aedes.on('clientDisconnect', async function (client) {
-      console.log(
-        'Client Disconnected: \x1b[31m' +
-          (client ? client.id : client) +
-          '\x1b[0m',
-        'to broker',
-        aedes.id,
-      );
+      LogService.log(`MQTT client disconnected: ${
+        client ? client.id : client
+      } to broker,
+        ${aedes.id}`);
 
       try {
         await axios.post(host + '/app/v1/broker-mqtt-log/log-device-event', {
@@ -159,7 +151,11 @@ export class MqttService implements OnModuleInit {
     });
 
     aedes.on('clientError', async function (client, err) {
-      console.log('client error', client.id, err.message, err.stack);
+      LogService.log(
+        `MQTT client error: ${client ? client.id : client} - Error: ${
+          err.message
+        }`,
+      );
 
       try {
         await axios.post(host + '/app/v1/broker-mqtt-log/log-device-event', {
@@ -172,7 +168,9 @@ export class MqttService implements OnModuleInit {
     });
 
     aedes.on('connectionError', async function (client, err) {
-      console.log('connection error', client, err.message, err.stack);
+      LogService.log(
+        `MQTT connection error: ${client} - Error: ${err.message}`,
+      );
 
       try {
         await axios.post(host + '/app/v1/broker-mqtt-log/log-device-event', {
@@ -186,8 +184,6 @@ export class MqttService implements OnModuleInit {
 
     aedes.on('publish', async (packet, client) => {
       if (client) {
-        console.log('message from client', client.id);
-
         let payload = packet.payload.toString();
         if (payload.includes('from')) {
           let parsedPayload;
@@ -227,11 +223,8 @@ export class MqttService implements OnModuleInit {
                 'root',
                 true,
               );
-              console.log(
-                `HV and FV of device with id: ${deviceData._id} updated successfully.`,
-              );
             } catch (error) {
-              console.log('Error updating device HV and FV:', error);
+              console.error('Error updating device HV and FV:', error);
             }
           }
 
@@ -247,10 +240,6 @@ export class MqttService implements OnModuleInit {
           }
 
           if (client.id !== parsedPayload.from) {
-            console.log(
-              '\x1b[33m \nWe are trying to republish node data... \x1b[0m',
-            );
-
             aedes.publish({
               topic: parsedPayload.from,
               payload: payload,
@@ -261,10 +250,6 @@ export class MqttService implements OnModuleInit {
     });
 
     aedes.on('subscribe', async function (subscriptions, client) {
-      if (client) {
-        console.log('subscribe from client', subscriptions, client.id);
-      }
-
       try {
         await axios.post(host + '/app/v1/broker-mqtt-log/log-device-event', {
           deviceEncryptedId: client.id,
@@ -276,7 +261,7 @@ export class MqttService implements OnModuleInit {
     });
 
     aedes.on('client', function (client) {
-      console.log('new client', client.id);
+      LogService.log(`new client connected: ${client.id}`);
     });
   }
 }

@@ -55,8 +55,6 @@ const createNewService = () => {
     )
 
     const onTabChange = (val: string) => {
-        console.log(val)
-
         setCurrentTab(val)
         navigate(`/account/settings/${val}`)
     }

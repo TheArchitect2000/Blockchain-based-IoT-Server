@@ -62,7 +62,6 @@ const EmailSent = ({ data = {}, className }: EmailSentProps) => {
             ) {
                 AddressValues?.forEach((item) => {
                     if (resData?.data?.data?.address[item]) {
-                        console.log(item)
                         nowPercent = nowPercent + 7.5
                     }
                 })

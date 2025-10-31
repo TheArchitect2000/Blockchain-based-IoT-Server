@@ -44,7 +44,6 @@ const _LanguageSelector = ({ className }: CommonProps) => {
         const formattedLang = lang.replace(/-([a-z])/g, function (g) {
             return g[1].toUpperCase()
         })
-        console.log(formattedLang)
 
         setLoading(true)
 

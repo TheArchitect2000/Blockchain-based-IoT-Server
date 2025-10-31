@@ -156,7 +156,6 @@ export class DeviceController {
     description: 'Renames device by device ID and new name.',
   })
   async renameDevice(@Body() body: renameDeviceDto, @Request() request) {
-    console.log('We are in renameDevice controller');
 
     if (
       body.deviceId === null ||

@@ -24,7 +24,7 @@ export class SubscriptionsRepository {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while commitment insertion!';
-        console.log(error);
+        console.error(error);
         throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,

@@ -69,8 +69,6 @@ export class MediaService {
       updateDate: new Date(),
     };
 
-    console.log('We are in Insert media', newMedium);
-
     try {
       const uploadedFile = await this.mediaRepository.create(newMedium);
 
@@ -95,7 +93,7 @@ export class MediaService {
         );
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
 
       throw new GeneralException(
         ErrorTypeEnum.INTERNAL_SERVER_ERROR,
@@ -118,7 +116,7 @@ export class MediaService {
         }/${media.path}`,
       };
     } catch (error) {
-      console.log(error);
+      console.error(error);
       throw new GeneralException(
         ErrorTypeEnum.INTERNAL_SERVER_ERROR,
         'An error occurred while retrieving the media.',

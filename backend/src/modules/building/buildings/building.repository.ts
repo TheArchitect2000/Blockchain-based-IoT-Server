@@ -27,7 +27,7 @@ export class BuildingRepository {
       })
       .catch((error) => {
         const errorMessage = 'Some errors occurred while inserting building!';
-        console.log(error.message);
+        console.error(error.message);
         throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
@@ -134,7 +134,6 @@ export class BuildingRepository {
       details: { $exists: true },
     });
     if (!buildingsExist) {
-      console.log(`No buildings found for user: ${userId}`);
       return;
     }
 

@@ -196,8 +196,6 @@ const Profile = ({}: ProfileProps) => {
                 }
             )
             if (resData.data.data.timezone) {
-                console.log(resData.data.data.timezone)
-
                 setSelectedTimeZone({
                     label: resData.data.data.timezone,
                     value: resData.data.data.timezone,

@@ -481,10 +481,6 @@ export default function BlocklyEditor() {
             type: deviceTypes[device],
         }))
 
-        console.log('ghol:', maghol)
-
-        console.log('ghol 2:', getUsedDeviceTypesFromXml())
-
         const res = (await apiEditService({
             ...data,
             blocklyJson: xml,
@@ -698,10 +694,6 @@ export default function BlocklyEditor() {
 
                 workspace.clear() // Clear the current workspace
                 Xml.domToWorkspace(xmlDoc.documentElement, workspace) // Set the new XML to the workspace
-
-                console.log('Valid XML, workspace updated')
-            } else {
-                console.log('Invalid XML')
             }
         } catch (err) {
             console.error('Failed to read clipboard contents:', err)
@@ -808,5 +800,3 @@ export default function BlocklyEditor() {
         </>
     )
 }
-
-

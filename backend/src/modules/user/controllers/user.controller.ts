@@ -97,26 +97,6 @@ export class UserController {
     }
   }
 
-  /* @Post('user/test')
-  @HttpCode(200)
-  @ApiOperation({
-    summary: 'Send otp code to user.',
-    description: 'This api requires a user mobile.',
-  })
-  async test() {
-    // @Param('mobile') mobile: string
-    console.log('We are in test function!');
-    var user = <User>{};
-    const token = Math.floor(1000 + Math.random() * 9000).toString();
-    user.name = 'Hamid';
-    user.email = 'sahebkherad@gmail.com';
-    await this.mailService.sendUserConfirmation(user, token);
-
-    console.log('Email sent!');
-
-    // return await this.userService.sendOTPCode(mobile)
-  } */
-
   @Post('v1/user/request-otp-code-for-signup-by-email')
   @HttpCode(200)
   @ApiOperation({
@@ -187,9 +167,6 @@ export class UserController {
   ) {
     body.email = email;
     body.otp = otp;
-    console.log('We are in verifyOTPCodeSentByEmailForSignup function!');
-    console.log('Email is: ', email);
-    console.log('OTP is: ', otp);
 
     try {
       const otpIsVerified =
@@ -249,9 +226,6 @@ export class UserController {
   ) {
     body.email = email;
     body.otp = otp;
-    console.log('We are in verifyOTPCodeSentByEmailForResetPassword function!');
-    console.log('Email is: ', email);
-    console.log('OTP is: ', otp);
 
     try {
       // Read the HTML file
@@ -332,9 +306,6 @@ export class UserController {
   ) {
     body.email = email;
     body.otp = otp;
-    console.log('We are in verifyOTPCodeSentByEmailForVerifyEmail function!');
-    console.log('Email is: ', email);
-    console.log('OTP is: ', otp);
 
     try {
       // Verify the OTP code
@@ -379,7 +350,6 @@ export class UserController {
     @Body() body: verifyOtpCodeSentByEmailDto,
     @Request() request,
   ) {
-    console.log('We are in verifyOtpCodeSentByEmail function!');
     return await this.userService.verifyOtpCodeSentByEmailForSignup(body);
   }
 
@@ -393,7 +363,6 @@ export class UserController {
     @Body() body: changePasswordByEmailDto,
     @Request() request,
   ) {
-    console.log('We are in changePasswordAndActivateAccount function!');
     return await this.userService.changePasswordAndActivateAccount(body);
   }
 
@@ -416,15 +385,12 @@ export class UserController {
   async verifyOtpCode(@Body() body: verifyOtpCodeDto, @Request() request) {
     const res1 = await this.userService.verifyOtpCode(body);
     if (res1 === true) {
-      console.log('Password Changed');
-
       await this.userService.changePasswordAndActivateAccount({
         ...body,
         newPassword: body.password,
       });
       return true;
     } else {
-      console.log('Password not Changed');
       return false;
     }
   }
@@ -436,8 +402,6 @@ export class UserController {
     description: 'This api requires a user mobile.',
   })
   async credential(@Body() body: credentialDto) {
-    console.log('body:', body);
-
     return await this.userService.credential({
       ...body,
       email: body.email.toString().toLocaleLowerCase(),
@@ -454,7 +418,6 @@ export class UserController {
     const emails = process.env.SUPER_ADMIN_EMAILS;
 
     if (emails.includes(body.email)) {
-      console.log('Included');
       const adminRes = await this.userService.makeUserAdmin(body.email, [
         'super',
       ]);
@@ -686,8 +649,6 @@ export class UserController {
       'Register a user by user mobile. This api requires a user mobile.',
   })
   async sendOTPForChangePassword(@Request() request) {
-    console.log('user email: ', request.user.email);
-
     return await this.userService.sendOTPForChangePassword(request.user.email);
   }
 

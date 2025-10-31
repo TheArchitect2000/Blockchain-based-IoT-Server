@@ -15,7 +15,6 @@ const Verify = () => {
         async function fetchData() {
             const resData = (await apiGetMyProfile()) as any
             setApiData(resData.data.data)
-            console.log(resData.data.data)
             setLoading(false)
         }
         fetchData()

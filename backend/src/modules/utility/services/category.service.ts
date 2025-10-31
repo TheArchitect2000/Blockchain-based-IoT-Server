@@ -429,8 +429,6 @@ export class CategoryService {
         this.result = data;
       })
       .catch((error) => {
-        console.log(error);
-
         let errorMessage = 'Some errors occurred while search in categories!';
         throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,

@@ -76,7 +76,6 @@ const Address = () => {
             placement: 'top-center',
         })
         setSubmitting(false)
-        console.log('values', dbDatas)
     }
 
     return (

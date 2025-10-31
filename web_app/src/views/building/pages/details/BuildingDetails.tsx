@@ -22,7 +22,7 @@ export default function BuildingDetails() {
     const { subscribe } = useMQTT()
     const themeColor = useAppSelector((state) => state.theme.themeColor)
     const timersRef = useRef<Record<string, NodeJS.Timeout>>({})
-    
+
     useEffect(() => {
         async function fetchData() {
             setLoading(true)
@@ -110,7 +110,6 @@ export default function BuildingDetails() {
                                 String(message.from) ===
                                 String(device.deviceEncryptedId)
                             ) {
-                                console.log('Shared devices set')
                                 setDevicePayloads((prevData) => ({
                                     ...prevData,
                                     [String(message.from)]: {

@@ -117,8 +117,6 @@ const ServiceCard = ({
         nowDevice: string,
         deviceType: string
     ) {
-        console.log('Ghol', deviceType)
-
         const selecteId = selectedDevices[nowDevice]
         let deviceList: Array<DeviceData> = []
 
@@ -317,7 +315,7 @@ const ServiceCard = ({
             setInstallModal(false)
             setSelectedDevices({})
         } catch (error) {
-            console.log('Error while installing service, error: ', error)
+            console.error('Error while installing service, error: ', error)
         }
     }
 

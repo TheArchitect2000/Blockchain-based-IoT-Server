@@ -211,10 +211,7 @@ const createService = ({
                     }
                 } catch (error) {
                     toast.push(
-                        <Notification
-                            title={error.message}
-                            type="danger"
-                        />,
+                        <Notification title={error.message} type="danger" />,
                         {
                             placement: 'top-center',
                         }
@@ -247,7 +244,6 @@ const createService = ({
 
                     const width = svgElement.getAttribute('width')
                     const height = svgElement.getAttribute('height')
-                    console.log(width + ' , ' + height)
 
                     if (parseInt(width!) <= 300 && parseInt(height!) <= 175) {
                         setSvgContent(svgText)

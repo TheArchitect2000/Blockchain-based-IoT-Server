@@ -122,7 +122,6 @@ const ProductTable = () => {
     const { devices, status } = useGetDevices()
     const loading = status === 'pending'
     const data = devices?.data.data
-    console.log(data)
 
     // const loading = useAppSelector(
     //     (state) => state.salesProductList.data.loading

@@ -54,18 +54,14 @@ export class DeviceLogController {
 
       devicesRes.map(async (device: any, index) => {
         usersRes.map(async (user) => {
-          console.log(
-            `User S3 Type: ${typeof user.StorX}, S3 Length: ${
-              Object.keys(user.StorX).length
-            }, userID: ${user._id}, Device Owner: ${device.userId}`,
-          );
+          
 
           if (
             user._id.toString() === device.userId.toString() &&
             (typeof user.StorX).toString() === 'object' &&
             Number(Object.keys(user.StorX).length) > 0
           ) {
-            console.log('User S3 is: ', user.StorX);
+          
             const StorX = user.StorX;
             storxController.setBucketProps(
               StorX.endpoint,
@@ -87,19 +83,6 @@ export class DeviceLogController {
               deviceID: device.deviceEncryptedId,
             });
 
-            console.log('Now bucket is: ', storxController.getStorxBucket());
-
-            if (uploadRes.success == true) {
-              console.log(
-                `${device.deviceName}, ${device.mac} : have ${res.length} log datas that uploaded successfully`,
-              );
-            } else {
-              console.log(
-                `${device.deviceName}, ${device.mac} : log datas can't be uploaded, got errors !`,
-              );
-            }
-
-            console.log('------------------------------------------------');
           // const writer = [];
           //const startTime = new Date();
           //startTime.setDate(startTime.getDate() - 10);
@@ -177,7 +160,7 @@ export class DeviceLogController {
         this.result = data;
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
 
         let errorMessage =
           'Some errors occurred while fetching last device log!';

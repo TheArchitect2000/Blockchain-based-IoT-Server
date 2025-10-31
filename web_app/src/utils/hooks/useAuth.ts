@@ -89,7 +89,7 @@ function useAuth() {
     const signUp = async (values: SignUpCredential) => {
         try {
             const resp = await apiSignUp(values)
-            console.log(resp)
+
             if (resp.data) {
                 const token = resp.data.data.tokens.accessToken
                 //dispatch(signInSuccess(token))

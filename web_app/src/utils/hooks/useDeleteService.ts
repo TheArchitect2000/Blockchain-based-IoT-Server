@@ -9,7 +9,6 @@ export type ApiResponse = {
     message: string
 }
 
-
 type BlocklyJson = {
     blocks: {
         languageVersion: number
@@ -41,7 +40,6 @@ type Variable = {
 
 export function useDeleteService() {
     const { serviceId } = useParams()
-    console.log(serviceId)
 
     const { data: service, status } = useQuery({
         queryKey: ['service'],

@@ -52,18 +52,14 @@ export class AppService {
           try {
             // Check if the file already exists
             await fs.promises.access(filePath, fs.constants.F_OK);
-            //console.log(`File ${filePath} already exists. Skipping creation.`);
           } catch (error) {
             if (error.code === 'ENOENT') {
               // File does not exist, so create it
               await fs.promises.writeFile(filePath, content);
-              //console.log(`File ${filePath} created successfully.`);
             } else {
               throw error; // Re-throw unexpected errors
             }
           }
-        } else {
-          //console.log(`Folder ${directoryPath} created successfully.`);
         }
       } catch (error) {
         console.error(`Error processing ${filePath}:`);
@@ -75,7 +71,6 @@ export class AppService {
 
   getDeviceUrlByType(deviceType: string) {
     if (!this.deviceList || this.deviceList.length === 0) {
-      console.log('Device list is empty or not loaded.');
       return null;
     }
 
@@ -84,7 +79,6 @@ export class AppService {
     if (device) {
       return `${process.env.HOST_PROTOCOL}${process.env.PANEL_URL}/${process.env.HOST_SUB_DIRECTORY}/uploads/devices/${device.fileName}`;
     } else {
-      console.log(`Device type "${deviceType}" not found.`);
       return null;
     }
   }

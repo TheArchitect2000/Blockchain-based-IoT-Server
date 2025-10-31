@@ -61,7 +61,8 @@ const RequestTable: React.FC<UsersTableProps> = ({ setCount }) => {
                         item.published == true) &&
                     (!item.nodeServiceId ||
                         item.nodeServiceId == null ||
-                        item.nodeServiceId == undefined || item.nodeServiceId == "undefined")
+                        item.nodeServiceId == undefined ||
+                        item.nodeServiceId == 'undefined')
             )
             setData(data.data)
             setFilteredData(data.data)
@@ -196,7 +197,6 @@ const RequestTable: React.FC<UsersTableProps> = ({ setCount }) => {
                     const res = (await apiGetUserProfileByUserId(
                         props.row.original?.insertedBy || ''
                     )) as any
-                    console.log(res?.data.data)
 
                     setUserProfile(res?.data.data)
                 }

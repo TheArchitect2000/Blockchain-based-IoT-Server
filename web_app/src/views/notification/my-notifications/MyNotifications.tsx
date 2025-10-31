@@ -67,7 +67,6 @@ export default function MyNotifications() {
     }, [myNotifs, publicNotifs])
 
     async function handleReadClick(data: NotificationProps) {
-        console.log(readedNotifs)
         if (!data.read) {
             if (data.public === false) {
                 const res = await apiReadNotificationsByNotifIdList([data._id])

@@ -161,8 +161,6 @@ export class ServiceController {
     description: 'Edites service by service ID and other fields.',
   })
   async editService(@Body() body: editServiceDto, @Request() request) {
-    console.log('We are in editService controller');
-
     if (
       body.serviceId === null ||
       body.serviceId === undefined ||

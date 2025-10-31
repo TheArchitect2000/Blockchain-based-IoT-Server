@@ -80,15 +80,16 @@ const MapChart = ({
     prefix,
 }: MapChartProps) => {
     const mode = useAppSelector((state) => state.theme.mode)
-    const [position, setPosition] = useState({ coordinates: [20, 0], zoom: 0.4 })
+    const [position, setPosition] = useState({
+        coordinates: [20, 0],
+        zoom: 0.4,
+    })
 
     const handleZoomIn = () => {
         setPosition((pos) => ({ ...pos, zoom: Math.min(pos.zoom * 1.5, 4) }))
     }
 
     const handleZoomOut = () => {
-        console.log(Math.max(position.zoom / 1.5, 0.1))
-
         setPosition((pos) => ({ ...pos, zoom: Math.max(pos.zoom / 1.5, 0.4) }))
     }
 
@@ -183,9 +184,6 @@ const MapChart = ({
                         if (item.location.coordinates) {
                             return (
                                 <Marker
-                                    onMouseEnter={() =>
-                                        console.log(item.deviceName)
-                                    }
                                     key={index}
                                     coordinates={[
                                         item.location.coordinates[1] - 1.5,

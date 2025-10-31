@@ -32,11 +32,7 @@ export default function CardBlockly({
         setXml(formatedXml)
 
         if (workspaceRef.current) {
-            console.log('Work Space Available')
-
             const domXml = Blockly.utils.xml.textToDom(xmlText)
-
-            //workspaceRef.current.clear()
 
             const parser = new DOMParser()
             const xmlDoc = parser.parseFromString(

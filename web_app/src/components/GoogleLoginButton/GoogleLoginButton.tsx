@@ -15,7 +15,6 @@ const GoogleLoginButton: React.FC = () => {
     const { signIn } = useAuth()
 
     const handleSuccess = async (credentialResponse: any) => {
-        console.log('Google Login Success:', credentialResponse)
         const response = await signIn({
             tokenId: credentialResponse.credential,
         })
@@ -31,7 +30,6 @@ const GoogleLoginButton: React.FC = () => {
 
     const login = useGoogleLogin({
         onSuccess: async (tokenResponse) => {
-            console.log('Google Login Success:', tokenResponse)
             const response = await signIn({
                 accessToken: tokenResponse.access_token,
             })
