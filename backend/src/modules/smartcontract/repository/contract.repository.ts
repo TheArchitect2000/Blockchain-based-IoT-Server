@@ -22,7 +22,7 @@ export class ContractRepository {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while commitment insertion!';
-        console.log(error);
+        console.error(error);
         throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
@@ -36,8 +36,6 @@ export class ContractRepository {
     commitmentId: string,
     nodeId: string,
   ) {
-    console.log('we are in getCommitmentByCommitmentIdAndNodeId repository!');
-
     return await this.contractModel
       .findOne({ _id: commitmentId, nodeId: nodeId })
       .where({})
@@ -49,18 +47,12 @@ export class ContractRepository {
     commitmentId: string,
     nodeId: string,
   ) {
-    console.log(
-      'we are in deleteCommitmentByCommitmentIdAndNodeId repository!',
-    );
-
     return await this.contractModel
       .deleteOne({ _id: { $eq: commitmentId }, nodeId: { $eq: nodeId } })
       .where({});
   }
 
   async getCommitmentsByUserId(userId: string) {
-    console.log('we are in getCommitmentsByUserId repository!');
-
     return await this.contractModel
       .find({ userId: userId })
       .where({})

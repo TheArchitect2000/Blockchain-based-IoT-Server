@@ -32,7 +32,7 @@ export class DeviceRepository {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while device insertion!';
-        console.log(error);
+        console.error(error);
         throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
@@ -92,8 +92,6 @@ export class DeviceRepository {
   }
 
   async getDevicesByUserId(userId) {
-    console.log('we are in getDevicesByUserId repository!');
-
     return await this.deviceModel
       .find({ userId: userId })
       .where({ isDeleted: false })
@@ -107,8 +105,6 @@ export class DeviceRepository {
     populateCondition,
     selectCondition,
   ) {
-    console.log('we are in findDeviceByMac repository!');
-
     return await this.deviceModel
       .findOne({ mac: deviceMac })
       .where(whereCondition)
@@ -123,8 +119,6 @@ export class DeviceRepository {
     populateCondition,
     selectCondition,
   ) {
-    console.log('we are in findDeviceByNodeIdAndNodeDeviceId repository!');
-
     return await this.deviceModel
       .findOne({ nodeId: nodeId, _id: nodeDeviceId })
       .where(whereCondition)
@@ -208,8 +202,6 @@ export class DeviceRepository {
   }
 
   async getDeviceByEncryptedId(encryptId) {
-    console.log('we are in getAllDevices repository!');
-
     return await this.deviceModel
       .findOne({ deviceEncryptedId: encryptId })
       .where({ isDeleted: false })
@@ -218,8 +210,6 @@ export class DeviceRepository {
   }
 
   async getAllDevices(whereCondition, populateCondition, selectCondition) {
-    console.log('we are in getAllDevices repository!');
-
     return await this.deviceModel
       .find()
       .where(whereCondition)

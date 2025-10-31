@@ -181,7 +181,7 @@ export class OTPService {
             try {
               await newThis.repository.deleteOTP(findOTP._id);
             } catch (error) {
-              console.log('Error Catched:', error);
+              console.error('Error Catched:', error);
             }
             return true;
             /* if (newThis.validateOTPExpiryDate(findOTP.expiryDate)) {
@@ -190,7 +190,6 @@ export class OTPService {
             return false;
           } */
           } else {
-            console.log('inValid code');
             return false;
           }
         });

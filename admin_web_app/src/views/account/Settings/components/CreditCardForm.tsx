@@ -109,7 +109,7 @@ const CreditCardForm = ({ card, type, onUpdate }: CreditCardFormProps) => {
                     cardType: 'VISA',
                 }
             }
-            console.log('updatedCard', updatedCard)
+
             onUpdate(updatedCard)
         }
     }

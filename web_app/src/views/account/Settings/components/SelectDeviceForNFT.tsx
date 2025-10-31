@@ -37,7 +37,6 @@ export default function SelectDeviceForNFT() {
             const imageUrl = URL.createObjectURL(processedImage)
             setProcessedImagePreview(imageUrl)
 
-
             // Step 2: Upload metadata to IPFS
             const ipfsMetadataURL = await uploadNFTToIPFS({
                 name: String(atob(device.deviceEncryptedId)),
@@ -178,7 +177,7 @@ export default function SelectDeviceForNFT() {
         try {
             setIsLoading(true)
             const deviceRes = (await apiGetDevices(userId || '')) as any
-            console.log('deviceRes.data.data:', deviceRes.data.data)
+
             setDevices(deviceRes.data.data)
         } finally {
             setIsLoading(false)

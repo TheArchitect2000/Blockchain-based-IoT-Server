@@ -399,9 +399,6 @@ export function CreateEditBuilding() {
         function replaceEncryptedId(data: any) {
             if (data && typeof data === 'object') {
                 // Debugging: log data at each level
-                console.log('Inspecting data:', data)
-
-                console.log('Gool:', myDevices)
 
                 // Check if the current object has a 'device' property
                 if (data.device) {
@@ -411,9 +408,6 @@ export function CreateEditBuilding() {
                     )
                     if (foundDevice) {
                         data.device = foundDevice._id
-                        console.log(
-                            `Replaced deviceEncryptedId with _id for: ${data.device}`
-                        )
                     }
                 }
 
@@ -433,7 +427,6 @@ export function CreateEditBuilding() {
     }
 
     useEffect(() => {
-        
         dispatch(setSideNavCollapse(true))
         async function fetchData() {
             let functionLocalMyDevices = undefined
@@ -521,7 +514,6 @@ export function CreateEditBuilding() {
                                 functionLocalMyDevices
                             )
 
-                        
                             setBuildData(updatedBuildData)
 
                             saveAllLastData(updatedBuildData)
@@ -866,12 +858,6 @@ export function CreateEditBuilding() {
                         value={buildData.name}
                         onChange={handleInputChange}
                     />
-                    {/* <Button
-                    onClick={() => console.log(buildData.details)}
-                    variant="default"
-                >
-                    log
-                </Button> */}
                 </div>
             )}
 

@@ -62,7 +62,7 @@ export function useEditService() {
     //const { serviceId } = useParams()
     
     const { serviceId } = useAppSelector((state) => state.)
-    console.log(serviceId)
+
 
     const { data: service, status } = useQuery({
         queryKey: ['service'],

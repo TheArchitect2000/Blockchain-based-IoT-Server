@@ -103,7 +103,6 @@ export function createContractStore(walletProvider: any) {
             try {
                 set({ loading: true })
                 const signer = await provider.getSigner()
-                console.log('Signer wallet address:', await signer.getAddress())
 
                 const tx = await (
                     deviceNFTManagemantContract.connect(signer) as any
@@ -133,7 +132,7 @@ export function createContractStore(walletProvider: any) {
             try {
                 set({ loading: true })
                 const signer = await provider.getSigner()
-                console.log('Signer wallet address:', await signer.getAddress())
+
                 const tx = await (
                     identityOwnershipRegisterationContract.connect(
                         signer
@@ -154,7 +153,7 @@ export function createContractStore(walletProvider: any) {
             try {
                 set({ loading: true })
                 const signer = await provider.getSigner()
-                console.log('Signer wallet address:', await signer.getAddress())
+
                 const tx = await (
                     identityOwnershipRegisterationContract.connect(
                         signer
@@ -175,11 +174,7 @@ export function createContractStore(walletProvider: any) {
             try {
                 set({ loading: true })
                 const signer = await provider.getSigner()
-                console.log('Signer wallet address:', await signer.getAddress())
-                console.log(
-                    'ownershipAddress wallet address:',
-                    ownershipAddress
-                )
+
                 const tx = await (
                     identityOwnershipRegisterationContract.connect(
                         signer

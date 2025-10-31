@@ -31,8 +31,6 @@ const ServiceEdit = () => {
         (service) => service._id === serviceId
     )[0]
 
-    console.log(curService)
-
     const dispatch = useAppDispatch()
 
     const location = useLocation()

@@ -51,7 +51,6 @@ const Password = () => {
         async function fetchData() {
             const resData = (await apiGetMyProfile()) as any
             setApiData(resData.data.data)
-            console.log(resData.data.data)
         }
         fetchData()
     }, [])
@@ -103,7 +102,6 @@ const Password = () => {
         }
 
         setSubmitting(false)
-        console.log('values', values)
     }
 
     return (

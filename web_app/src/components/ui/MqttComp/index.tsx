@@ -43,16 +43,12 @@ export const useMQTT = () => {
             clients[mqttUrl] = client
 
             client.on('connect', () => {
-                console.log(`Connected to MQTT broker at ${mqttUrl}`)
                 updateStatus(mqttUrl, 'connected')
             })
 
             client.on('message', (topic, payload) => {
                 let message = payload.toString()
-                /* console.log(
-                    `Message from MQTT (${mqttUrl} - ${topic}):`,
-                    message
-                ) */
+
                 try {
                     message = JSON.parse(message)
                     if (messageHandlers[mqttUrl]?.[topic]) {
@@ -73,7 +69,6 @@ export const useMQTT = () => {
             })
 
             client.on('close', () => {
-                console.log(`Disconnected from MQTT broker at ${mqttUrl}`)
                 updateStatus(mqttUrl, 'disconnected')
                 delete clients[mqttUrl]
             })
@@ -92,7 +87,6 @@ export const useMQTT = () => {
                 {status} {statusIcon[status]}
             </p>
         )
-        //console.log(`Status of ${mqttUrl}: ${status}`)
     }
 
     const subscribe = (
@@ -119,9 +113,6 @@ export const useMQTT = () => {
                         )
                         updateStatus(mqttUrl, 'error')
                     } else {
-                        console.log(
-                            `Subscribed to topic: ${topic} at ${mqttUrl}`
-                        )
                         updateStatus(mqttUrl, 'connected')
                     }
                 })
@@ -139,7 +130,6 @@ export const useMQTT = () => {
                 // Unsubscribe from the topic if no handlers are left
                 client.unsubscribe(topic)
                 delete messageHandlers[mqttUrl][topic]
-                console.log(`Unsubscribed from topic: ${topic} at ${mqttUrl}`)
             }
 
             // Clean up MQTT client if no topics are subscribed for this URL

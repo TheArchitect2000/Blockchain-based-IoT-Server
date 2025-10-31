@@ -72,7 +72,7 @@ export class CustomerService {
       'IsActive Email Username Password FirstName LastName Mobile createdAt updatedAt';
     let foundCustomer = null;
 
-    console.log('I am in checkCustomerEmailIsExist!');
+
 
     foundCustomer = await this.findACustomerByEmail(
       customerEmail,
@@ -82,10 +82,8 @@ export class CustomerService {
     );
 
     if (foundCustomer) {
-      console.log('Customer found!');
       return true;
     } else {
-      console.log('Customer not found!');
       throw new GeneralException(
         ErrorTypeEnum.NOT_FOUND,
         'Customer does not exist.',
@@ -113,7 +111,6 @@ export class CustomerService {
     let insertedCustomer = await this.customerRepository.insertCustomer(
       newCustomer,
     );
-    console.log('Customer inserted!');
     return insertedCustomer;
   }
 
@@ -127,18 +124,6 @@ export class CustomerService {
     let populateCondition = [];
     let selectCondition =
       'IsActive Email Username Password FirstName LastName Mobile createdAt updatedAt';
-
-    console.log('we are in getCutomerProfileByEmail service!');
-
-    console.log(
-      'Found customer is: ',
-      await this.customerRepository.findCustomerByEmail(
-        customerEmail,
-        whereCondition,
-        populateCondition,
-        selectCondition,
-      ),
-    );
 
     return await this.customerRepository.findCustomerByEmail(
       customerEmail,

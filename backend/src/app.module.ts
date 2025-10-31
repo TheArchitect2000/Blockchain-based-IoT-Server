@@ -3,17 +3,15 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthenticationModule } from './modules/authentication/authentication.module';
-import { BlocklyModule } from './modules/blockly/blockly.module';
 import { BrokerModule } from './modules/broker/broker.module';
 import { DeviceModule } from './modules/device/device.module';
 import { ContractModule } from './modules/smartcontract/contract.module';
 import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
 import { NotificationModule } from './modules/notification/notification.module';
-import { PanelModule } from './modules/panel/panel.module';
 import { ServiceModule } from './modules/service/service.module';
 import { UserModule } from './modules/user/user.module';
 import databaseConfig from './modules/utility/configurations/database.configuration';
@@ -23,9 +21,8 @@ import { UtilityModule } from './modules/utility/utility.module';
 import { MediaModule } from './modules/media/media.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { BuildingModule } from './modules/building/building.module';
-import { SyslogModule } from './modules/logging/syslog.module';
+import { LogModule } from './modules/logging/log.module';
 import { ScheduleModule } from '@nestjs/schedule';
-//import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -48,18 +45,14 @@ import { ScheduleModule } from '@nestjs/schedule';
       rootPath: './uploads/*',
       serveRoot: '/app/uploads/*',
     }),
-
+    LogModule,
     ScheduleModule.forRoot(),
-
     AuthenticationModule,
-    SyslogModule,
     UserModule,
     BrokerModule,
     forwardRef(() => DeviceModule),
     UtilityModule,
-    //PanelModule,
     ServiceModule,
-    BlocklyModule,
     NotificationModule,
     BuildingModule,
     ContractModule,

@@ -164,7 +164,6 @@ const ProductImages = (props: ProductImagesProps) => {
             img: URL.createObjectURL(files[latestUpload]),
         }
         const imageList = [...values.imgList, ...[image]]
-        console.log('imageList', imageList)
         form.setFieldValue(field.name, imageList)
     }
 

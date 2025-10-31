@@ -24,24 +24,16 @@ export class PermissionsGuard implements CanActivate {
       context.getHandler(),
     );
 
-    console.log('routePermissions: ', routePermissions);
-
     let userRoles: any = null;
     let rolePermissions: any = null;
     let userPermissions: string[] = [];
 
     let hasPermission: boolean;
 
-    console.log('hasPermission', hasPermission);
-
     let userId: any = null;
     let user: any = [];
 
     if (context.getArgs()[0].user !== undefined) {
-      console.log(
-        'context.getArgs()[0].user.userId',
-        context.getArgs()[0].user.userId,
-      );
       userId = context.getArgs()[0].user.userId;
 
       await this.userService
@@ -58,25 +50,18 @@ export class PermissionsGuard implements CanActivate {
             });
           });
 
-          console.log('userPermissions: ---> ', userPermissions);
-
           const checkPermission = () =>
             routePermissions.every((routePermission) =>
               userPermissions.includes(routePermission),
             );
 
           hasPermission = checkPermission();
-          console.log('hasPermission1: ', hasPermission);
-
-          console.log('checkPermission(): ', checkPermission());
         })
         .catch((error) => {
           let errorMessage = 'Some errors occurred while finding a user!';
           throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
         });
     }
-
-    console.log('hasPermission2: ', hasPermission);
 
     return hasPermission;
   }

@@ -58,8 +58,6 @@ export default function Subscriptions() {
     }
 
     async function handleChangeEmailSubscribe(state: boolean) {
-        console.log('state:', state)
-
         try {
             setApiLoading(true)
             const res = await apiSetMyEmailSubscription(state)

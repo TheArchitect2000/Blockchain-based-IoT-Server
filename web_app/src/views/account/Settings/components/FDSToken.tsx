@@ -44,7 +44,6 @@ export default function FDSToken() {
         }
         const ethersProvider = new BrowserProvider(walletProvider as any)
         const accounts = await ethersProvider.send('eth_requestAccounts', [])
-        console.log('Selected accounts:', accounts)
         return accounts || []
     }
 

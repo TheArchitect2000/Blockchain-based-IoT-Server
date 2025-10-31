@@ -17,7 +17,9 @@ export function transformCsvData(inputArray: UserData[]): OutputObject[] {
     return inputArray.map((obj) => {
         // Construct telephone string from tel object
         const telephone = obj.tel
-            ? `${obj.tel?.countryCode?.value || ''} ${obj.tel?.phoneNumber || ''}`
+            ? `${obj.tel?.countryCode?.value || ''} ${
+                  obj.tel?.phoneNumber || ''
+              }`
             : null
 
         // Destructure necessary fields and rename address lines
@@ -41,9 +43,6 @@ export function transformCsvData(inputArray: UserData[]): OutputObject[] {
             zipCode,
             telephone,
         }
-
-        // Log each result
-        console.log(result)
 
         return result
     })

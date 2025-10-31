@@ -176,7 +176,7 @@ export default function ProofPage() {
                 )
             }, 5000)
         } catch (error: any) {
-            console.log('error:', error)
+            console.error('error:', error)
 
             setTransactionLoading(false)
             toast.push(
@@ -188,10 +188,6 @@ export default function ProofPage() {
                 }
             )
         }
-
-        console.log('filteredItems:', filteredItems)
-        console.log('deviceType:', values.deviceType.value)
-        console.log('Proof:', values.proof)
     }
 
     const handleProofFileChange = (event: any, setFieldValue: any) => {

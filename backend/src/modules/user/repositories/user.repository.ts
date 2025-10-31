@@ -82,7 +82,7 @@ export class UserRepository {
       return true;
     } catch (error) {
       const errorMessage = 'Some errors occurred while deleting userName!';
-      console.log(error.message); // Log the actual error
+      console.error(error.message); // Log the actual error
       throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         errorMessage,
@@ -98,7 +98,7 @@ export class UserRepository {
       })
       .catch((error) => {
         const errorMessage = 'Some errors occurred while user insertion!';
-        console.log(error.message);
+        console.error(error.message);
         throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
@@ -117,7 +117,7 @@ export class UserRepository {
       .catch((error) => {
         const errorMessage =
           'Some errors occurred while insert change email token!';
-        console.log(error.message);
+        console.error(error.message);
         throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
@@ -299,8 +299,6 @@ export class UserRepository {
   }
 
   async getAllUsers(whereCondition, populateCondition, selectCondition) {
-    console.log('we are in getAllUsers repository!');
-
     return await this.userModel
       .find()
       .where(whereCondition)

@@ -143,9 +143,6 @@ export default function MakeAdmin() {
 
             const userRoles = userDatas.roles || []
 
-            console.log('userRoles:', userRoles)
-            console.log('adminRanks:', adminRanks)
-
             // Check if user has 'super_admin' role
             const isSuperAdmin = userRoles.some(
                 (role: any) => role.name === 'super_admin'

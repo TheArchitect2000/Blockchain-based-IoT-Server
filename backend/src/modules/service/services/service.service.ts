@@ -18,8 +18,6 @@ export class ServiceService {
   ) {}
 
   async insertService(body) {
-    //console.log('Body: ', body);
-
     let newService = {
       nodeId: String(body?.nodeId),
       nodeServiceId: String(body?.nodeServiceId),
@@ -50,10 +48,8 @@ export class ServiceService {
       let insertedService = await this.serviceRepository.insertService(
         newService,
       );
-      console.log('service inserted!', exist);
       return insertedService;
     } else {
-      console.log('service exist!', exist);
       return exist;
     }
   }
@@ -64,10 +60,6 @@ export class ServiceService {
     let selectCondition =
       '_id userId deviceName nodeId nodeServiceId published nodeId nodeServiceId publishRequested publishRejected description serviceType status devices numberOfInstallations installationPrice runningPrice rate serviceImage blocklyJson code insertedBy insertDate updatedBy updateDate';
     let foundService: any = null;
-
-    console.log('we are in editService service!');
-    console.log('body: ', body);
-    console.log('userId: ', userId);
 
     await this.serviceRepository
       .getServiceById(
@@ -142,14 +134,10 @@ export class ServiceService {
       foundService.updatedAt = new Date();
     }
 
-    console.log('Updated found service for edit is: ', foundService);
-
     await this.serviceRepository
       .editService(foundService._id, foundService)
       .then((data) => {
         this.result = data;
-        console.log('editing service: ');
-        console.log(data);
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while renaming a service!';
@@ -168,10 +156,6 @@ export class ServiceService {
     let selectCondition =
       '_id userId serviceName published nodeId nodeServiceId publishRequested publishRejected description serviceType status devices numberOfInstallations installationPrice runningPrice rate serviceImage blocklyJson code insertedBy insertDate updatedBy updateDate';
     let foundService: any = null;
-
-    console.log('we are in publishService service!');
-    console.log('body: ', body);
-    console.log('userId: ', userId);
 
     await this.serviceRepository
       .getServiceById(
@@ -200,20 +184,11 @@ export class ServiceService {
       foundService.updatedAt = new Date();
     }
 
-    console.log('Updated found service for publish is: ', foundService);
-
     await this.serviceRepository
       .editService(foundService._id, foundService)
       .then((data) => {
         this.result = data;
         if (nodePublish == false) {
-          console.log('foundService.devices:', foundService.devices);
-          console.log('---------------------------------------------');
-          console.log(
-            'JSONNNNNN(foundService.devices):',
-            JSON.stringify(foundService.devices),
-          );
-
           this.contractService.createService(
             String(process.env.NODE_NAME),
             String(foundService._id),
@@ -248,10 +223,6 @@ export class ServiceService {
       '_id userId deviceName published nodeId nodeServiceId publishRequested publishRejected description serviceType status devices numberOfInstallations installationPrice runningPrice rate serviceImage blocklyJson code insertedBy insertDate updatedBy updateDate';
     let foundService: any = null;
 
-    console.log('we are in publishService service!');
-    console.log('body: ', body);
-    console.log('userId: ', userId);
-
     await this.serviceRepository
       .getServiceById(
         body.serviceId,
@@ -277,8 +248,6 @@ export class ServiceService {
       foundService.updatedBy = userId;
       foundService.updatedAt = new Date();
     }
-
-    console.log('Updated found service for cancel request is: ', foundService);
 
     await this.serviceRepository
       .editService(foundService._id, foundService)
@@ -310,10 +279,6 @@ export class ServiceService {
       '_id userId deviceName published nodeId nodeServiceId publishRequested publishRejected description serviceType status devices numberOfInstallations installationPrice runningPrice rate serviceImage blocklyJson code insertedBy insertDate updatedBy updateDate';
     let foundService: any = null;
 
-    console.log('we are in rejectService service!');
-    console.log('body: ', body);
-    console.log('userId: ', userId);
-
     await this.serviceRepository
       .getServiceById(
         body.serviceId,
@@ -344,8 +309,6 @@ export class ServiceService {
       foundService.updatedAt = new Date();
     }
 
-    console.log('Updated found service for reject is: ', foundService);
-
     await this.serviceRepository
       .editService(foundService._id, foundService)
       .then((data) => {
@@ -368,10 +331,6 @@ export class ServiceService {
     let selectCondition =
       '_id userId deviceName published nodeId nodeServiceId publishRequested publishRejected description serviceType status devices numberOfInstallations installationPrice runningPrice rate serviceImage blocklyJson code insertedBy insertDate updatedBy updateDate';
     let foundService: any = null;
-
-    console.log('we are in requestPublishService service!');
-    console.log('body: ', body);
-    console.log('userId: ', userId);
 
     await this.serviceRepository
       .getServiceById(
@@ -411,11 +370,6 @@ export class ServiceService {
       foundService.updatedBy = userId;
       foundService.updatedAt = new Date();
     }
-
-    console.log(
-      'Updated found service for publishing request is: ',
-      foundService,
-    );
 
     await this.serviceRepository
       .editService(foundService._id, foundService)
@@ -510,16 +464,12 @@ export class ServiceService {
       'serviceName description serviceType nodeId nodeServiceId published publishRequested publishRejected status blocklyJson code devices numberOfInstallations installationPrice runningPrice rate serviceImage blocklyXML code insertedBy insertDate isDeletable isDeleted deletedBy deleteDate deletionReason updatedBy updateDate';
     let foundServices: any = null;
 
-    console.log('we are in getServicesByUserId service!');
-
     foundServices = await this.serviceRepository.getServicesByUserId(
       userId,
       whereCondition,
       populateCondition,
       selectCondition,
     );
-
-    //console.log('Found services are: ', foundServices);
 
     return foundServices;
   }
@@ -532,15 +482,11 @@ export class ServiceService {
     let foundServices: any = null;
     let response = [];
 
-    console.log('we are in getAllServices service!');
-
     foundServices = await this.serviceRepository.getAllServices(
       whereCondition,
       populateCondition,
       selectCondition,
     );
-
-    //console.log('Found services are: ', foundServices);
 
     foundServices.forEach((element) => {
       response.push({
@@ -579,15 +525,11 @@ export class ServiceService {
     let foundServices: any = null;
     let response = [];
 
-    console.log('we are in getAllServices service!');
-
     foundServices = await this.serviceRepository.getAllServices(
       whereCondition,
       populateCondition,
       selectCondition,
     );
-
-    //console.log('Found services are: ', foundServices);
 
     foundServices.forEach((element) => {
       response.push({
@@ -626,15 +568,11 @@ export class ServiceService {
     let foundServices: any = null;
     let response = [];
 
-    console.log('we are in getAllServices service!');
-
     foundServices = await this.serviceRepository.getAllServices(
       whereCondition,
       populateCondition,
       selectCondition,
     );
-
-    //console.log('Found services are: ', foundServices);
 
     foundServices.forEach((element) => {
       response.push({
@@ -726,8 +664,6 @@ export class ServiceService {
       foundService.updatedBy = userId;
       foundService.updateDate = new Date();
     }
-
-    console.log('Updated found service for deletion is: ', foundService);
 
     await this.serviceRepository
       .editService(foundService._id, foundService)

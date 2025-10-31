@@ -71,8 +71,6 @@ export class UserInfoService {
       });
 
     if (user) {
-      console.log('user found');
-
       userInfo = await this.userInfoRepository
         .findAUserInfoByUserId(userId)
         .catch((error) => {
@@ -85,7 +83,6 @@ export class UserInfoService {
     }
 
     if (userInfo) {
-      console.log('user info exists!');
       let errorMessage =
         'Some errors occurred while inserting a user info, User info already exists!';
       throw new GeneralException(
@@ -164,8 +161,6 @@ export class UserInfoService {
       });
 
     if (user) {
-      console.log('user found');
-
       userInfo = await this.userInfoRepository
         .findAUserInfoByUserId(data.userId)
         .catch((error) => {
@@ -178,7 +173,6 @@ export class UserInfoService {
     }
 
     if (userInfo) {
-      console.log('user info exists!');
       let errorMessage =
         'Some errors occurred while inserting a user info, User info already exists!';
       throw new GeneralException(
@@ -276,8 +270,6 @@ export class UserInfoService {
   }
 
   async editUserByPanel(data, userId): Promise<any> {
-    console.log('In editUserByUser Service');
-
     let foundUserInfo = null;
     await this.userInfoRepository
       .findAUserInfoByUserId(data.userId)

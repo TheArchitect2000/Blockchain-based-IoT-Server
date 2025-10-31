@@ -111,8 +111,6 @@ export class UserPermissionRepository {
         throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
-    console.log(this.result);
-
     return this.result;
   }
 }

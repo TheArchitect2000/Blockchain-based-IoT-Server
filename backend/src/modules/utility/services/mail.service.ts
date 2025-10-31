@@ -92,7 +92,7 @@ export class MailService {
       };
 
       const result = await this.transporter.sendMail(mailOptions);
-      console.log('Email sent:', result.messageId);
+
       return result;
     } catch (error) {
       console.error('Email sending error:', error);
@@ -202,13 +202,6 @@ export class MailService {
   }
 
   async sendRegistrationOTP(email: string, otp: string, otpType: string) {
-    console.log(
-      'We are in sendRegistrationOTP email is: ',
-      email,
-      '   and OTP is: ',
-      otp,
-    );
-
     const url =
       process.env.HOST_PROTOCOL +
       process.env.PANEL_URL +
@@ -218,8 +211,6 @@ export class MailService {
       email +
       '&otp=' +
       otp;
-
-    console.log('email url: ', url);
 
     await this.sendMail({
       to: email,
@@ -242,13 +233,6 @@ export class MailService {
   }
 
   async sendChangePasswordOTP(email: string, otp: string, otpType: string) {
-    console.log(
-      'We are in sendChangePasswordOTP email is: ',
-      email,
-      ', and OTP is: ',
-      otp,
-    );
-
     const url =
       process.env.HOST_PROTOCOL +
       process.env.PANEL_URL +
@@ -259,10 +243,7 @@ export class MailService {
       '&otp=' +
       otp;
 
-    console.log('url 22: ', url);
-
     try {
-      console.log('Sending email');
       const userToken = await this.getTokenWithUserEmail(email);
 
       await this.sendMail({
@@ -284,9 +265,8 @@ export class MailService {
           },
         ],
       });
-      console.log('email sent');
     } catch (error) {
-      console.log(error);
+      console.error(error);
       throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         'Some errors occurred while sending email',
@@ -295,13 +275,6 @@ export class MailService {
   }
 
   async sendVerifyEmailOTP(email: string, otp: string, otpType: string) {
-    console.log(
-      'We are in sendVerifyEmailOTP email is: ',
-      email,
-      '   and OTP is: ',
-      otp,
-    );
-
     const url =
       process.env.HOST_PROTOCOL +
       process.env.PANEL_URL +
@@ -311,8 +284,6 @@ export class MailService {
       email +
       '&otp=' +
       otp;
-
-    console.log('url: ', url);
 
     const userToken = await this.getTokenWithUserEmail(email);
 
@@ -353,13 +324,6 @@ export class MailService {
     notificationMessage: string,
     subject: string,
   ) {
-    console.log(
-      'We are in sendEmailFromService email is: ',
-      email,
-      '   and notification message is: ',
-      notificationMessage,
-    );
-
     if (process.env.NOTIFICATION_BY_MAIL == 'enabled') {
       const userToken = await this.getTokenWithUserEmail(email);
       const currentTime = await this.getCurrentTimeFormatted();
@@ -385,8 +349,6 @@ export class MailService {
           },
         ],
       });
-    } else if (process.env.NOTIFICATION_BY_MAIL == 'disabled') {
-      console.log(`\x1b[33m \nSending email is disabled.\x1b[0m`);
     }
   }
 
@@ -395,23 +357,12 @@ export class MailService {
     notificationTitle: string,
     notificationMessage: string,
   ) {
-    console.log(
-      'We are in sendNotificationFromService userId is: ',
-      userId,
-      '   and notification title is: ',
-      notificationTitle,
-      '   and notification message is: ',
-      notificationMessage,
-    );
-
     if (process.env.NOTIFICATION_BY_NOTIFICATION == 'enabled') {
       this.notificationService.sendNotification({
         message: notificationMessage,
         title: notificationTitle,
         user: userId,
       });
-    } else if (process.env.NOTIFICATION_BY_NOTIFICATION == 'disabled') {
-      console.log(`\x1b[33m \nSending notifications is disabled.\x1b[0m`);
     }
   }
 }

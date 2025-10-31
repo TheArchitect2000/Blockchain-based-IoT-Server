@@ -63,8 +63,6 @@ const CrmDashboard = () => {
                         isValidCoordinate(item?.location?.coordinates)
                 )
 
-                console.log('newPositions:', newPositions)
-
                 setPositions([...newPositions, ...generateParisData(200, 200)])
                 setMapLoading(false)
             }

@@ -105,7 +105,6 @@ export default function CompanyDeveloperPage() {
             placement: 'top-center',
         })
         setSubmitting(false)
-        console.log('values', dbDatas)
     }
 
     const isDeveloper = checkUserHasRole('company_developer')

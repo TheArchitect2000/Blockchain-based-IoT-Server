@@ -26,8 +26,6 @@ export class MediaService {
     userId: string,
     file: Express.Multer.File,
   ) {
-    console.log('We are in Insert media');
-
     const newMedium = {
       user: userId,
       type: type,

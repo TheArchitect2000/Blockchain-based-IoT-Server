@@ -90,8 +90,6 @@ const MapChart = ({
     }
 
     const handleZoomOut = () => {
-        console.log(Math.max(position.zoom / 1.5, 0.1))
-
         setPosition((pos) => ({ ...pos, zoom: Math.max(pos.zoom / 1.5, 0.4) }))
     }
 
@@ -196,9 +194,6 @@ const MapChart = ({
                             const [lat, lon] = coords
                             return (
                                 <Marker
-                                    onMouseEnter={() =>
-                                        console.log(item.deviceName)
-                                    }
                                     key={index}
                                     coordinates={[lon - 1.5, lat + 2]} // note: might be [lng, lat] depending on projection
                                 >

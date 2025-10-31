@@ -442,7 +442,7 @@ export class TagService {
         this.result = data;
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
 
         let errorMessage = 'Some errors occurred while search in tags!';
         throw new GeneralException(
