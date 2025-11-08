@@ -43,6 +43,7 @@ import { ScheduleModule } from '@nestjs/schedule';
       serveRoot: '/app/uploads',
       serveStaticOptions: {
         index: false,
+        fallthrough: true,
       },
     }),
     LogModule,
