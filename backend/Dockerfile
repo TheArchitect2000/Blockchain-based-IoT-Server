@@ -1,4 +1,3 @@
-
 FROM node:20-alpine AS builder
 
 WORKDIR /usr/src/app
@@ -22,9 +21,10 @@ WORKDIR /usr/src/app
 RUN npm config set registry https://registry.npmjs.org/
 
 COPY --from=builder /usr/src/app/dist ./dist
-RUN mkdir -p /app/uploads
-COPY package*.json ./
 
+RUN mkdir -p /usr/src/app/uploads
+
+COPY package*.json ./
 
 RUN npm install --omit=dev
 
