@@ -22,7 +22,7 @@ WORKDIR /usr/src/app
 RUN npm config set registry https://registry.npmjs.org/
 
 COPY --from=builder /usr/src/app/dist ./dist
-COPY --from=builder /usr/src/app/uploads ./uploads
+RUN mkdir -p /app/uploads
 COPY package*.json ./
 
 
