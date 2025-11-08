@@ -4,7 +4,7 @@ import { LogService } from './log.service';
 import { JwtAuthGuard } from '../authentication/guard/jwt-auth.guard';
 
 @ApiTags('Manage Activity Logs')
-@Controller('logs')
+@Controller('app')
 export class LogController {
   /**
    *
@@ -14,7 +14,7 @@ export class LogController {
     private readonly logService: LogService,
   ) {}
 
-  @Get('')
+  @Get('v1/logs')
   @HttpCode(200)
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
