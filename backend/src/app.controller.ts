@@ -55,9 +55,6 @@ export class AppController {
         );
       });
 
-    //test logging
-    LogService.log('Test log message from AppService');
-
     return this.result;
   }
 
@@ -87,6 +84,8 @@ export class AppController {
     description: '',
   })
   async getDevices() {
+    //test logging
+    LogService.log('Test log message from AppService');
     return this.appService.deviceList;
   }
 }
