@@ -2,7 +2,7 @@ import ApiService from './ApiService'
 
 export async function apiGetLogs<T>() {
     return ApiService.fetchData<T>({
-        url: import.meta.env.VITE_URL + '/logs',
+        url: import.meta.env.VITE_URL + 'logs',
         method: 'get',
     })
 }

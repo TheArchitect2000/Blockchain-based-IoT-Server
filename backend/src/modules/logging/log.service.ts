@@ -1,6 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { SyslogStrategy } from './strategies/syslog.strategy';
 import { InternalStrategy } from './strategies/internal.strategy';
+import { GetInternalLogDto } from './dto/get-internal-log.dto';
 
 export class LogService {
   private static configService: ConfigService;
@@ -32,7 +33,7 @@ export class LogService {
     }
   }
 
-  async getInternalLogs(): Promise<any[]> {
+  async getInternalLogs(): Promise<GetInternalLogDto[]> {
     return LogService.internalStrategy.getLogs();
   }
 }
