@@ -4,11 +4,12 @@ import { SyslogStrategy } from './strategies/syslog.strategy';
 import { InternalStrategy } from './strategies/internal.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as Syslog from 'syslog-client';
+import { LogController } from './log.controller';
 
 @Global()
 @Module({
   imports: [ConfigModule],
-  controllers: [],
+  controllers: [LogController],
   providers: [
     {
       provide: SyslogStrategy,

@@ -78,6 +78,16 @@ const navigationConfig: NavigationTree[] = [
         authority: [],
         subMenu: [],
     },
+    {
+        key: 'logs',
+        path: '/logs',
+        title: 'Activity/System logs',
+        translateKey: 'Activity/System Logs',
+        icon: 'logs',
+        type: NAV_ITEM_TYPE_ITEM,
+        authority: [],
+        subMenu: [],
+    },
 
     // {
     //     key: 'collapseMenu',
