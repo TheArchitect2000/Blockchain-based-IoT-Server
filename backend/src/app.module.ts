@@ -41,10 +41,6 @@ import { ScheduleModule } from '@nestjs/schedule';
       rootPath: './uploads',
       serveRoot: '/app/uploads',
     }),
-    ServeStaticModule.forRoot({
-      rootPath: './uploads/*',
-      serveRoot: '/app/uploads/*',
-    }),
     LogModule,
     ScheduleModule.forRoot(),
     AuthenticationModule,
