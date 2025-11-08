@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { LoggingStrategyInterface } from './logging-strategy.interface';
 import * as fs from 'fs';
 import * as path from 'path';
-import { GetInternalLogDto } from '../dto/get-internal-log.dto';
+
 import { LogLevelEnum } from '../enums/log-level.dto';
 
 @Injectable()
@@ -33,34 +33,5 @@ export class InternalStrategy implements LoggingStrategyInterface {
     }
 
     fs.appendFileSync(logFile, message + '\n');
-  }
-
-  getLogs(userId?: string): GetInternalLogDto[] {
-    const logFile = path.join(process.cwd(), 'logs', 'internal.log');
-
-    if (fs.existsSync(logFile)) {
-      const logs = fs.readFileSync(logFile, 'utf-8');
-      const rowLogs = logs
-        .split('\n')
-        .filter((line: string) => line.trim() !== '');
-      return rowLogs.map((line: string) => {
-        const parts = line.split(',');
-        const message = parts[0];
-        const nodeName = parts[1];
-        const user = parts.length == 5 ? parts[4] : null;
-
-        if ((userId && user === userId) || this.nodeName === nodeName) {
-          return {
-            message,
-            nodeName,
-            level: parts[2] as LogLevelEnum,
-            timestamp: parts[3],
-            user,
-          };
-        }
-      });
-    } else {
-      return [];
-    }
   }
 }

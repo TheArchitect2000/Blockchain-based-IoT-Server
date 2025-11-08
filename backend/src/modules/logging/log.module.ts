@@ -5,6 +5,7 @@ import { InternalStrategy } from './strategies/internal.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as Syslog from 'syslog-client';
 import { LogController } from './log.controller';
+import { LogInfoService } from './log-info.service';
 
 @Global()
 @Module({
@@ -57,6 +58,7 @@ import { LogController } from './log.controller';
       },
       inject: [ConfigService, SyslogStrategy, InternalStrategy],
     },
+    LogInfoService,
   ],
   exports: [LogService],
 })
