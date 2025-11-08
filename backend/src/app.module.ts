@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -38,7 +39,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     ),
 
     ServeStaticModule.forRoot({
-      rootPath: './uploads',
+      rootPath: join(__dirname, '..', 'uploads'),
       serveRoot: '/app/uploads',
     }),
     LogModule,
