@@ -41,6 +41,9 @@ import { ScheduleModule } from '@nestjs/schedule';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads'),
       serveRoot: '/app/uploads',
+      serveStaticOptions: {
+        index: false,
+      },
     }),
     LogModule,
     ScheduleModule.forRoot(),
