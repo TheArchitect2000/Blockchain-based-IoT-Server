@@ -2,7 +2,6 @@ import { Card } from '@/components/ui'
 import Table from '@/components/ui/Table'
 import { LogData, useGetLogs } from '@/utils/hooks/useGetLogs'
 import { useNavigate } from 'react-router-dom'
-import './style.css'
 
 import { useConfig } from '@/components/ui/ConfigProvider'
 import useColorLevel from '@/components/ui/hooks/useColorLevel'
