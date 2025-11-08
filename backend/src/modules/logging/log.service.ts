@@ -32,8 +32,4 @@ export class LogService {
       LogService.internalStrategy.log(message, userId);
     }
   }
-
-  async getInternalLogs(): Promise<GetInternalLogDto[]> {
-    return LogService.internalStrategy.getLogs();
-  }
 }
