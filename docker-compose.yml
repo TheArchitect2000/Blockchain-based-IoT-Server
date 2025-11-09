@@ -14,6 +14,7 @@ services:
       - ./nginx/ssl:/etc/nginx/ssl:ro
       - ./backend/src/data:/usr/src/app/src/data:ro
       - ./backend/uploads:/usr/src/app/uploads
+      - ./backend/logs:/usr/src/app/logs
 
   webapp:
     build:

@@ -23,6 +23,7 @@ RUN npm config set registry https://registry.npmjs.org/
 COPY --from=builder /usr/src/app/dist ./dist
 
 RUN mkdir -p /usr/src/app/uploads
+RUN mkdir -p /usr/src/app/logs
 
 COPY package*.json ./
 
