@@ -20,22 +20,23 @@ export class LogInfoService {
       const rowLogs = logs
         .split('\n')
         .filter((line: string) => line.trim() !== '');
-      return rowLogs.map((line: string) => {
-        const parts = line.split(',');
-        const message = parts[0];
-        const node = parts[1];
-        const user = parts.length == 5 ? parts[4] : null;
-
-        if ((userId && user === userId) || nodeName === node) {
+      return rowLogs
+        .filter((line: string) => {
+          const parts = line.split(',');
+          const node = parts[1];
+          const user = parts.length == 5 ? parts[4] : null;
+          return (userId && user === userId) || nodeName === node;
+        })
+        .map((line: string) => {
+          const parts = line.split(',');
           return {
-            message,
-            nodeName: node,
+            message: parts[0],
+            nodeName: parts[1],
             level: parts[2] as LogLevelEnum,
             timestamp: parts[3],
-            user,
+            user: parts.length == 5 ? parts[4] : null,
           };
-        }
-      });
+        });
     } else {
       return [];
     }
