@@ -9,10 +9,7 @@ import { LogLevelEnum } from './enums/log-level.dto';
 export class LogInfoService {
   constructor() {}
 
-  async getInternalLogs(
-    nodeName: string,
-    userId: string,
-  ): Promise<GetInternalLogDto[]> {
+  async getInternalLogs(nodeName: string): Promise<GetInternalLogDto[]> {
     const logFile = path.join(process.cwd(), 'logs', 'internal.log');
 
     if (fs.existsSync(logFile)) {
@@ -24,8 +21,7 @@ export class LogInfoService {
         .filter((line: string) => {
           const parts = line.split(',');
           const node = parts[1];
-          const user = parts.length == 5 ? parts[4] : null;
-          return (userId && user === userId) || nodeName === node;
+          return nodeName === node;
         })
         .map((line: string) => {
           const parts = line.split(',');
@@ -34,7 +30,6 @@ export class LogInfoService {
             nodeName: parts[1],
             level: parts[2] as LogLevelEnum,
             timestamp: parts[3],
-            user: parts.length == 5 ? parts[4] : null,
           };
         });
     } else {
