@@ -20,16 +20,16 @@ export class LogInfoService {
       return rowLogs
         .filter((line: string) => {
           const parts = line.split(',');
-          const node = parts[1];
+          const node = parts[3];
           return nodeName === node;
         })
         .map((line: string) => {
           const parts = line.split(',');
           return {
             message: parts[0],
-            nodeName: parts[1],
-            level: parts[2] as LogLevelEnum,
-            timestamp: parts[3],
+            level: parts[1] as LogLevelEnum,
+            timestamp: parts[2],
+            nodeName: parts[3],
           };
         });
     } else {
