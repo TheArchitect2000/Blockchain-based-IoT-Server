@@ -1,46 +1,72 @@
 name: Deploy to Amazon ECS
 
+
 on:
   push:
     branches: ["main"]
+  # Optional: Allow manual workflow dispatch for testing
+  workflow_dispatch:
 
+# Global environment variables - shared across all jobs
 env:
   AWS_REGION: us-east-2
-  # Backend Service
+  ECS_CLUSTER: fidesinnova_iot_server/ecs_cluster
+  
+  # Backend Service Configuration
   ECR_REPOSITORY_BACKEND: fidesinnova_iot_server/backend
   ECS_SERVICE_BACKEND: fidesinnova_iot_server/backend
   ECS_TASK_DEFINITION_BACKEND: .aws/backend.json
   CONTAINER_NAME_BACKEND: backend
+  BACKEND_BUILD_CONTEXT: ./backend
 
-  # WebApp Service
+  # WebApp Service Configuration
   ECR_REPOSITORY_WEBAPP: fidesinnova_iot_server/user_webapp
   ECS_SERVICE_WEBAPP: fidesinnova_iot_server/user_webapp
   ECS_TASK_DEFINITION_WEBAPP: .aws/webapp.json
   CONTAINER_NAME_WEBAPP: user_webapp
+  WEBAPP_BUILD_CONTEXT: ./web_app
 
-  # Admin WebApp Service
+  # Admin WebApp Service Configuration
   ECR_REPOSITORY_ADMIN: fidesinnova_iot_server/admin_webapp
   ECS_SERVICE_ADMIN: fidesinnova_iot_server/admin_webapp
   ECS_TASK_DEFINITION_ADMIN: .aws/admin-webapp.json
   CONTAINER_NAME_ADMIN: admin_webapp
+  ADMIN_BUILD_CONTEXT: ./admin_web_app
 
-  ECS_CLUSTER: fidesinnova_iot_server/ecs_cluster
-
+# Minimal permissions needed
 permissions:
   contents: read
 
 jobs:
-  deploy:
-    name: Deploy
+  # Job 1: Build and push Docker images in parallel (faster!)
+  build-and-push:
+    name: Build and Push Images
     runs-on: ubuntu-latest
-    environment: production
+    
+    # Build all three services in parallel using matrix strategy
+    strategy:
+      matrix:
+        service:
+          - name: backend
+            repository: ${{ env.ECR_REPOSITORY_BACKEND }}
+            context: ${{ env.BACKEND_BUILD_CONTEXT }}
+          - name: webapp
+            repository: ${{ env.ECR_REPOSITORY_WEBAPP }}
+            context: ${{ env.WEBAPP_BUILD_CONTEXT }}
+          - name: admin
+            repository: ${{ env.ECR_REPOSITORY_ADMIN }}
+            context: ${{ env.ADMIN_BUILD_CONTEXT }}
+      # Don't fail all builds if one fails - continue with others
+      fail-fast: false
+      # Maximum parallel jobs (3 services = 3 parallel builds)
+      max-parallel: 3
 
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -48,34 +74,120 @@ jobs:
 
       - name: Login to Amazon ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Set AWS Account ID
-        id: account
-        run: |
-          echo "account_id=$(aws sts get-caller-identity --query Account --output text)" >> $GITHUB_OUTPUT
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        # Buildx enables advanced features like cache and parallel builds
 
-      - name: Prepare task definitions with secrets
-        run: |
-          sed -i "s/{{AWS_ACCOUNT_ID}}/${{ steps.account.outputs.account_id }}/g" .aws/*.json
-          sed -i "s/{{AWS_REGION}}/${{ env.AWS_REGION }}/g" .aws/*.json
-          sed -i "s|{{ECR_REGISTRY}}|${{ steps.login-ecr.outputs.registry }}|g" .aws/*.json
-          sed -i "s/{{EFS_ID}}/${{ secrets.EFS_FILE_SYSTEM_ID }}/g" .aws/*.json
-          sed -i "s/{{EFS_SSL_ACCESS_POINT}}/${{ secrets.EFS_SSL_ACCESS_POINT }}/g" .aws/*.json
-          sed -i "s/{{EFS_DATA_ACCESS_POINT}}/${{ secrets.EFS_DATA_ACCESS_POINT }}/g" .aws/*.json
-          sed -i "s/{{EFS_MONGO_DATA_ACCESS_POINT}}/${{ secrets.EFS_MONGO_DATA_ACCESS_POINT }}/g" .aws/*.json
-          sed -i "s/{{EFS_MONGO_INIT_ACCESS_POINT}}/${{ secrets.EFS_MONGO_INIT_ACCESS_POINT }}/g" .aws/*.json
-
-      # Backend Service
-      - name: Build, tag, and push backend image to Amazon ECR
-        id: build-backend
+      - name: Build, tag, and push ${{ matrix.service.name }} image
+        id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
+          IMAGE_NAME: ${{ matrix.service.repository }}
+          BUILD_CONTEXT: ${{ matrix.service.context }}
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_BACKEND:$IMAGE_TAG ./backend
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY_BACKEND:$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY_BACKEND:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          # Create image tags: SHA for versioning, latest for convenience
+          FULL_IMAGE_TAG="$ECR_REGISTRY/$IMAGE_NAME:$IMAGE_TAG"
+          LATEST_IMAGE_TAG="$ECR_REGISTRY/$IMAGE_NAME:latest"
+          
+          # Build with Docker BuildKit for better caching and performance
+          # --cache-from: Use previous image as cache source (faster rebuilds)
+          # --cache-to: Export cache to ECR for future builds
+          # --platform: Specify platform (linux/amd64 for ECS Fargate)
+          docker buildx build \
+            --platform linux/amd64 \
+            --cache-from type=registry,ref=$ECR_REGISTRY/$IMAGE_NAME:latest \
+            --cache-to type=registry,ref=$ECR_REGISTRY/$IMAGE_NAME:buildcache,mode=max \
+            --tag $FULL_IMAGE_TAG \
+            --tag $LATEST_IMAGE_TAG \
+            --push \
+            --progress=plain \
+            $BUILD_CONTEXT
+          
+          # Save image reference for deployment job
+          echo "image=$FULL_IMAGE_TAG" >> $GITHUB_OUTPUT
+          echo "image_latest=$LATEST_IMAGE_TAG" >> $GITHUB_OUTPUT
+          
+          # Output for debugging
+          echo "✅ Successfully built and pushed: $FULL_IMAGE_TAG"
+
+      - name: Save image reference to artifact
+        run: |
+          mkdir -p image-refs
+          echo "${{ steps.build-image.outputs.image }}" > "image-refs/${{ matrix.service.name }}.txt"
+          
+      - name: Upload image references
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-references-${{ matrix.service.name }}
+          path: image-refs/${{ matrix.service.name }}.txt
+          retention-days: 1
+
+  # Job 2: Deploy to ECS (runs after all builds complete)
+  deploy:
+    name: Deploy to ECS
+    runs-on: ubuntu-latest
+    needs: build-and-push  # Wait for all builds to finish
+    environment: production
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Get AWS Account ID
+        id: account
+        run: |
+          echo "account_id=$(aws sts get-caller-identity --query Account --output text)" >> $GITHUB_OUTPUT
+          echo "✅ AWS Account ID: $(aws sts get-caller-identity --query Account --output text)"
+
+      - name: Prepare task definitions
+        run: |
+          echo "📝 Preparing task definitions with environment variables..."
+          
+          # Replace placeholders in all task definition files
+          # Using a more robust approach with proper escaping
+          for file in .aws/*.json; do
+            if [ -f "$file" ]; then
+              echo "Processing $file..."
+              
+              # Use perl for better cross-platform compatibility, or sed with proper escaping
+              sed -i "s/{{AWS_ACCOUNT_ID}}/${{ steps.account.outputs.account_id }}/g" "$file"
+              sed -i "s/{{AWS_REGION}}/${{ env.AWS_REGION }}/g" "$file"
+              sed -i "s|{{ECR_REGISTRY}}|${{ steps.login-ecr.outputs.registry }}|g" "$file"
+              sed -i "s/{{EFS_ID}}/${{ secrets.EFS_FILE_SYSTEM_ID }}/g" "$file"
+              sed -i "s/{{EFS_SSL_ACCESS_POINT}}/${{ secrets.EFS_SSL_ACCESS_POINT }}/g" "$file"
+              sed -i "s/{{EFS_DATA_ACCESS_POINT}}/${{ secrets.EFS_DATA_ACCESS_POINT }}/g" "$file"
+              sed -i "s/{{EFS_MONGO_DATA_ACCESS_POINT}}/${{ secrets.EFS_MONGO_DATA_ACCESS_POINT }}/g" "$file"
+              sed -i "s/{{EFS_MONGO_INIT_ACCESS_POINT}}/${{ secrets.EFS_MONGO_INIT_ACCESS_POINT }}/g" "$file"
+            fi
+          done
+          
+          echo "✅ Task definitions prepared"
+
+      # Deploy Backend Service
+      - name: Download backend image reference
+        uses: actions/download-artifact@v4
+        with:
+          name: image-references-backend
+          path: image-refs
+          
+      - name: Get backend image
+        id: backend-image
+        run: |
+          echo "image=$(cat image-refs/backend.txt)" >> $GITHUB_OUTPUT
 
       - name: Update backend task definition
         id: task-def-backend
@@ -83,7 +195,7 @@ jobs:
         with:
           task-definition: ${{ env.ECS_TASK_DEFINITION_BACKEND }}
           container-name: ${{ env.CONTAINER_NAME_BACKEND }}
-          image: ${{ steps.build-backend.outputs.image }}
+          image: ${{ steps.backend-image.outputs.image }}
 
       - name: Deploy backend to Amazon ECS
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
@@ -92,17 +204,20 @@ jobs:
           service: ${{ env.ECS_SERVICE_BACKEND }}
           cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
+          # Optional: Enable rollback on failure
+          wait-for-minutes: 10
 
-      # WebApp Service
-      - name: Build, tag, and push webapp image to Amazon ECR
-        id: build-webapp
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
+      # Deploy WebApp Service
+      - name: Download webapp image reference
+        uses: actions/download-artifact@v4
+        with:
+          name: image-references-webapp
+          path: image-refs
+          
+      - name: Get webapp image
+        id: webapp-image
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_WEBAPP:$IMAGE_TAG ./web_app
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY_WEBAPP:$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY_WEBAPP:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          echo "image=$(cat image-refs/webapp.txt)" >> $GITHUB_OUTPUT
 
       - name: Update webapp task definition
         id: task-def-webapp
@@ -110,7 +225,7 @@ jobs:
         with:
           task-definition: ${{ env.ECS_TASK_DEFINITION_WEBAPP }}
           container-name: ${{ env.CONTAINER_NAME_WEBAPP }}
-          image: ${{ steps.build-webapp.outputs.image }}
+          image: ${{ steps.webapp-image.outputs.image }}
 
       - name: Deploy webapp to Amazon ECS
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
@@ -119,17 +234,19 @@ jobs:
           service: ${{ env.ECS_SERVICE_WEBAPP }}
           cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
+          wait-for-minutes: 10
 
-      # Admin WebApp Service
-      - name: Build, tag, and push admin webapp image to Amazon ECR
-        id: build-admin
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
+      # Deploy Admin WebApp Service
+      - name: Download admin image reference
+        uses: actions/download-artifact@v4
+        with:
+          name: image-references-admin
+          path: image-refs
+          
+      - name: Get admin image
+        id: admin-image
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_ADMIN:$IMAGE_TAG ./admin_web_app
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY_ADMIN:$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY_ADMIN:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          echo "image=$(cat image-refs/admin.txt)" >> $GITHUB_OUTPUT
 
       - name: Update admin webapp task definition
         id: task-def-admin
@@ -137,7 +254,7 @@ jobs:
         with:
           task-definition: ${{ env.ECS_TASK_DEFINITION_ADMIN }}
           container-name: ${{ env.CONTAINER_NAME_ADMIN }}
-          image: ${{ steps.build-admin.outputs.image }}
+          image: ${{ steps.admin-image.outputs.image }}
 
       - name: Deploy admin webapp to Amazon ECS
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
@@ -146,3 +263,4 @@ jobs:
           service: ${{ env.ECS_SERVICE_ADMIN }}
           cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
+          wait-for-minutes: 10
