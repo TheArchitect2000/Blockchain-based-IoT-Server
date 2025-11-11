@@ -6,6 +6,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import isEmpty from 'lodash/isEmpty'
 import { apiGetAccountSettingData } from '@/services/AccountServices'
 import CompanyDeveloperPage from './components/CompanyDeveloper'
+import LogTable from './components/LogTable'
 
 const Profile = lazy(() => import('./components/Profile/Profile'))
 const Address = lazy(() => import('./components/Address'))
@@ -46,6 +47,7 @@ const settingsMenu: Record<
         path: 'subscriptions',
         element: <Subscriptions />,
     },
+    logs: { label: 'Activity/System logs', path: 'log', element: <LogTable /> },
     storx: { label: 'StorX', path: 'storx', element: <StorX /> },
     password: { label: 'Password', path: 'password', element: <Password /> },
     developer: {
