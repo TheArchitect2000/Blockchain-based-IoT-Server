@@ -5,26 +5,26 @@ on:
     branches: ["main"]
 
 env:
-  AWS_REGION: MY_AWS_REGION
+  AWS_REGION: us-east-2
   # Backend Service
-  ECR_REPOSITORY_BACKEND: FIDES_BACKEND_ECR_REPO
-  ECS_SERVICE_BACKEND: FIDES_BACKEND_ECS_SERVICE
+  ECR_REPOSITORY_BACKEND: fidesinnova_iot_server/backend
+  ECS_SERVICE_BACKEND: fidesinnova_iot_server/backend
   ECS_TASK_DEFINITION_BACKEND: .aws/backend.json
-  CONTAINER_NAME_BACKEND: FIDES_BACKEND_CONTAINER_NAME
+  CONTAINER_NAME_BACKEND: backend
 
   # WebApp Service
-  ECR_REPOSITORY_WEBAPP: FIDES_WEBAPP_ECR_REPO
-  ECS_SERVICE_WEBAPP: FIDES_WEBAPP_ECS_SERVICE
+  ECR_REPOSITORY_WEBAPP: fidesinnova_iot_server/user_webapp
+  ECS_SERVICE_WEBAPP: fidesinnova_iot_server/user_webapp
   ECS_TASK_DEFINITION_WEBAPP: .aws/webapp.json
-  CONTAINER_NAME_WEBAPP: FIDES_WEBAPP_CONTAINER_NAME
+  CONTAINER_NAME_WEBAPP: user_webapp
 
   # Admin WebApp Service
-  ECR_REPOSITORY_ADMIN: FIDES_ADMIN_WEBAPP_ECR_REPO
-  ECS_SERVICE_ADMIN: FIDES_ADMIN_WEBAPP_ECS_SERVICE
+  ECR_REPOSITORY_ADMIN: fidesinnova_iot_server/admin_webapp
+  ECS_SERVICE_ADMIN: fidesinnova_iot_server/admin_webapp
   ECS_TASK_DEFINITION_ADMIN: .aws/admin-webapp.json
-  CONTAINER_NAME_ADMIN: FIDES_ADMIN_WEBAPP_CONTAINER_NAME
+  CONTAINER_NAME_ADMIN: admin_webapp
 
-  ECS_CLUSTER: FIDES_ECS_CLUSTER
+  ECS_CLUSTER: fidesinnova_iot_server/ecs_cluster
 
 permissions:
   contents: read
@@ -57,7 +57,6 @@ jobs:
 
       - name: Prepare task definitions with secrets
         run: |
-          # Replace placeholders in task definitions
           sed -i "s/{{AWS_ACCOUNT_ID}}/${{ steps.account.outputs.account_id }}/g" .aws/*.json
           sed -i "s/{{AWS_REGION}}/${{ env.AWS_REGION }}/g" .aws/*.json
           sed -i "s|{{ECR_REGISTRY}}|${{ steps.login-ecr.outputs.registry }}|g" .aws/*.json
