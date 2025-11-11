@@ -7,9 +7,9 @@ import { LogLevelEnum } from './enums/log-level.dto';
 
 @Injectable()
 export class LogInfoService {
-  constructor() {}
+  constructor() { }
 
-  async getInternalLogs(nodeName: string): Promise<GetInternalLogDto[]> {
+  async getInternalLogs(nodeName: string, userId: string): Promise<GetInternalLogDto[]> {
     const logFile = path.join(process.cwd(), 'logs', 'internal.log');
 
     if (fs.existsSync(logFile)) {
@@ -21,7 +21,7 @@ export class LogInfoService {
         .filter((line: string) => {
           const parts = line.split(',');
           const node = parts[3];
-          return nodeName === node;
+          return userId ? parts[4] === userId : nodeName === node;
         })
         .map((line: string) => {
           const parts = line.split(',');

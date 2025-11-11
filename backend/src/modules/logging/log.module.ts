@@ -6,10 +6,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as Syslog from 'syslog-client';
 import { LogController } from './log.controller';
 import { LogInfoService } from './log-info.service';
+import { UserModule } from '../user/user.module';
 
 @Global()
 @Module({
-  imports: [ConfigModule],
+  imports: [ConfigModule, UserModule],
   controllers: [LogController],
   providers: [
     {
@@ -62,4 +63,4 @@ import { LogInfoService } from './log-info.service';
   ],
   exports: [LogService],
 })
-export class LogModule {}
+export class LogModule { }

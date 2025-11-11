@@ -35,6 +35,7 @@ const navigationIcon: NavigationIcons = {
     list: <HiOutlineCollection />,
     user: <HiUser />,
     device: <HiDeviceMobile />,
+    logs: <HiDocumentText />,
     collapseMenu: <HiOutlineTemplate />,
     groupSingleMenu: <HiOutlineDesktopComputer />,
     groupCollapseMenu: <HiOutlineColorSwatch />,

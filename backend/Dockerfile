@@ -21,6 +21,7 @@ WORKDIR /usr/src/app
 RUN npm config set registry https://registry.npmjs.org/
 
 COPY --from=builder /usr/src/app/dist ./dist
+COPY --from=builder /usr/src/app/src/modules/utility/templates ./src/modules/utility/templates
 
 RUN mkdir -p /usr/src/app/uploads
 RUN mkdir -p /usr/src/app/logs

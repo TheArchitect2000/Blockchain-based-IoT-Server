@@ -90,6 +90,12 @@ export const protectedRoutes = [
         authority: [],
     },
     {
+        key: 'systemLogs',
+        path: '/system-logs',
+        component: lazy(() => import('@/views/systemlogs')),
+        authority: [],
+    },
+    {
         key: 'requests',
         path: '/requests',
         component: lazy(() => import('@/views/requests')),

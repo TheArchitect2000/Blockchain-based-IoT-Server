@@ -111,6 +111,16 @@ const navigationConfig: NavigationTree[] = [
         authority: [],
         subMenu: [],
     },
+    {
+        key: 'systemLogs',
+        path: '/system-logs',
+        title: 'Activity/System Logs',
+        translateKey: 'Activity/System Logs',
+        icon: 'logs',
+        type: NAV_ITEM_TYPE_ITEM,
+        authority: [],
+        subMenu: [],
+    },
 ]
 
 export async function fixNavigationWithRoles(userEmail: string) {
