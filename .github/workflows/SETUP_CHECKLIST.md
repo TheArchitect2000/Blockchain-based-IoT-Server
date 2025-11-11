@@ -1,8 +1,4 @@
-# Setup Checklist - What to Do Outside the Code
-
-This guide walks you through all the AWS and GitHub setup needed to make your CI/CD workflow work.
-
-## 📋 Prerequisites Checklist
+## 📋 Prerequisites
 
 ### ✅ 1. AWS Account Setup
 
@@ -302,67 +298,6 @@ Create security groups for your services:
 
 ---
 
-### ✅ 12. Test the Workflow
-
-#### 12.1 First Test
-1. Make a small change to your code
-2. Commit and push to `main` branch
-3. Go to Actions tab → Watch the workflow run
-4. Check for errors and fix them
-
-#### 12.2 Verify Deployment
-1. Check ECR: Images should appear in repositories
-2. Check ECS: Services should update with new tasks
-3. Check CloudWatch: Logs should appear
-4. Test your application endpoints
-
----
-
-## 🔍 Verification Checklist
-
-Before your first deployment, verify:
-
-- [ ] AWS IAM user created with correct permissions
-- [ ] 3 ECR repositories created
-- [ ] ECS cluster created
-- [ ] IAM roles created (`ecsTaskExecutionRole`, `ecsTaskRole`)
-- [ ] EFS file system created
-- [ ] 5 EFS access points created
-- [ ] CloudWatch log groups created
-- [ ] AWS Secrets created (if using)
-- [ ] ECS task definitions registered
-- [ ] ECS services created
-- [ ] VPC and subnets configured
-- [ ] Security groups configured
-- [ ] GitHub secrets added
-- [ ] Production environment created (optional)
-
----
-
-## 🚨 Common Issues & Solutions
-
-### Issue: "Access Denied" errors
-**Solution:** Check IAM user permissions and roles
-
-### Issue: "Repository not found" in ECR
-**Solution:** Verify repository names match exactly (case-sensitive)
-
-### Issue: "Task definition not found"
-**Solution:** Register task definitions first, or check family names
-
-### Issue: "EFS mount failed"
-**Solution:** 
-- Check security group allows NFS (port 2049)
-- Verify access point IDs are correct
-- Check EFS is in same VPC as ECS tasks
-
-### Issue: "Image pull failed"
-**Solution:**
-- Verify ECR repository exists
-- Check task execution role has ECR permissions
-- Verify image was pushed successfully
-
----
 
 ## 📚 Useful AWS CLI Commands
 
@@ -388,27 +323,4 @@ aws logs tail /ecs/backend --follow --region us-east-2
 
 ---
 
-## 🎯 Next Steps After Setup
-
-1. **Monitor first deployment** - Watch logs and metrics
-2. **Set up alerts** - CloudWatch alarms for failures
-3. **Configure load balancer** - For production traffic
-4. **Set up domain/DNS** - Point to your services
-5. **Enable auto-scaling** - Based on CPU/memory
-6. **Set up backup strategy** - For EFS and databases
-
----
-
-## 💡 Pro Tips
-
-1. **Start small** - Test with one service first
-2. **Use AWS Console** - Easier for beginners than CLI
-3. **Save all IDs** - Keep a document with all resource IDs
-4. **Test in staging** - Create a staging environment first
-5. **Monitor costs** - Fargate and EFS can get expensive
-6. **Use tags** - Tag all resources for better organization
-
----
-
-**Need help?** Check AWS documentation or GitHub Actions logs for detailed error messages.
 
