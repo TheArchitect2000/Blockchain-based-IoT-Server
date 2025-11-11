@@ -129,10 +129,4 @@ export const protectedRoutes = [
         component: lazy(() => import('@/views/account/KycForm')),
         authority: [],
     },
-    {
-        key: 'logs',
-        path: `/logs`,
-        component: lazy(() => import('@/views/log')),
-        authority: [],
-    },
 ]

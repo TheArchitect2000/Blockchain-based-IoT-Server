@@ -43,4 +43,3 @@ const LogTable = () => {
 }
 
 export default LogTable
-
