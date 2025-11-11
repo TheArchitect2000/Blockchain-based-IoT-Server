@@ -10,7 +10,7 @@ const { Tr, Th, Td, THead, TBody } = Table
 
 const LogTable = () => {
     const navigate = useNavigate()
-    const { logs, loading, error } = useGetLogs()
+    const { logs, loading, error, refetch } = useGetLogs()
 
     const { themeColor, controlSize, primaryColorLevel } = useConfig()
     const [increaseLevel, decreaseLevel] = useColorLevel(
@@ -29,7 +29,19 @@ const LogTable = () => {
                         </Tr>
                     </THead>
                     <TBody>
-                        {logs && logs.length > 0 ? (
+                        {loading ? (
+                            <Tr>
+                                <Td colSpan={3} className="text-center py-4">
+                                    Loading logs...
+                                </Td>
+                            </Tr>
+                        ) : error ? (
+                            <Tr>
+                                <Td colSpan={3} className="text-center py-4 text-red-500">
+                                    {error}
+                                </Td>
+                            </Tr>
+                        ) : logs && logs.length > 0 ? (
                             logs.slice(0, 10).map((log: LogData, i: number) => (
                                 <Tr key={log._id || i}>
                                     <Td>{log.message}</Td>
