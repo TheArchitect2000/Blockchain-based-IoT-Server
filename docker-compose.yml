@@ -1,0 +1,60 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "${BACK_PORT}:${BACK_PORT}"
+    env_file:
+      - ./backend/.env
+    restart: always
+    depends_on:
+      - mongo
+    volumes:
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./backend/src/data:/usr/src/app/src/data:ro
+      - ./backend/uploads:/usr/src/app/uploads
+      - ./backend/logs:/usr/src/app/logs
+
+  webapp:
+    build:
+      context: ./web_app
+      dockerfile: Dockerfile
+    ports:
+      - ${WEBAPP_PORT}:80
+    restart: always
+    depends_on:
+      - backend
+    env_file:
+      - "./web_app/.env"
+
+  admin_webapp:
+    build:
+      context: ./admin_web_app
+      dockerfile: Dockerfile
+    ports:
+      - ${ADMIN_WEBAPP_PORT}:80
+    restart: always
+    depends_on:
+      - backend
+    env_file:
+      - "./admin_web_app/.env"
+
+  mongo:
+    image: mongo:7.0
+    restart: always
+    ports:
+      - "${MONGO_DATABASE_PORT}:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE_NAME}
+      FIDESINNOVA_DB_USERNAME: ${MONGO_USER}
+      FIDESINNOVA_DB_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_DATABASE_PORT: ${MONGO_DATABASE_PORT}
+    volumes:
+      - mongo_data:/data/db
+      - ./mongo-init-scripts:/docker-entrypoint-initdb.d
+
+volumes:
+  mongo_data:
