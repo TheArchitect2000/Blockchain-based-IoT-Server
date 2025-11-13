@@ -12,6 +12,7 @@ import { ContractService } from 'src/modules/smartcontract/services/contract.ser
 import { AppService } from 'src/app.service';
 import { BuildingService } from 'src/modules/building/buildings/building.service';
 import { GlobalShareDto } from '../data-transfer-objects/global-share-dto';
+import { LogService } from 'src/modules/logging/log.service';
 
 // Nodejs encryption with CTR
 let crypto = require('crypto');
@@ -150,6 +151,10 @@ export class DeviceService {
 
     if (exist == null || exist == undefined) {
       let insertedDevice = await this.deviceRepository.insertDevice(newDevice);
+      LogService.log(
+        `Device created: ${newDevice.deviceName}`,
+        newDevice.insertedBy,
+      );
       return insertedDevice;
     } else {
       return exist;
@@ -479,6 +484,8 @@ export class DeviceService {
       const newData = { ...foundDevice._doc, ...body };
 
       await this.deviceRepository.editDevice(foundDevice._id, newData);
+
+      LogService.log(`Device updated: ${body}`, userId);
       return this.result;
     } catch (error) {
       let errorMessage = 'Some errors occurred while editing a device!';
@@ -536,6 +543,7 @@ export class DeviceService {
       updateDate: new Date().toDateString(),
       location: { type: 'Point', coordinates: body.coordinate },
     });
+    LogService.log(`Device shared: ${device.deviceName}`, userId);
   }
 
   async unshareGlobalDevice(
@@ -573,6 +581,7 @@ export class DeviceService {
       updatedBy: userId,
       updateDate: new Date().toDateString(),
     });
+    LogService.log(`Device unshared: ${device.deviceName}`, userId);
   }
 
   /*
@@ -644,6 +653,8 @@ export class DeviceService {
           errorMessage,
         );
       });
+
+    LogService.log(`Device renamed: ${foundDevice.deviceName}`, userId);
 
     return this.result;
   }
@@ -862,6 +873,8 @@ export class DeviceService {
         );
       });
 
+    LogService.log(`Device deleted: ${foundDevice.deviceName}`, userId);
+
     return this.result;
   }
 
@@ -891,6 +904,7 @@ export class DeviceService {
             false,
             `Installed service with name "${insService.installedServiceName}" has been deleted because the device is no longer available`,
           );
+          LogService.log(`Device removed: ${insService.deviceName}`, userId);
         }),
       );
     }
