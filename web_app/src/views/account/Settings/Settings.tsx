@@ -47,7 +47,7 @@ const settingsMenu: Record<
         path: 'subscriptions',
         element: <Subscriptions />,
     },
-    logs: { label: 'Activity/System logs', path: 'log', element: <LogTable /> },
+    logs: { label: 'Activity/System logs', path: 'logs', element: <LogTable /> },
     storx: { label: 'StorX', path: 'storx', element: <StorX /> },
     password: { label: 'Password', path: 'password', element: <Password /> },
     developer: {
