@@ -49,13 +49,17 @@ function generatePassword(length: number): string {
     throw new Error('Length must be greater than 0');
   }
 
-  const buffer = randomBytes(length);
   const characters =
     'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let password = '';
 
-  for (let i = 0; i < length; i++) {
-    password += characters.charAt(buffer[i] % characters.length);
+  while (password.length < length) {
+    const maxValidByte =
+      Math.floor(256 / characters.length) * characters.length;
+    const randomByte = randomBytes(1)[0];
+    if (randomByte < maxValidByte) {
+      password += characters.charAt(randomByte % characters.length);
+    }
   }
 
   return password;
@@ -103,8 +107,10 @@ export class UserService {
   }
 
   validateEmail(email: string) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return email.trim() && emailRegex.test(email.trim());
+    if (typeof email !== 'string' || email.length > 320) return false;
+    // RFC 5322 Official Standard (simplified, safe for most uses)
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailRegex.test(email.trim());
   }
 
   generateEmailToken(): string {
@@ -116,8 +122,6 @@ export class UserService {
   }
 
   async generateAndSaveChangeEmailToken(data) {
-    console.log('data.newEmail:', String(data.newEmail));
-
     await this.findAUserByEmail(data.nowEmail);
 
     if (this.user.google == true) {
@@ -192,7 +196,6 @@ export class UserService {
   async verifyChangeEmailWithToken(token: string) {
     try {
       this.result = await this.userRepository.getChangeEmailWithToken(token);
-      console.log(this.result);
     } catch (error) {
       throw new GeneralException(
         ErrorTypeEnum.CONFLICT,
@@ -242,8 +245,6 @@ export class UserService {
   }
 
   async sendOTPCodeForSignupByEmail(body) {
-    console.log('We are in sendOTPCodeForSignupByEmail service');
-
     try {
       const user = await this.checkUserEmailIsExist(body.email);
 
@@ -271,7 +272,7 @@ export class UserService {
       const newUser = await this.insertAUserByEmail({ ...body, StorX: {} });
       const payload = { mobile: newUser.mobile, sub: newUser._id };
 
-      this.buildingService.createDefaultBuilding(String(newUser._id));
+      this.buildingService.createDefaultBuilding(newUser._id);
 
       const accessSignOptions: any = {};
       accessSignOptions.expiresIn = process.env.ACCESS_TOKEN_EXPIRATION_TIME;
@@ -308,8 +309,6 @@ export class UserService {
   }
 
   async sendOTPCodeForVrifyEmail(userEmail: string) {
-    console.log('We are in sendOTPCodeForVrifyEmail service ');
-
     await this.findAUserByEmail(userEmail);
 
     if (!this.user) {
@@ -343,8 +342,6 @@ export class UserService {
   }
 
   async sendOTPCodeForResetPasswordByEmail(body) {
-    console.log('We are in sendOTPCodeForResetPasswordByEmail service ');
-
     this.otp = await this.otpService.findOTPByEmail(
       body.email,
       OTPTypeEnum.CHANGE_PASSWORD,
@@ -366,8 +363,6 @@ export class UserService {
   }
 
   async verifyOtpCodeSentByEmailForSignup(body) {
-    console.log('I am in verifyOtpCodeSentByEmailForSignup service!');
-
     this.otp = await this.otpService.findOTPByEmail(
       body.email,
       OTPTypeEnum.REGISTRATION,
@@ -386,8 +381,6 @@ export class UserService {
       );
 
       await this.findAUserByEmail(body.email);
-
-      console.log('this.user: ', this.user);
 
       if (this.user) {
         // User already exists.
@@ -450,26 +443,18 @@ export class UserService {
           foundedNewUser._id,
         );
 
-        // return await response
         return true;
       }
-
-      // return console.log('Correct code');
     } else {
-      // return console.log('expired code');
       return false;
     }
   }
 
   async verifyOtpCodeSentByEmailForVerify(body) {
-    console.log('I am in verifyOtpCodeSentByEmailForVerify service!');
-
     this.otp = await this.otpService.findOTPByEmail(
       body.email,
       OTPTypeEnum.Verify,
     );
-
-    console.log('after findOTPByEmail', this.otp);
 
     const verifyOTP = await this.otpService.verifyOTP(
       this.otp[this.otp.length - 1],
@@ -488,8 +473,6 @@ export class UserService {
       );
 
       await this.findAUserByEmail(body.email);
-
-      //console.log('this.user: ', this.user);
 
       if (this.user) {
         // User already exists.
@@ -515,12 +498,7 @@ export class UserService {
 
         return true;
       }
-
-      // return console.log('Correct code');
     } else {
-      // return console.log('expired code');
-      console.log('Returning False');
-
       return false;
     }
   }
@@ -555,9 +533,6 @@ export class UserService {
     if (this.user) {
       // User found.
 
-      //console.log('User found for password change.');
-      //console.log('New Password: ', data.newPassword);
-
       const salt = bcrypt.genSaltSync(saltRounds);
       const hashedNewPassword = bcrypt.hashSync(String(data.newPassword), salt);
 
@@ -570,8 +545,6 @@ export class UserService {
       return await this.findAUserById(this.user._id);
     } else {
       // User found.
-
-      console.log('User not found for password change.');
 
       throw new GeneralException(ErrorTypeEnum.NOT_FOUND, 'User not found.');
     }
@@ -637,15 +610,11 @@ export class UserService {
   }
 
   async checkUserEmailIsExist(userEmail): Promise<boolean> {
-    console.log('I am in checkUserEmailIsExist!');
-
     await this.findAUserByEmail(userEmail);
 
     if (this.user) {
-      console.log('User found!');
       return true;
     } else {
-      console.log('User not found!');
       throw new GeneralException(
         ErrorTypeEnum.NOT_FOUND,
         'User does not exist.',
@@ -676,8 +645,6 @@ export class UserService {
 
       await this.userRepository.editUser(this.user._id, this.user);
       return await this.findAUserById(this.user._id);
-    } else {
-      return console.log('expired code');
     }
   }
 
@@ -854,7 +821,6 @@ export class UserService {
 
       data.updatedBy = userId;
       data.updateDate = new Date();
-      console.log('Edited Data:', data);
 
       await this.userRepository.editUser(userId, data);
       return await this.findAUserById(userId);
@@ -910,7 +876,6 @@ export class UserService {
 
       data.updatedBy = userId;
       data.updateDate = new Date();
-      console.log('Edited Data:', data);
 
       await this.userRepository.editUser(userId, data);
       return await this.findAUserById(userId);
@@ -934,7 +899,6 @@ export class UserService {
     if (this.user) {
       data.updatedBy = userId;
       data.updateDate = new Date();
-      console.log('Edited Data:', data);
 
       await this.userRepository.editUser(userId, data);
       return await this.findAUserById(userId);
@@ -1151,8 +1115,6 @@ export class UserService {
     const populateCondition = [];
     const selectCondition = this.getUserKeys();
 
-    console.log('we are in getUserByEmail service!');
-
     await this.userRepository
       .findUserByEmail(
         userEmail,
@@ -1162,7 +1124,6 @@ export class UserService {
       )
       .then((data) => {
         this.result = data;
-        //console.log('Found user is: ', this.result);
       })
       .catch((error) => {
         const errorMessage =
@@ -1445,8 +1406,6 @@ export class UserService {
   }
 
   async credential(data, createIfNotExist = false) {
-    console.log('We are in credential');
-
     this.user = null;
 
     const whereCondition = { isDeleted: false };
@@ -1469,7 +1428,6 @@ export class UserService {
     );
 
     if (createIfNotExist == true && !this.user) {
-      console.log('Creating User');
       this.user = await this.insertAUserByEmail({
         ...data,
         google: true,
@@ -1510,8 +1468,6 @@ export class UserService {
           this.user.password,
         );
       }
-
-      console.log('Is Valid Password:', isValidPassword.toString());
 
       if (isValidPassword) {
         const payload = { email: this.user.email, sub: this.user._id };
@@ -1556,8 +1512,6 @@ export class UserService {
   }
 
   async adminCredential(data, isGoogle = false) {
-    console.log('We are in adminCredential');
-
     const whereCondition = { isDeleted: false };
     const populateCondition = [
       {
@@ -1681,21 +1635,16 @@ export class UserService {
     let verifiedRefreshToken = null;
     let verifiedOldAccessToken = null;
 
-    console.log('Date.now(): ' + Math.floor(Date.now() / 1000));
-
     await verify(
       data.refreshToken,
       process.env.REFRESH_TOKEN_SECRET_KEY,
       (error, decodedToken) => {
         var util = require('util');
-        console.log(
-          'decoded refresh Token: ' +
-            util.inspect(decodedToken, {
-              showHidden: false,
-              depth: null,
-              colors: true,
-            }),
-        );
+        util.inspect(decodedToken, {
+          showHidden: false,
+          depth: null,
+          colors: true,
+        });
 
         if (error) {
           throw new GeneralException(
@@ -1721,14 +1670,12 @@ export class UserService {
       process.env.ACCESS_TOKEN_SECRET_KEY,
       (error, decodedToken) => {
         var util = require('util');
-        console.log(
-          'decoded access Token: ' +
-            util.inspect(decodedToken, {
-              showHidden: false,
-              depth: null,
-              colors: true,
-            }),
-        );
+
+        util.inspect(decodedToken, {
+          showHidden: false,
+          depth: null,
+          colors: true,
+        });
 
         if (error) {
           throw new GeneralException(
@@ -1936,8 +1883,6 @@ export class UserService {
     activationReason,
     activationStatusChangedBy,
   ) {
-    console.log('We are in setActivationStatus', activationStatusChangedBy);
-
     return await this.userRepository.editUser(userId, {
       activationStatus: activationStatus,
       activationStatusChangeReason: activationReason,
@@ -1952,8 +1897,6 @@ export class UserService {
     verificationReason,
     verificationStatusChangedBy,
   ) {
-    console.log('We are in setVerificationStatus', verificationStatusChangedBy);
-
     return await this.userRepository.editUser(userId, {
       verificationStatus: verificationStatus,
       verificationStatusChangeReason: verificationReason,
@@ -1990,19 +1933,13 @@ export class UserService {
       updateDate: new Date(),
     };
 
-    console.log('newUser:', newUser);
-
     const insertedUser = await this.userRepository.insertUser(newUser);
-    console.log('User inserted!');
+
     return insertedUser;
   }
 
   async insertUserByEmail(body) {
-    console.log('I am in insertUserByEmail service!');
-
     await this.findAUserByEmail(body.email);
-
-    console.log('this.user: ', this.user);
 
     if (this.user) {
       // User already exists.
@@ -2071,20 +2008,15 @@ export class UserService {
     let foundUsers: any = null;
     const response = [];
 
-    console.log('we are in getAllUsers service!');
-
     foundUsers = await this.userRepository.getAllUsers(
       whereCondition,
       populateCondition,
       selectCondition,
     );
 
-    //console.log('Found users are: ', foundUsers);
-
     foundUsers.forEach((element) => {
       response.push({ ...element._doc });
     });
-    //console.log('response are: ', response);
 
     return response;
   }

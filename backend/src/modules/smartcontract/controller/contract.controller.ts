@@ -50,7 +50,7 @@ export class contractController {
         this.contractService.syncAllServices();
         // this.contractService.syncAllDevices();
       } catch (error) {
-        console.log('contractController constructor error:', error);
+        console.error('contractController constructor error:', error);
       }
     }, 4000);
   }
@@ -64,8 +64,6 @@ export class contractController {
     description: 'This api verifies then user proof code.',
   })
   async verifyProof(@Body() body: verifyProofDto, @Request() request) {
-    console.log('We are in Verify Proof section', body);
-
     if (body.proof === null || body.proof === undefined || body.proof === '') {
       let errorMessage = 'proof is not valid!';
       throw new GeneralException(
@@ -87,8 +85,6 @@ export class contractController {
       'This api will store the user commitment file in smart contract.',
   })
   async storeCommitment(@Body() body: storeCommitmentDto, @Request() request) {
-    console.log('We are in Store Commitment section', body);
-
     return this.contractService.storeCommitment({
       ...body,
       userId: String(request.user.userId),
@@ -108,8 +104,6 @@ export class contractController {
     @Body() body: removeCommitmentDto,
     @Request() request,
   ) {
-    console.log('We are in Remove Commitment section', body);
-
     return this.contractService.removeCommitment(
       body.commitmentId,
       body.dbId,
@@ -244,19 +238,17 @@ export class contractController {
       'This api will store the user commitment file in smart contract.',
   })
   async zkpPublishProof(@Body() body: publishProofDto, @Request() request) {
-    console.log('We are in zkpPublishProof section', body);
-
     const objectId = String(new mongoose.Types.ObjectId());
 
     if (body.frontPublish) {
       return {
         objectId: objectId,
-        nodeId: process.env.PANEL_URL,
+        nodeId: process.env.NODE_NAME,
       };
     }
 
     const tx: any = await this.contractService.storeZKP(
-      process.env.PANEL_URL,
+      process.env.NODE_NAME,
       objectId,
       JSON.stringify(body.proof),
       JSON.stringify(body.data),

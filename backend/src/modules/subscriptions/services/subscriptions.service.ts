@@ -72,7 +72,6 @@ export class SubscriptionsService {
 
   async checkUserUnsubscribed(userId: string): Promise<boolean> {
     const res = await this.userService.getUserProfileByIdFromUser(userId);
-    console.log('Ghol res:', res);
 
     return res.unsubscribed ?? false;
   }

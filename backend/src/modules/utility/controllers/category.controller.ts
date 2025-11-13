@@ -210,7 +210,6 @@ export class CategoryController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   async getAnContentById(@Param('id') id: string, @Request() request) {
-    console.log('We are here1!');
     if (
       id === null ||
       id === undefined ||
@@ -347,8 +346,6 @@ export class CategoryController {
     @Query('isDeleted') isDeleted: boolean,
     @Request() request,
   ) {
-    console.log('We are here2!');
-
     pageNumber = pageNumber ? pageNumber : 1;
     limit = limit ? limit : 20;
     sortMode = sortMode ? sortMode : 'DESC'; // ASC/DESC OR 1/-1

@@ -39,8 +39,6 @@ export class zpkController {
     description: 'This api verifies then user proof code.',
   })
   async verifyProof(@Body() body: verifyProofDto, @Request() request) {
-    console.log('We are in Verify Proof section', body);
-
     if (body.proof === null || body.proof === undefined || body.proof === '') {
       let errorMessage = 'proof is not valid!';
       throw new GeneralException(

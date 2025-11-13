@@ -9,9 +9,8 @@ import { CustomerModel } from '../models/customer.model';
 export class CustomerRepository {
   private result;
 
-  constructor() /* @InjectModel('iacustomer', 'panelDb') // panelDb is defined in app.module.ts
-    private readonly customerModel?: CustomerModel, */
-  {}
+  constructor /* @InjectModel('iacustomer', 'panelDb') // panelDb is defined in app.module.ts
+    private readonly customerModel?: CustomerModel, */() {}
 
   /* async insertCustomer(data) {
     await this.customerModel
@@ -53,7 +52,7 @@ export class CustomerRepository {
     populateCondition,
     selectCondition,
   ) {
-    console.log('we are in findCustomerByEmail repository!');
+
 
     return await this.customerModel
       .findOne({ Email: customerEmail })

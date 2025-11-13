@@ -1,5 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { log } from 'console';
+import { Injectable } from '@nestjs/common';
 import { DeviceLogService } from 'src/modules/device/services/device-log.service';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
@@ -10,10 +9,7 @@ import { GeneralException } from 'src/modules/utility/exceptions/general.excepti
 
 @Injectable()
 export class MqttLogService {
-  constructor(
-    // @Inject('DeviceLogService')
-    private readonly deviceLogService?: DeviceLogService,
-  ) {}
+  constructor(private readonly deviceLogService?: DeviceLogService) {}
 
   async logDeviceEvent(body) {
     let insertedDeviceLogEvent: any = null;
@@ -32,7 +28,6 @@ export class MqttLogService {
           errorMessage,
         );
       });
-    console.log('Device event log inserted!');
     return insertedDeviceLogEvent;
   }
 
@@ -54,14 +49,6 @@ export class MqttLogService {
         );
       });
 
-    console.log('Device data log inserted!');
     return insertedDeviceLogEvent;
-  }
-
-  async testLogService() {
-    console.log('\x1b[5m', '\x1b[33m', '\nTesting log service...', '\x1b[0m');
-    console.log('\x1b[32m --------------------------------- \x1b[0m');
-    console.log('\x1b[32m Log service Test Successful. \x1b[0m');
-    console.log('\x1b[32m --------------------------------- \x1b[0m');
   }
 }

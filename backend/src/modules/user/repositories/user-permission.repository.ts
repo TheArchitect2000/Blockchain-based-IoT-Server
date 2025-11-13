@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-
+import { MongoClient, ObjectID } from 'mongodb';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { UserPermissionModel } from '../models/user-permission.model';
@@ -36,7 +36,7 @@ export class UserPermissionRepository {
 
   async editPermission(id, editedData) {
     await this.userPermissionModel
-      .updateOne({ _id: id }, editedData)
+      .updateOne({ _id: { $eq: id } }, editedData)
       .then((data) => {
         this.result = data;
       })
@@ -52,6 +52,8 @@ export class UserPermissionRepository {
   }
 
   async findAPermissionById(_id) {
+    const userInfoId = new ObjectID(_id);
+
     await this.userPermissionModel
       .findOne({ _id })
       .where({ isDeleted: false })
@@ -108,8 +110,6 @@ export class UserPermissionRepository {
         let errorMessage = 'Some errors occurred while finding a permission!';
         throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
-
-    console.log(this.result);
 
     return this.result;
   }

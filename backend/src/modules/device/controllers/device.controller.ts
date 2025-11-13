@@ -93,7 +93,7 @@ export class DeviceController {
     const newBody = {
       ...body,
       userId: request.user.userId,
-      nodeId: process.env.PANEL_URL,
+      nodeId: process.env.NODE_NAME,
     };
     return await this.deviceService.insertDevice(newBody);
   }
@@ -108,8 +108,6 @@ export class DeviceController {
       'Edites device by device ID and other fields. This api requires user device profile. Parameters are array of JSON objects like: [{"a1":"v1"},{"a2":"v2"},...], Locations and Geometries are like: "location": {"type":"Point","coordinates": [50,40]}, "geometry": {"type":"Polygon","coordinates": [[50,40],[20,10],[30,60]]}  for default set to "location": {}, "geometry": {}',
   })
   async editDevice(@Body() body: EditDeviceDto, @Request() request) {
-    console.log('We are in editDevice controller');
-
     if (
       body.deviceId === null ||
       body.deviceId === undefined ||
@@ -131,7 +129,7 @@ export class DeviceController {
         this.result = data;
       })
       .catch((error) => {
-        console.log('Error is:', error);
+        console.error('Error is:', error);
 
         let errorMessage = 'Some errors occurred while editing the device!';
         throw new GeneralException(
@@ -292,8 +290,6 @@ export class DeviceController {
     description: 'Renames device by device ID and new name.',
   })
   async renameDevice(@Body() body: renameDeviceDto, @Request() request) {
-    console.log('We are in renameDevice controller');
-
     if (
       body.deviceId === null ||
       body.deviceId === undefined ||
@@ -578,8 +574,6 @@ export class DeviceController {
     description: 'This API will locally share a device with user',
   })
   async localShareDevice(@Body() body: LocalShareDto, @Request() request) {
-    console.log('We are in localShareDevice controller');
-
     if (
       body.deviceId === null ||
       body.deviceId === undefined ||
@@ -619,8 +613,6 @@ export class DeviceController {
     description: 'This API will locally unshare a device with user',
   })
   async localUnshareDevice(@Body() body: LocalShareDto, @Request() request) {
-    console.log('We are in localUnshareDevice controller');
-
     if (
       body.deviceId === null ||
       body.deviceId === undefined ||
@@ -664,8 +656,6 @@ export class DeviceController {
     @Param('deviceId') deviceId: string,
     @Request() request,
   ) {
-    console.log('We are in getUsersDeviceSharingWith controller');
-
     if (
       deviceId === null ||
       deviceId === undefined ||
@@ -697,8 +687,6 @@ export class DeviceController {
       'This API will return all devices that are sharing with a user.',
   })
   async getAllDevicesSharingWithUser(@Request() request) {
-    console.log('We are in getAllDevicesSharingWithUser controller');
-
     return await this.deviceService.getSharedDevicesWithUserId(
       request.user.userId,
     );

@@ -7,12 +7,12 @@ import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { UserService } from 'src/modules/user/services/user/user.service';
 import { DeviceLogService } from './device-log.service';
 import { EditDeviceDto } from '../data-transfer-objects/edit-device.dto';
-import { NotificationService } from 'src/modules/notification/notification/notification.service';
 import { InstalledServiceService } from 'src/modules/service/services/installed-service.service';
 import { ContractService } from 'src/modules/smartcontract/services/contract.service';
 import { AppService } from 'src/app.service';
 import { BuildingService } from 'src/modules/building/buildings/building.service';
 import { GlobalShareDto } from '../data-transfer-objects/global-share-dto';
+import { LogService } from 'src/modules/logging/log.service';
 
 // Nodejs encryption with CTR
 let crypto = require('crypto');
@@ -42,7 +42,6 @@ export class DeviceService {
     private readonly userService?: UserService,
     private readonly deviceLogService?: DeviceLogService,
     private readonly deviceRepository?: DeviceRepository,
-    private readonly notificationService?: NotificationService,
     private readonly buildingService?: BuildingService,
     @Inject(forwardRef(() => AppService))
     private readonly appService?: AppService,
@@ -64,9 +63,7 @@ export class DeviceService {
   }
 
   encryptDeviceId(deviceId) {
-    console.log('deviceId: ', deviceId);
     let cipher = crypto.createCipher(algorithm, defaultEncryptionPassword);
-    console.log('cipher: ', cipher);
     let encrypted = cipher.update(deviceId, 'utf8', 'base64');
     encrypted += cipher.final('base64');
     encrypted = encrypted.replace(/\//g, '~').replace(/\+/g, '_');
@@ -82,7 +79,6 @@ export class DeviceService {
     );
     let decrypted = decipher.update(encryptedDeviceId, 'base64', 'utf8');
     decrypted += decipher.final('utf8');
-    // console.log('decryptid', text, dec);
     return decrypted;
   }
 
@@ -155,10 +151,12 @@ export class DeviceService {
 
     if (exist == null || exist == undefined) {
       let insertedDevice = await this.deviceRepository.insertDevice(newDevice);
-      console.log('Device inserted!', exist);
+      LogService.log(
+        `Device created: ${newDevice.deviceName}`,
+        newDevice.insertedBy,
+      );
       return insertedDevice;
     } else {
-      console.log('Device exist!', exist);
       return exist;
     }
   }
@@ -166,21 +164,15 @@ export class DeviceService {
   async getDevicesByUserId(userId) {
     let foundDevices: any = null;
 
-    console.log('we are in getDeviceByUserId service!');
-
     foundDevices = await this.deviceRepository.getDevicesByUserId(userId);
 
     decodeDeviceEncryptedIds(foundDevices);
-
-    //console.log('Found devices are: ', foundDevices);
 
     const lastLogs =
       await this.deviceLogService.getLastDevicesLogByUserIdAndFieldName(
         userId,
         foundDevices,
       );
-
-    console.log('lastLogs devices are: ', lastLogs);
 
     const updatedDevices = foundDevices.map((item: any) => {
       const imageUrl = this.appService.getDeviceUrlByType(
@@ -212,15 +204,10 @@ export class DeviceService {
     let foundDevicesWithEncryptedDeviceId = [];
     let encryptedDeviceId;
 
-    console.log('we are in getDeviceByUserId service!');
-
     foundDevices = await this.deviceRepository.getDevicesByUserId(userId);
-
-    //console.log('Found devices are: ', foundDevices);
 
     foundDevices.forEach((element) => {
       encryptedDeviceId = this.encryptDeviceId(element._id.toString());
-      //console.log('encryptedDeviceId is: ', encryptedDeviceId);
       foundDevicesWithEncryptedDeviceId.push({
         _id: element._id,
         encryptedId: encryptedDeviceId,
@@ -233,10 +220,6 @@ export class DeviceService {
         updateDate: element.updateDate,
       });
     });
-    console.log(
-      'foundDevicesWithEncryptedDeviceId are: ',
-      foundDevicesWithEncryptedDeviceId,
-    );
 
     return foundDevicesWithEncryptedDeviceId;
   }
@@ -305,8 +288,6 @@ export class DeviceService {
       },
     };
 
-    console.log(query);
-
     await this.deviceRepository
       .getInstalledDevicesByDate(query)
       .then(async (data) => {
@@ -347,7 +328,6 @@ export class DeviceService {
         throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
-    console.log('formatedFoundDevices are: ', formatedFoundDevices);
     return formatedFoundDevices;
   }
 
@@ -356,7 +336,6 @@ export class DeviceService {
     reportMonth,
     reportDay,
   ) {
-    let startDate = new Date(reportYear, reportMonth - 1, reportDay);
     let endDate = new Date(reportYear, reportMonth - 1, reportDay);
     endDate.setDate(endDate.getDate() + 1);
     endDate.setHours(0);
@@ -370,8 +349,6 @@ export class DeviceService {
     let query = {
       isDeleted: false,
     };
-
-    console.log(query);
 
     await this.deviceRepository
       .getAllActiveDevices(query)
@@ -414,8 +391,6 @@ export class DeviceService {
         throw new GeneralException(ErrorTypeEnum.NOT_FOUND, errorMessage);
       });
 
-    console.log('formatedFoundDevices are: ', formatedFoundDevices);
-
     for (const element of formatedFoundDevices) {
       let foundDeviceLog;
       await this.deviceLogService
@@ -428,10 +403,7 @@ export class DeviceService {
         .then((data) => {
           foundDeviceLog = data;
 
-          console.log('foundDeviceLog: ', foundDeviceLog);
-
           element.payloadsSent = foundDeviceLog.length;
-          console.log('foundDeviceLog.length: ', foundDeviceLog.length);
         })
         .catch((error) => {
           let errorMessage =
@@ -450,8 +422,6 @@ export class DeviceService {
       'isDeleted userId deviceName deviceEncryptedId deviceType mac insertedBy insertDate updatedBy updateDate';
     let foundDevice = null;
 
-    console.log('I am in checkDeviceIsExist!');
-
     foundDevice = await this.findADeviceByMac(
       deviceMac,
       whereCondition,
@@ -460,10 +430,8 @@ export class DeviceService {
     );
 
     if (foundDevice) {
-      console.log('Device found!');
       return true;
     } else {
-      console.log('Device not found!');
       throw new GeneralException(
         ErrorTypeEnum.NOT_FOUND,
         'Device does not exist.',
@@ -475,8 +443,6 @@ export class DeviceService {
   async editDevice(body: EditDeviceDto, userId: any, isAdmin = false) {
     try {
       let foundDevice: any = null;
-
-      console.log('we are in editDevice service!');
 
       await this.deviceRepository
         .getDeviceById(body.deviceId)
@@ -490,13 +456,7 @@ export class DeviceService {
         });
 
       if (foundDevice && foundDevice !== undefined) {
-        console.log('Founded Device is:', foundDevice);
-
-        console.log(
-          `Device Node: ${foundDevice.nodeId} ||| BackEnd Node: ${process.env.PANEL_URL}`,
-        );
-
-        if (String(foundDevice.nodeId) !== String(process.env.PANEL_URL)) {
+        if (String(foundDevice.nodeId) !== String(process.env.NODE_NAME)) {
           let errorMessage = `You can't edit other nodes devices !`;
           throw new GeneralException(ErrorTypeEnum.FORBIDDEN, errorMessage);
         }
@@ -515,7 +475,7 @@ export class DeviceService {
           };
           return this.result;
         }
-        foundDevice.nodeId = String(process.env.PANEL_URL);
+        foundDevice.nodeId = String(process.env.NODE_NAME);
         foundDevice.updatedBy =
           String(userId) == 'root' ? foundDevice.updatedBy : userId;
         foundDevice.updateDate = new Date();
@@ -523,9 +483,9 @@ export class DeviceService {
 
       const newData = { ...foundDevice._doc, ...body };
 
-      console.log('Updated found device for edit is: ', foundDevice);
-
       await this.deviceRepository.editDevice(foundDevice._id, newData);
+
+      LogService.log(`Device updated: ${body}`, userId);
       return this.result;
     } catch (error) {
       let errorMessage = 'Some errors occurred while editing a device!';
@@ -550,7 +510,7 @@ export class DeviceService {
       throw new GeneralException(ErrorTypeEnum.FORBIDDEN, errorMessage);
     }
 
-    if (device.nodeId !== String(process.env.PANEL_URL)) {
+    if (device.nodeId !== String(process.env.NODE_NAME)) {
       let errorMessage = `You can't edit other nodes devices !`;
       throw new GeneralException(ErrorTypeEnum.FORBIDDEN, errorMessage);
     }
@@ -583,6 +543,7 @@ export class DeviceService {
       updateDate: new Date().toDateString(),
       location: { type: 'Point', coordinates: body.coordinate },
     });
+    LogService.log(`Device shared: ${device.deviceName}`, userId);
   }
 
   async unshareGlobalDevice(
@@ -601,7 +562,7 @@ export class DeviceService {
       throw new GeneralException(ErrorTypeEnum.FORBIDDEN, errorMessage);
     }
 
-    if (device.nodeId !== String(process.env.PANEL_URL)) {
+    if (device.nodeId !== String(process.env.NODE_NAME)) {
       let errorMessage = `You can't edit other nodes devices !`;
       throw new GeneralException(ErrorTypeEnum.FORBIDDEN, errorMessage);
     }
@@ -620,16 +581,32 @@ export class DeviceService {
       updatedBy: userId,
       updateDate: new Date().toDateString(),
     });
+    LogService.log(`Device unshared: ${device.deviceName}`, userId);
+  }
+
+  /*
+  if a device is shared but doesnt exist on blockchain, unshare it on db
+  */
+  async unshareBySystem(deviceId: string): Promise<void> {
+    const device = await this.deviceRepository.getDeviceById(deviceId);
+
+    if (!device) {
+      throw new GeneralException(ErrorTypeEnum.NOT_FOUND, 'Device not found!');
+    }
+
+    await this.deviceRepository.editDevice(device._id, {
+      isShared: false,
+
+      updateDate: new Date().toDateString(),
+    });
   }
 
   async updateAllDevices() {
-    await this.deviceRepository.updateAllNodeIds(process.env.PANEL_URL);
+    await this.deviceRepository.updateAllNodeIds(process.env.NODE_NAME);
   }
 
   async renameDevice(body, userId, isAdmin = false): Promise<any> {
     let foundDevice: any = null;
-
-    console.log('we are in renameDevice service!');
 
     await this.deviceRepository
       .getDeviceById(body.deviceId)
@@ -664,8 +641,6 @@ export class DeviceService {
       foundDevice.updateDate = new Date();
     }
 
-    console.log('Updated found device for rename is: ', foundDevice);
-
     await this.deviceRepository
       .editDevice(foundDevice._id, foundDevice)
       .then((data) => {
@@ -679,6 +654,8 @@ export class DeviceService {
         );
       });
 
+    LogService.log(`Device renamed: ${foundDevice.deviceName}`, userId);
+
     return this.result;
   }
 
@@ -690,8 +667,6 @@ export class DeviceService {
     let foundDevices: any = null;
     let response = [];
 
-    console.log('we are in getAllSharedDevices service!');
-
     foundDevices = await this.deviceRepository.getAllDevices(
       whereCondition,
       populateCondition,
@@ -699,31 +674,6 @@ export class DeviceService {
     );
 
     decodeDeviceEncryptedIds(foundDevices);
-
-    /* const logPromises = foundDevices.map(async (device) => {
-      try {
-        console.log('Device encrypt isssss:', device.deviceEncryptedId);
-
-        const res =
-          await this.deviceLogService.getDeviceLogByEncryptedDeviceIdAndFieldName(
-            device.deviceEncryptedId,
-            '',
-            true,
-            true,
-          );
-
-        device.lastLog = res;
-
-        //console.log('Result is:', res);
-      } catch (error) {
-        console.error(
-          `Error fetching log for device ${device.deviceEncryptedId}:`,
-          error,
-        );
-      }
-    }); */
-
-    //await Promise.all(logPromises);
 
     foundDevices.forEach((element) => {
       response.push({
@@ -743,7 +693,6 @@ export class DeviceService {
         insertDate: element.insertDate,
       });
     });
-    //console.log('response are: ', response);
 
     return response;
   }
@@ -756,15 +705,11 @@ export class DeviceService {
     let foundDevices: any = null;
     let response = [];
 
-    console.log('we are in getAllDevices service!');
-
     foundDevices = await this.deviceRepository.getAllDevices(
       whereCondition,
       populateCondition,
       selectCondition,
     );
-
-    //console.log('Found devices are: ', foundDevices);
 
     foundDevices.forEach((element) => {
       response.push({
@@ -784,7 +729,6 @@ export class DeviceService {
         geometry: element.geometry,
       });
     });
-    //console.log('response are: ', response);
 
     return response;
   }
@@ -793,13 +737,9 @@ export class DeviceService {
     let foundDevices: any = null;
     let response = {};
 
-    console.log('we are in getDeviceInfoByEncryptedId service!');
-
     foundDevices = await this.deviceRepository.getDeviceByEncryptedId(
       encryptId,
     );
-
-    //console.log('foundeddddddd deviceeeeeeeeee: ', foundDevices);
 
     if (
       userId.length > 0 &&
@@ -816,22 +756,6 @@ export class DeviceService {
       };
       return this.result;
     }
-
-    /* response = {
-      _id: foundDevices._id,
-      deviceName: foundDevices.deviceName,
-      deviceType: foundDevices.deviceType,
-      mac: foundDevices.mac,
-      deviceEncryptedId: foundDevices.deviceEncryptedId,
-      hardwareVersion: foundDevices.hardwareVersion,
-      firmwareVersion: foundDevices.firmwareVersion,
-      parameters: foundDevices.parameters,
-      isShared: foundDevices.isShared,
-      location: foundDevices.location,
-      geometry: foundDevices.geometry,
-    }; */
-
-    //console.log('response are: ', response);
 
     return foundDevices;
   }
@@ -907,8 +831,6 @@ export class DeviceService {
       return this.result;
     }
 
-    console.log('Updated found device for deletion is: ', foundDevice);
-
     this.contractService.removeSharedDevice(
       process.env.NODE_NAME,
       String(foundDevice.deviceEncryptedId),
@@ -951,6 +873,8 @@ export class DeviceService {
         );
       });
 
+    LogService.log(`Device deleted: ${foundDevice.deviceName}`, userId);
+
     return this.result;
   }
 
@@ -980,6 +904,7 @@ export class DeviceService {
             false,
             `Installed service with name "${insService.installedServiceName}" has been deleted because the device is no longer available`,
           );
+          LogService.log(`Device removed: ${insService.deviceName}`, userId);
         }),
       );
     }
@@ -1172,5 +1097,9 @@ export class DeviceService {
       userId,
     );
     return checkExist;
+  }
+
+  async getDeviceByEncryptedId(deviceEncryptedId: string) {
+    return this.deviceRepository.getDeviceByEncryptedId(deviceEncryptedId);
   }
 }

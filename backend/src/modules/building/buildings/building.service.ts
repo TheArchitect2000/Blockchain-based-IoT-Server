@@ -154,7 +154,9 @@ export class BuildingService {
   }
 
   async deleteDeviceIdFromBuildingsByUserId(deviceId: string, userId: string) {
-    console.log("Gholllllllllllll 111111111111111111111")
-    return this.buildingRepository.deleteDeviceIdFromBuildingsByUserId(deviceId, userId);
+    return this.buildingRepository.deleteDeviceIdFromBuildingsByUserId(
+      deviceId,
+      userId,
+    );
   }
 }

@@ -1,10 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { DeleteResult, Types } from 'mongoose';
+import { Types } from 'mongoose';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { ChangeEmailTokenModel, UserModel } from '../models/user.model';
-import { UserInterface } from '../interfaces/user.interface';
+import {
+  UserChangeEmailTokenInterface,
+  UserInterface,
+} from '../interfaces/user.interface';
 import { changeEmailTokenSchema, userSchema } from '../schemas/user.schema';
 
 @Injectable()
@@ -13,7 +16,7 @@ export class UserRepository {
 
   constructor(
     @InjectModel('user')
-    private readonly userModel: UserModel,
+    private readonly userModel?: UserModel,
     @InjectModel('email-token')
     private readonly changeEmailTokenModel?: ChangeEmailTokenModel,
   ) {
@@ -51,9 +54,9 @@ export class UserRepository {
       .select(this.getChangeEmailKeys());
   }
 
-  async deleteChangeEmailToken(token: string): Promise<DeleteResult> {
+  async deleteChangeEmailToken(token: string) {
     return await this.changeEmailTokenModel
-      .deleteOne({ token: token })
+      .deleteOne({ token: { $eq: token } })
       .where({})
       .populate([]);
   }
@@ -79,7 +82,7 @@ export class UserRepository {
       return true;
     } catch (error) {
       const errorMessage = 'Some errors occurred while deleting userName!';
-      console.log(error.message); // Log the actual error
+      console.error(error.message); // Log the actual error
       throw new GeneralException(
         ErrorTypeEnum.UNPROCESSABLE_ENTITY,
         errorMessage,
@@ -95,7 +98,7 @@ export class UserRepository {
       })
       .catch((error) => {
         const errorMessage = 'Some errors occurred while user insertion!';
-        console.log(error.message);
+        console.error(error.message);
         throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
@@ -114,7 +117,7 @@ export class UserRepository {
       .catch((error) => {
         const errorMessage =
           'Some errors occurred while insert change email token!';
-        console.log(error.message);
+        console.error(error.message);
         throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
@@ -126,7 +129,7 @@ export class UserRepository {
 
   async changeUserEmail(userId, newEmail) {
     await this.userModel
-      .updateOne({ _id: userId }, { $set: { email: newEmail } })
+      .updateOne({ _id: { $eq: userId } }, { $set: { email: newEmail } })
       .then((data) => {
         this.result = data;
       })
@@ -144,7 +147,7 @@ export class UserRepository {
   async editUser(id, editedData) {
     const { email, ...restData } = editedData;
     await this.userModel
-      .updateOne({ _id: id }, { $set: restData })
+      .updateOne({ _id: { $eq: id } }, { $set: restData })
       .then((data) => {
         this.result = data;
       })
@@ -160,11 +163,23 @@ export class UserRepository {
   }
 
   async checkIfOwnerShipWalletExist(wallet: string) {
-    return (await this.userModel.countDocuments()) > 0;
+    return (
+      (await this.userModel
+        .find({
+          ownerShipWallets: wallet,
+        })
+        .count()) > 0
+    );
   }
 
   async checkIfIdentityWalletExist(wallet: string) {
-    return (await this.userModel.countDocuments()) > 0;
+    return (
+      (await this.userModel
+        .find({
+          identityWallet: { $exists: true, $eq: wallet },
+        })
+        .count()) > 0
+    );
   }
 
   async findUserById(_id, whereCondition, populateCondition, selectCondition) {
@@ -284,8 +299,6 @@ export class UserRepository {
   }
 
   async getAllUsers(whereCondition, populateCondition, selectCondition) {
-    console.log('we are in getAllUsers repository!');
-
     return await this.userModel
       .find()
       .where(whereCondition)

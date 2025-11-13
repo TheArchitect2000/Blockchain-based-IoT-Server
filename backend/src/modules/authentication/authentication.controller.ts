@@ -29,14 +29,17 @@ export class AuthenticationController {
     @Body('accessToken') accessToken?: string | null,
     @Body('admin') admin: boolean = false,
   ) {
-    return await this.authenticationService.loginWithGoogle(tokenId, accessToken, admin);
+    return await this.authenticationService.loginWithGoogle(
+      tokenId,
+      accessToken,
+      admin,
+    );
   }
 
   @Get('google/redirect')
   @UseGuards(AuthGuard('google'))
   async googleLoginCallback(@Req() req) {
     // Successful Google login
-    console.log('req.user:', req.user);
     return req.user; // Add logic to handle user (e.g., generate a JWT)
   }
 }

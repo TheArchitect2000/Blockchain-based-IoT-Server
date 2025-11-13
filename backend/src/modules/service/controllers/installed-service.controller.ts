@@ -115,8 +115,6 @@ export class InstalledServiceController {
     @Body() body: editInstalledServiceDto,
     @Request() request,
   ) {
-    console.log('We are in editService controller');
-
     if (
       body.installedServiceId === null ||
       body.installedServiceId === undefined ||
@@ -305,8 +303,6 @@ export class InstalledServiceController {
         this.result = data;
       })
       .catch((error) => {
-        console.log('Errrrrrrorrrrrrrrrrrrrrr Isssssssssssssss:', error);
-
         let errorMessage =
           'Some errors occurred while deleting the installed service!';
         throw new GeneralException(

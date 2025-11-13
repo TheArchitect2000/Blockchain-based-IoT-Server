@@ -20,8 +20,6 @@ export class InstalledServiceService {
   ) {}
 
   async insertInstalledService(body) {
-    //console.log('Body: ', body);
-
     let newInstalledService = {
       userId: body.userId,
       serviceId: body.serviceId,
@@ -40,7 +38,6 @@ export class InstalledServiceService {
       await this.installedServiceRepository.insertInstalledService(
         newInstalledService,
       );
-    console.log('User installed service inserted!');
     return insertedService;
   }
 
@@ -50,10 +47,6 @@ export class InstalledServiceService {
     let selectCondition =
       '_id userId serviceId installedServiceName description deviceMap installedServiceImage activationStatus insertedBy insertDate updatedBy updateDate';
     let foundInstalledService: any = null;
-
-    console.log('we are in editInstalledService service!');
-    console.log('body: ', body);
-    console.log('userId: ', userId);
 
     await this.installedServiceRepository
       .getInstalledServiceById(
@@ -119,11 +112,6 @@ export class InstalledServiceService {
       foundInstalledService.updatedAt = new Date();
     }
 
-    console.log(
-      'Updated found installed service for edit is: ',
-      foundInstalledService,
-    );
-
     await this.installedServiceRepository
       .editInstalledService(foundInstalledService._id, foundInstalledService)
       .then((data) => {
@@ -175,8 +163,6 @@ export class InstalledServiceService {
       '_id userId serviceId installedServiceName description deviceMap installedServiceImage activationStatus insertedBy insertDate updatedBy updateDate';
     let foundServices: any = null;
 
-    console.log('we are in getInstalledServicesByUserId service!');
-
     foundServices =
       await this.installedServiceRepository.getInstalledServicesByUserId(
         userId,
@@ -184,8 +170,6 @@ export class InstalledServiceService {
         populateCondition,
         selectCondition,
       );
-
-    console.log('Found installed services are: ', foundServices);
 
     return foundServices;
   }
@@ -243,8 +227,6 @@ export class InstalledServiceService {
     let foundServices: any = null;
     let response = [];
 
-    console.log('we are in getAllInstalledServices service!');
-
     try {
       foundServices =
         await this.installedServiceRepository.getAllInstalledServices(
@@ -253,7 +235,7 @@ export class InstalledServiceService {
           selectCondition,
         );
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
 
     foundServices.forEach((element) => {
@@ -275,8 +257,14 @@ export class InstalledServiceService {
     return response;
   }
 
-  async deleteServicesOfAnUserWithDeviceId(userId: string, deviceEncryptedId: string) {
-    return await this.installedServiceRepository.deleteInstalledServicesFromUserWithDeviceEncryptedId(userId, deviceEncryptedId)
+  async deleteServicesOfAnUserWithDeviceId(
+    userId: string,
+    deviceEncryptedId: string,
+  ) {
+    return await this.installedServiceRepository.deleteInstalledServicesFromUserWithDeviceEncryptedId(
+      userId,
+      deviceEncryptedId,
+    );
   }
 
   async deleteInstalledServiceByInstalledServiceId(
@@ -342,7 +330,7 @@ export class InstalledServiceService {
       foundInstalledService._id,
     );
 
-    return true
+    return true;
   }
 
   async deleteAllUserInstalledServicesPermanently(userId) {

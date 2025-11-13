@@ -8,9 +8,8 @@ import { DeviceTypeModel } from '../models/device-type.model';
 export class DeviceTypeRepository {
   private result;
 
-  constructor() /* @InjectModel('iadevicetype', 'panelDb') // panelDb is defined in app.module.ts
-    private readonly deviceTypeModel?: DeviceTypeModel, */
-  {}
+  constructor /* @InjectModel('iadevicetype', 'panelDb') // panelDb is defined in app.module.ts
+    private readonly deviceTypeModel?: DeviceTypeModel, */() {}
 
   /* async insertDeviceType(data) {
     await this.deviceTypeModel
@@ -34,7 +33,6 @@ export class DeviceTypeRepository {
   }
 
   async findAllDeviceTypes(whereCondition, populateCondition, selectCondition) {
-    console.log('we are in findAllDeviceTypes repository!');
 
     return await this.deviceTypeModel
       .find()

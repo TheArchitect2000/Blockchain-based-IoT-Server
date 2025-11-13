@@ -1,5 +1,11 @@
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
-import { AbiCoder, ContractTransaction, ethers, id as keccakId } from 'ethers';
+import {
+  AbiCoder,
+  ContractTransaction,
+  ethers,
+  id as keccakId,
+  Log,
+} from 'ethers';
 import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { DeviceService } from 'src/modules/device/services/device.service';
@@ -7,6 +13,7 @@ import { ServiceService } from 'src/modules/service/services/service.service';
 import { StoreCommitmentData } from '../dto/contract-dto';
 import { ContractRepository } from '../repository/contract.repository';
 import { ContractDataService } from '../contract-data';
+import { Cron, Interval } from '@nestjs/schedule';
 
 // Import JSON files with type assertions
 const serviceDeviceABI = require('../ABI/ServiceDeviceABI.json') as any[];
@@ -140,17 +147,6 @@ export class ContractService {
       this.provider,
     );
 
-    // Add debug logging
-    console.log(
-      'this.contractData.serviceDeviceContractAddress:',
-      this.contractData.serviceDeviceContractAddress,
-    );
-    console.log(
-      'Service Device ABI loaded:',
-      Array.isArray(serviceDeviceABI),
-      serviceDeviceABI?.length,
-    );
-
     if (this.contractData.serviceDeviceContractAddress) {
       this.contracts.serviceDevice = new ethers.Contract(
         this.contractData.serviceDeviceContractAddress,
@@ -172,7 +168,6 @@ export class ContractService {
     );
 
     this.contracts.serviceDevice.on('ServiceCreated', async (id, service) => {
-      console.log('New Service Created Right Now');
       let newService = {
         nodeId: service[0],
         nodeServiceId: service[1],
@@ -197,25 +192,22 @@ export class ContractService {
           newService,
         );
       } catch (error) {
-        console.log('error isssss: ', error);
+        console.error('error: ', error);
       }
     });
 
     this.contracts.serviceDevice.on('ServiceRemoved', async (id, service) => {
-      console.log(`${service[0]} , ${service[1]}`);
-
       try {
         await this.serviceService.deleteServiceByNodeServiceIdAndNodeId(
           service[0],
           service[1],
         );
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     });
 
     this.contracts.serviceDevice.on('DeviceCreated', (id, device) => {
-      Logger.log('DeviceCreated', device);
       try {
         let newDevice = {
           nodeId: device[0],
@@ -236,7 +228,7 @@ export class ContractService {
 
         this.deviceService.insertDevice(newDevice);
       } catch (error) {
-        console.log('DeviceCreated', error);
+        console.error('DeviceCreated', error);
       }
     });
 
@@ -419,7 +411,7 @@ export class ContractService {
         publishedDate,
       );
     } catch (error) {
-      console.log('Error While publishing service:', error);
+      console.error('Error While publishing service:', error);
     }
   }
 
@@ -461,7 +453,7 @@ export class ContractService {
             nodeServices.nodeServiceId,
           );
         } catch (error) {
-          console.log(error);
+          console.error(error);
         }
       }
     });
@@ -499,77 +491,64 @@ export class ContractService {
         try {
           this.serviceService.insertService(newService);
         } catch (error) {
-          console.log(error);
+          console.error(error);
         }
       }
     });
   }
 
-  // async syncAllDevices() {
-  //   const allContractDevices = await this.fetchAllDevices();
-  //   const allNodeDevices = await this.deviceService.getAllSharedDevices();
+  @Cron('0 2 * * *')
+  async handleSyncAllDevicesCron() {
+    await this.syncAllSharedDevices();
+    await this.removeUnsharedDevices();
+  }
 
-  //   allNodeDevices.map((nodeDevices: any) => {
-  //     let exist = false;
-  //     allContractDevices.map((contractDevices: any) => {
-  //       Logger.log('contractDevices:', contractDevices);
-  //       Logger.log('nodeDevices:', nodeDevices);
-  //       if (
-  //         String(nodeDevices.nodeId) == String(contractDevices[0]) &&
-  //         (String(nodeDevices.nodeDeviceId) == String(contractDevices[1]) ||
-  //           String(nodeDevices._id) == String(contractDevices[1]))
-  //       ) {
-  //         exist = true;
-  //       }
-  //     });
-  //     if (exist == false) {
-  //       try {
-  //         this.deviceService.deleteOtherNodeDeviceByNodeIdAndDeviceId(
-  //           nodeDevices.nodeId,
-  //           nodeDevices.nodeDeviceId,
-  //           nodeDevices.deviceEncryptedId,
-  //         );
-  //       } catch (error) {
-  //         console.log(error);
-  //       }
-  //     }
-  //   });
+  async syncAllSharedDevices() {
+    const allContractDevices = await this.fetchAllDevices();
+    const allNodeDevices = await this.deviceService.getAllSharedDevices();
 
-  //   allContractDevices.map((contractDevices: any) => {
-  //     let exist = false;
-  //     allNodeDevices.map((nodeDevices: any) => {
-  //       if (
-  //         String(nodeDevices.nodeId) == String(contractDevices[0]) &&
-  //         (String(nodeDevices.nodeDeviceId) == String(contractDevices[1]) ||
-  //           String(nodeDevices._id) == String(contractDevices[1]))
-  //       ) {
-  //         exist = true;
-  //       }
-  //     });
-  //     if (exist == false) {
-  //       let newDevice = {
-  //         nodeId: contractDevices[0],
-  //         nodeDeviceId: contractDevices[1],
-  //         isShared: true,
-  //         deviceName: contractDevices[2],
-  //         deviceType: contractDevices[2],
-  //         deviceEncryptedId: contractDevices[3],
-  //         mac: Buffer.from(contractDevices[3], 'base64').toString('utf8'),
-  //         hardwareVersion: String(contractDevices[4]).split('/')[0],
-  //         firmwareVersion: String(contractDevices[4]).split('/')[1],
-  //         parameters: contractDevices[6].map((str) => JSON.parse(str)),
-  //         costOfUse: contractDevices[7],
-  //         location: { coordinates: contractDevices[8] },
-  //         insertDate: new Date(String(contractDevices[10])),
-  //         updateDate: new Date(String(contractDevices[10])),
-  //       };
+    allNodeDevices.map(async (nodeDevices: any) => {
+      let isExist = false;
+      allContractDevices.map((contractDevices: any) => {
+        if (
+          String(nodeDevices.deviceEncryptedId) === String(contractDevices[1])
+        ) {
+          isExist = true;
+        }
+      });
+      if (!isExist) {
+        await this.deviceService.unshareBySystem(nodeDevices._id);
+      }
+    });
+  }
 
-  //       this.deviceService.insertDevice(newDevice).catch((error) => {
-  //         console.log('syncAllDevices insertDevice error:', error);
-  //       });
-  //     }
-  //   });
-  // }
+  /**
+   * when a device doesnt share in db, remove it from blockchain
+   */
+  async removeUnsharedDevices() {
+    const allContractDevices = await this.fetchAllDevices();
+    for (const contract of allContractDevices) {
+      const device = await this.deviceService.getDeviceByEncryptedId(
+        contract[3],
+      );
+
+      if (!device || !device.isShared) {
+        await this.removeSharedDevice(contract[0], contract[3]);
+      }
+    }
+  }
+
+  async unshareIncorrectNodeIdDevices() {
+    const allContractDevices = await this.fetchAllDevices();
+    for (const contract of allContractDevices) {
+      const device = await this.deviceService.getDeviceByEncryptedId(
+        contract[3],
+      );
+      if (device && device.nodeId !== String(contract[0])) {
+        await this.deviceService.unshareBySystem(device._id);
+      }
+    }
+  }
 
   async storeZKP(
     nodeId: string,
@@ -602,16 +581,13 @@ export class ContractService {
         transactionId,
       } = data;
 
-      console.log('data:', data);
-
       let txHash = '';
 
       if (!frontPublish) {
-        console.log('Storing commitment');
         try {
           const tx: any = await this.contracts.commitment.storeCommitment(
             commitmentID,
-            process.env.PANEL_URL,
+            process.env.NODE_NAME,
             deviceType,
             deviceIdType,
             deviceModel,
@@ -622,10 +598,8 @@ export class ContractService {
           );
 
           txHash = tx.hash;
-
-          console.log(`Transaction submitted. Hash: ${tx.hash}`);
         } catch (error) {
-          console.log('Storing commitment Error:', error);
+          console.error('Storing commitment Error:', error);
         }
       }
 
@@ -634,7 +608,6 @@ export class ContractService {
         ...data,
         transactionId: transactionId ? transactionId : txHash,
       });
-      console.log('Commitment data saved to the database successfully.');
 
       return txHash;
     } catch (error: any) {
@@ -688,7 +661,7 @@ export class ContractService {
         );
       }
     } catch (error) {
-      console.log('removeCommitment error:', error);
+      console.error('removeCommitment error:', error);
     }
   }
 
@@ -712,7 +685,7 @@ export class ContractService {
     return await this.contractRepository.saveCommitment({
       transactionId: data.transactionId,
       commitmentId: data.commitmentID,
-      nodeId: process.env.PANEL_URL,
+      nodeId: process.env.NODE_NAME,
       userId: data.userId,
       manufacturer: data.manufacturer,
       deviceType: data.deviceType,

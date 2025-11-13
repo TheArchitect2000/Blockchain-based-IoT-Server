@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose'; // Import Model type from mongoose
 import { SubscriptionModel } from '../model/subscriptions.model'; // Ensure this is the correct path
 import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { SaveSubscriptionDTO } from '../dto/subscriptions.dto';
-import { DeleteResult } from 'mongoose';
 
 @Injectable()
 export class SubscriptionsRepository {
@@ -24,7 +24,7 @@ export class SubscriptionsRepository {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while commitment insertion!';
-        console.log(error);
+        console.error(error);
         throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
@@ -42,9 +42,9 @@ export class SubscriptionsRepository {
       .select(this.selectCondition);
   }
 
-  async deleteToken(token: string): Promise<DeleteResult> {
+  async deleteToken(token: string) {
     return await this.subscriptionModel
-      .deleteOne({ token: token })
+      .deleteOne({ token: { $eq: token } })
       .where({})
       .populate([]);
   }

@@ -31,7 +31,6 @@ export class HomeService {
     };
 
     let insertedHome = await this.homeRepository.insertHome(newHome);
-    console.log('Customer home inserted!');
     return insertedHome;
   }
 
@@ -42,7 +41,6 @@ export class HomeService {
       'Address CustomerId Name Type IsActive Guard DeviceType updatedAt updateAt Timezone';
     let foundHome: any = null;
 
-    console.log('we are in getHomeProfileByCustomerId service!');
 
     foundHome = await this.homeRepository.findHomeByCustomerId(
       customerId,
@@ -51,7 +49,6 @@ export class HomeService {
       selectCondition,
     );
 
-    console.log('Found Home is: ', foundHome);
 
     return await foundHome;
   }

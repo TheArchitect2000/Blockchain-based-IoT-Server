@@ -36,7 +36,7 @@ export class ServiceRepository {
 
   async editService(id, editedData) {
     await this.serviceModel
-      .updateOne({ _id: id }, editedData)
+      .updateOne({ _id: { $eq: id } }, editedData)
       .then((data) => {
         this.result = data;
       })
@@ -84,8 +84,6 @@ export class ServiceRepository {
     populateCondition,
     selectCondition,
   ) {
-    console.log('we are in findServicesByUserId repository!');
-
     return await this.serviceModel
       .find({ userId: userId })
       .where(whereCondition)
@@ -94,8 +92,6 @@ export class ServiceRepository {
   }
 
   async getAllServices(whereCondition, populateCondition, selectCondition) {
-    console.log('we are in getAllServices repository!');
-
     return await this.serviceModel
       .find()
       .where(whereCondition)

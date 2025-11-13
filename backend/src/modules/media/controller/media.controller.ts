@@ -64,7 +64,8 @@ export class MediaController {
         },
         path: {
           type: 'string',
-          description: 'Custom path within uploads directory (e.g. NFT/metadata)',
+          description:
+            'Custom path within uploads directory (e.g. NFT/metadata)',
         },
       },
     },
@@ -76,8 +77,6 @@ export class MediaController {
     @Body() body: uploadFileDto,
     @Request() request,
   ) {
-    console.log('We are in upload media upload');
-
     try {
       const uploadResult = await this.mediaService.insertMedia(
         type,

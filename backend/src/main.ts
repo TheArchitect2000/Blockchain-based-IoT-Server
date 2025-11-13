@@ -4,23 +4,9 @@ import { DocumentBuilder } from '@nestjs/swagger/dist/document-builder';
 import { SwaggerModule } from '@nestjs/swagger/dist/swagger-module';
 import { AppModule } from './app.module';
 import { join } from 'path';
-import { Inject, Logger } from '@nestjs/common';
-import { TestService } from './modules/broker/services/test.service';
-import { MqttLogService } from './modules/broker/services/mqtt-log.service';
-import { readFileSync } from 'fs';
-import { SyslogService } from './modules/logging/syslog.service';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-
-  const syslog = app.get(SyslogService);
-
-  console.log = (...args) => {
-    const msg = args
-      .map((a) => (typeof a === 'string' ? a : JSON.stringify(a)))
-      .join(' ');
-    syslog.log(msg);
-  };
 
   const config = new DocumentBuilder()
     .setTitle('FidesInnova')
@@ -70,15 +56,7 @@ async function bootstrap() {
     process.env.HOST_PORT,
   );
 
-  let mqttLogService: MqttLogService = new MqttLogService();
-  let testService: TestService = new TestService(mqttLogService);
-  testService.printMsg();
-  testService.callDeviceModule();
-
   // Run MQTT Server.
   const mqttServerRunner = require('./modules/broker/server/mqtt-server');
-
-  // Run Blockly Server.
-  const blocklyServerRunner = require('./modules/blockly/server/blockly-server');
 }
 bootstrap();

@@ -59,7 +59,7 @@ export class NotificationService {
       });
       return 'notification send';
     } catch (err) {
-      console.log(err);
+      console.error(err);
 
       throw new BadRequestException(undefined, err.message);
     }

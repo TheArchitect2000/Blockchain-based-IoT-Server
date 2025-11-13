@@ -27,7 +27,7 @@ export class NotificationRepository {
       .catch((error) => {
         const errorMessage =
           'Some errors occurred while inserting notification!';
-        console.log(error.message);
+        console.error(error.message);
         throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
@@ -82,7 +82,7 @@ export class NotificationRepository {
     try {
       const result = await this.notificationModel
         .updateOne(
-          { _id: notifId },
+          { _id: { $eq: notifId } },
           { $set: editedFields }, // Use $set to update specific fields
         )
         .exec();
