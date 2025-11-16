@@ -2,7 +2,7 @@
   <a href="https://fidesinnova.io/" target="blank"><img src="g-c-web-back.png" /></a>
 </p>
 
-# Step-by-step Installation Instructions for IoT Server 
+# Step-by-step Installation Instructions for IoT Server
 
 
 <a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
@@ -16,6 +16,7 @@
 To install the back-end and front-end components of the Fidesinnova platform, including both the web app and mobile app, you can follow the steps below. These instructions assume that you have a basic understanding of setting up development environments and are familiar with JavaScript, Node.js, and related technologies.
 
 # Step A. Prepare operating system
+
 To run `Blockchain-based-IoT-Server` effectively, the following system specifications are recommended:
 
 - **Operating System:** Ubuntu 24.04 LTS
@@ -23,138 +24,87 @@ To run `Blockchain-based-IoT-Server` effectively, the following system specifica
 - **Storage:** 30 GB SSD minimum
 - **CPU:** Dual-core processor (x86_64 or ARM64)
 
---- 
+---
+
 ## URLs:
+
 - **PANEL_URL: Consider a URL (sub-domain), e.g., panel.zksensor.tech, for your IoT server's users. We call it PANEL_URL in this ReadMe.**
 - **ADMIN_URL: Consider a URL (sub-domain), e.g., admin.zksensor.tech, for your IoT server's administrators. We call it ADMIN_URL in the ReadMe.**
+
 ---
 
 _These requirements are suitable for typical IoT workloads. Actual needs may vary based on deployment scale and data volume._
 
-## A.1. Install MongoDB
-- Install MongoDB version 8.0 for ARM64.
-- If you have a x86 machine, please check the MongoDB documentation.
-```
-sudo apt update
-sudo apt upgrade
-sudo apt install -y gnupg curl
-curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc | sudo gpg -o /usr/share/keyrings/mongodb-server-8.0.gpg --dearmor
-echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-8.0.list
-sudo apt update
-sudo apt install -y mongodb-org
-```
+## A.1. Install nginx web server
 
-- Start the MongoDB service and test the database
-```
-sudo systemctl start mongod
-sudo systemctl start mongod.service
-sudo systemctl enable mongod
-```
-
-- Set MongoDB password
-Run `mongosh`
-```
-mongosh
-```
-
-Set `ADMIN_USERNAME` and `ADMIN_PASSWORD`, and type the following lines in the `mongosh` terminal. Note that the password must contain only lowercase or uppercase characters or numbers.
-```
-use admin
-```
-
-```
-db.createUser({
-  user: "MONGODB_ADMIN_USERNAME",
-  pwd: "MONGODB_ADMIN_PASSWORD",
-  roles: [{ role: "root", db: "admin" }]
-})
-```
-This account can be used later to connect to MongoDB using MongoDB Compass.
-
-Set `FIDESINNOVA_DB_USERNAME` and `FIDESINNOVA_DB_PASSWORD`, and type the following lines in the `mongosh` terminal. Note that the password must contain only lowercase or uppercase characters or numbers.
-```
-use fidesinnova
-```
-
-```
-db.createUser({
-  user: "FIDESINNOVA_DB_USERNAME",
-  pwd: "FIDESINNOVA_DB_PASSWORD",
-  roles: [{ role: "readWrite", db: "fidesinnova" }]
-})
-```
-This account will be used later to let the system backend connects to the database. Save both credentials in a secure place. 
-Exit from the mongosh environment.
-```
-exit
-```
-
-
-- Edit the config file
-```
-sudo nano /etc/mongod.conf
-```
-Find the security section and enable authentication:
-```
-security:
-  authorization: enabled
-```
-
-- Restart the MongoDb service
-```
-sudo systemctl restart mongod  
-```
-
-- The MongoDB configuration is done. To conect to MongoDB, use `mongosh -u 'ADMIN_USERNAME' -p 'ADMIN_PASSWORD' --authenticationDatabase admin`. Also, to manage the MongoDB service, use the following commands:
-```
-sudo systemctl status mongod
-sudo systemctl stop mongod
-sudo systemctl start mongod
-sudo systemctl restart mongod
-sudo systemctl disable mongod
-sudo systemctl enable mongod
-```
---- 
-## A.2. Install nginx web server 
 ```
 sudo apt update
 sudo apt -y install nginx
 ```
---- 
+
+---
+
+## A.2. Install Docker
+
+Docker lets us run ZAP in a lightweight container without manual setup. Install and configure Docker:
+
+```bash
+sudo apt update
+sudo apt install docker.io -y
+sudo systemctl enable docker
+sudo systemctl start docker
+sudo usermod -aG docker $USER
+```
+
 ## A.3. Install Certbot
+
 - First, stop the `nginx`
+
 ```
 sudo systemctl stop nginx
 ```
+
 - Now, install the `certbot`
+
 ```
 sudo apt-get update
 sudo apt-get install certbot
 ```
+
 - To manually obtain an SSL certificate for your domains without directly modifying your web server configurations, run the following command:
+
 ```
 sudo certbot certonly --standalone --preferred-challenges http
 ```
--  Make sure to create the certificate for domain and all subdomains
-After running the command, enter your web app and admin web app domains separated by a space, like this:
+
+- Make sure to create the certificate for domain and all subdomains
+  After running the command, enter your web app and admin web app domains separated by a space, like this:
+
 ```
 PANEL_URL  ADMIN_URL
 ```
+
 - The 'certbot' command generates `fullchain.pem` and `privkey.pem` in either `/etc/letsencrypt/admin.YOURDOMAIN.COM` or `/etc/letsencrypt/panel.YOURDOMAIN.COM`.
-- Create the `ssl` folder inside `/etc/nginx` 
+- Create the `ssl` folder inside `/etc/nginx`
+
 ```
 sudo mkdir /etc/nginx/ssl
 ```
-- Copy both `fullchain.pem` and `privkey.pem` into `/etc/nginx/ssl`. 
+
+- Copy both `fullchain.pem` and `privkey.pem` into `/etc/nginx/ssl`.
+
 ```
 sudo cp /etc/letsencrypt/live/PANEL_URL/fullchain.pem /etc/nginx/ssl/
 sudo cp /etc/letsencrypt/live/PANEL_URL/privkey.pem /etc/nginx/ssl/
 ```
+
 or
+
 ```
 sudo cp /etc/letsencrypt/live/ADMIN_URL/fullchain.pem /etc/nginx/ssl/
 sudo cp /etc/letsencrypt/live/ADMIN_URL/privkey.pem /etc/nginx/ssl/
 ```
+
 <!-- - Required commands for SSL by Certbot:
   - Check the expiration date of your SSL certificates:
   ```
@@ -164,9 +114,13 @@ sudo cp /etc/letsencrypt/live/ADMIN_URL/privkey.pem /etc/nginx/ssl/
   ```
   sudo certbot renew
   ``` -->
---- 
+
+---
+
 ## A.4. Update the `nginx.conf` file
+
 - Replace the following configuration in your `nginx.conf` file located at `/etc/nginx/nginx.conf`.
+
 ```
 user www-data;
 worker_processes auto;
@@ -193,7 +147,7 @@ http {
 	# server_names_hash_bucket_size 64;
 	# server_name_in_redirect off;
 
-	
+
 	default_type application/octet-stream;
 	include /etc/nginx/mime.types;
 	##
@@ -232,7 +186,7 @@ http {
 		location / {
 			proxy_set_header Authorization $http_authorization;
 			proxy_pass_header Authorization;
-			proxy_pass https://localhost:4000;
+			proxy_pass http://localhost:4000;
 		}
 
 		# This section is for Server Backend on port 6000
@@ -253,31 +207,25 @@ http {
 		location / {
 			proxy_set_header Authorization $http_authorization;
 			proxy_pass_header Authorization;
-			proxy_pass https://localhost:5000;
+			proxy_pass http://localhost:5000;
 		}
 	}
 }
 
 ```
-  
-- Restart Nginx 
+
+- Restart Nginx
+
 ```
 sudo systemctl restart nginx
 ```
---- 
-## A.5. Install Node.js and NestJS
-```
-sudo apt update
-sudo apt install -y curl build-essential
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-sudo apt install -y nodejs
-sudo npm install -g n
-sudo n 22.14.0
-sudo npm i -g @nestjs/cli 
-```
---- 
-## A.6. Configure Firewall 
+
+---
+
+## A.6. Configure Firewall
+
 - Install `ufw`, allow OpenSSH connection, allow nginx connection. Then, allow ports 4000, 5000, and 6000 on the server for Mobile App, Web App, and Admin Web App, respectively. Also, open ports 8883 and 8081 to let IoT devices to connect to the MQTT broker and the web socket, respectively.
+
 ```
 sudo apt install ufw
 sudo ufw allow OpenSSH
@@ -288,53 +236,95 @@ sudo ufw allow 6000
 sudo ufw allow 8883
 sudo ufw allow 8081
 ```
+
 - Note: If you’re using Amazon EC2 or a similar platform, ensure that inbound traffic for TCP 8883 is open. This port is required for secure MQTT communication between the IoT server and users’ IoT devices.
 - Enable the firewall
+
 ```
 sudo ufw enable
 ```
+
 - Check the firewall status
+
 ```
 sudo ufw status
 ```
---- 
+
+---
+
 ## A.7. Clone the project
+
 - Install `git`
+
 ```
 sudo apt install git
 ```
+
 - Clone the project
+
 ```
 cd /home
 sudo git clone https://github.com/TheArchitect2000/Blockchain-based-IoT-Server.git
 ```
 
 ### Continue with Step B if you want to install a new node, or jump to Step C if you want to restore your node from a previous backup.
---- 
+
+---
+
 # Step B. Configure a New Node
-## B.1. Generate two JWT secret keys  
+
+## B.1. Generate two JWT secret keys
+
 - Generate an access secret key (256-bit / 32-byte)
+
 ```
 openssl rand -hex 32
 ```
 
 - Generate a refresh secret key (256-bit / 32-byte)
+
 ```
 openssl rand -hex 32
 ```
---- 
-## B.2. Backend configurations
+
+---
+
+## B.2 create node in root of project
+
+```
+sudo nano .env
+```
+
+- Insert the following values:
+
+```
+BACK_PORT=6000
+WEBAPP_PORT=4000
+ADMIN_WEBAPP_PORT=5000
+
+# Mongo Database Configuration
+MONGO_DATABASE_NAME=fidesinnova
+MONGO_DATABASE_PORT=27017
+MONGO_USER=fidesinnova_user
+MONGO_PASSWORD=FIDESINNOVA_DB_PASSWORD
+MONGO_INITDB_ROOT_USERNAME=admin
+MONGO_INITDB_ROOT_PASSWORD=supersecretadmin
+```
+
+## B.3. Backend configurations
+
 - In project root folder, create `.env` file and edit parameters based on your node URL info
+
 ```
 cd /home/Blockchain-based-IoT-Server/backend
 sudo nano .env
 ```
 
-- Inside the `.env` file, paste the following parameters. Note that your user web app URL is "PANEL_URL"  (e.g., "panel.zksensor.com").
+- Inside the `.env` file, paste the following parameters. Note that your user web app URL is "PANEL_URL" (e.g., "panel.zksensor.com").
 
 ```
 # Set this with your node URL (e.g., 'zksensor.com')
-PANEL_URL='YOUR_NODE_DOMAIN' 
+PANEL_URL='YOUR_NODE_DOMAIN'
 
 # Set this with your node admin URL (e.g., 'admin.zksensor.com')
 ADMIN_URL='YOUR_NODE_ADMIN_DOMAIN'
@@ -342,7 +332,6 @@ ADMIN_URL='YOUR_NODE_ADMIN_DOMAIN'
 # Set this with your node name (e.g., 'zkSensor')
 NODE_NAME='YOUR_NODE_NAME'
 
-SWAGGER_LOCAL_SERVER=http://localhost:5000
 
 # RPC URL - This is the address of a blockchain node in the network that provides RPC sevice to your IoT server
 RPC_URL='https://rpc1.fidesinnova.io'
@@ -358,11 +347,15 @@ CRYPTION_SALT=10
 
 # Syslog Server Configuration
 SYSLOG_SERVER_ENABLED='True'
-SYSLOG_SERVER_HOST='192.168.1.100'
+SYSLOG_SERVER_HOST='YOUR_SYSLOG_SERVER'
 SYSLOG_SERVER_PORT=514
-SYSLOG_SERVER_LEVEL=3
+SYSLOG_SERVER_LEVEL=7
 SYSLOG_SERVER_USERNAME=''
 SYSLOG_SERVER_PASSWORD=''
+
+# Internal logging
+INTERNAL_LOGGING_ENABLED='True'
+MAX_LOG_FILE_SIZE_PER_MB='12'
 
 # Server Configuration
 HOST_PROTOCOL='https://'
@@ -379,7 +372,7 @@ MONGO_DATABASE_NAME='fidesinnova'
 MONGO_USER='FIDESINNOVA_DB_USERNAME'
 MONGO_PASSWORD='FIDESINNOVA_DB_PASSWORD'
 MONGO_PORT=27017
-MONGO_HOST=127.0.0.1
+MONGO_HOST=mongo
 
 # Email Configuration
 NOTIFICATION_BY_MAIL='enabled'
@@ -395,11 +388,11 @@ MAIL_USER='noreply@YOUR_NODE_DOMAIN'
 MAIL_PASSWORD='YOUR_MAIL_SERVER_PASSWORD'
 MAIL_FROM='noreply@YOUR_NODE_DOMAIN'
 # optional
-MAIL_TRANSPORT=smtp://${MAIL_USER}:${MAIL_PASSWORD}@${MAIL_HOST} 
+MAIL_TRANSPORT=smtp://${MAIL_USER}:${MAIL_PASSWORD}@${MAIL_HOST}
 
 # Application color codes in hex. Please write it without '#'. Exmaple: #4e46e7 -> 4e46e7
-# This text color is for Mobile App 
-THEME_TEXT='ffffff' 
+# This text color is for Mobile App
+THEME_TEXT='ffffff'
 # These colors are for Web App and Mobile App
 THEME_BACKGROUND='1D293D'
 THEME_BOX='1D293D'
@@ -419,7 +412,7 @@ REFRESH_TOKEN_SECRET_KEY='YOUR_REFRESH_SECRET_KEY'
 REFRESH_TOKEN_ALGORITHM='HS384'
 
 # your admins emails that can make other users into admin or developer
-SUPER_ADMIN_EMAILS=['SERVER_ADMIN_EMAIL@EXAMPLE.COM'] 
+SUPER_ADMIN_EMAILS=['SERVER_ADMIN_EMAIL@EXAMPLE.COM']
 
 # Multer Configuration
 # Multer is a node.js middleware for handling multipart/form-data, which is primarily used for uploading files.
@@ -432,10 +425,12 @@ COMMITMENT_MANAGEMENT='0x96259fba1f845b42c257f72088dd38c7e8540504'
 ZKP_STORAGE='0x897264b7d872e07a3d8e1d22b199f12cfb4bb26d'
 NODE_SERVICE_DEVICE_MANAGEMENT='0x4b08ea934e6bfb7c72a376c842c911e1dd2aa74f'
 ```
-- Create two wallets address on Fidesinnova network for the admin and the faucet. To learn how to connect your wallet to fides network, please [watch this video on YouTube](https://www.youtube.com/watch?v=3GVfyu4uzhs) 
+
+- Create two wallets address on Fidesinnova network for the admin and the faucet. To learn how to connect your wallet to fides network, please [watch this video on YouTube](https://www.youtube.com/watch?v=3GVfyu4uzhs)
 - Email only the wallet addresses (excluding private keys) to info@fidesinnova.io and ask to receive some tokens for your node operation. The admin address will be authorized on the network. The faucet address will be used to distribute tokens to your users on your server.
-Never share your account’s private key with anyone.
+  Never share your account’s private key with anyone.
 - Update these parameters in the file:
+
 ```
 # Set this with your node URL (e.g., 'zksensor.com')
 PANEL_URL='YOUR_NODE_DOMAIN'
@@ -461,8 +456,8 @@ MAIL_PASSWORD='YOUR_MAIL_SERVER_PASSWORD'
 MAIL_FROM='noreply@YOUR_NODE_DOMAIN'
 
 # Application color codes in hex. Please write it without '#'. Exmaple: #4e46e7 -> 4e46e7
-# This text color is for Mobile App 
-THEME_TEXT='ffffff' 
+# This text color is for Mobile App
+THEME_TEXT='ffffff'
 # These colors are for Web App and Mobile App
 THEME_BACKGROUND='1D293D'
 THEME_BOX='1D293D'
@@ -481,18 +476,20 @@ NODE_SERVICE_DEVICE_MANAGEMENT='0x4b08ea934e6bfb7c72a376c842c911e1dd2aa74f'
 ```
 
 - Please update only the necessary values in the `.env` file, and make sure **not to add any extra spaces** before or after the `=` sign. For example:
+
 ```ini
-THEME_BOX='0xabcd'      ✔️ Correct  
-THEME_BOX ='0xabcd'     ❌ Incorrect  
-THEME_BOX= '0xabcd'     ❌ Incorrect  
-THEME_BOX = '0xabcd'    ❌ Incorrect  
-```
-- Additionally, ensure that **no comments** are placed on the same line as any parameter.
-```ini
-API_KEY='123456'        ✔️ Correct  
-API_KEY='123456' # key  ❌ Incorrect  
+THEME_BOX='0xabcd'      ✔️ Correct
+THEME_BOX ='0xabcd'     ❌ Incorrect
+THEME_BOX= '0xabcd'     ❌ Incorrect
+THEME_BOX = '0xabcd'    ❌ Incorrect
 ```
 
+- Additionally, ensure that **no comments** are placed on the same line as any parameter.
+
+```ini
+API_KEY='123456'        ✔️ Correct
+API_KEY='123456' # key  ❌ Incorrect
+```
 
 ### 🔔 Enable Node Mobile Notifications
 
@@ -511,21 +508,29 @@ To enable mobile notifications on your Node server, follow these steps:
 
 3. **Paste JSON Content**  
    Open the file with `nano`, then paste the full content of the `firebase-adminsdk.json` file you received.
---- 
-## B.3. Web App Logo
-- Copy your logo in `.png` format with the `logo` name as `logo.png` in `\home\Blockchain-based-IoT-Server\backend\uploads` folder on your server. 
---- 
-## B.4. Device Configuration File
+
+---
+
+## B.4. Web App Logo
+
+- Copy your logo in `.png` format with the `logo` name as `logo.png` in `\home\Blockchain-based-IoT-Server\backend\uploads` folder on your server.
+
+---
+
+## B.5. Device Configuration File
+
 - Fidesinnova offers a mobile app to control IoT devices that support the MQTT protocol. The device configuration files, which specify the IoT device types, are stored on the IoT server. In this section, we will review how to create a device configuration file on the server. Each device in the configuration file is represented by an image, a title, a type, and its parameters:
 - **fileName**: Refers to the image file that should be placed in the `/Blockchain-based-IoT-Server/backend/uploads/device` directory. This image will be displayed in the mobile app (e.g., "ecard.png").
 - **title**: The display name for the device (e.g., "E-Card").
 - **type**: Device type identifier (e.g., "E-CARD").
-- **Device Parameters**: Parameters specify data points each device supports. These parameters will be passed to the web app Blockly editor for creating new services. 
+- **Device Parameters**: Parameters specify data points each device supports. These parameters will be passed to the web app Blockly editor for creating new services.
 - If a parameter’s `value` is an empty array `[]`, it indicates dynamic data input.
 - If `value` has specific options (e.g., `["Open", "Close"]`), it will show these options in the Blockly dropdown as predefined outputs.
 
-### B.4.1. Edit the `devices.json` file
+### B.5.1. Edit the `devices.json` file
+
 - Create `devices.json` file in the `backend/src/data/` in the project folder
+
 ```
 cd /home/Blockchain-based-IoT-Server/backend/src
 sudo mkdir data
@@ -534,6 +539,7 @@ sudo nano devices.json
 ```
 
 - Copy the following config in your `devices.json` file if you would like to use zkSensor's devices. Please note that you can edit this file and add your own IoT devices. When you add your new IoT device make sure you upload a `.png` file in `/home/Blockchain-based-IoT-Server/backend/uploads/devices`. We hae already copied three `zksensor-ecard.png`, `zksensor-minisensor.png`, and `zksensor-zk-multisensor.png` files in this folder for the following devices.
+
 ```json
 [
   {
@@ -608,62 +614,53 @@ sudo nano devices.json
   }
 ]
 ```
---- 
-## B.5. Install Panel Web App for users
-- In `Source_webapp` folder, create `.env` file.
+
+---
+
+## B.6. Initial Panel Web App for users
+
 ```
-cd /home/Blockchain-based-IoT-Server/web_app/Source_webapp
+cd /home/Blockchain-based-IoT-Server/web_app/
 sudo nano .env
-```
-Enter the following lines in the .env file and replace `YOUR_NODE_NAME` with your actual node name.
-```
-VITE_URL='https://PANEL_URL/app/'
-VITE_NODE_NAME='YOUR_NODE_NAME'
-VITE_RPC_URL='https://rpc1.fidesinnova.io'
-```
---- 
-## B.6. Install Admin Web App for administrator
-- In `Source_webapp` folder, create `.env` file.
-```
-cd /home/Blockchain-based-IoT-Server/admin_web_app/Source_webapp
-sudo nano .env
-```
-Enter the following lines in the .env file and replace `YOUR_NODE_NAME` with your actual node name.
-```
-VITE_URL='https://PANEL_URL/app/'
-VITE_NODE_NAME='YOUR_NODE_NAME'
-VITE_RPC_URL='https://rpc1.fidesinnova.io'
-```
---- 
-# C. Restore Node from Backup
-- Create the 'backups' folder.
-   ```
-   cd /home/Blockchain-based-IoT-Server/
-   sudo mkdir backups
-   ```
-- Copy your backup file (e.g. iot_server_backup_2025-02-12.tar.gz ) to this folder.
-- Execute the restore script file
-```
-   cd /home/Blockchain-based-IoT-Server/
-   sudo chmod +x restore.sh
-   sudo ./restore.sh
 ```
 
-# D. Build and Execute
---- 
-## D.1. Build the System
-To automate the setup and build processes for both the backend and frontend applications, run the `initial_setup.sh` script located in the root directory of the project. This script will handle building both the backend and frontend applications and configuring systemctl services automatically.
-   ```
-   cd /home/Blockchain-based-IoT-Server/
-   sudo chmod +x initial_setup.sh
-   sudo ./initial_setup.sh
-   ```
---- 
-## D.2. Account Setup
-- Goto `https://PANEL_URL` and go to the 'Sign up' section and create a password for your `super admin email address`.
-- Goto `https://ADMIN_URL` and login with your `super admin email address` and its password.
---- 
-## D.3. Congratulations
+Enter the following lines in the .env file and replace `YOUR_NODE_NAME` with your actual node name.
+
+```
+VITE_URL='https://PANEL_URL/app/'
+VITE_NODE_NAME='YOUR_NODE_NAME'
+VITE_RPC_URL='https://rpc1.fidesinnova.io'
+MQTT_WEBSOCKET_PORT=8082
+PORT=4000
+```
+
+---
+
+## B.7. Initial Admin Web App for administrator
+
+```
+cd /home/Blockchain-based-IoT-Server/admin_web_app
+sudo nano .env
+```
+
+Enter the following lines in the .env file and replace `YOUR_NODE_NAME` with your actual node name.
+
+```
+VITE_URL='https://PANEL_URL/app/'
+VITE_NODE_NAME='YOUR_NODE_NAME'
+VITE_RPC_URL='https://rpc1.fidesinnova.io'
+PORT=5000
+```
+
+## B.8. Run the app
+
+```
+docker compose -p $PROJECT_NAME build --no-cache
+docker compose -p $PROJECT_NAME up -d
+```
+
+## C.1. Congratulations
+
 - Panel Web App, `https://PANEL_URL` is for your regular users.
 - Admin Web App, `https://ADMIN_URL` is for your super admin users.
 - Contact FidesInnova at info@fidesinnova.io to add your Web App URLs to the FidesInnova website. These are already registered IoT Servers:
@@ -673,38 +670,12 @@ To automate the setup and build processes for both the backend and frontend appl
 - [https://panel.energywisenetwork.com](https://panel.energywisenetwork.com/)
 - [https://panel.trustsense.tech](https://panel.trustsense.tech/)
 
-# E. Maintenance
---- 
-## E.1. Update IoT Server
-- Every time the Fides Innova core development team pushes a new version of the code on GitHub.
-- **Note:** Make sure to check the name of the repository, and if needed, update the folder name using the following command:
-```
-mv IoT-Server Blockchain-based-IoT-Server
-```
-Use the following commands to pull and update your local repository from GitHub:
-```
-cd /home/Blockchain-based-IoT-Server/
-sudo git fetch
-sudo git pull
-```
+# D. Maintenance
 
-- Every time you pull a new version of the server code from GitHub or you make a change to any `.env` files in the system, you should apply the changes to your production server via update script.
-```
-cd /home/Blockchain-based-IoT-Server/
-sudo chmod +x update.sh
-sudo ./update.sh
-```
---- 
-## E.2. Backup IoT Server
-- Every time you want to get a backup from your server, you should execute the following script and get your backup file in the 'backups' folder.
-```
-cd /home/Blockchain-based-IoT-Server/
-sudo chmod +x backup.sh
-sudo ./backup.sh
-```
---- 
-## E.3. Troubleshooting
+## D.1. Troubleshooting
+
 - Useful commands for troubleshooting
+
 ```
 # to make file writable and other permissions :
 chmod +rwx chainthreed
@@ -730,76 +701,23 @@ mv source target
 # delete a directory or file
 rm -rf directoryName
 
-# View logs for a specific service (last 1 minute):
-sudo journalctl -u fides.backend.service --no-pager --since "1 minute ago"
-sudo journalctl -u fides.userwebapp.service --no-pager --since "1 minute ago"
-sudo journalctl -u fides.adminwebapp.service --no-pager --since "1 minute ago"
+# View logs for a specific continer (last 1 minute):
+sudo docker compose logs $service-name -f
 
-# View the latest logs for a service:
-sudo journalctl -u fides.backend.service -f
-sudo journalctl -u fides.userwebapp.service -f
-sudo journalctl -u fides.adminwebapp.service -f
-
-# Show logs for a service since a specific time:
-sudo journalctl -u fides.backend.service --since "2025-06-08 10:00:00"
-sudo journalctl -u fides.userwebapp.service --since "2025-06-08 10:00:00"
-sudo journalctl -u fides.adminwebapp.service --since "2025-06-08 10:00:00"
-
-# Show logs for all systemd services:
-sudo journalctl -xe
 
 # Check the status of a service:
-systemctl status fides.backend.service
-systemctl status fides.userwebapp.service
-systemctl status fides.adminwebapp.service
+sudo docker ps
 
-# Restart a service:
-sudo systemctl restart fides.backend.service
-sudo systemctl restart fides.userwebapp.service
-sudo systemctl restart fides.adminwebapp.service
+# Restart continers:
+sudo docker compose -p $stage-name  build
 
 # Stop a service:
-sudo systemctl stop fides.backend.service
-sudo systemctl stop fides.userwebapp.service
-sudo systemctl stop fides.adminwebapp.service
+sudo docker stop $service-name
 
-# Enable a service to start on boot:
-sudo systemctl enable fides.backend.service
-sudo systemctl enable fides.userwebapp.service
-sudo systemctl enable fides.adminwebapp.service
+#See syslogs
+sudo tail -f /var/log/syslog | grep -v UFW
 
-# Disable a service from starting on boot:
-sudo systemctl disable fides.backend.service
-sudo systemctl disable fides.userwebapp.service
-sudo systemctl disable fides.adminwebapp.service
-
-# List all active systemd services:
-systemctl list-units --type=service
 ```
---- 
-## E.4. Web App Ports
-- Change the Panel Web App Port
-In `Runner_webapp` folder, create `.env` file.
-```
-cd /home/Blockchain-based-IoT-Server/web_app/Runner_webapp
-sudo nano .env
-```
-Change the port number in the following line.
-```
-PORT=4000
-```
-
-- Change the Admin Web App Port
-- In `Runner_webapp` folder, create `.env` file.
-```
-cd /home/Blockchain-based-IoT-Server/admin_web_app/Runner_webapp
-sudo nano .env
-```
-Change the port number in the following line.
-```
-PORT=5000
-```
-Note: If you change these two ports, please make sure you consult with the Fides Innova repository manager to avoid any future git push conflicts.
 
 ---
 
@@ -822,18 +740,6 @@ You should see a version output confirming Java is installed. Example:
 ```bash
 openjdk version "11.0.20" 2023-07-18
 OpenJDK Runtime Environment (build 11.0.20+8-Ubuntu)
-```
-
-## 🐳 2. Install Docker
-
-Docker lets us run ZAP in a lightweight container without manual setup. Install and configure Docker:
-
-```bash
-sudo apt update
-sudo apt install docker.io -y
-sudo systemctl enable docker
-sudo systemctl start docker
-sudo usermod -aG docker $USER
 ```
 
 ## 🧰 3. Pull OWASP ZAP Docker Image
@@ -877,10 +783,10 @@ panel.zksensor.tech
 
 Once the scan is complete, the following files will appear in your `/home/security-report` folder:
 
-- `zap-report.html` — Main visual report (open this in any browser)  
+- `zap-report.html` — Main visual report (open this in any browser)
 - `zap.yaml` — Scan configuration and results in YAML format
 
 To review the results:
 
-1. Download the `/home/security-report` folder to your local machine.  
+1. Download the `/home/security-report` folder to your local machine.
 2. Open `zap-report.html` in a browser to inspect potential vulnerabilities.

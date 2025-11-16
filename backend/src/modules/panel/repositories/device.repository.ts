@@ -10,9 +10,8 @@ import { DeviceModel } from '../models/device.model';
 export class DeviceRepository {
   private result;
 
-  constructor() /* @InjectModel('iadevice', 'panelDb') // panelDb is defined in app.module.ts
-    private readonly deviceModel?: DeviceModel, */
-  {}
+  constructor /* @InjectModel('iadevice', 'panelDb') // panelDb is defined in app.module.ts
+    private readonly deviceModel?: DeviceModel, */() {}
 
   /* async insertDevice(data) {
     await this.deviceModel
@@ -41,7 +40,7 @@ export class DeviceRepository {
     populateCondition,
     selectCondition,
   ) {
-    console.log('we are in findDevicesById repository!');
+
 
     return await this.deviceModel
       .findOne({ _id: deviceId })
@@ -56,7 +55,7 @@ export class DeviceRepository {
     populateCondition,
     selectCondition,
   ) {
-    console.log('we are in findDeviceByHomeId repository!');
+
 
     return await this.deviceModel
       .find({ HomeId: homeId })
@@ -71,7 +70,7 @@ export class DeviceRepository {
     populateCondition,
     selectCondition,
   ) {
-    console.log('we are in findDeviceByMac repository!');
+
 
     return await this.deviceModel
       .findOne({ MAC: deviceMac })

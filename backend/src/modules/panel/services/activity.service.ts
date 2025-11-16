@@ -31,14 +31,12 @@ export class ActivityService {
     };
     query[fieldName] = { $exists: true };
 
-    console.log(query);
 
     foundActivities =
       await this.activityRepository.getDeviceActivityByEncryptedDeviceIdAndFieldName(
         query,
       );
 
-    console.log(foundActivities);
 
     return foundActivities;
   }
@@ -64,14 +62,12 @@ export class ActivityService {
     };
     query[fieldName] = { $exists: true };
 
-    console.log(query);
 
     foundActivities =
       await this.activityRepository.getDeviceActivityByEncryptedDeviceIdAndFieldNameAndDate(
         query,
       );
 
-    console.log(foundActivities);
 
     return foundActivities;
   }

@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { MongoClient, ObjectID } from 'mongodb';
+import { Types } from 'mongoose';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { DeviceTypeModel } from '../models/device-type.model';
@@ -34,7 +36,7 @@ export class DeviceTypeRepository {
 
   async editDeviceType(id, editedData) {
     await this.deviceTypeModel
-      .updateOne({ _id: id }, editedData)
+      .updateOne({ _id: { $eq: id } }, editedData)
       .then((data) => {
         this.result = data;
       })
@@ -63,8 +65,6 @@ export class DeviceTypeRepository {
   }
 
   async findAllDeviceTypes(whereCondition, populateCondition, selectCondition) {
-    console.log('we are in findAllDeviceTypes repository!');
-
     return await this.deviceTypeModel
       .find()
       .where(whereCondition)

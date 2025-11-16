@@ -4,7 +4,7 @@ import { GeneralException } from 'src/modules/utility/exceptions/general.excepti
 import { uploadFileDto } from '../dto/media-dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { MediaRepository } from 'src/modules/utility/repositories/media.repository';
-import { join } from 'path';
+import { join, resolve } from 'path';
 import * as fs from 'fs';
 
 @Injectable()
@@ -20,18 +20,38 @@ export class MediaService {
     userId: string,
     file: Express.Multer.File,
   ) {
-    // Handle custom path
     const basePath = './uploads';
     const customPath = body?.path || '';
-    const fullPath = join(basePath, customPath);
-    
+
+    const uploadsRootAbsPath = resolve(basePath);
+    const fullPath = resolve(uploadsRootAbsPath, customPath);
+    const newFilePath = resolve(fullPath, file.filename);
+
+    if (
+      !fullPath.startsWith(uploadsRootAbsPath + '/') &&
+      fullPath !== uploadsRootAbsPath
+    ) {
+      throw new GeneralException(
+        ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+        'Invalid media path: Directory traversal is not allowed.',
+      );
+    }
+    // Check that newFilePath is inside uploads root (in case filename is malicious)
+    if (
+      !newFilePath.startsWith(uploadsRootAbsPath + '/') &&
+      newFilePath !== uploadsRootAbsPath
+    ) {
+      throw new GeneralException(
+        ErrorTypeEnum.UNPROCESSABLE_ENTITY,
+        'Invalid file name: Directory traversal is not allowed.',
+      );
+    }
+
     // Create directory if it doesn't exist
     if (!fs.existsSync(fullPath)) {
       fs.mkdirSync(fullPath, { recursive: true });
     }
 
-    // Move file to custom path
-    const newFilePath = join(fullPath, file.filename);
     fs.renameSync(file.path, newFilePath);
 
     const newMedium = {
@@ -48,8 +68,6 @@ export class MediaService {
       updatedBy: userId,
       updateDate: new Date(),
     };
-
-    console.log('We are in Insert media', newMedium);
 
     try {
       const uploadedFile = await this.mediaRepository.create(newMedium);
@@ -75,7 +93,7 @@ export class MediaService {
         );
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
 
       throw new GeneralException(
         ErrorTypeEnum.INTERNAL_SERVER_ERROR,
@@ -98,7 +116,7 @@ export class MediaService {
         }/${media.path}`,
       };
     } catch (error) {
-      console.log(error);
+      console.error(error);
       throw new GeneralException(
         ErrorTypeEnum.INTERNAL_SERVER_ERROR,
         'An error occurred while retrieving the media.',

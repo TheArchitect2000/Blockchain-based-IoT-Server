@@ -1,5 +1,12 @@
 import { Injectable } from '@nestjs/common';
+import { InjectConnection } from '@nestjs/mongoose';
+import { Mongoose, Connection } from 'mongoose';
+import mongoose from 'mongoose';
+import { MongoClient, ObjectID } from 'mongodb';
 import { DeviceRepository } from '../repositories/device.repository';
+import * as randompassword from 'secure-random-password';
+import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
+import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 
 // Nodejs encryption with CTR
 let crypto = require('crypto');
@@ -33,9 +40,7 @@ export class DeviceService {
   }
 
   encryptDeviceId(deviceId) {
-    console.log('deviceId: ', deviceId);
     let cipher = crypto.createCipher(algorithm, defaultEncryptionPassword);
-    console.log('cipher: ', cipher);
     let encrypted = cipher.update(deviceId, 'utf8', 'base64');
     encrypted += cipher.final('base64');
     encrypted = encrypted.replace(/\//g, '~').replace(/\+/g, '_');
@@ -51,7 +56,6 @@ export class DeviceService {
     );
     let decrypted = decipher.update(encryptedDeviceId, 'base64', 'utf8');
     decrypted += decipher.final('utf8');
-    // console.log('decryptid', text, dec);
     return decrypted;
   }
 
@@ -67,7 +71,6 @@ export class DeviceService {
     };
 
     let insertedDevice = await this.deviceRepository.insertDevice(newDevice);
-    console.log('Customer device inserted!');
     return insertedDevice;
   }
 
@@ -78,7 +81,6 @@ export class DeviceService {
       'Removed HomeId Name GPS Password IsActive DeviceType createdAt updatedAt RemoveTime MAC';
     let foundDevices: any = null;
 
-    console.log('we are in getDeviceByHomeId service!');
 
     foundDevices = await this.deviceRepository.findDevicesByHomeId(
       homeId,
@@ -87,7 +89,6 @@ export class DeviceService {
       selectCondition,
     );
 
-    console.log('Found devices are: ', foundDevices);
 
     return foundDevices;
   }
@@ -101,7 +102,6 @@ export class DeviceService {
     let foundDevicesWithEncryptedDeviceId = [];
     let encryptedDeviceId;
 
-    console.log('we are in getDeviceByHomeId service!');
 
     foundDevices = await this.deviceRepository.findDevicesByHomeId(
       homeId,
@@ -110,11 +110,9 @@ export class DeviceService {
       selectCondition,
     );
 
-    console.log('Found devices are: ', foundDevices);
 
     foundDevices.forEach((element) => {
       encryptedDeviceId = this.encryptDeviceId(element._id.toString());
-      console.log('encryptedDeviceId is: ', encryptedDeviceId);
       foundDevicesWithEncryptedDeviceId.push({
         _id: element._id,
         EncryptedId: encryptedDeviceId,
@@ -130,10 +128,6 @@ export class DeviceService {
         UpdateDate: element.updatedAt,
       });
     });
-    console.log(
-      'foundDevicesWithEncryptedDeviceId are: ',
-      foundDevicesWithEncryptedDeviceId,
-    );
 
     return foundDevicesWithEncryptedDeviceId;
   }
@@ -187,7 +181,6 @@ export class DeviceService {
       'Removed HomeId Name GPS Password IsActive DeviceType createdAt updatedAt RemoveTime MAC';
     let foundDevice = null;
 
-    console.log('I am in checkDeviceIsExist!');
 
     foundDevice = await this.findADeviceByMac(
       deviceMac,
@@ -197,10 +190,8 @@ export class DeviceService {
     );
 
     if (foundDevice) {
-      console.log('Device found!');
       return true;
     } else {
-      console.log('Device not found!');
       throw new GeneralException(
         ErrorTypeEnum.NOT_FOUND,
         'Device does not exist.',
@@ -231,7 +222,6 @@ export class DeviceService {
       '_id Removed HomeId Name GPS Password IsActive DeviceType createdAt updatedAt RemoveTime MAC';
     let foundDevice: any = null;
 
-    console.log('we are in renameDevice service!');
 
     await this.deviceRepository
       .findDeviceById(
@@ -255,7 +245,6 @@ export class DeviceService {
       foundDevice.updatedAt = new Date();
     }
 
-    console.log('Updated found device for rename is: ', foundDevice);
 
     await this.deviceRepository
       .editDevice(foundDevice._id, foundDevice)
@@ -303,7 +292,6 @@ export class DeviceService {
       foundDevice.updatedAt = new Date();
     }
 
-    console.log('Updated found device for deletion is: ', foundDevice);
 
     await this.deviceRepository
       .editDevice(foundDevice._id, foundDevice)

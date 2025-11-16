@@ -1,0 +1,96 @@
+name: Deploy to Staging
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: [staging]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: staging
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.STAGING_SSH_PRIVATE_KEY }}" > ~/.ssh/staging_key
+          chmod 600 ~/.ssh/staging_key
+          ssh-keyscan -H ${{ secrets.STAGING_SERVER }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to staging server
+        env:
+          HOSTNAME: ${{ secrets.STAGING_SERVER }}
+          USERNAME: ${{ secrets.STAGING_USER }}
+        run: |
+          ssh -i ~/.ssh/staging_key ${USERNAME}@${HOSTNAME} << 'EOF'
+            set -e
+            
+            PROJECT_DIR="/home/fidesinnova-stg"
+            PROJECT_NAME="staging"
+            
+            echo "📦 Pulling latest changes..."
+            cd $PROJECT_DIR
+            git fetch origin staging
+            git reset --hard origin/staging
+            
+            echo "🔧 Stopping existing containers..."
+            docker compose -p $PROJECT_NAME down --remove-orphans
+            
+            echo "🏗️ Building Docker images..."
+            docker compose -p $PROJECT_NAME build --no-cache
+            
+            echo "🚀 Starting containers..."
+            docker compose -p $PROJECT_NAME up -d
+            
+            echo "⏳ Waiting for services to be healthy..."
+            sleep 10
+            
+            echo "📊 Container status:"
+            docker compose -p $PROJECT_NAME ps
+            
+            echo "🧹 Cleaning up unused Docker resources..."
+            docker image prune -af --filter "until=24h"
+            docker volume prune -f --filter "label!=keep"
+            
+            echo "✅ Deployment completed successfully!"
+          EOF
+
+      - name: Verify deployment
+        env:
+          HOSTNAME: ${{ secrets.STAGING_SERVER }}
+          USERNAME: ${{ secrets.STAGING_USER }}
+        run: |
+          ssh -i ~/.ssh/staging_key ${USERNAME}@${HOSTNAME} << 'EOF'
+            PROJECT_NAME="staging"
+            
+            # Check if all containers are running
+            RUNNING=$(docker compose -p $PROJECT_NAME ps --status running --quiet | wc -l)
+            TOTAL=$(docker compose -p $PROJECT_NAME ps --quiet | wc -l)
+            
+            echo "Containers running: $RUNNING/$TOTAL"
+            
+            if [ "$RUNNING" -ne "$TOTAL" ]; then
+              echo "❌ Not all containers are running!"
+              docker compose -p $PROJECT_NAME logs --tail=50
+              exit 1
+            fi
+            
+            echo "✅ All containers are running"
+          EOF
+
+      - name: Cleanup SSH key
+        if: always()
+        run: |
+          rm -f ~/.ssh/staging_key
+
+      - name: Send notification on failure
+        if: failure()
+        run: |
+          echo "Deployment failed! Check the logs above for details."
+          # Add your notification service here (Slack, Discord, email, etc.)

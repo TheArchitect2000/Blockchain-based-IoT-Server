@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { MongoClient, ObjectID } from 'mongodb';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { UserInfoModel } from '../models/user-info.model';
@@ -37,10 +38,12 @@ export class UserInfoRepository {
   }
 
   async editUserInfo(id, editedData) {
-    return await this.userInfoModel.updateOne({ _id: id }, editedData);
+    return await this.userInfoModel.updateOne({ _id: { $eq: id } }, editedData);
   }
 
   async findAUserInfoById(_id) {
+    const userInfoId = new ObjectID(_id);
+
     await this.userInfoModel
       .findOne({ _id })
       .where({ isDeleted: false })

@@ -3,7 +3,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { ContractModel } from '../model/contract.model';
-import { DeleteResult } from 'mongoose';
 
 @Injectable()
 export class ContractRepository {
@@ -23,7 +22,7 @@ export class ContractRepository {
       })
       .catch((error) => {
         let errorMessage = 'Some errors occurred while commitment insertion!';
-        console.log(error);
+        console.error(error);
         throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
@@ -37,8 +36,6 @@ export class ContractRepository {
     commitmentId: string,
     nodeId: string,
   ) {
-    console.log('we are in getCommitmentByCommitmentIdAndNodeId repository!');
-
     return await this.contractModel
       .findOne({ _id: commitmentId, nodeId: nodeId })
       .where({})
@@ -49,19 +46,13 @@ export class ContractRepository {
   async deleteCommitmentByCommitmentIdAndNodeId(
     commitmentId: string,
     nodeId: string,
-  ): Promise<DeleteResult> {
-    console.log(
-      'we are in deleteCommitmentByCommitmentIdAndNodeId repository!',
-    );
-
+  ) {
     return await this.contractModel
-      .deleteOne({ _id: commitmentId, nodeId: nodeId })
+      .deleteOne({ _id: { $eq: commitmentId }, nodeId: { $eq: nodeId } })
       .where({});
   }
 
   async getCommitmentsByUserId(userId: string) {
-    console.log('we are in getCommitmentsByUserId repository!');
-
     return await this.contractModel
       .find({ userId: userId })
       .where({})

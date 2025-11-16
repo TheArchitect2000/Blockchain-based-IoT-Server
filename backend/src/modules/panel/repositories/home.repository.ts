@@ -9,9 +9,8 @@ import { HomeModel } from '../models/home.model';
 export class HomeRepository {
   private result;
 
-  constructor() /* @InjectModel('iahome', 'panelDb') // panelDb is defined in app.module.ts
-    private readonly homeModel?: HomeModel, */
-  {}
+  constructor /* @InjectModel('iahome', 'panelDb') // panelDb is defined in app.module.ts
+    private readonly homeModel?: HomeModel, */() {}
 
   /* async insertHome(data) {
     await this.homeModel
@@ -40,7 +39,6 @@ export class HomeRepository {
     populateCondition,
     selectCondition,
   ) {
-    console.log('we are in findCustomerByEmail repository!');
 
     return await this.homeModel
       .findOne({ CustomerId: customerId })

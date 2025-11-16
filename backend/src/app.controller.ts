@@ -7,7 +7,7 @@ import { UserService } from './modules/user/services/user/user.service';
 import { ErrorTypeEnum } from './modules/utility/enums/error-type.enum';
 import { GeneralException } from './modules/utility/exceptions/general.exception';
 import { JwtAuthGuard } from './modules/authentication/guard/jwt-auth.guard';
-
+import { LogService } from './modules/logging/log.service';
 
 @Controller('app')
 export class AppController {
@@ -48,7 +48,7 @@ export class AppController {
       .catch((error) => {
         let errorMessage =
           'Some errors occurred while inserting default roles!';
-        console.log(error);
+        console.error(error);
         throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,
           errorMessage,
@@ -84,7 +84,8 @@ export class AppController {
     description: '',
   })
   async getDevices() {
+    //test logging
+    LogService.log('Test log message from AppService');
     return this.appService.deviceList;
   }
-
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
-import { ObjectId } from 'mongodb';
+import { MongoClient, ObjectID } from 'mongodb';
 import { Types } from 'mongoose';
 import { CategoryRepository } from '../repositories/category.repository';
 import { MediaService } from 'src/modules/utility/services/media.service';
@@ -275,7 +275,7 @@ export class CategoryService {
   }
 
   async findCategoryById(categoryId) {
-    if (ObjectId.isValid(categoryId)) {
+    if (ObjectID.isValid(categoryId)) {
       await this.categoryRepository
         .findCategoryById(categoryId)
         .then((data) => {
@@ -429,8 +429,6 @@ export class CategoryService {
         this.result = data;
       })
       .catch((error) => {
-        console.log(error);
-
         let errorMessage = 'Some errors occurred while search in categories!';
         throw new GeneralException(
           ErrorTypeEnum.UNPROCESSABLE_ENTITY,

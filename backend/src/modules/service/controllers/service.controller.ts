@@ -71,7 +71,7 @@ export class ServiceController {
     const data = {
       ...body,
       userId: request.user.userId,
-      nodeId: process.env.PANEL_URL
+      nodeId: process.env.NODE_NAME,
     };
     return await this.serviceService.insertService(data);
   }
@@ -161,8 +161,6 @@ export class ServiceController {
     description: 'Edites service by service ID and other fields.',
   })
   async editService(@Body() body: editServiceDto, @Request() request) {
-    console.log('We are in editService controller');
-
     if (
       body.serviceId === null ||
       body.serviceId === undefined ||

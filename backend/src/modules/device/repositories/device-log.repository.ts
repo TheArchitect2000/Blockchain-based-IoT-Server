@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { MongoClient, ObjectID } from 'mongodb';
+import { Types } from 'mongoose';
 import { ErrorTypeEnum } from 'src/modules/utility/enums/error-type.enum';
 import { GeneralException } from 'src/modules/utility/exceptions/general.exception';
 import { DeviceLogModel } from '../models/device-log.model';
-import { DeleteResult } from 'mongodb';
 
 @Injectable()
 export class DeviceLogRepository {
@@ -33,7 +34,7 @@ export class DeviceLogRepository {
     // return await this.deviceLogModel.create(data)
   }
 
-  async deleteDeviceLogs(query): Promise<DeleteResult> {
+  async deleteDeviceLogs(query) {
     try {
       const result = await this.deviceLogModel.deleteMany(query);
       return result;
@@ -47,7 +48,7 @@ export class DeviceLogRepository {
 
   async editDeviceLog(id, editedData) {
     await this.deviceLogModel
-      .updateOne({ _id: id }, editedData)
+      .updateOne({ _id: { $eq: id } }, editedData)
       .then((data) => {
         this.result = data;
       })

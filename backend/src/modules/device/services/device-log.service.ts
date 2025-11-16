@@ -27,7 +27,7 @@ export class DeviceLogService {
             insertDate: new Date(),
         }
 
-        console.log("deviceLog", deviceLog);
+
         
         let insertedDeviceLog;
 
@@ -256,8 +256,6 @@ export class DeviceLogService {
 
     foundDeviceLogs = await this.deviceLogRepository.getDeviceLogs(query);
 
-    //console.log(foundDeviceLogs);
-
     return foundDeviceLogs;
   }
 
@@ -275,8 +273,6 @@ export class DeviceLogService {
       isAdmin,
     );
 
-    console.log('foundDevices:', foundDevices);
-
     if (foundDevices?.success == false) {
       return foundDevices;
     }
@@ -288,8 +284,6 @@ export class DeviceLogService {
     };
 
     const logs = await this.deviceLogRepository.getDeviceLogs(query);
-
-    console.log('logs2222:', logs);
 
     const periods = this.generatePeriods(startDate, endDate, type);
     const groupedLogs = this.groupLogsByPeriod(logs, type);
@@ -458,8 +452,6 @@ export class DeviceLogService {
     };
 
     foundDeviceLogs = await this.deviceLogRepository.getDeviceLogs(query);
-
-    console.log('foundDeviceLogs:', foundDeviceLogs);
 
     return foundDeviceLogs;
   }
