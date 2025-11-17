@@ -49,18 +49,18 @@ jobs:
               "git fetch origin main",
               "git reset --hard origin/main",
               "echo \"🔧 Stopping existing containers...\"",
-              "docker compose -p $PROJECT_NAME down --remove-orphans",
+              "sudo docker compose -p $PROJECT_NAME down --remove-orphans",
               "echo \"🏗️ Building Docker images...\"",
-              "docker compose -p $PROJECT_NAME build --no-cache",
+              "sudo docker compose -p $PROJECT_NAME build --no-cache",
               "echo \"🚀 Starting containers...\"",
-              "docker compose -p $PROJECT_NAME up -d",
+              "sudo  docker compose -p $PROJECT_NAME up -d",
               "echo \"⏳ Waiting for services to be healthy...\"",
               "sleep 10",
               "echo \"📊 Container status:\"",
-              "docker compose -p $PROJECT_NAME ps",
+              "sudo  docker compose -p $PROJECT_NAME ps",
               "echo \"🧹 Cleaning up unused Docker resources...\"",
-              "docker image prune -af --filter \"until=24h\"",
-              "docker volume prune -f --filter \"label!=keep\"",
+              "sudo  docker image prune -af --filter \"until=24h\"",
+              "sudo  docker volume prune -f --filter \"label!=keep\"",
               "echo \"✅ Deployment completed successfully!\""
             ]' \
             --output text \
@@ -102,12 +102,12 @@ jobs:
             --document-name "AWS-RunShellScript" \
             --parameters 'commands=[
               "PROJECT_NAME=\"main\"",
-              "RUNNING=$(docker compose -p $PROJECT_NAME ps --status running --quiet | wc -l)",
-              "TOTAL=$(docker compose -p $PROJECT_NAME ps --quiet | wc -l)",
+              "RUNNING=$(sudo docker compose -p $PROJECT_NAME ps --status running --quiet | wc -l)",
+              "TOTAL=$(sudo  docker compose -p $PROJECT_NAME ps --quiet | wc -l)",
               "echo \"Containers running: $RUNNING/$TOTAL\"",
               "if [ \"$RUNNING\" -ne \"$TOTAL\" ]; then",
               "  echo \"❌ Not all containers are running!\"",
-              "  docker compose -p $PROJECT_NAME logs --tail=50",
+              "  sudo  docker compose -p $PROJECT_NAME logs --tail=50",
               "  exit 1",
               "fi",
               "echo \"✅ All containers are running\""
