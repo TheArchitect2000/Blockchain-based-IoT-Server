@@ -42,7 +42,7 @@ jobs:
             --document-name "AWS-RunShellScript" \
             --parameters 'commands=[
               "set -e",
-              "PROJECT_DIR=\"/home/ubuntu/Blockchain-based-IoT-Server\"",
+              "PROJECT_DIR=\"/home/Blockchain-based-IoT-Server\"",
               "PROJECT_NAME=\"main\"",
               "echo \"📦 Pulling latest changes...\"",
               "cd $PROJECT_DIR",
