@@ -132,113 +132,179 @@ export class ContractService {
     private readonly serviceService?: ServiceService,
     private readonly contractData?: ContractDataService,
   ) {
-    this.provider = new ethers.JsonRpcProvider(this.rpcUrl, {
-      name: 'FidesInnova',
-      chainId: this.chainId,
-    });
+    try {
+      this.provider = new ethers.JsonRpcProvider(this.rpcUrl, {
+        name: 'FidesInnova',
+        chainId: this.chainId,
+      });
 
-    this.faucetWallet = new ethers.Wallet(
-      process.env.FAUCET_WALLET_PRIVATE_KEY,
-      this.provider,
-    );
+      // Add error handlers to prevent crashes
+      this.provider.on('error', (error) => {
+        console.error('RPC Provider Error:', error.message);
+        // Don't crash - just log the error
+      });
 
-    this.adminWallet = new ethers.Wallet(
-      process.env.ADMIN_WALLET_PRIVATE_KEY,
-      this.provider,
-    );
-
-    if (this.contractData.serviceDeviceContractAddress) {
-      this.contracts.serviceDevice = new ethers.Contract(
-        this.contractData.serviceDeviceContractAddress,
-        serviceDeviceABI,
-        this.adminWallet,
-      );
+      // Try to get network info, but don't crash if it fails
+      this.provider.getNetwork().catch((error) => {
+        console.error(
+          'RPC Provider: Failed to get network info:',
+          error.message,
+        );
+      });
+    } catch (error) {
+      console.error('Failed to initialize RPC Provider:', error.message);
+      // Create a dummy provider to prevent null reference errors
+      // The service will need to handle this gracefully
+      this.provider = null;
     }
 
-    this.contracts.storeZkp = new ethers.Contract(
-      this.contractData.storeZkpContractAddress,
-      zkpStorageABI,
-      this.adminWallet,
-    );
-
-    this.contracts.commitment = new ethers.Contract(
-      this.contractData.commitmentContractAddress,
-      commitmentManagementABI,
-      this.adminWallet,
-    );
-
-    this.contracts.serviceDevice.on('ServiceCreated', async (id, service) => {
-      let newService = {
-        nodeId: service[0],
-        nodeServiceId: service[1],
-        userId: service[1],
-        serviceName: service[2],
-        description: service[3],
-        serviceImage: service[8],
-        serviceType: service[4],
-        installationPrice: service[6],
-        runningPrice: service[7],
-        status: 'tested',
-        blocklyJson: '',
-        code: service[9],
-        devices: JSON.parse(service[5]),
-        insertDate: service[10],
-        updateDate: service[11],
-        published: true,
-      };
-
+    // Only create wallets if provider is available
+    if (this.provider) {
       try {
-        const createService = await this.serviceService.insertService(
-          newService,
+        this.faucetWallet = new ethers.Wallet(
+          process.env.FAUCET_WALLET_PRIVATE_KEY,
+          this.provider,
+        );
+
+        this.adminWallet = new ethers.Wallet(
+          process.env.ADMIN_WALLET_PRIVATE_KEY,
+          this.provider,
         );
       } catch (error) {
-        console.error('error: ', error);
+        console.error('Failed to create wallets:', error.message);
       }
-    });
+    }
 
-    this.contracts.serviceDevice.on('ServiceRemoved', async (id, service) => {
+    // Only create contracts if provider and wallets are available
+    if (
+      this.provider &&
+      this.adminWallet &&
+      this.contractData?.serviceDeviceContractAddress
+    ) {
       try {
-        await this.serviceService.deleteServiceByNodeServiceIdAndNodeId(
-          service[0],
-          service[1],
+        this.contracts.serviceDevice = new ethers.Contract(
+          this.contractData.serviceDeviceContractAddress,
+          serviceDeviceABI,
+          this.adminWallet,
         );
       } catch (error) {
-        console.error(error);
+        console.error(
+          'Failed to create serviceDevice contract:',
+          error.message,
+        );
       }
-    });
+    }
 
-    this.contracts.serviceDevice.on('DeviceCreated', (id, device) => {
+    if (this.provider && this.adminWallet) {
       try {
-        let newDevice = {
-          nodeId: device[0],
-          nodeDeviceId: device[1],
-          isShared: true,
-          deviceName: device[2],
-          deviceType: device[2],
-          deviceEncryptedId: device[3],
-          mac: Buffer.from(device[3], 'base64').toString('utf8'),
-          hardwareVersion: String(device[4]).split('/')[0],
-          firmwareVersion: String(device[4]).split('/')[1],
-          parameters: device[6].map((str) => JSON.parse(str)),
-          costOfUse: device[7],
-          location: { coordinates: device[8] },
-          insertDate: new Date(String(device[10])),
-          updateDate: new Date(String(device[10])),
-        };
-
-        this.deviceService.insertDevice(newDevice);
+        this.contracts.storeZkp = new ethers.Contract(
+          this.contractData.storeZkpContractAddress,
+          zkpStorageABI,
+          this.adminWallet,
+        );
       } catch (error) {
-        console.error('DeviceCreated', error);
+        console.error('Failed to create storeZkp contract:', error.message);
       }
-    });
 
-    this.contracts.serviceDevice.on('DeviceRemoved', (id, device) => {
-      this.deviceService.deleteOtherNodeDeviceByNodeIdAndDeviceId(
-        device[0],
-        device[1],
-        device[3],
-      );
-    });
+      try {
+        this.contracts.commitment = new ethers.Contract(
+          this.contractData.commitmentContractAddress,
+          commitmentManagementABI,
+          this.adminWallet,
+        );
+      } catch (error) {
+        console.error('Failed to create commitment contract:', error.message);
+      }
+    }
+
+    // Only set up event listeners if contracts are available
+    if (this.contracts.serviceDevice) {
+      try {
+        this.contracts.serviceDevice.on(
+          'ServiceCreated',
+          async (id, service) => {
+            let newService = {
+              nodeId: service[0],
+              nodeServiceId: service[1],
+              userId: service[1],
+              serviceName: service[2],
+              description: service[3],
+              serviceImage: service[8],
+              serviceType: service[4],
+              installationPrice: service[6],
+              runningPrice: service[7],
+              status: 'tested',
+              blocklyJson: '',
+              code: service[9],
+              devices: JSON.parse(service[5]),
+              insertDate: service[10],
+              updateDate: service[11],
+              published: true,
+            };
+
+            try {
+              const createService = await this.serviceService.insertService(
+                newService,
+              );
+            } catch (error) {
+              console.error('error: ', error);
+            }
+          },
+        );
+
+        this.contracts.serviceDevice.on(
+          'ServiceRemoved',
+          async (id, service) => {
+            try {
+              await this.serviceService.deleteServiceByNodeServiceIdAndNodeId(
+                service[0],
+                service[1],
+              );
+            } catch (error) {
+              console.error(error);
+            }
+          },
+        );
+
+        this.contracts.serviceDevice.on('DeviceCreated', (id, device) => {
+          try {
+            let newDevice = {
+              nodeId: device[0],
+              nodeDeviceId: device[1],
+              isShared: true,
+              deviceName: device[2],
+              deviceType: device[2],
+              deviceEncryptedId: device[3],
+              mac: Buffer.from(device[3], 'base64').toString('utf8'),
+              hardwareVersion: String(device[4]).split('/')[0],
+              firmwareVersion: String(device[4]).split('/')[1],
+              parameters: device[6].map((str) => JSON.parse(str)),
+              costOfUse: device[7],
+              location: { coordinates: device[8] },
+              insertDate: new Date(String(device[10])),
+              updateDate: new Date(String(device[10])),
+            };
+
+            this.deviceService.insertDevice(newDevice);
+          } catch (error) {
+            console.error('DeviceCreated', error);
+          }
+        });
+
+        this.contracts.serviceDevice.on('DeviceRemoved', (id, device) => {
+          this.deviceService.deleteOtherNodeDeviceByNodeIdAndDeviceId(
+            device[0],
+            device[1],
+            device[3],
+          );
+        });
+      } catch (error) {
+        console.error(
+          'Failed to set up contract event listeners:',
+          error.message,
+        );
+      }
+    }
   }
 
   async adminWalletData() {

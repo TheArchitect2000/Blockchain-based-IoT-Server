@@ -67,29 +67,86 @@ export class MqttService implements OnModuleInit {
       wss: process.env.MQTT_WEBSOCKET_PORT || 8081,
     };
 
-    // Using proper Let's Encrypt certificates - no need to disable validation
-    const tlsOptions = {
-      key: fs.readFileSync('/etc/nginx/ssl/privkey.pem'),
-      cert: fs.readFileSync('/etc/nginx/ssl/fullchain.pem'),
-    };
+    // Try to load TLS certificates, but don't crash if they're missing/expired
+    let tlsOptions: { key: Buffer; cert: Buffer } | null = null;
 
-    const tlsServer = createServer(tlsOptions, aedes.handle);
+    try {
+      const keyPath = '/etc/nginx/ssl/privkey.pem';
+      const certPath = '/etc/nginx/ssl/fullchain.pem';
 
-    tlsServer.listen(mqttPorts.mqtts, function () {
+      // Check if files exist
+      if (fs.existsSync(keyPath) && fs.existsSync(certPath)) {
+        tlsOptions = {
+          key: fs.readFileSync(keyPath),
+          cert: fs.readFileSync(certPath),
+        };
+        LogService.log('MQTT: TLS certificates loaded successfully');
+      } else {
+        LogService.log(
+          'MQTT: TLS certificate files not found, starting without TLS',
+        );
+      }
+    } catch (error) {
+      console.error('MQTT: Failed to load TLS certificates:', error.message);
+      LogService.log(`MQTT: Failed to load TLS certificates: ${error.message}`);
+      LogService.log('MQTT: Starting without TLS (non-secure mode)');
+    }
+
+    // Start non-secure MQTT server (always available)
+    const mqttServer = require('net').createServer(aedes.handle);
+    mqttServer.listen(mqttPorts.mqtt, function () {
+      LogService.log(`MQTT started and listening on port ${mqttPorts.mqtt}`);
+    });
+
+    // Start non-secure WebSocket server
+    const wsServer = require('http').createServer();
+    wsStream.createServer({ server: wsServer }, aedes.handle);
+    wsServer.listen(mqttPorts.ws, function () {
       LogService.log(
-        `MQTT over TLS / MQTTS started and listening on port ${mqttPorts.mqtts}`,
+        `MQTT over WebSocket started and listening on port ${mqttPorts.ws}`,
       );
     });
 
-    const httpServer = require('https').createServer(tlsOptions);
+    // Start secure servers only if certificates are available
+    if (tlsOptions) {
+      try {
+        const tlsServer = createServer(tlsOptions, aedes.handle);
 
-    wsStream.createServer({ server: httpServer }, aedes.handle);
+        tlsServer.on('error', (err) => {
+          console.error('MQTT TLS Server Error:', err.message);
+          LogService.log(`MQTT TLS Server Error: ${err.message}`);
+        });
 
-    httpServer.listen(mqttPorts.wss, function () {
-      LogService.log(
-        `MQTT over WebSocket Secure / WSS started and listening on port ${mqttPorts.wss}`,
-      );
-    });
+        tlsServer.listen(mqttPorts.mqtts, function () {
+          LogService.log(
+            `MQTT over TLS / MQTTS started and listening on port ${mqttPorts.mqtts}`,
+          );
+        });
+      } catch (error) {
+        console.error('MQTT: Failed to start TLS server:', error.message);
+        LogService.log(`MQTT: Failed to start TLS server: ${error.message}`);
+      }
+
+      try {
+        const httpServer = require('https').createServer(tlsOptions);
+
+        httpServer.on('error', (err) => {
+          console.error('MQTT HTTPS Server Error:', err.message);
+          LogService.log(`MQTT HTTPS Server Error: ${err.message}`);
+        });
+
+        wsStream.createServer({ server: httpServer }, aedes.handle);
+
+        httpServer.listen(mqttPorts.wss, function () {
+          LogService.log(
+            `MQTT over WebSocket Secure / WSS started and listening on port ${mqttPorts.wss}`,
+          );
+        });
+      } catch (error) {
+        console.error('MQTT: Failed to start WSS server:', error.message);
+        LogService.log(`MQTT: Failed to start WSS server: ${error.message}`);
+      }
+    }
 
     aedes.on('subscribe', async function (subscriptions, client) {
       LogService.log(
