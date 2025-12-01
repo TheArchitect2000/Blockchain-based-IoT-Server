@@ -5,6 +5,11 @@ services:
       dockerfile: Dockerfile
     ports:
       - "${BACK_PORT}:${BACK_PORT}"
+      # MQTT ports
+      - "1883:1883"      # MQTT (non-secure)
+      - "${MQTT_BROKER_PORT:-8883}:8883"      # MQTTS (secure)
+      - "8080:8080"      # MQTT over WebSocket
+      - "${MQTT_WEBSOCKET_PORT:-8081}:8081"   # MQTT over WebSocket Secure
     env_file:
       - ./backend/.env
     restart: always
