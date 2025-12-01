@@ -659,7 +659,91 @@ docker compose -p $PROJECT_NAME build --no-cache
 docker compose -p $PROJECT_NAME up -d
 ```
 
-## C.1. Congratulations
+---
+
+# Step C. Backup and Restore MongoDB Data
+
+## C.1. Backup MongoDB Data
+
+To create a backup of your MongoDB database, follow these steps:
+
+- First, identify your MongoDB container name or ID:
+
+```
+sudo docker ps
+```
+
+- Create a backup directory on your host machine:
+
+```
+sudo mkdir -p /home/mongodb-backup
+```
+
+- Run `mongodump` to create a backup. Replace `<CONTAINER_ID>` with your MongoDB container ID or name, `<USER>` with your MongoDB username, and `<PASS>` with your MongoDB password:
+
+```
+sudo docker exec -it <CONTAINER_ID> mongodump \
+  --username <USER> \
+  --password <PASS> \
+  --authenticationDatabase admin \
+  --out /dump
+```
+
+- Copy the backup from the container to your host machine:
+
+```
+sudo docker cp <CONTAINER_ID>:/dump /home/mongodb-backup/
+```
+
+- The backup files will be stored in `/home/mongodb-backup/dump/`. You can compress this directory for easier storage and transfer:
+
+```
+sudo tar -czf /home/mongodb-backup/mongodb-backup-$(date +%Y%m%d-%H%M%S).tar.gz -C /home/mongodb-backup dump/
+```
+
+---
+
+## C.2. Restore MongoDB Data
+
+To restore MongoDB data from a backup, follow these steps:
+
+- First, identify your MongoDB container name or ID:
+
+```
+sudo docker ps
+```
+
+- If you have a compressed backup, extract it first:
+
+```
+sudo tar -xzf /home/mongodb-backup/mongodb-backup-YYYYMMDD-HHMMSS.tar.gz -C /home/mongodb-backup/
+```
+
+- Copy the backup files into the MongoDB container:
+
+```
+sudo docker cp /home/mongodb-backup/dump <CONTAINER_ID>:/dump
+```
+
+- Restore the data using `mongorestore`. Replace `<CONTAINER_ID>` with your MongoDB container ID or name, `<USER>` with your MongoDB username, and `<PASS>` with your MongoDB password:
+
+```
+sudo docker exec -it <CONTAINER_ID> mongorestore \
+  --username <USER> \
+  --password <PASS> \
+  --authenticationDatabase admin \
+  /dump
+```
+
+- After restoration, you can clean up the dump directory inside the container:
+
+```
+sudo docker exec -it <CONTAINER_ID> rm -rf /dump
+```
+
+---
+
+## C.3. Congratulations
 
 - Panel Web App, `https://PANEL_URL` is for your regular users.
 - Admin Web App, `https://ADMIN_URL` is for your super admin users.

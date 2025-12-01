@@ -36,7 +36,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ positions, loading }) => {
                 if (item.nodeId == 'developer.fidesinnova.io') {
                     deviceNodeId = `wss://${item.nodeId}:${port}`
                 } else {
-                    deviceNodeId = `wss://panel.${item.nodeId}:${port}}`
+                    deviceNodeId = `wss://panel.${item.nodeId}:${port}`
                 }
 
                 const unsubscribe = subscribe(
