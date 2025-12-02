@@ -418,6 +418,7 @@ ADMIN_WEBAPP_PORT=5000
 
 # Mongo Database Configuration
 MONGO_DATABASE_NAME=fidesinnova
+MONGO_INITDB_DATABASE=fidesinnova
 MONGO_DATABASE_PORT=27017
 MONGO_USER=fidesinnova_user
 MONGO_PASSWORD=FIDESINNOVA_DB_PASSWORD
@@ -463,6 +464,9 @@ ADMIN_WALLET_PRIVATE_KEY='YOUR_ADMIN_WALLET_PRIVATE_KEY'
 # Sets how many times passwords are hashed. Higher values mean stronger security but slower processing
 CRYPTION_SALT=10
 
+# Allow insecure RPC connections (set to true for development, false for production)
+ALLOW_INSECURE_RPC=true
+
 # Syslog Server Configuration
 SYSLOG_SERVER_ENABLED='True'
 SYSLOG_SERVER_HOST='YOUR_SYSLOG_SERVER'
@@ -484,6 +488,13 @@ HOST_SUB_DIRECTORY='app'
 STORX_BUCKET_NAME='fidesinnova'
 STORX_HOST='https://b2.storx.io'
 STORX_AUTH_HOST='https://auth.storx.io'
+STORX_CALLBACK_URI='https://PANEL_URL/account/settings/storx'
+STORX_STG_AUTH_URL='https://stagingauth.storx.io'
+STORX_AUTH_EMAIL='your-storx-email@example.com'
+STORX_AUTH_PASSWORD='YOUR_STORX_PASSWORD'
+STORX_NAME='your_storx_name'
+STORX_CLIENT_ID='YOUR_STORX_CLIENT_ID'
+STORX_CLIENT_SECRET='YOUR_STORX_CLIENT_SECRET'
 
 # Mongo Database Configuration
 MONGO_DATABASE_NAME='fidesinnova'
@@ -537,11 +548,19 @@ SUPER_ADMIN_EMAILS=['SERVER_ADMIN_EMAIL@EXAMPLE.COM']
 MULTER_MEDIA_PATH=./storages/resources
 MULTER_MEDIA_SIZE=10000000
 
+# Smart Contract Addresses
 IDENTITY_OWNERSHIP_REGISTERATION='0xb02c53d07b2b40cb9edf3f7531ab9735bfa5eded'
 DEVICE_NFT_MANAGEMENT='0x640335b9cab770dd720c9f57a82becc60bc97d02'
 COMMITMENT_MANAGEMENT='0x96259fba1f845b42c257f72088dd38c7e8540504'
 ZKP_STORAGE='0x897264b7d872e07a3d8e1d22b199f12cfb4bb26d'
 NODE_SERVICE_DEVICE_MANAGEMENT='0x4b08ea934e6bfb7c72a376c842c911e1dd2aa74f'
+
+# Host Configuration
+HOST_NAME_OR_IP='PANEL_URL'
+
+# MQTT Broker Configuration
+MQTT_BROKER_PORT=8885
+MQTT_WEBSOCKET_PORT=8083
 ```
 
 - Create two wallet addresses on the Fidesinnova network for the admin and the faucet. To learn how to connect your wallet to the Fides network, please [watch this video on YouTube](https://www.youtube.com/watch?v=3GVfyu4uzhs)
@@ -591,6 +610,11 @@ DEVICE_NFT_MANAGEMENT='0x640335b9cab770dd720c9f57a82becc60bc97d02'
 COMMITMENT_MANAGEMENT='0x96259fba1f845b42c257f72088dd38c7e8540504'
 ZKP_STORAGE='0x897264b7d872e07a3d8e1d22b199f12cfb4bb26d'
 NODE_SERVICE_DEVICE_MANAGEMENT='0x4b08ea934e6bfb7c72a376c842c911e1dd2aa74f'
+
+HOST_NAME_OR_IP='PANEL_URL'
+
+MQTT_BROKER_PORT=8885
+MQTT_WEBSOCKET_PORT=8083
 ```
 
 - Please update only the necessary values in the `.env` file, and make sure **not to add any extra spaces** before or after the `=` sign. For example:
