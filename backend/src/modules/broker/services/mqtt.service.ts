@@ -38,6 +38,8 @@ export class MqttService implements OnModuleInit {
   ) {}
 
   private deviceCache: Map<string, any> = new Map();
+  private isBrokerAvailable: boolean = false;
+  private brokerError: string | null = null;
 
   async getDeviceType(device: string) {
     if (this.deviceCache.has(device)) {
@@ -56,96 +58,191 @@ export class MqttService implements OnModuleInit {
   }
 
   async onModuleInit() {
-    await this.brokerStart();
+    // Start broker asynchronously without blocking app startup
+    this.brokerStart().catch((error) => {
+      console.error('MQTT Broker failed to start:', error.message);
+      LogService.log(`MQTT Broker failed to start: ${error.message}`);
+      this.isBrokerAvailable = false;
+      this.brokerError = error.message;
+    });
+  }
+
+  /**
+   * Check if the MQTT broker is available
+   */
+  isBrokerReady(): boolean {
+    return this.isBrokerAvailable;
+  }
+
+  /**
+   * Get the broker error message if available
+   */
+  getBrokerError(): string | null {
+    return this.brokerError;
+  }
+
+  /**
+   * Safely publish a message to MQTT broker
+   * Returns true if published, false if broker is unavailable
+   */
+  safePublish(topic: string, payload: string | Buffer): boolean {
+    if (!this.isBrokerAvailable) {
+      console.error(`MQTT Broker is not available. Cannot publish to topic: ${topic}`);
+      return false;
+    }
+
+    try {
+      aedes.publish({
+        topic: topic,
+        payload: payload,
+      });
+      return true;
+    } catch (error) {
+      console.error(`Failed to publish to topic ${topic}:`, error.message);
+      return false;
+    }
   }
 
   async brokerStart() {
-    const mqttPorts = {
-      mqtt: 1883,
-      mqtts: process.env.MQTT_BROKER_PORT || 8883,
-      ws: 8080,
-      wss: process.env.MQTT_WEBSOCKET_PORT || 8081,
-    };
-
-    // Try to load TLS certificates, but don't crash if they're missing/expired
-    let tlsOptions: { key: Buffer; cert: Buffer } | null = null;
-
     try {
-      const keyPath = '/etc/nginx/ssl/privkey.pem';
-      const certPath = '/etc/nginx/ssl/fullchain.pem';
+      const mqttPorts = {
+        mqtt: 1883,
+        mqtts: process.env.MQTT_BROKER_PORT || 8883,
+        ws: 8080,
+        wss: process.env.MQTT_WEBSOCKET_PORT || 8081,
+      };
 
-      // Check if files exist
-      if (fs.existsSync(keyPath) && fs.existsSync(certPath)) {
-        tlsOptions = {
-          key: fs.readFileSync(keyPath),
-          cert: fs.readFileSync(certPath),
-        };
-        LogService.log('MQTT: TLS certificates loaded successfully');
-      } else {
+      // Try to load TLS certificates, but don't crash if they're missing/expired
+      let tlsOptions: { key: Buffer; cert: Buffer } | null = null;
+
+      try {
+        const keyPath = '/etc/nginx/ssl/privkey.pem';
+        const certPath = '/etc/nginx/ssl/fullchain.pem';
+
+        // Check if files exist
+        if (fs.existsSync(keyPath) && fs.existsSync(certPath)) {
+          tlsOptions = {
+            key: fs.readFileSync(keyPath),
+            cert: fs.readFileSync(certPath),
+          };
+          LogService.log('MQTT: TLS certificates loaded successfully');
+        } else {
+          LogService.log(
+            'MQTT: TLS certificate files not found, starting without TLS',
+          );
+        }
+      } catch (error) {
+        console.error('MQTT: Failed to load TLS certificates:', error.message);
+        LogService.log(`MQTT: Failed to load TLS certificates: ${error.message}`);
+        LogService.log('MQTT: Starting without TLS (non-secure mode)');
+      }
+
+      let serversStarted = 0;
+      const requiredServers = 2; // MQTT and WebSocket are required
+
+      // Start non-secure MQTT server (always available)
+      const mqttServer = require('net').createServer(aedes.handle);
+      
+      mqttServer.on('error', (err) => {
+        console.error('MQTT Server Error:', err.message);
+        LogService.log(`MQTT Server Error: ${err.message}`);
+        this.isBrokerAvailable = false;
+        this.brokerError = `MQTT server error: ${err.message}`;
+      });
+
+      mqttServer.listen(mqttPorts.mqtt, () => {
+        LogService.log(`MQTT started and listening on port ${mqttPorts.mqtt}`);
+        serversStarted++;
+        if (serversStarted >= requiredServers) {
+          this.isBrokerAvailable = true;
+          this.brokerError = null;
+          LogService.log('MQTT Broker is now available');
+        }
+      }).on('error', (err) => {
+        console.error('MQTT Server Listen Error:', err.message);
+        LogService.log(`MQTT Server Listen Error: ${err.message}`);
+        this.isBrokerAvailable = false;
+        this.brokerError = `MQTT server listen error: ${err.message}`;
+      });
+
+      // Start non-secure WebSocket server
+      const wsServer = require('http').createServer();
+      
+      wsServer.on('error', (err) => {
+        console.error('MQTT WebSocket Server Error:', err.message);
+        LogService.log(`MQTT WebSocket Server Error: ${err.message}`);
+        this.isBrokerAvailable = false;
+        this.brokerError = `MQTT WebSocket server error: ${err.message}`;
+      });
+
+      wsStream.createServer({ server: wsServer }, aedes.handle);
+      wsServer.listen(mqttPorts.ws, () => {
         LogService.log(
-          'MQTT: TLS certificate files not found, starting without TLS',
+          `MQTT over WebSocket started and listening on port ${mqttPorts.ws}`,
         );
+        serversStarted++;
+        if (serversStarted >= requiredServers) {
+          this.isBrokerAvailable = true;
+          this.brokerError = null;
+          LogService.log('MQTT Broker is now available');
+        }
+      }).on('error', (err) => {
+        console.error('MQTT WebSocket Server Listen Error:', err.message);
+        LogService.log(`MQTT WebSocket Server Listen Error: ${err.message}`);
+        this.isBrokerAvailable = false;
+        this.brokerError = `MQTT WebSocket server listen error: ${err.message}`;
+      });
+
+      // Start secure servers only if certificates are available
+      if (tlsOptions) {
+        try {
+          const tlsServer = createServer(tlsOptions, aedes.handle);
+
+          tlsServer.on('error', (err) => {
+            console.error('MQTT TLS Server Error:', err.message);
+            LogService.log(`MQTT TLS Server Error: ${err.message}`);
+            // Don't mark broker as unavailable if only TLS fails
+          });
+
+          tlsServer.listen(mqttPorts.mqtts, () => {
+            LogService.log(
+              `MQTT over TLS / MQTTS started and listening on port ${mqttPorts.mqtts}`,
+            );
+          });
+        } catch (error) {
+          console.error('MQTT: Failed to start TLS server:', error.message);
+          LogService.log(`MQTT: Failed to start TLS server: ${error.message}`);
+          // Don't mark broker as unavailable if only TLS fails
+        }
+
+        try {
+          const httpServer = require('https').createServer(tlsOptions);
+
+          httpServer.on('error', (err) => {
+            console.error('MQTT HTTPS Server Error:', err.message);
+            LogService.log(`MQTT HTTPS Server Error: ${err.message}`);
+            // Don't mark broker as unavailable if only WSS fails
+          });
+
+          wsStream.createServer({ server: httpServer }, aedes.handle);
+
+          httpServer.listen(mqttPorts.wss, () => {
+            LogService.log(
+              `MQTT over WebSocket Secure / WSS started and listening on port ${mqttPorts.wss}`,
+            );
+          });
+        } catch (error) {
+          console.error('MQTT: Failed to start WSS server:', error.message);
+          LogService.log(`MQTT: Failed to start WSS server: ${error.message}`);
+          // Don't mark broker as unavailable if only WSS fails
+        }
       }
     } catch (error) {
-      console.error('MQTT: Failed to load TLS certificates:', error.message);
-      LogService.log(`MQTT: Failed to load TLS certificates: ${error.message}`);
-      LogService.log('MQTT: Starting without TLS (non-secure mode)');
-    }
-
-    // Start non-secure MQTT server (always available)
-    const mqttServer = require('net').createServer(aedes.handle);
-    mqttServer.listen(mqttPorts.mqtt, function () {
-      LogService.log(`MQTT started and listening on port ${mqttPorts.mqtt}`);
-    });
-
-    // Start non-secure WebSocket server
-    const wsServer = require('http').createServer();
-    wsStream.createServer({ server: wsServer }, aedes.handle);
-    wsServer.listen(mqttPorts.ws, function () {
-      LogService.log(
-        `MQTT over WebSocket started and listening on port ${mqttPorts.ws}`,
-      );
-    });
-
-    // Start secure servers only if certificates are available
-    if (tlsOptions) {
-      try {
-        const tlsServer = createServer(tlsOptions, aedes.handle);
-
-        tlsServer.on('error', (err) => {
-          console.error('MQTT TLS Server Error:', err.message);
-          LogService.log(`MQTT TLS Server Error: ${err.message}`);
-        });
-
-        tlsServer.listen(mqttPorts.mqtts, function () {
-          LogService.log(
-            `MQTT over TLS / MQTTS started and listening on port ${mqttPorts.mqtts}`,
-          );
-        });
-      } catch (error) {
-        console.error('MQTT: Failed to start TLS server:', error.message);
-        LogService.log(`MQTT: Failed to start TLS server: ${error.message}`);
-      }
-
-      try {
-        const httpServer = require('https').createServer(tlsOptions);
-
-        httpServer.on('error', (err) => {
-          console.error('MQTT HTTPS Server Error:', err.message);
-          LogService.log(`MQTT HTTPS Server Error: ${err.message}`);
-        });
-
-        wsStream.createServer({ server: httpServer }, aedes.handle);
-
-        httpServer.listen(mqttPorts.wss, function () {
-          LogService.log(
-            `MQTT over WebSocket Secure / WSS started and listening on port ${mqttPorts.wss}`,
-          );
-        });
-      } catch (error) {
-        console.error('MQTT: Failed to start WSS server:', error.message);
-        LogService.log(`MQTT: Failed to start WSS server: ${error.message}`);
-      }
+      console.error('MQTT Broker startup failed:', error.message);
+      LogService.log(`MQTT Broker startup failed: ${error.message}`);
+      this.isBrokerAvailable = false;
+      this.brokerError = error.message;
+      throw error; // Re-throw to be caught by onModuleInit
     }
 
     aedes.on('subscribe', async function (subscriptions, client) {
@@ -297,10 +394,11 @@ export class MqttService implements OnModuleInit {
           }
 
           if (client.id !== parsedPayload.from) {
-            aedes.publish({
-              topic: parsedPayload.from,
-              payload: payload,
-            });
+            if (!this.safePublish(parsedPayload.from, payload)) {
+              console.error(
+                `Failed to publish message from ${client.id} to ${parsedPayload.from}: Broker unavailable`,
+              );
+            }
           }
         }
       }
