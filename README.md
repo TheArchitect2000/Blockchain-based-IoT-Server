@@ -541,7 +541,12 @@ REFRESH_TOKEN_SECRET_KEY='YOUR_REFRESH_SECRET_KEY'
 REFRESH_TOKEN_ALGORITHM='HS384'
 
 # your admins emails that can make other users into admin or developer
+# The first email in this array will be used to create the default admin user when running the seeder
 SUPER_ADMIN_EMAILS=['SERVER_ADMIN_EMAIL@EXAMPLE.COM']
+
+# Optional: Set a custom default password for the admin user created by the seeder
+# If not set, the default password will be 'Admin123!'
+# DEFAULT_ADMIN_PASSWORD='YourCustomPassword123'
 
 # Multer Configuration
 # Multer is a node.js middleware for handling multipart/form-data, which is primarily used for uploading files.
@@ -825,6 +830,51 @@ To view logs:
 
 ```bash
 docker compose -p $PROJECT_NAME logs -f
+```
+
+---
+
+### B.9. Initialize Database (Run Seeder)
+
+After the containers are running, you need to initialize the database with default permissions, roles, and create an admin user. Run the seeder command:
+
+**Option 1: Run seeder inside the backend container (Recommended)**
+
+```bash
+docker compose -p $PROJECT_NAME exec backend npm run seed
+```
+
+**Option 2: Run seeder locally (if you have Node.js installed)**
+
+```bash
+cd /home/Blockchain-based-IoT-Server/backend
+npm install
+npm run seed
+```
+
+**What the seeder does:**
+1. Creates default permissions (full_controll, read_content, users, devices, services, etc.)
+2. Creates default roles (super_admin, user_admin, device_admin, service_admin, request_admin, notification_admin, company_developer, and **ordinary** role for regular users)
+3. Creates a default admin user using the first email from `SUPER_ADMIN_EMAILS` in your `.env` file
+
+**Important Notes:**
+- The seeder uses the first email from `SUPER_ADMIN_EMAILS` environment variable to create the admin user
+- Default password is `Admin123!` unless you set `DEFAULT_ADMIN_PASSWORD` in your `.env` file
+- **Please change the default password after first login!**
+- If a user with the email already exists, the seeder will skip creation but will grant them super_admin role if they don't have it
+
+**Example output:**
+```
+[Seeder] Starting database seeding...
+[Seeder] Step 1: Inserting default permissions...
+[Seeder] ✓ Default permissions inserted successfully
+[Seeder] Step 2: Inserting default roles...
+[Seeder] ✓ Default roles inserted successfully
+[Seeder] Step 3: Creating default admin user...
+[Seeder] ✓ Default building created for admin user.
+[Seeder] ✓ Admin user created successfully with email: admin@example.com
+[Seeder]   Default password: Admin123! (Please change this after first login!)
+[Seeder] ✅ Database seeding completed successfully!
 ```
 
 ---
