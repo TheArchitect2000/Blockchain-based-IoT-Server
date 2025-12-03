@@ -24,6 +24,7 @@ import { AdminModule } from './modules/admin/admin.module';
 import { BuildingModule } from './modules/building/building.module';
 import { LogModule } from './modules/logging/log.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { SeederModule } from './modules/seeder/seeder.module';
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     MediaModule,
     AdminModule,
     SubscriptionsModule,
+    SeederModule,
   ],
   controllers: [AppController],
   providers: [
